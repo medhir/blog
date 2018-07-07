@@ -1,0 +1,63 @@
+.editor {
+    position: relative;
+    margin-top: 20px;
+    border: 2px solid rgb(0,0,0);
+}
+
+.editor textarea, 
+.editor article {
+    padding: 10px 20px;
+}
+
+.editor textarea {
+    border: none;
+    resize: none;
+    outline: none;
+    font-size: 1em;
+    box-sizing: border-box;
+    background-color: rgb(224, 224, 224);
+    border-right: 2px dashed rgb(0,0,0);
+    width: 24%;
+}
+
+.editor article {
+    display: inline-block;
+    overflow: scroll;
+    width: 75%;
+}
+
+.preview textarea {
+    display: none;
+}
+
+.preview article {
+    width: 100%;
+}
+
+.editor-controls {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+@media only screen and (max-width: 600px){
+    .editor {
+        margin-top: 10px;
+    }
+
+    .editor textarea, 
+    .editor article {
+        height: auto;
+        width: 100%;
+        padding: 10px;
+    }
+
+    .editor textarea {
+        font-size: 1.2em;
+        border: none;
+    }
+
+    .editor-controls {
+        top: 0;
+    }
+}

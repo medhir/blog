@@ -1,0 +1,55 @@
+/*
+  high level style definitions
+*/
+body {
+  font-family: 'Helvetica Neue', 'Helvetica', sans-serif;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+h1 {
+  font-weight: 800;
+  font-size: 4rem;
+}
+
+h2 {
+  font-weight: 700;
+  font-size: 3.5rem;
+}
+
+h3 {
+  font-weight: 700;
+  font-size: 3em;
+}
+
+h4 {
+  font-weight: 600;
+  font-size: 2.5em;
+}
+
+h5 {
+  font-weight: 600; 
+  font-size: 2em;
+}
+
+h6 {
+  font-weight: 600;
+  font-size: 1.5em;
+}
+
+ul {
+  list-style-type: disc;
+}
+
+section {
+  display: flex;
+  background-color: #fefefe;
+  height: 800px;
+  overflow: scroll;
+}
+
+code {
+  font-family: 'Menlo', monospace;
+}

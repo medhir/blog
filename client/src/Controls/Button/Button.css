@@ -1,0 +1,34 @@
+button {
+    font-size: 1em;
+    margin: 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    width: 70px;
+}
+
+.button-save {
+    background-color: rgb(15, 175, 0);
+    border: 2px solid rgb(12, 129, 1);
+    color: white;
+}
+
+.button-save:hover {
+    background-color: rgb(12, 129, 1);
+}
+
+.button-edit {
+    background-color: rgb(253, 68, 36);
+    border: 2px solid rgb(212, 44, 14);
+    color: white;
+}
+
+.button-edit:hover {
+    background-color: rgb(212, 44, 14);
+}
+
+/* .button-save:active, .button-edit:active {
+    border: none;
+} */

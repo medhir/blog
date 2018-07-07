@@ -1,0 +1,23 @@
+main {
+    min-height: 100%;
+    padding: 0.1px; /* to prevent margin collapsing */
+    background: linear-gradient(45deg, rgb(0,0,255), rgb(255, 50, 231));
+    background-size: 400% 200%;
+    animation: underanimate 30s infinite;
+}
+
+main > * {
+    margin: 20px 45px;
+}
+
+@media only screen and (max-width: 600px){
+    main > * {
+        margin: 10px;
+    }
+}
+
+@keyframes underanimate { 
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
