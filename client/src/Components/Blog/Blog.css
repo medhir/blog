@@ -1,0 +1,28 @@
+.blog {
+    background: transparent;
+}
+
+li.post {
+    margin: 20px 0px;
+}
+
+li.post > * {
+    background: white;
+    padding: 4px;
+}
+
+li.post > h3 {
+    font-size: 2.7em;
+    margin: 2px 0px;
+}
+
+li.post > h4 {
+    font-size: 1.7em;
+    font-weight: 200;
+    display: block;
+}
+
+li.post > p {
+    display: inline-block;
+    margin: 1px 0px;
+}
