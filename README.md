@@ -12,5 +12,4 @@ The front-end is entirely written in React (for now). There are a few high-level
 # To Do 
 - Consider whether use of a templating system is even worth it 
 - **TASTS**
-- **Why the fuck** did the CSS stop working? 
 - Makefile for build step (Go + React) -> Serve to single port 
