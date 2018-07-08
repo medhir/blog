@@ -19,7 +19,7 @@ class Editor extends Component {
 
     handleClick = () => {
         if (this.state.edit === true) {
-            localStorage.setItem('medhir-markdown', this.state.markdown);
+            localStorage.setItem('medhir-md', this.state.markdown);
         }
 
         this.setState(prevState => ({
@@ -41,7 +41,7 @@ class Editor extends Component {
 
     componentDidMount () {
         window.addEventListener('resize', this.handleWindowResize)
-        const localMd = localStorage.getItem('medhir-markdown');
+        const localMd = localStorage.getItem('medhir-md');
         this.setState({
             parsed: localMd ? Marked(localMd) : Marked(this.state.markdown)
         })
@@ -49,7 +49,7 @@ class Editor extends Component {
 
     render () {
         // local variables
-        const localStorageMd = localStorage.getItem('medhir-markdown');
+        const localStorageMd = localStorage.getItem('medhir-md');
         const className = `editor ${ this.state.edit ? null : 'preview' }`;
 
         // components
