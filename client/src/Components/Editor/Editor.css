@@ -1,7 +1,8 @@
 .editor {
+    height: 100%;
+    display: flex;
     position: relative;
     margin-top: 20px;
-    border: 2px solid rgb(0,0,0);
 }
 
 .editor textarea, 
@@ -21,6 +22,7 @@
 }
 
 .editor article {
+    background-color: white;
     display: inline-block;
     overflow: scroll;
     width: 75%;
@@ -37,7 +39,7 @@
 .editor-controls {
     position: absolute;
     right: 0;
-    bottom: 0;
+    top: 0;
 }
 
 @media only screen and (max-width: 600px){
@@ -55,9 +57,5 @@
     .editor textarea {
         font-size: 1.2em;
         border: none;
-    }
-
-    .editor-controls {
-        top: 0;
     }
 }
