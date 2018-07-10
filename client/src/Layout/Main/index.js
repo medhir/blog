@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 import Editor from '../../Components/Editor';
-import Photos from '../../Components/Gallery';
+import Gallery from '../../Components/Gallery';
 import Blog from '../../Components/Blog';
 import Login from '../../Auth/Login';
 
@@ -13,7 +13,7 @@ class Main extends Component {
       <main>
         <Route path="/blog" component={ Blog } />
         <Route path="/edit" component={ Login } />
-        <Route path="/photos" component={ Photos } />
+        <Route path="/photos" component={ Gallery } />
       </main>
       )
   }

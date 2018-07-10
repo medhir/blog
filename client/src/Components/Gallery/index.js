@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import http from 'axios';
+import axios from 'axios';
 import './Photos.css';
 import Photo from '../../Layout/Photo';
+import Uploader from '../Uploader';
 
-// const BASE_URL = "http://192.168.1.140:8000";
+const http = axios.create({
+    baseURL: 'http://localhost:8000'
+});
 
 const shuffle = (a) => {
     var j, x, i;
@@ -18,17 +21,18 @@ const shuffle = (a) => {
 
 const Layout = (props) => (
     <section className="photos">
+        <Uploader className="uploader" />
         {
-            props.photos.map((photo) => <Photo className="photo" src={ `/assets/photos/${ photo }`} />)
+            props.photos.map((photo) => <Photo className="photo" src={ `http://localhost:8000/assets/photos/${ photo }`} />)
         }
     </section>  
 );
 
 
 // returns an array of Photo components
-// as an album
+// as a Gallery
 
-class Photos extends Component {
+class Gallery extends Component {
     constructor (props) {
         super(props);
         this.state = {
@@ -64,4 +68,4 @@ class Photos extends Component {
     }
 }
 
-export default Photos;
+export default Gallery;
