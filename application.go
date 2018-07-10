@@ -10,9 +10,11 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/rs/cors"
 )
 
-const maxUploadSize = 20 * 1024 // 20 MB
+const maxUploadSize = 32 << 20 // 32 MB
 
 func randToken(len int) string {
 	b := make([]byte, len)
@@ -28,10 +30,11 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 	w.Write(index)
 }
 
-func uploadFileHandler(path string) http.HandlerFunc {
+func uploadFile(path string) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			http.Error(w, "Must be POST request", http.StatusBadRequest)
+			return
 		}
 		// check file size
 		r.Body = http.MaxBytesReader(w, r.Body, maxUploadSize)
@@ -86,11 +89,6 @@ func uploadFileHandler(path string) http.HandlerFunc {
 	})
 }
 
-// type PhotoInfo []struct {
-// 	name string
-// 	size int64
-// }
-
 func getFileNames(path string) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
@@ -120,26 +118,28 @@ func main() {
 	http.HandleFunc("/", serveIndex)
 
 	// CORS config
-	// c := cors.New(cors.Options{
-	// 	Debug:            true,
-	// 	AllowCredentials: true,
-	// })
+	c := cors.New(cors.Options{
+		Debug:            true,
+		AllowCredentials: true,
+	})
+
 	// photo uploader
-	http.HandleFunc("/uploadphoto", uploadFileHandler("/static/photos"))
+	http.HandleFunc("/api/photos/upload/", uploadFile("/assets/photos"))
 
 	// static files
 	staticfs := http.FileServer(http.Dir("build/static"))
 	http.Handle("/static/", http.StripPrefix("/static/", staticfs))
-	assetsfs := http.FileServer(http.Dir("assets"))
+	assetsfs := http.FileServer(http.Dir("assets/"))
 	http.Handle("/assets/", http.StripPrefix("/assets/", assetsfs))
 
 	// photo name API
-	http.Handle("/api/photos/", getFileNames("./assets/photos"))
+	http.HandleFunc("/api/photos/", getFileNames("./assets/photos"))
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8000"
 	}
 	log.Println("Listening on port " + port)
-	http.ListenAndServe(":"+port, nil)
+	corsEnabled := c.Handler(http.DefaultServeMux)
+	http.ListenAndServe(":"+port, corsEnabled)
 }
