@@ -2,11 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import './Photos.css';
 import Photo from '../../Layout/Photo';
-import Uploader from '../Uploader';
-
-const http = axios.create({
-    baseURL: 'http://localhost:8000'
-});
+import Uploader from '../../Controls/Uploader';
+import api from './api';
 
 const shuffle = (a) => {
     var j, x, i;
@@ -19,13 +16,10 @@ const shuffle = (a) => {
     return a;
 }
 
-const Layout = (props) => (
-    <section className="photos">
-        <Uploader className="uploader" />
-        {
-            props.photos.map((photo) => <Photo className="photo" src={ `http://localhost:8000/assets/photos/${ photo }`} />)
-        }
-    </section>  
+const Album = (props) => (
+    <section className="album" album={ props.album } onClick={ props.onClick }>
+        <h1>{ props.album }</h1>
+    </section>
 );
 
 
@@ -36,16 +30,46 @@ class Gallery extends Component {
     constructor (props) {
         super(props);
         this.state = {
+            album: null,
+            albums: null,
             photos: null,
             error: null
         }
     }
+
+    Albums = () => (
+        <section className="albums">
+        {
+            this.state.albums.map((album) => <Album album={ album } key={ album } onClick={ () => this.getPhotos(album) } />)
+        }
+        </section>
+    )
+
+    Gallery = () => (
+        <section className="photos">
+        {
+            this.state.photos.map((photo) => <Photo className="photo" src={ `http://localhost:8000/assets/photos/${ this.state.album }/${ photo }`} />)
+        }
+        </section>  
+    )
+
+    getPhotos = (album) => {
+        api.getPhotos(album)
+           .then((response) => {
+               this.setState({
+                   albums: null,
+                   album: album,
+                   photos: response.data
+               })
+           })
+    }
+
     componentDidMount = () => {
-        http.get(`/api/photos/`)
+        api.getAlbums()
             .then((response) => {
                 console.dir(response);
                 this.setState({
-                    photos: response.data
+                    albums: response.data
                 });
             })
             .catch((error) => {
@@ -57,13 +81,12 @@ class Gallery extends Component {
     }
 
     render () {
-        if (this.state.photos) {
-            const shuffled = shuffle(this.state.photos);
-            return <Layout photos={ shuffled.slice(0,27) } />;
+        if (this.state.albums) {
+            return <this.Albums albums={ this.state.albums } />;
+        } else if (this.state.photos) {
+            return <this.Gallery album={ this.state.album } photos={ this.state.photos } />;
         } else {
-            return (
-                <section><h2>Loading...</h2></section>
-            )
+            return (<section><h2>Loading...</h2></section>);
         }
     }
 }
