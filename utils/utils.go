@@ -23,11 +23,7 @@ func Assets(dir string) http.HandlerFunc {
 		}
 		var files []string
 		for _, v := range dir {
-			if v.IsDir() {
-				files = append([]string{"/" + v.Name()}, files...)
-			} else {
-				files = append(files, v.Name())
-			}
+			files = append(files, v.Name())
 		}
 		obj, err := json.Marshal(files)
 		if err != nil {
@@ -56,6 +52,7 @@ func Upload(path string) http.HandlerFunc {
 			}
 			defer f.Close()
 			io.Copy(f, file)
+			w.WriteHeader(http.StatusOK)
 		}
 	})
 }
