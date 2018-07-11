@@ -6,21 +6,28 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 )
 
-func FileNames(path string) http.HandlerFunc {
+func Assets(dir string) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
 			http.Error(w, "Invalid request", http.StatusBadRequest)
 			return
 		}
-		dir, err := ioutil.ReadDir(path)
+		path := strings.TrimPrefix(r.URL.Path, "/api/"+dir+"/")
+
+		dir, err := ioutil.ReadDir("assets/" + dir + "/" + path)
 		if err != nil {
 			http.Error(w, "Cannot read directory.", http.StatusInternalServerError)
 		}
 		var files []string
 		for _, v := range dir {
-			files = append(files, v.Name())
+			if v.IsDir() {
+				files = append([]string{"/" + v.Name()}, files...)
+			} else {
+				files = append(files, v.Name())
+			}
 		}
 		obj, err := json.Marshal(files)
 		if err != nil {
@@ -32,7 +39,7 @@ func FileNames(path string) http.HandlerFunc {
 	})
 }
 
-func Upload(path string) http.Handler {
+func Upload(path string) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.ParseMultipartForm(32 << 20)
 		fhs := r.MultipartForm.File["uploads"]

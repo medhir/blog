@@ -40,7 +40,7 @@ func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets/", assetsfs))
 
 	// photo name API
-	http.HandleFunc("/api/photos/", utils.FileNames("./assets/photos"))
+	http.HandleFunc("/api/photos/", utils.Assets("photos"))
 
 	port := os.Getenv("PORT")
 	if port == "" {
