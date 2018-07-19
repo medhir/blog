@@ -32,15 +32,20 @@ func main() {
 	// photo uploader
 	// http.HandleFunc("/api/photos/upload/", uploadFile("/assets/photos"))
 
-	// staticjsetc
+	// static js,css
 	staticfs := http.FileServer(http.Dir("build/static"))
 	http.Handle("/static/", http.StripPrefix("/static/", staticfs))
-	// static files
+	// asset files
 	assetsfs := http.FileServer(http.Dir("assets/"))
 	http.Handle("/assets/", http.StripPrefix("/assets/", assetsfs))
 
 	// photo name API
 	http.HandleFunc("/api/photos/", utils.Assets("photos"))
+	// album API
+	http.HandleFunc("/api/albums/", utils.Albums())
+
+	// uploader service
+	http.HandleFunc("/api/upload/", utils.Upload())
 
 	port := os.Getenv("PORT")
 	if port == "" {

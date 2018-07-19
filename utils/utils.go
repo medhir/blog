@@ -9,6 +9,13 @@ import (
 	"strings"
 )
 
+type Album struct {
+	Name   string
+	Images []string
+}
+
+const AlbumsPath = "assets/photos"
+
 func Assets(dir string) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
@@ -35,7 +42,51 @@ func Assets(dir string) http.HandlerFunc {
 	})
 }
 
-func Upload(path string) http.HandlerFunc {
+func Albums() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" {
+			http.Error(w, "Invalid request", http.StatusBadRequest)
+			return
+		}
+
+		// get albums from photos
+		albums, err := ioutil.ReadDir(AlbumsPath)
+		if err != nil {
+			http.Error(w, "Could not read photos at "+AlbumsPath, http.StatusInternalServerError)
+			return
+		}
+		var albumsResponse []Album
+		for _, album := range albums {
+			var albumPath = AlbumsPath + "/" + album.Name()
+			photoFiles, err := ioutil.ReadDir(albumPath)
+			if err != nil {
+				http.Error(w, "Could not read photos at "+albumPath, http.StatusInternalServerError)
+				return
+			}
+			var photoArr []string
+			for _, photo := range photoFiles {
+				photoArr = append(photoArr, photo.Name())
+			}
+
+			albumStruct := Album{
+				album.Name(),
+				photoArr,
+			}
+			albumsResponse = append(albumsResponse, albumStruct)
+		}
+
+		// write JSON to response
+		w.Header().Set("Content-Type", "application/json")
+		obj, err := json.Marshal(albumsResponse)
+		if err != nil {
+			http.Error(w, "Data could not be encoded.", http.StatusInternalServerError)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write(obj)
+	})
+}
+
+func Upload() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.ParseMultipartForm(32 << 20)
 		fhs := r.MultipartForm.File["uploads"]
