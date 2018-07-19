@@ -1,27 +1,44 @@
-import React, { Component } from 'react';
-import axios from 'axios';
+import React, { Component, Fragment } from 'react';
+import { Route, Link } from "react-router-dom";
 import './Photos.css';
 import Photo from '../../Layout/Photo';
-import Uploader from '../../Controls/Uploader';
+import Loading from '../../Layout/Loading';
 import api from './api';
 
-const shuffle = (a) => {
-    var j, x, i;
-    for (i = a.length - 1; i > 0; i--) {
-        j = Math.floor(Math.random() * (i + 1));
-        x = a[i];
-        a[i] = a[j];
-        a[j] = x;
-    }
-    return a;
+const Album = (props) => {
+    const preview = props.album.Images.slice(0,4);
+    return (
+        <Link to={ `/photos/${ props.album.Name }` }>
+            <div className="album" album={ props.album } onClick={ props.onClick }>
+                <h1>{ props.album.Name }</h1>
+                {
+                    preview.map(photo => <Photo className="preview" src={ `http://localhost:8000/assets/photos/${props.album.Name}/${photo}` }/>)
+                }
+            </div>
+        </Link>
+    );
+};
+
+const Albums = (props) => {
+    return (
+        <section className="albums">
+        {
+            props.albums.map((album) => <Album album={ album } key={ album.Name } />)
+        }
+        </section>
+    )
 }
 
-const Album = (props) => (
-    <section className="album" album={ props.album } onClick={ props.onClick }>
-        <h1>{ props.album }</h1>
-    </section>
-);
-
+const PhotoGallery = (props) => {
+    const photos = props.getPhotos(props.album);
+    return (
+        <section className="photos">
+        {
+            photos.map((photo) => <Photo className="photo" src={ `http://localhost:8000/assets/photos/${ props.album }/${ photo }`} />)
+        }
+        </section>  
+    )
+}
 
 // returns an array of Photo components
 // as a Gallery
@@ -37,37 +54,15 @@ class Gallery extends Component {
         }
     }
 
-    Albums = () => (
-        <section className="albums">
-        {
-            this.state.albums.map((album) => <Album album={ album } key={ album } onClick={ () => this.getPhotos(album) } />)
-        }
-        </section>
-    )
-
-    Gallery = () => (
-        <section className="photos">
-        {
-            this.state.photos.map((photo) => <Photo className="photo" src={ `http://localhost:8000/assets/photos/${ this.state.album }/${ photo }`} />)
-        }
-        </section>  
-    )
-
-    getPhotos = (album) => {
-        api.getPhotos(album)
-           .then((response) => {
-               this.setState({
-                   albums: null,
-                   album: album,
-                   photos: response.data
-               })
-           })
+    getPhotos = (albumName) => {
+        const album = this.state.albums.find(album => album.Name === albumName);
+        return album.Images;
     }
 
     componentDidMount = () => {
         api.getAlbums()
             .then((response) => {
-                console.dir(response);
+                console.dir(response.data);
                 this.setState({
                     albums: response.data
                 });
@@ -82,11 +77,16 @@ class Gallery extends Component {
 
     render () {
         if (this.state.albums) {
-            return <this.Albums albums={ this.state.albums } />;
-        } else if (this.state.photos) {
-            return <this.Gallery album={ this.state.album } photos={ this.state.photos } />;
+            return (
+                <Fragment>
+                    <Route exact path={ this.props.match.path }
+                                 render={ () => <Albums albums={ this.state.albums } getPhotos={ this.getPhotos }/> } />
+                    <Route path={ `${ this.props.match.url }/:album` } 
+                           render={ (props) => <PhotoGallery album={ props.match.params.album } getPhotos={ this.getPhotos }/> } />
+                </Fragment>
+            );
         } else {
-            return (<section><h2>Loading...</h2></section>);
+            return <Loading />;
         }
     }
 }
