@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Route, Link } from "react-router-dom";
-import './Photos.css';
+import './Gallery.css';
 import Photo from '../../Layout/Photo';
 import Loading from '../../Layout/Loading';
 import api from './api';
@@ -8,14 +8,16 @@ import api from './api';
 const Album = (props) => {
     const preview = props.album.Images.slice(0,4);
     return (
-        <Link to={ `/photos/${ props.album.Name }` }>
-            <div className="album" album={ props.album } onClick={ props.onClick }>
+        <div className="album" album={ props.album } onClick={ props.onClick }>
+            <Link to={ `/photos/${ props.album.Name }` }>
                 <h1>{ props.album.Name }</h1>
+                <div class="thumbnails">
                 {
-                    preview.map(photo => <Photo className="preview" src={ `http://localhost:8000/assets/photos/${props.album.Name}/${photo}` }/>)
+                    preview.map(photo => <img src={ `/assets/photos/${props.album.Name}/${photo}` }/>)
                 }
-            </div>
-        </Link>
+                </div>
+            </Link>
+        </div>
     );
 };
 
@@ -34,7 +36,7 @@ const PhotoGallery = (props) => {
     return (
         <section className="photos">
         {
-            photos.map((photo) => <Photo className="photo" src={ `http://localhost:8000/assets/photos/${ props.album }/${ photo }`} />)
+            photos.map((photo) => <Photo className="photo" src={ `/assets/photos/${ props.album }/${ photo }`} />)
         }
         </section>  
     )

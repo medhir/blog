@@ -1,0 +1,61 @@
+.photos {
+    display: block;
+    overflow: hidden;
+    min-height: 100%;
+}
+
+.photo {
+    display: block;
+    width: 50%;
+    margin: 20px auto;
+    cursor: pointer;
+}
+
+.photos:first-child {
+    margin-top: 0px;
+}
+
+.photo > img {
+    width: 100%;
+    border: 1px solid black;
+}
+
+.albums a {
+    color: black;
+}
+
+.album {
+    margin: 10px 0px;
+}
+
+.album h1 {
+    height: 100%;
+    background-color: white;
+    display: inline-block;
+    padding-right: 30px;
+}
+
+.album .thumbnails {
+    display: inline-block;
+    height: 100%;
+}
+
+.thumbnails > img {
+    height: 75px;
+    width: auto;
+}
+
+@media only screen and (max-width: 600px){
+    .photos {
+        text-align: center;
+    }
+    
+    .photo {
+        width: 100%;
+    }
+
+    .photo > img {
+        width: 99%;
+        height: auto;
+    }
+}

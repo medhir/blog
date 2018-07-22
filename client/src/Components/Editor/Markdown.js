@@ -15,8 +15,8 @@ const Markdown = (props) => {
     }
 
     const handlePaste = (e) => {
-        e.preventDefault();
-        console.log('A SINGLE PASTE');
+        // e.preventDefault();
+        console.log("A paste happened");
     }
 
     return (
