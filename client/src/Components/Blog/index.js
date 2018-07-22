@@ -12,7 +12,7 @@ const BlogPosts = (props) => {
 }
 
 const AddPost = (props) => {
-    return <button onClick={ props.onClick }>Add a post</button>;
+    return <button className="addPost" onClick={ props.onClick }>Add A Post</button>;
 }
 
 const md = 

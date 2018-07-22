@@ -2,27 +2,39 @@
     background: transparent;
 }
 
-li.post {
+.posts li {
+    background: white;
     margin: 20px 0px;
 }
 
-li.post > * {
-    background: white;
-    padding: 4px;
+.posts li * {
+    padding: 0px 10px;
+} 
+
+.addPost {
+    display: inline-block;
+    width: 100%;
+    font-size: 1.9rem;
+    font-weight: 600;
+    background: linear-gradient(25deg, rgb(0, 174, 255), rgb(50, 255, 170), rgb(0,174,275));
+    background-size: 800% 200%;
+    animation: underanimate 69s infinite;
+    margin: 0px 0px;
+    border-radius: 0px;
+    border: 2px solid black;
 }
 
-li.post > h3 {
+li.post h3 {
     font-size: 2.7em;
-    margin: 2px 0px;
+    margin: 5px 0px;
 }
 
-li.post > h4 {
+li.post h4 {
     font-size: 1.7em;
     font-weight: 200;
     display: block;
 }
 
-li.post > p {
+li.post p {
     display: inline-block;
-    margin: 1px 0px;
 }

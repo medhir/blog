@@ -1,47 +1,72 @@
-import React, { Component } from 'react';
-import http from 'axios';
-import './Photos.css';
+import React, { Component, Fragment } from 'react';
+import { Route, Link } from "react-router-dom";
+import './Gallery.css';
 import Photo from '../../Layout/Photo';
+import Loading from '../../Layout/Loading';
+import api from './api';
 
-// const BASE_URL = "http://192.168.1.140:8000";
+const Album = (props) => {
+    const preview = props.album.Images.slice(0,4);
+    return (
+        <div className="album" album={ props.album } onClick={ props.onClick }>
+            <Link to={ `/photos/${ props.album.Name }` }>
+                <h1>{ props.album.Name }</h1>
+                <div class="thumbnails">
+                {
+                    preview.map(photo => <img src={ `/assets/photos/${props.album.Name}/${photo}` }/>)
+                }
+                </div>
+            </Link>
+        </div>
+    );
+};
 
-const shuffle = (a) => {
-    var j, x, i;
-    for (i = a.length - 1; i > 0; i--) {
-        j = Math.floor(Math.random() * (i + 1));
-        x = a[i];
-        a[i] = a[j];
-        a[j] = x;
-    }
-    return a;
+const Albums = (props) => {
+    return (
+        <section className="albums">
+        {
+            props.albums.map((album) => <Album album={ album } key={ album.Name } />)
+        }
+        </section>
+    )
 }
 
-const Layout = (props) => (
-    <section className="photos">
+const PhotoGallery = (props) => {
+    const photos = props.getPhotos(props.album);
+    return (
+        <section className="photos">
         {
-            props.photos.map((photo) => <Photo className="photo" src={ `/assets/photos/${ photo }`} />)
+            photos.map((photo) => <Photo className="photo" src={ `/assets/photos/${ props.album }/${ photo }`} />)
         }
-    </section>  
-);
-
+        </section>  
+    )
+}
 
 // returns an array of Photo components
-// as an album
+// as a Gallery
 
-class Photos extends Component {
+class Gallery extends Component {
     constructor (props) {
         super(props);
         this.state = {
+            album: null,
+            albums: null,
             photos: null,
             error: null
         }
     }
+
+    getPhotos = (albumName) => {
+        const album = this.state.albums.find(album => album.Name === albumName);
+        return album.Images;
+    }
+
     componentDidMount = () => {
-        http.get(`/api/photos/`)
+        api.getAlbums()
             .then((response) => {
-                console.dir(response);
+                console.dir(response.data);
                 this.setState({
-                    photos: response.data
+                    albums: response.data
                 });
             })
             .catch((error) => {
@@ -53,15 +78,19 @@ class Photos extends Component {
     }
 
     render () {
-        if (this.state.photos) {
-            const shuffled = shuffle(this.state.photos);
-            return <Layout photos={ shuffled.slice(0,27) } />;
-        } else {
+        if (this.state.albums) {
             return (
-                <section><h2>Loading...</h2></section>
-            )
+                <Fragment>
+                    <Route exact path={ this.props.match.path }
+                                 render={ () => <Albums albums={ this.state.albums } getPhotos={ this.getPhotos }/> } />
+                    <Route path={ `${ this.props.match.url }/:album` } 
+                           render={ (props) => <PhotoGallery album={ props.match.params.album } getPhotos={ this.getPhotos }/> } />
+                </Fragment>
+            );
+        } else {
+            return <Loading />;
         }
     }
 }
 
-export default Photos;
+export default Gallery;
