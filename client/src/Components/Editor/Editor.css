@@ -1,5 +1,5 @@
 .editor {
-    height: 100vh;
+    height: 100%;
     display: flex;
     position: relative;
 }
@@ -30,17 +30,13 @@
 .editor article h1 {
     font-size: 3.7rem;
     margin: 20px 10px;
-    border-bottom: 2px solid transparent;
-    border-image: linear-gradient(to right, rgb(38, 0, 255), rgb(122, 50, 255));
-    border-image-slice: 1;
+    border-bottom: 2px solid blue;
 }
 
 .editor article h2 {
     font-size: 2.7rem;
     margin: 15px 10px;
-    border-bottom: 1px solid transparent;
-    border-image: linear-gradient(to right, rgb(38, 0, 255), rgb(122, 50, 255));
-    border-image-slice: 1;
+    border-bottom: 1px solid blue;
 }
 
 .editor article h3, h4, h5, h6 {
@@ -61,7 +57,7 @@
 
 .editor article p {
     font-size: 1.05rem;
-    margin: 10px;
+    margin: 25px 80px;
 }
 
 .editor article p em {

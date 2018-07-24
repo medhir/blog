@@ -1,9 +1,11 @@
 main {
     min-height: 100%;
     padding: 0.1px; /* to prevent margin collapsing */
-    background: linear-gradient(45deg, rgb(0,0,255), rgb(255, 50, 231));
+    /* background: linear-gradient(45deg, rgb(0,0,255), rgb(255, 50, 231));
     background-size: 400% 200%;
-    animation: underanimate 30s infinite;
+    animation: underanimate 30s infinite; */
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
 main > * {
