@@ -13,7 +13,7 @@ const Album = (props) => {
                 <h1>{ props.album.Name }</h1>
                 <div class="thumbnails">
                 {
-                    preview.map(photo => <img src={ `/assets/photos/${props.album.Name}/${photo}` }/>)
+                    preview.map(photo => <img src={ `/assets/photos/${props.album.Name}/${photo}` } alt=""/>)
                 }
                 </div>
             </Link>
