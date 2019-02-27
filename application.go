@@ -6,8 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"medhir/utils"
-
+	"github.com/medhir/blog/utils"
 	"github.com/rs/cors"
 )
 
@@ -29,9 +28,6 @@ func main() {
 		AllowCredentials: true,
 	})
 
-	// photo uploader
-	// http.HandleFunc("/api/photos/upload/", uploadFile("/assets/photos"))
-
 	// static js,css
 	staticfs := http.FileServer(http.Dir("build/static"))
 	http.Handle("/static/", http.StripPrefix("/static/", staticfs))
@@ -40,10 +36,9 @@ func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets/", assetsfs))
 
 	// photo name API
-	http.HandleFunc("/api/photos/", utils.Assets("photos"))
+	http.HandleFunc("/api/photos", utils.Photos())
 	// album API
 	http.HandleFunc("/api/albums/", utils.Albums())
-
 	// uploader service
 	http.HandleFunc("/api/upload/", utils.Upload())
 

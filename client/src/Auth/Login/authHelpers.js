@@ -1,5 +1,4 @@
 import Auth0 from 'auth0-js';
-import { PHONE_NUMBER } from '../../ProtectedConstants';
 
 const webAuth = new Auth0.WebAuth({
     domain: 'medhir.auth0.com',
@@ -14,7 +13,7 @@ const sendText = () => {
     webAuth.passwordlessStart({
         connection: 'sms',
         send: 'code',
-        phoneNumber: PHONE_NUMBER
+        phoneNumber: ''
     }, (err, res) => {
         if (err) {
             console.error(errMessage, err);
@@ -25,7 +24,7 @@ const sendText = () => {
 const login = (code) => {
     webAuth.passwordlessVerify({
         connection: 'sms', 
-        phoneNumber: PHONE_NUMBER,
+        phoneNumber: '',
         verificationCode: code
     }, (err, res) => {
         if (err) {

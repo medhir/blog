@@ -3,6 +3,7 @@ import { Route, Link } from "react-router-dom";
 import './Gallery.css';
 import Photo from '../../Layout/Photo';
 import Loading from '../../Layout/Loading';
+import Uploader from '../../Controls/Uploader'
 import api from './api';
 
 const Album = (props) => {
@@ -23,11 +24,14 @@ const Album = (props) => {
 
 const Albums = (props) => {
     return (
-        <section className="albums">
-        {
-            props.albums.map((album) => <Album album={ album } key={ album.Name } />)
-        }
-        </section>
+        <Fragment>
+            <section className="albums">
+                {
+                    props.albums.map((album) => <Album album={ album } key={ album.Name } />)
+                }
+            </section>
+            <section className="addAlbum"></section>
+        </Fragment>
     )
 }
 
