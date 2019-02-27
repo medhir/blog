@@ -6,18 +6,12 @@ import Loading from '../../Layout/Loading';
 import Uploader from '../../Controls/Uploader'
 import api from './api';
 
+const BASE_PHOTO_URL = 'https://s3-us-west-2.amazonaws.com/medhir-blog-dev'
+
 const Album = (props) => {
-    const preview = props.album.Images.slice(0,4);
     return (
-        <div className="album" album={ props.album } onClick={ props.onClick }>
-            <Link to={ `/photos/${ props.album.Name }` }>
-                <h1>{ props.album.Name }</h1>
-                <div class="thumbnails">
-                {
-                    preview.map(photo => <img src={ `/assets/photos/${props.album.Name}/${photo}` } alt=""/>)
-                }
-                </div>
-            </Link>
+        <div className="album" album={ props.album } onClick={ () => props.getPhotos(props.album) }>
+            <h1>{ props.album }</h1>
         </div>
     );
 };
@@ -27,7 +21,7 @@ const Albums = (props) => {
         <Fragment>
             <section className="albums">
                 {
-                    props.albums.map((album) => <Album album={ album } key={ album.Name } />)
+                    props.albums.map((album) => <Album album={ album } key={ album } getPhotos={ props.getPhotos }/>)
                 }
             </section>
             <section className="addAlbum"></section>
@@ -36,11 +30,11 @@ const Albums = (props) => {
 }
 
 const PhotoGallery = (props) => {
-    const photos = props.getPhotos(props.album);
     return (
         <section className="photos">
+            <h1>{ props.album }</h1>
         {
-            photos.map((photo) => <Photo className="photo" src={ `/assets/photos/${ props.album }/${ photo }`} />)
+            props.photos.map((photo) => <Photo className="photo" src={ `${ BASE_PHOTO_URL }/${ photo }`} />)
         }
         </section>  
     )
@@ -53,22 +47,27 @@ class Gallery extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            album: null,
-            albums: null,
-            photos: null,
+            albums: null, 
+            album: null, 
+            photos: null, 
             error: null
         }
     }
 
-    getPhotos = (albumName) => {
-        const album = this.state.albums.find(album => album.Name === albumName);
-        return album.Images;
+    getPhotos = (album) => {
+        api.getPhotos(album)
+            .then(response => {
+                this.setState({
+                    albums: null, 
+                    album: album,
+                    photos: response.data
+                })
+            })
     }
 
     componentDidMount = () => {
         api.getAlbums()
             .then((response) => {
-                console.dir(response.data);
                 this.setState({
                     albums: response.data
                 });
@@ -83,14 +82,9 @@ class Gallery extends Component {
 
     render () {
         if (this.state.albums) {
-            return (
-                <Fragment>
-                    <Route exact path={ this.props.match.path }
-                                 render={ () => <Albums albums={ this.state.albums } getPhotos={ this.getPhotos }/> } />
-                    <Route path={ `${ this.props.match.url }/:album` } 
-                           render={ (props) => <PhotoGallery album={ props.match.params.album } getPhotos={ this.getPhotos }/> } />
-                </Fragment>
-            );
+            return <Albums albums={ this.state.albums } getPhotos={ this.getPhotos }/>;
+        } else if (this.state.album) {
+            return <PhotoGallery album={ this.state.albums } photos={ this.state.photos }/>;
         } else {
             return <Loading />;
         }

@@ -23,7 +23,7 @@ func Albums() http.HandlerFunc {
 		// get albums from photos
 		albums, err := ListAlbums()
 		if err != nil {
-			http.Error(w, "Could not objects at s3 bucket "+BUCKET_NAME, http.StatusInternalServerError)
+			http.Error(w, "Could not get objects at s3 bucket "+BUCKET_NAME, http.StatusInternalServerError)
 			return
 		}
 

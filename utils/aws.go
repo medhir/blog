@@ -45,6 +45,7 @@ func ListAlbums() ([]string, error) {
 	for _, prefixedAlbum := range prefixedAlbums {
 		p := aws.StringValue(prefixedAlbum.Prefix)
 		a := strings.TrimPrefix(p, ALBUM_PREFIX)
+		a = strings.TrimSuffix(a, "/")
 		albums = append(albums, a)
 	}
 	return albums, err
