@@ -2,17 +2,26 @@ package utils
 
 import (
 	"encoding/json"
-	"io"
+	"fmt"
 	"net/http"
-	"os"
+	"net/http/httputil"
 )
 
+// Album semantially represents the name of an album storing photos in S3
 type Album struct {
 	Name string
 }
 
-const AlbumsPath = "assets/photos"
+func dumpRequest(r *http.Request) {
+	output, err := httputil.DumpRequest(r, true)
+	if err != nil {
+		fmt.Println("Error dumping request", err)
+	}
+	fmt.Println(string(output))
+}
 
+// Albums returns a HandlerFunc that writes a JSON response with
+// a string array of album names
 func Albums() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
@@ -23,7 +32,7 @@ func Albums() http.HandlerFunc {
 		// get albums from photos
 		albums, err := ListAlbums()
 		if err != nil {
-			http.Error(w, "Could not get objects at s3 bucket "+BUCKET_NAME, http.StatusInternalServerError)
+			http.Error(w, "Could not get objects at s3 bucket "+BucketName, http.StatusInternalServerError)
 			return
 		}
 
@@ -38,6 +47,8 @@ func Albums() http.HandlerFunc {
 	})
 }
 
+// Photos returns a HandlerFunc that writes a JSON response containing
+// a string array of S3 object keys associated with album
 func Photos() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
@@ -65,24 +76,46 @@ func Photos() http.HandlerFunc {
 	})
 }
 
+type s3UploadResult struct {
+	Location string
+	UploadID string
+}
+
+// Upload returns a HandlerFunc that uploads a Multipart Form with
+// image data as an object in the S3 bucket specified by BucketName
 func Upload() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var uploadResults []s3UploadResult
 		r.ParseMultipartForm(32 << 20)
-		fhs := r.MultipartForm.File["uploads"]
-		for _, fh := range fhs {
-			file, err := fh.Open()
+		fileHeaders := r.MultipartForm.File["image"]
+		for _, fileHeader := range fileHeaders {
+			key := fileHeader.Filename
+			file, err := fileHeader.Open()
 			if err != nil {
+				fmt.Println(err.Error())
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 			defer file.Close()
-			f, err := os.OpenFile("./test"+fh.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+			result, err := UploadPhoto(file, "feb.2019", key)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				fmt.Println(err.Error())
+				http.Error(w, "Could not upload file "+key, http.StatusInternalServerError)
+				return
 			}
-			defer f.Close()
-			io.Copy(f, file)
-			w.WriteHeader(http.StatusOK)
+			uploadResult := s3UploadResult{
+				Location: result.Location,
+				UploadID: result.UploadID}
+			uploadResults = append(uploadResults, uploadResult)
 		}
+		w.Header().Set("Content-Type", "application/json")
+		obj, err := json.Marshal(uploadResults)
+		if err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, "Data could not be encoded.", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write(obj)
 	})
 }
