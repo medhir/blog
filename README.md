@@ -1,7 +1,7 @@
 A blog engine written in Go and React. 
 
 # Architecture 
-The back-end is literally one file, `application.go`. This file can handle serving of static assets (CSS, JS, etc) as well as some API endpoints for interacting with the back-end service.
+The back-end is written in Go. The main driver is `application.go`. This file can handle serving of static assets (CSS, JS, etc) as well as some API endpoints for interacting with AWS services, mainly S3. 
 
 The front-end is in React / ES6 Javascript. There are a few high-level folders for organization of components by purpose:
 - **Auth** is for all relevant logic pertaining to authentication initiation and verification
