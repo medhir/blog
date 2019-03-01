@@ -6,10 +6,12 @@ import (
 	"net/http"
 	"os"
 
-	"medhir/utils"
-
-	"github.com/rs/cors"
+	"github.com/medhir/blog/utils"
 )
+
+// Provide runtime profiling data
+// https://golang.org/pkg/net/http/pprof/
+import _ "net/http/pprof"
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
 	index, err := ioutil.ReadFile("build/index.html")
@@ -24,13 +26,10 @@ func main() {
 	http.HandleFunc("/", serveIndex)
 
 	// CORS config
-	c := cors.New(cors.Options{
-		Debug:            true,
-		AllowCredentials: true,
-	})
-
-	// photo uploader
-	// http.HandleFunc("/api/photos/upload/", uploadFile("/assets/photos"))
+	// c := cors.New(cors.Options{
+	// 	Debug:            true,
+	// 	AllowCredentials: true,
+	// })
 
 	// static js,css
 	staticfs := http.FileServer(http.Dir("build/static"))
@@ -40,10 +39,9 @@ func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets/", assetsfs))
 
 	// photo name API
-	http.HandleFunc("/api/photos/", utils.Assets("photos"))
+	http.HandleFunc("/api/photos", utils.Photos())
 	// album API
 	http.HandleFunc("/api/albums/", utils.Albums())
-
 	// uploader service
 	http.HandleFunc("/api/upload/", utils.Upload())
 
@@ -51,7 +49,7 @@ func main() {
 	if port == "" {
 		port = "8000"
 	}
+
 	log.Println("Listening on port " + port)
-	corsEnabled := c.Handler(http.DefaultServeMux)
-	http.ListenAndServe(":"+port, corsEnabled)
+	http.ListenAndServe(":"+port, nil)
 }

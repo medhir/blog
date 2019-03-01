@@ -6,7 +6,7 @@ const http = axios.create({
 
 const api = {
     getAlbums: () => http.get('/api/albums/'),
-    getPhotos: (album) => http.get(`/api/photos/${ album }`)
+    getPhotos: (album) => http.get(`/api/photos?album=${ album }`)
 }
 
 export default api;
