@@ -5,12 +5,29 @@ import './Uploader.css'
 
 const UploadPath = "http://localhost:8000/api/upload/"
 
+const Locations = (props) => {
+    if (props.locations) {
+        return (
+            <Fragment>
+                <p>Photos saved at:</p>
+                <ul>
+                    {
+                        props.locations.map(location => <li><a href={ location }>{ location }</a></li>)
+                    }
+                </ul>
+            </Fragment>
+        )
+    } else {
+        return null
+    }
+}
+
 class Uploader extends Component {
     constructor (props) {
         super(props)
         this.state = {
             progress: null,
-            success: null, 
+            successLocations: null, 
             files: null, 
             error: null
         }
@@ -43,8 +60,9 @@ class Uploader extends Component {
                 headers: {'Content-Type': 'multipart/form-data' }, 
                 onUploadProgress: this.handleProgressEvent
             }).then(success => {
+                const locations = success.data.map(successObj => successObj["Location"])
                 this.setState({
-                    success: success
+                    successLocations: locations
                 })
             }).catch(error => {
                 this.setState({
@@ -68,8 +86,10 @@ class Uploader extends Component {
                     <label htmlFor="imagesInput">Choose Images</label>
                     <button className="uploadButton" onClick={ (e) => { this.handleUpload(e) } }>Upload</button>
                 </form>
-                <p className="progressIndicator">{ this.state.progress }</p>
-                <p>{ JSON.stringify(this.state.success) }</p>
+                <div className="progressIndicator">
+                    <div style={{ width: this.state.progress }}></div>
+                </div>
+                <Locations locations={ this.state.successLocations }></Locations>
             </Fragment>
         )
     }
