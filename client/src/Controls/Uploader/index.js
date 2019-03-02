@@ -1,7 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import Axios from 'axios';
 
-const UploadPath = "/api/upload/"
+import './Uploader.css'
+
+const UploadPath = "http://localhost:8000/api/upload/"
 
 class Uploader extends Component {
     constructor (props) {
@@ -9,7 +11,8 @@ class Uploader extends Component {
         this.state = {
             progress: null,
             success: null, 
-            files: null
+            files: null, 
+            error: null
         }
     }
 
@@ -18,6 +21,17 @@ class Uploader extends Component {
             files: e.target.files
         })
     }
+
+    handleProgressEvent = (e) => {
+        console.warn('fired')
+        if (e.lengthComputable) {
+            const percentage = Math.round((e.loaded * 100) / e.total)
+            this.setState({
+                progress: `${ percentage }%`
+            })
+        }
+    }
+
     handleUpload = (e) => {
         e.preventDefault()
         if (this.state.files) {
@@ -25,19 +39,16 @@ class Uploader extends Component {
             for (let i = 0; i < this.state.files.length; i++) {
                 formData.append("image", this.state.files[i])
             }
-            debugger
             Axios.post(UploadPath, formData, {
-                headers: {'Content-Type': 'multipart/form-data' }
-            })
-            .then(success => {
-                console.log(success)
+                headers: {'Content-Type': 'multipart/form-data' }, 
+                onUploadProgress: this.handleProgressEvent
+            }).then(success => {
                 this.setState({
-                    success: true
+                    success: success
                 })
-            }).catch(err => {
-                console.error(err)
+            }).catch(error => {
                 this.setState({
-                    success: false
+                    error: error
                 })
             })
         }
@@ -45,15 +56,21 @@ class Uploader extends Component {
 
     render () {
         return (
-            <form>
-                <input type="file"
-                       accept="image/*"
-                       name="images"
-                       multiple
-                       onChange={ this.handleFileStateChange }
-                />
-                <button onClick={ (e) => { this.handleUpload(e) } }>Upload</button>
-            </form>
+            <Fragment>
+                <form className="imageForm">
+                    <input 
+                        type="file"
+                        accept="image/*"
+                        id="imagesInput"
+                        multiple
+                        onChange={ this.handleFileStateChange }
+                    />
+                    <label htmlFor="imagesInput">Choose Images</label>
+                    <button className="uploadButton" onClick={ (e) => { this.handleUpload(e) } }>Upload</button>
+                </form>
+                <p className="progressIndicator">{ this.state.progress }</p>
+                <p>{ JSON.stringify(this.state.success) }</p>
+            </Fragment>
         )
     }
 }

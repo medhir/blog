@@ -1,0 +1,45 @@
+#imagesInput {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+#imagesInput, label {
+    transition: all ease-in-out 150ms;
+}
+
+#imagesInput + label {
+    font-size: 1.2em;
+    font-weight: 400;
+    padding: 6px 8px;
+    margin-right: 10px;
+    border: 2px solid blue;
+    display: inline-block;
+    cursor: pointer;
+}
+
+#imagesInput:focus + label, 
+#imagesInput + label:hover {
+    border: 2px solid rgb(50, 255, 170);
+}
+
+.uploadButton {
+    display: inline-block;
+    width: auto;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: linear-gradient(25deg, rgb(0, 174, 255), rgb(50, 255, 170), rgb(0,174,275));
+    background-size: 800% 200%;
+    animation: underanimate 69s infinite;
+    margin: 0px 0px;
+    border-radius: 0px;
+    border: 2px solid black;
+    transition: all ease-in-out 150ms;
+}
+
+.uploadButton:hover, .uploadButton:focus {
+    border: 2px solid rgb(50, 255, 170);
+}

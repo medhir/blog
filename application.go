@@ -7,11 +7,13 @@ import (
 	"os"
 
 	"github.com/medhir/blog/utils"
-)
+	"github.com/rs/cors"
 
-// Provide runtime profiling data
-// https://golang.org/pkg/net/http/pprof/
-import _ "net/http/pprof"
+	// Provide runtime profiling data
+	// https://golang.org/pkg/net/http/pprof/
+
+	_ "net/http/pprof"
+)
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
 	index, err := ioutil.ReadFile("build/index.html")
@@ -25,11 +27,11 @@ func main() {
 	// index.html
 	http.HandleFunc("/", serveIndex)
 
-	// CORS config
-	// c := cors.New(cors.Options{
-	// 	Debug:            true,
-	// 	AllowCredentials: true,
-	// })
+	// CORS config for development purposes
+	c := cors.New(cors.Options{
+		Debug:            true,
+		AllowCredentials: true,
+	})
 
 	// static js,css
 	staticfs := http.FileServer(http.Dir("build/static"))
@@ -51,5 +53,6 @@ func main() {
 	}
 
 	log.Println("Listening on port " + port)
-	http.ListenAndServe(":"+port, nil)
+	enableCORS := c.Handler(http.DefaultServeMux)
+	http.ListenAndServe(":"+port, enableCORS)
 }
