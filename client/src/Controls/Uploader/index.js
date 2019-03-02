@@ -1,15 +1,35 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import Axios from 'axios';
 
-const UploadPath = "/api/upload/"
+import './Uploader.css'
+
+const UploadPath = "http://localhost:8000/api/upload/"
+
+const Locations = (props) => {
+    if (props.locations) {
+        return (
+            <Fragment>
+                <p>Photos saved at:</p>
+                <ul>
+                    {
+                        props.locations.map(location => <li><a href={ location }>{ location }</a></li>)
+                    }
+                </ul>
+            </Fragment>
+        )
+    } else {
+        return null
+    }
+}
 
 class Uploader extends Component {
     constructor (props) {
         super(props)
         this.state = {
             progress: null,
-            success: null, 
-            files: null
+            successLocations: null, 
+            files: null, 
+            error: null
         }
     }
 
@@ -18,6 +38,17 @@ class Uploader extends Component {
             files: e.target.files
         })
     }
+
+    handleProgressEvent = (e) => {
+        console.warn('fired')
+        if (e.lengthComputable) {
+            const percentage = Math.round((e.loaded * 100) / e.total)
+            this.setState({
+                progress: `${ percentage }%`
+            })
+        }
+    }
+
     handleUpload = (e) => {
         e.preventDefault()
         if (this.state.files) {
@@ -25,19 +56,17 @@ class Uploader extends Component {
             for (let i = 0; i < this.state.files.length; i++) {
                 formData.append("image", this.state.files[i])
             }
-            debugger
             Axios.post(UploadPath, formData, {
-                headers: {'Content-Type': 'multipart/form-data' }
-            })
-            .then(success => {
-                console.log(success)
+                headers: {'Content-Type': 'multipart/form-data' }, 
+                onUploadProgress: this.handleProgressEvent
+            }).then(success => {
+                const locations = success.data.map(successObj => successObj["Location"])
                 this.setState({
-                    success: true
+                    successLocations: locations
                 })
-            }).catch(err => {
-                console.error(err)
+            }).catch(error => {
                 this.setState({
-                    success: false
+                    error: error
                 })
             })
         }
@@ -45,15 +74,23 @@ class Uploader extends Component {
 
     render () {
         return (
-            <form>
-                <input type="file"
-                       accept="image/*"
-                       name="images"
-                       multiple
-                       onChange={ this.handleFileStateChange }
-                />
-                <button onClick={ (e) => { this.handleUpload(e) } }>Upload</button>
-            </form>
+            <Fragment>
+                <form className="imageForm">
+                    <input 
+                        type="file"
+                        accept="image/*"
+                        id="imagesInput"
+                        multiple
+                        onChange={ this.handleFileStateChange }
+                    />
+                    <label htmlFor="imagesInput">Choose Images</label>
+                    <button className="uploadButton" onClick={ (e) => { this.handleUpload(e) } }>Upload</button>
+                </form>
+                <div className="progressIndicator">
+                    <div style={{ width: this.state.progress }}></div>
+                </div>
+                <Locations locations={ this.state.successLocations }></Locations>
+            </Fragment>
         )
     }
 }
