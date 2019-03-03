@@ -1,7 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
+import { Link, Route } from 'react-router-dom'
 import Editor from '../Editor';
 import BlogPost from './BlogPost';
 import './Blog.css';
+import md from './popplers'
 
 const BlogPosts = (props) => {
     const posts = props.posts.map(post => {
@@ -12,14 +14,21 @@ const BlogPosts = (props) => {
 }
 
 const AddPost = (props) => {
-    return <button className="addPost" onClick={ props.onClick }>Add A Post</button>;
+    return (
+        <Link to={ `${ props.match.path }/add` }>
+            <button className="addPost">Add A Post</button>
+        </Link>
+    )
 }
 
-const md = 
-`# DELETE YOUR FACEBook
-## Please`;
-
-const editor = <Editor markdown={ md } />;
+const BlogView = (props) => {
+    return (
+        <section className="blog">
+            <BlogPosts posts={ props.posts } />
+            <AddPost match={ props.match } />
+        </section>
+    )
+}
 
 class Blog extends Component {
     constructor (props) {
@@ -29,34 +38,27 @@ class Blog extends Component {
             posts: [
                 {
                     title: "Barp",
-                    subtitle: "Beeerp",
+                    subtitle: "Barp.com",
                     date: new Date().toDateString()
                 }, 
                 {
                     title: "Darp",
-                    subtitle: "Deeerp",
                     date: new Date().toDateString()
                 }
             ]
         }
     }
 
-    handleAddPost = (e) => {
-        this.setState({
-            add: true
-        });
-    }
-
     render () {
-        if (this.state.add) {
-            return editor;
-        }
         return (
-        <section className="blog">
-            <BlogPosts posts={ this.state.posts } />
-            <AddPost onClick={ this.handleAddPost }/>
-        </section>
-        );
+            <Fragment>
+                <Route 
+                    exact 
+                    path={ this.props.match.path } 
+                    component={ () => <BlogView match={ this.props.match } posts={ this.state.posts } /> } />
+                <Route path={ `${ this.props.match.path }/add` } component={ () => <Editor markdown={ md } /> }/>
+            </Fragment>
+        )
     }
 }
 
