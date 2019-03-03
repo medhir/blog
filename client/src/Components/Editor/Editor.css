@@ -6,7 +6,7 @@
 
 .editor textarea, 
 .editor article {
-    padding: 10px 20px;
+    padding: 10px 10px;
 }
 
 .editor textarea {
@@ -15,33 +15,45 @@
     outline: none;
     font-size: 1em;
     box-sizing: border-box;
-    background-color: rgb(224, 224, 224);
+    background-color: rgb(252, 247, 231);
     border-right: 2px dashed rgb(0,0,0);
-    width: 24%;
+    width: 40%;
 }
 
 .editor article {
     background-color: white;
     display: inline-block;
     overflow: scroll;
-    width: 75%;
+    width: 59%;
+}
+
+.editor > article > * {
+    margin: 15px 0px;
 }
 
 .editor article h1 {
-    font-size: 3.7rem;
-    margin: 20px 10px;
-    border-bottom: 2px solid blue;
+    font-size: 3rem;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.editor > article > h1:after {
+    content:'';
+    width:100%;
+    position: absolute;
+    left:0;
+    bottom: -7px;
+    height: 3px;
+    background: linear-gradient(270deg, #1100ff, #6200ff, #1100ff);
+    background-size: 200% 200%;
+    animation: underanimate 5s infinite;
 }
 
 .editor article h2 {
-    font-size: 2.7rem;
-    margin: 15px 10px;
-    border-bottom: 1px solid blue;
+    font-size: 2.3rem;
+    font-weight: 500;
 }
 
-.editor article h3, h4, h5, h6 {
-    margin: 10px 10px;
-}
 
 .editor article h3 {
     font-size: 2.2rem;
@@ -57,7 +69,7 @@
 
 .editor article p {
     font-size: 1.05rem;
-    margin: 25px 80px;
+    margin: 25px 0px;
 }
 
 .editor article p em {
@@ -89,7 +101,6 @@
 
     .editor textarea, 
     .editor article {
-        height: auto;
         width: 100%;
         padding: 10px;
     }

@@ -3,7 +3,7 @@ import Axios from 'axios';
 
 import './Uploader.css'
 
-const UploadPath = "http://localhost:8000/api/upload/"
+const UploadPath = "/api/upload/"
 
 const Locations = (props) => {
     if (props.locations) {
