@@ -119,3 +119,18 @@ func Upload() http.HandlerFunc {
 		w.Write(obj)
 	})
 }
+
+// BlogPosts provides a JSON response with the blog's index
+func BlogPosts() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		index, err := FetchBlogIndex()
+		if err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(index)
+	})
+}

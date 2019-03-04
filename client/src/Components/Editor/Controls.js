@@ -9,7 +9,6 @@ const Controls = (props) => {
                 <SaveButton onClick={ props.onClick }>Save Draft</SaveButton> :
                 <EditButton onClick={ props.onClick }>Edit</EditButton>
             }
-
         </div>
     )
 }

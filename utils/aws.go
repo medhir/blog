@@ -27,6 +27,7 @@ const AlbumPrefix = "albums/"
 var sess = session.Must(session.NewSession(&aws.Config{Region: aws.String("us-west-2")}))
 var svc = s3.New(sess)
 var uploader = s3manager.NewUploaderWithClient(svc)
+var downloader = s3manager.NewDownloaderWithClient(svc)
 
 // ListBuckets list all buckets for AWS account
 func ListBuckets() {
@@ -83,4 +84,15 @@ func UploadPhoto(file multipart.File, album string, key string) (*s3manager.Uplo
 		ACL:    aws.String("public-read")}
 	result, err := uploader.Upload(uploadParams)
 	return result, err
+}
+
+const blogIndexKey = "blog/index.json"
+
+// FetchBlogIndex returns a byte slice containing contents of medhir-blog-dev/blog/index.json
+func FetchBlogIndex() ([]byte, error) {
+	buffer := aws.NewWriteAtBuffer([]byte{})
+	_, err := downloader.Download(buffer, &s3.GetObjectInput{
+		Bucket: aws.String(BucketName),
+		Key:    aws.String(blogIndexKey)})
+	return buffer.Bytes(), err
 }

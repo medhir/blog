@@ -16,17 +16,13 @@ class Editor extends Component {
     }
 
     handleClick = () => {
-        if (this.state.edit === true) {
+        if (this.state.edit) {
             localStorage.setItem('medhir-md', this.state.markdown);
         }
 
         this.setState(prevState => ({
             edit: !prevState.edit
         }));
-    }
-
-    handleWindowResize = () => {
-        this.setState({ width: window.innerWidth });
     }
 
     parseMarkdown = (e) => {
@@ -37,26 +33,21 @@ class Editor extends Component {
     }
 
     componentDidMount () {
-        window.addEventListener('resize', this.handleWindowResize)
-        const localMd = localStorage.getItem('medhir-md');
         this.setState({
-            parsed: localMd ? Marked(localMd) : Marked(this.state.markdown)
+            parsed: Marked(this.state.markdown)
         })
     }
 
     render () {
         // local variables
-        const localStorageMd = localStorage.getItem('medhir-md');
-        const className = `editor ${ this.state.edit ? null : 'preview' }`;
-
+        const editorClasses = `editor ${ this.state.edit ? null : 'preview' }`;
         // components
-        const markdown = <Markdown markdown={ localStorageMd ? localStorageMd : this.state.markdown} parse={this.parseMarkdown} />;
+        const markdown = <Markdown markdown={ this.state.markdown } parse={ this.parseMarkdown } />;
         const preview = <Preview parsedContent={ this.state.parsed } />;
         const controls = <Controls edit={ this.state.edit } onClick={ this.handleClick } />;
-
         // layout 
         const mobileLayout = (
-            <section className={ className }>
+            <section className={ editorClasses }>
                 {   
                     this.state.edit 
                     ? markdown 
@@ -65,15 +56,13 @@ class Editor extends Component {
                 { controls }
             </section>
         );
-
         const desktopLayout = (
-            <section className={ `editor ${ this.state.edit ? null : 'preview' }` }>
+            <section className={ editorClasses }>
                 { markdown }
                 { preview }
                 { controls }
             </section>
         );
-
         // render layout
         return this.state.isMobile ? mobileLayout : desktopLayout;
     }

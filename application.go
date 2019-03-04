@@ -40,6 +40,9 @@ func main() {
 	assetsfs := http.FileServer(http.Dir("assets/"))
 	http.Handle("/assets/", http.StripPrefix("/assets/", assetsfs))
 
+	// blog index API
+	http.HandleFunc("/api/blog/posts", utils.BlogPosts())
+
 	// photo name API
 	http.HandleFunc("/api/photos", utils.Photos())
 	// album API

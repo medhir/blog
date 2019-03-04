@@ -2,12 +2,12 @@
     background: transparent;
 }
 
-.posts li {
+.posts li, .drafts li {
     background: white;
     margin: 20px 0px;
 }
 
-.posts li * {
+.posts li *, .drafts li * {
     padding: 0px 10px;
 } 
 
@@ -21,15 +21,30 @@
     animation: underanimate 69s infinite;
     margin: 0px 0px;
     border-radius: 0px;
-    border: 2px solid black;
+    border: 1px solid black;
+    transition: all ease-in 200ms;
 }
 
-li.post h3 {
-    font-size: 2.7em;
+.addPost:hover {
+    color: white;
+    border: 1px solid white;
+}
+
+li.post h3, li.draft h3 {
+    font-size: 2em;
+    font-weight: 500;
     margin: 5px 0px;
 }
 
-li.post h4 {
+li.post > h3 {
+    border-bottom: 1px solid blue;
+}
+
+li.draft > h3 {
+    border-bottom: 1px dashed red;
+}
+
+li.post h4, li.draft h4 {
     font-size: 1.7em;
     font-weight: 200;
     display: block;
