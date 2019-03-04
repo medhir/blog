@@ -95,17 +95,25 @@
 }
 
 @media only screen and (max-width: 600px){
-    .editor {
-        margin-top: 10px;
+    main > .editor {
+        margin: 0 0px;
+    }
+    main > .editor.preview {
+        margin: 0 10px;
     }
 
-    .editor textarea, 
-    .editor article {
+    .editor > textarea, 
+    .editor > article {
         width: 100%;
+        margin: 0px;
+    }
+
+    .editor > article {
         padding: 10px;
     }
 
-    .editor textarea {
+    .editor > textarea {
+        margin: 0px;
         font-size: 1.2em;
         border: none;
     }

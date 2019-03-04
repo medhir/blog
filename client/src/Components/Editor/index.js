@@ -3,7 +3,6 @@ import Marked from 'marked';
 import Markdown from './Markdown';
 import Preview from './Preview';
 import Controls from './Controls'; 
-import { Types } from '../../Controls/Button';
 import './Editor.css';
 
 class Editor extends Component {
@@ -12,7 +11,6 @@ class Editor extends Component {
         this.state = {
             markdown: props.markdown,
             edit: true, 
-            type: Types.save,
             isMobile: window.innerWidth <= 600 ? true : false
         }
     }
@@ -23,8 +21,7 @@ class Editor extends Component {
         }
 
         this.setState(prevState => ({
-            edit: !prevState.edit,
-            type: !prevState.edit ? Types.save : Types.edit
+            edit: !prevState.edit
         }));
     }
 
@@ -55,7 +52,7 @@ class Editor extends Component {
         // components
         const markdown = <Markdown markdown={ localStorageMd ? localStorageMd : this.state.markdown} parse={this.parseMarkdown} />;
         const preview = <Preview parsedContent={ this.state.parsed } />;
-        const controls = <Controls edit={ this.state.edit } type={ this.state.type } onClick={ this.handleClick } />;
+        const controls = <Controls edit={ this.state.edit } onClick={ this.handleClick } />;
 
         // layout 
         const mobileLayout = (
