@@ -6,8 +6,8 @@ const Controls = (props) => {
         <div className="editor-controls">
             { 
                 props.edit === true ? 
-                <SaveButton onClick={ props.onClick }>Save Draft</SaveButton> :
-                <EditButton onClick={ props.onClick }>Edit</EditButton>
+                <SaveButton onClick={ props.saveDraft }>Save Draft</SaveButton> :
+                <EditButton onClick={ props.openEditor }>Edit</EditButton>
             }
         </div>
     )

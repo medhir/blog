@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+const BaseURL = process.env.REACT_APP_DEBUG_HOST || ''
+
 const http = axios.create({
-    baseURL: ''
+    baseURL: BaseURL
 })
 
 const api = {

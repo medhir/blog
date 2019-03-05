@@ -3,6 +3,7 @@ import Marked from 'marked';
 import Markdown from './Markdown';
 import Preview from './Preview';
 import Controls from './Controls'; 
+import api from './api'
 import './Editor.css';
 
 class Editor extends Component {
@@ -15,17 +16,18 @@ class Editor extends Component {
         }
     }
 
-    handleClick = () => {
-        if (this.state.edit) {
-            localStorage.setItem('medhir-md', this.state.markdown);
-        }
-
-        this.setState(prevState => ({
-            edit: !prevState.edit
-        }));
+    saveDraft = () => {
+        // post draft 
+        api.saveDraft({}).then(draft => {
+            this.setState({
+                draft: draft, 
+                edit: false
+            })
+        })
     }
 
     parseMarkdown = (e) => {
+        debugger
         this.setState({
             markdown: e.target.value,
             parsed: Marked(e.target.value)
