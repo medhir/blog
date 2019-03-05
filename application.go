@@ -57,5 +57,11 @@ func main() {
 
 	log.Println("Listening on port " + port)
 	enableCORS := c.Handler(http.DefaultServeMux)
-	http.ListenAndServe(":"+port, enableCORS)
+	// Allow CORS Headers for development
+	_, dev := os.LookupEnv("REACT_APP_DEBUG_HOST")
+	if dev {
+		http.ListenAndServe(":"+port, enableCORS)
+	} else {
+		http.ListenAndServe(":"+port, nil)
+	}
 }
