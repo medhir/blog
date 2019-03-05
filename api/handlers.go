@@ -1,4 +1,4 @@
-package utils
+package api
 
 import (
 	"encoding/json"
@@ -20,9 +20,9 @@ func dumpRequest(r *http.Request) {
 	fmt.Println(string(output))
 }
 
-// Albums returns a HandlerFunc that writes a JSON response with
+// GetAlbums returns a HandlerFunc that writes a JSON response with
 // a string array of album names
-func Albums() http.HandlerFunc {
+func GetAlbums() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
 			http.Error(w, "Invalid request", http.StatusBadRequest)
@@ -30,7 +30,7 @@ func Albums() http.HandlerFunc {
 		}
 
 		// get albums from photos
-		albums, err := ListAlbums()
+		albums, err := getAlbums()
 		if err != nil {
 			http.Error(w, "Could not get objects at s3 bucket "+BucketName, http.StatusInternalServerError)
 			return
@@ -47,9 +47,9 @@ func Albums() http.HandlerFunc {
 	})
 }
 
-// Photos returns a HandlerFunc that writes a JSON response containing
+// GetPhotos returns a HandlerFunc that writes a JSON response containing
 // a string array of S3 object keys associated with album
-func Photos() http.HandlerFunc {
+func GetPhotos() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "Invalid request", http.StatusBadRequest)
@@ -59,7 +59,7 @@ func Photos() http.HandlerFunc {
 		// Get album param from URL
 		album := r.URL.Query().Get("album")
 		// Use AWS util method to get photo keys
-		photoKeys, err := GetPhotoKeysForAlbum(album)
+		photoKeys, err := getPhotoKeysForAlbum(album)
 		if err != nil {
 			http.Error(w, "Photo keys could not be retreived", http.StatusInternalServerError)
 			return
@@ -81,9 +81,9 @@ type s3UploadResult struct {
 	UploadID string
 }
 
-// Upload returns a HandlerFunc that uploads a Multipart Form with
+// UploadPhoto returns a HandlerFunc that uploads a Multipart Form with
 // image data as an object in the S3 bucket specified by BucketName
-func Upload() http.HandlerFunc {
+func UploadPhoto() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var uploadResults []s3UploadResult
 		r.ParseMultipartForm(32 << 20)
@@ -97,7 +97,7 @@ func Upload() http.HandlerFunc {
 				return
 			}
 			defer file.Close()
-			result, err := UploadPhoto(file, "feb.2019", key)
+			result, err := uploadPhotoToS3(file, "feb.2019", key)
 			if err != nil {
 				fmt.Println(err.Error())
 				http.Error(w, "Could not upload file "+key, http.StatusInternalServerError)
@@ -120,10 +120,10 @@ func Upload() http.HandlerFunc {
 	})
 }
 
-// BlogPosts provides a JSON response with the blog's index
-func BlogPosts() http.HandlerFunc {
+// GetBlogPosts provides a JSON response with the blog's index
+func GetBlogPosts() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		index, err := FetchBlogIndex()
+		index, err := getBlogIndex()
 		if err != nil {
 			fmt.Println(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -132,5 +132,32 @@ func BlogPosts() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write(index)
+	})
+}
+
+// PutBlogDraft saves an object as json with its id as the filename under the "blog/drafts/" folder
+func PutBlogDraft() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id := r.URL.Query().Get("id")
+		_, err := putJSON(r.Body, BlogDrafts+id)
+		if err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		err = updateDraftIndex(r.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	})
+}
+
+// PutBlogPost saves an object with its id as the key under the "blog/posts/" folder
+func PutBlogPost() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
 	})
 }

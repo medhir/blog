@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/medhir/blog/utils"
+	"github.com/medhir/blog/api"
 	"github.com/rs/cors"
 
 	// Provide runtime profiling data
@@ -40,15 +40,17 @@ func main() {
 	assetsfs := http.FileServer(http.Dir("assets/"))
 	http.Handle("/assets/", http.StripPrefix("/assets/", assetsfs))
 
-	// blog index API
-	http.HandleFunc("/api/blog/posts", utils.BlogPosts())
-
+	// blog API
+	http.HandleFunc("/api/blog/posts", api.GetBlogPosts())
+	// http.HandleFunc("/api/blog/post/")
+	// blog draft API
+	http.HandleFunc("/api/blog/draft", api.PutBlogDraft())
 	// photo name API
-	http.HandleFunc("/api/photos", utils.Photos())
+	http.HandleFunc("/api/photos", api.GetPhotos())
 	// album API
-	http.HandleFunc("/api/albums/", utils.Albums())
+	http.HandleFunc("/api/albums/", api.GetAlbums())
 	// uploader service
-	http.HandleFunc("/api/upload/", utils.Upload())
+	http.HandleFunc("/api/upload/", api.UploadPhoto())
 
 	port := os.Getenv("PORT")
 	if port == "" {

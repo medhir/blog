@@ -8,8 +8,7 @@ const http = axios.create({
 
 const api = {
     getDraft: id => http.get(`/api/blog/draft?id=${ id }`),
-    postDraft: draft => http.post('/api/blog/draft', draft),
-    saveDraft: draft => http.put('/api/blog/draft', draft),
+    saveDraft: draft => http.post(`/api/blog/draft?id=${ draft.id }`, draft),
     publish: blogPost => http.post('/api/blog/post', blogPost)
 }
 
