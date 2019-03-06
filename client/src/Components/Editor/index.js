@@ -22,15 +22,11 @@ class Editor extends Component {
     saveDraft = () => {
         const draft = {
             title: this.getTitle(), 
-            markdown: this.state.markdown
+            saved: new Date().getTime(), 
+            markdown: this.state.markdown, 
+            id: this.state.id ? this.state.id : uuid()
         }
 
-        if (this.state.id) {
-            draft.id = this.state.id
-        } else {
-            draft.id = uuid()
-        }
-        
         api.saveDraft(draft).then((success) => {
             console.log(success)
             this.setState({

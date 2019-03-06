@@ -1,8 +1,10 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
 )
@@ -120,18 +122,45 @@ func UploadPhoto() http.HandlerFunc {
 	})
 }
 
+// BlogPostsAndDrafts describes the JSON response sent to the client for GetBlogPosts()
+type BlogPostsAndDrafts struct {
+	Posts  []BlogPostEntry  `json:"posts"`
+	Drafts []BlogDraftEntry `json:"drafts"`
+}
+
 // GetBlogPosts provides a JSON response with the blog's index
 func GetBlogPosts() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		index, err := getBlogIndex()
+		blogIndex, err := getBlogIndex()
 		if err != nil {
 			fmt.Println(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		var blogPosts []BlogPostEntry
+		err = json.Unmarshal(blogIndex, &blogPosts)
+		if err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		draftIndex, err := getDraftIndex()
+		if err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		var blogDrafts []BlogDraftEntry
+		err = json.Unmarshal(draftIndex, &blogDrafts)
+		if err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		blogPostAndDraftIndex, err := json.Marshal(BlogPostsAndDrafts{blogPosts, blogDrafts})
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(index)
+		w.Write(blogPostAndDraftIndex)
 	})
 }
 
@@ -139,19 +168,27 @@ func GetBlogPosts() http.HandlerFunc {
 func PutBlogDraft() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("id")
-		_, err := putJSON(r.Body, BlogDrafts+id)
+		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			fmt.Println(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		err = updateDraftIndex(r.Body)
+		response, err := putJSON(bytes.NewReader(body), BlogDrafts+id)
+		if err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		obj, _ := json.Marshal(response)
+		err = updateDraftIndex(body)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
+		w.Write(obj)
 	})
 }
 

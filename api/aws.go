@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -98,7 +99,7 @@ func getBytesForObject(key string) ([]byte, error) {
 	buffer := aws.NewWriteAtBuffer([]byte{})
 	_, err := downloader.Download(buffer, &s3.GetObjectInput{
 		Bucket: aws.String(BucketName),
-		Key:    aws.String(blogIndexKey)})
+		Key:    aws.String(key)})
 	return buffer.Bytes(), err
 }
 
@@ -113,13 +114,12 @@ func putJSON(body io.Reader, key string) (*s3manager.UploadOutput, error) {
 	return result, err
 }
 
-type blogPostIndexEntry struct {
+// BlogPostEntry describes the json encoding for a blog post
+type BlogPostEntry struct {
 	Title     string `json:"title"`
 	Published int64  `json:"published"`
 	ID        string `json:"id"`
 }
-
-type blogPostIndex []blogPostIndexEntry
 
 func getBlogIndex() ([]byte, error) {
 	index, err := getBytesForObject(postIndex + ".json")
@@ -133,12 +133,12 @@ func getDraftIndex() ([]byte, error) {
 
 // updateBlogIndex writes an updated json file of all blog posts
 func updateBlogIndex(post []byte) error {
-	entry := blogPostIndexEntry{}
+	entry := BlogPostEntry{}
 	err := json.Unmarshal(post, &entry)
 	if err != nil {
 		return err
 	}
-	index := blogPostIndex{}
+	var index []BlogPostEntry
 	indexBytes, err := getBlogIndex()
 	if err != nil {
 		return err
@@ -159,38 +159,38 @@ func updateBlogIndex(post []byte) error {
 	return nil
 }
 
-type blogDraftIndexEntry struct {
-	Title string `json:"title"`
-	Saved int64  `json:"saved"`
-	ID    string `json:"id"`
+// BlogDraftEntry is the JSON data sent by the client to save a draft
+type BlogDraftEntry struct {
+	ID       string  `json:"id"`
+	Markdown string  `json:"markdown"`
+	Saved    float64 `json:"saved"`
+	Title    string  `json:"title"`
 }
 
-type blogDraftIndex []blogDraftIndexEntry
-
-func updateDraftIndex(body io.Reader) error {
-	draft := getBytesFromStream(body)
-	entry := blogDraftIndexEntry{}
-	err := json.Unmarshal(draft, &entry)
+func updateDraftIndex(body []byte) error {
+	entry := BlogDraftEntry{}
+	err := json.Unmarshal(body, &entry)
 	if err != nil {
-		return err
+		return errors.New("Failed to construct draft. Method error - " + err.Error())
 	}
-	index := blogDraftIndex{}
+	var index []BlogDraftEntry
 	indexBytes, err := getDraftIndex()
 	if err != nil {
-		return err
+		return errors.New("Failed to get draft index from S3")
 	}
+	fmt.Println(string(indexBytes))
 	err = json.Unmarshal(indexBytes, &index)
 	if err != nil {
-		return err
+		return errors.New("Failed to construct index. Method error - " + err.Error())
 	}
 	index = append(index, entry)
 	newJSON, err := json.Marshal(index)
 	if err != nil {
-		return err
+		return errors.New("Failed to create json response buffer")
 	}
 	_, err = putJSON(bytes.NewReader(newJSON), draftIndex)
 	if err != nil {
-		return err
+		return errors.New("Failed to put updated draft index")
 	}
 	return nil
 }
