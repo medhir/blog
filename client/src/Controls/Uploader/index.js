@@ -1,9 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import Axios from 'axios';
-
+import api from './api'
 import './Uploader.css'
 
-const UploadPath = "/api/upload/"
 
 const Locations = (props) => {
     if (props.locations) {
@@ -56,7 +54,7 @@ class Uploader extends Component {
             for (let i = 0; i < this.state.files.length; i++) {
                 formData.append("image", this.state.files[i])
             }
-            Axios.post(UploadPath, formData, {
+            api.upload(formData, {
                 headers: {'Content-Type': 'multipart/form-data' }, 
                 onUploadProgress: this.handleProgressEvent
             }).then(success => {

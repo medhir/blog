@@ -198,3 +198,25 @@ func PutBlogPost() http.HandlerFunc {
 
 	})
 }
+
+// GetBlogDraft gets an object with under the `blog/drafts` folder and returns it as json
+func GetBlogDraft() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// get id parameter
+		id := r.URL.Query().Get("id")
+		// get bytes for draft
+		draftBytes, err := getBytesForObject(BlogDrafts + id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		obj, err := json.Marshal(draftBytes)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(obj)
+	})
+}

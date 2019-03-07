@@ -2,20 +2,30 @@ import React, { Component, Fragment } from 'react';
 import Marked from 'marked';
 import uuid from 'uuid/v4';
 import Markdown from './Markdown';
+import PopplersMarkdown from '../Blog/popplers'
 import Preview from './Preview';
 import Controls from './Controls'; 
 import api from './api'
 import './Editor.css';
+import { timingSafeEqual } from 'crypto';
 
 class Editor extends Component {
     constructor (props) {
         super(props)
         this.editorRef = React.createRef()
         this.state = {
-            markdown: props.markdown,
-            id: this.props.id || null,
             edit: true, 
-            isMobile: window.innerWidth <= 600 ? true : false
+            isMobile: window.innerWidth <= 600 ? true : false, 
+        }
+
+        if (this.props.draft) {
+            this.state.new = false
+            this.state.markdown = props.draft.markdown
+            this.state.id = props.draft.id
+        } else {
+            this.state.new = true
+            this.state.markdown = PopplersMarkdown, 
+            this.state.id = uuid()
         }
     }
 
@@ -24,16 +34,22 @@ class Editor extends Component {
             title: this.getTitle(), 
             saved: new Date().getTime(), 
             markdown: this.state.markdown, 
-            id: this.state.id ? this.state.id : uuid()
+            id: this.state.id 
         }
 
-        api.saveDraft(draft).then((success) => {
+        const handleSuccess = (success) => {
             console.log(success)
             this.setState({
                 draft: draft, 
                 edit: false
             })
-        })
+        }
+        
+        if (this.state.new) {
+            api.newDraft(draft).then(handleSuccess)
+        } else {
+            api.saveDraft(draft).then(handleSuccess)
+        }
     }
 
     getTitle = () => {

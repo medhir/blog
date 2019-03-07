@@ -31,6 +31,10 @@ const BlogDraft = (props) => {
         <li className="draft">
             <h3>{ props.draft.title }</h3>
             <p>{ `Last saved at: ${ saved }` }</p>
+            <Link to={ { 
+                pathname: `blog/drafts/edit/${ props.draft.id }`, 
+                state: props.draft
+            } }>Edit</Link>
         </li>
     )
 }
@@ -45,7 +49,7 @@ const BlogDrafts = (props) => {
 
 const AddPost = (props) => {
     return (
-        <Link to={ `${ props.match.path }/new` }>
+        <Link to={ `${ props.match.path }/drafts/new` }>
             <button className="addPost">New Post</button>
         </Link>
     )
@@ -63,7 +67,7 @@ const BlogView = (props) => {
 
 class Blog extends Component {
     constructor (props) {
-        super(props);   
+        super(props)   
         this.state = {
             add: false,
             posts: null, 
@@ -88,7 +92,10 @@ class Blog extends Component {
                     <Route 
                         exact path={ this.props.match.path } 
                         component={ () => <BlogView match={ this.props.match } posts={ this.state.posts } drafts={ this.state.drafts }/> } />
-                    <Route path={ `${ this.props.match.path }/new` } component={ () => <Editor markdown={ md } /> }/>
+                    <Route exact path={ `${ this.props.match.path }/drafts/new` } 
+                           component={ () => <Editor markdown={ md } /> }/>
+                    <Route path={ `${ this.props.match.path }/drafts/edit/:id` } 
+                           component={ () => <Editor draft={ this.props.location.state }/> }/>       
                 </Fragment>
             )
         } else {

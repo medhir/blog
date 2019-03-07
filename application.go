@@ -42,7 +42,7 @@ func main() {
 
 	// blog API
 	http.HandleFunc("/api/blog/posts", api.GetBlogPosts())
-	// http.HandleFunc("/api/blog/post/")
+	http.HandleFunc("/api/blog/draft", api.GetBlogDraft())
 	// blog draft API
 	http.HandleFunc("/api/blog/draft", api.PutBlogDraft())
 	// photo name API
