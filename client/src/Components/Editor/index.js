@@ -1,35 +1,68 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import Marked from 'marked';
+import uuid from 'uuid/v4';
 import Markdown from './Markdown';
+import PopplersMarkdown from '../Blog/popplers'
 import Preview from './Preview';
 import Controls from './Controls'; 
-import { Types } from '../../Controls/Button';
+import api from './api'
 import './Editor.css';
 
 class Editor extends Component {
     constructor (props) {
-        super(props);
+        super(props)
+        this.editorRef = React.createRef()
         this.state = {
-            markdown: props.markdown,
-            edit: true, 
-            type: Types.save,
             isMobile: window.innerWidth <= 600 ? true : false
         }
+
+        if (this.props.draft) {
+            this.state.new = false
+            this.state.edit = false
+            this.state.id = props.draft.id
+        } else {
+            this.state.new = true
+            this.state.edit = true
+            this.state.markdown = PopplersMarkdown, 
+            this.state.id = uuid()
+        }
     }
 
-    handleClick = () => {
-        if (this.state.edit === true) {
-            localStorage.setItem('medhir-md', this.state.markdown);
+    saveDraft = () => {
+        const draft = {
+            title: this.getTitle(), 
+            saved: new Date().getTime(), 
+            markdown: this.state.markdown, 
+            id: this.state.id 
         }
 
-        this.setState(prevState => ({
-            edit: !prevState.edit,
-            type: !prevState.edit ? Types.save : Types.edit
-        }));
+        const handleSuccess = (success) => {
+            console.log(success)
+            this.setState({
+                draft: draft, 
+                edit: false
+            })
+            // Set parent state
+            this.props.handleSave()
+        }
+        
+        if (this.state.new) {
+            api.newDraft(draft).then(handleSuccess)
+        } else {
+            api.saveDraft(draft).then(handleSuccess)
+        }
     }
 
-    handleWindowResize = () => {
-        this.setState({ width: window.innerWidth });
+    getTitle = () => {
+        // grab the first h1 tag present in the article preview and return its innerText
+        const header = this.editorRef.current.querySelector('article > h1')
+        return header.innerText || 'Untitled'
+    }
+
+    openEditor = () => {
+        this.setState({
+            edit: true
+        })
     }
 
     parseMarkdown = (e) => {
@@ -40,45 +73,52 @@ class Editor extends Component {
     }
 
     componentDidMount () {
-        window.addEventListener('resize', this.handleWindowResize)
-        const localMd = localStorage.getItem('medhir-md');
-        this.setState({
-            parsed: localMd ? Marked(localMd) : Marked(this.state.markdown)
-        })
+        if (!this.state.new) {
+            api.getDraft(this.state.id).then(response => {
+                const draft = response.data
+                this.setState({
+                    markdown: draft.markdown, 
+                    parsed: Marked(draft.markdown)
+                })
+            })
+        } else {
+            this.setState({
+                parsed: Marked(this.state.markdown)
+            })
+        }
     }
 
     render () {
         // local variables
-        const localStorageMd = localStorage.getItem('medhir-md');
-        const className = `editor ${ this.state.edit ? null : 'preview' }`;
-
-        // components
-        const markdown = <Markdown markdown={ localStorageMd ? localStorageMd : this.state.markdown} parse={this.parseMarkdown} />;
+        const editorClasses = `editor ${ this.state.edit ? '' : 'preview' }`;
+        // local components
+        const markdown = <Markdown markdown={ this.state.markdown } parse={ this.parseMarkdown } />;
         const preview = <Preview parsedContent={ this.state.parsed } />;
-        const controls = <Controls edit={ this.state.edit } type={ this.state.type } onClick={ this.handleClick } />;
-
-        // layout 
+        const controls = <Controls edit={ this.state.edit } saveDraft={ this.saveDraft.bind(this) } openEditor={ this.openEditor.bind(this) } />;
+        // layouts
         const mobileLayout = (
-            <section className={ className }>
+            <Fragment>
                 {   
                     this.state.edit 
                     ? markdown 
                     : preview
                 }
                 { controls }
-            </section>
+            </Fragment>
         );
-
         const desktopLayout = (
-            <section className={ `editor ${ this.state.edit ? null : 'preview' }` }>
+            <Fragment>
                 { markdown }
                 { preview }
                 { controls }
-            </section>
+            </Fragment>
         );
-
         // render layout
-        return this.state.isMobile ? mobileLayout : desktopLayout;
+        return (
+            <section ref={ this.editorRef } className={ editorClasses }>
+                { this.state.isMobile ? mobileLayout : desktopLayout }
+            </section>
+        )
     }
 }
 

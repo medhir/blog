@@ -1,10 +1,14 @@
 import React from 'react';
-import { Button } from '../../Controls/Button';
+import { EditButton, SaveButton } from '../../Controls/Buttons';
 
 const Controls = (props) => {
     return (
         <div className="editor-controls">
-            <Button edit={ props.edit } type={ props.type } onClick={ props.onClick } />
+            { 
+                props.edit === true ? 
+                <SaveButton onClick={ props.saveDraft }>Save Draft</SaveButton> :
+                <EditButton onClick={ props.openEditor }>Edit</EditButton>
+            }
         </div>
     )
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import TextareaAutosize from 'react-textarea-autosize';
 
 const Markdown = (props) => {
     
@@ -20,11 +21,12 @@ const Markdown = (props) => {
     }
 
     return (
-        <textarea defaultValue={ props.markdown } 
-                    onChange={ props.parse } 
-                    onDrop={ handleDrop }
-                    onPaste={ handlePaste }
-                    ></textarea>
+        <TextareaAutosize
+            value={ props.markdown } 
+            onChange={ props.parse } 
+            onDrop={ handleDrop }
+            onPaste={ handlePaste }
+        />
     )
 }
 

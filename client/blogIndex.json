@@ -1,0 +1,61 @@
+{
+  "posts": [
+    {
+      "title": "Cats are the real enemy: 2019.",
+      "published": 1551675149525,
+      "id": "0b9d0f78-e2ee-4fa2-8efa-995fb95f604c"
+    },
+    {
+      "title": "Muzzles and measles",
+      "published": 1551675149549,
+      "id": "3d528d74-6e33-4faf-a847-853c11394051"
+    },
+    {
+      "title": "Muzzles and measles",
+      "published": 1551675149572,
+      "id": "2b58c1f6-3bf6-46e4-930a-bbb3af97c347"
+    },
+    {
+      "title": "mental health and programming",
+      "published": 1551675149597,
+      "id": "1435ee47-80c4-4a0b-a993-714d97403e25"
+    },
+    {
+      "title": "Cats are the real enemy: 2019.",
+      "published": 1551675149621,
+      "id": "be1dfa68-45cf-4bd5-8cf6-952f7dc69315"
+    }
+  ],
+  "drafts": [
+    {
+      "title": "mental health and programming",
+      "saved": 1551675149514,
+      "id": "b20a789c-786b-44f0-b286-5e4455691a80"
+    },
+    {
+      "title": "mental health and programming",
+      "saved": 1551675149538,
+      "id": "2b8b289e-17ee-499d-b4e0-9b3381d6b2a4"
+    },
+    {
+      "title": "Muzzles and measles",
+      "saved": 1551675149559,
+      "id": "435101fa-86c2-4fc4-aaa2-1df8e5986b9c"
+    },
+    {
+      "title": "Muzzles and measles",
+      "saved": 1551675149585,
+      "id": "c55c790f-69a0-4595-b0a5-ee8086fb4abb"
+    },
+    {
+      "title": "how to create an uploading service in React",
+      "saved": 1551675149610,
+      "id": "797699fc-326c-4795-be75-0eaff2a83c63"
+    },
+    {
+      "title": "Cats are the real enemy: 2019.",
+      "saved": 1551675149631,
+      "id": "d520c3be-7267-41fd-ab75-df2efdb40e43"
+    }
+  ]
+}

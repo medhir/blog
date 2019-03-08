@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 import Gallery from '../../Components/Gallery';
 import Blog from '../../Components/Blog';
+import Editor from '../../Components/Editor';
 import Uploader from '../../Controls/Uploader'
 import Login from '../../Auth/Login';
 

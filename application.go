@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/medhir/blog/utils"
+	"github.com/medhir/blog/api"
 	"github.com/rs/cors"
 
 	// Provide runtime profiling data
@@ -31,7 +31,7 @@ func main() {
 	c := cors.New(cors.Options{
 		Debug:            true,
 		AllowCredentials: true,
-	})
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut}})
 
 	// static js,css
 	staticfs := http.FileServer(http.Dir("build/static"))
@@ -40,12 +40,17 @@ func main() {
 	assetsfs := http.FileServer(http.Dir("assets/"))
 	http.Handle("/assets/", http.StripPrefix("/assets/", assetsfs))
 
+	// blog API
+	http.HandleFunc("/api/blog/posts", api.GetBlogPosts())
+	http.HandleFunc("/api/blog/draft", api.GetBlogDraft())
+	// blog draft editing API
+	http.HandleFunc("/api/blog/draft/edit", api.PutBlogDraft())
 	// photo name API
-	http.HandleFunc("/api/photos", utils.Photos())
+	http.HandleFunc("/api/photos", api.GetPhotos())
 	// album API
-	http.HandleFunc("/api/albums/", utils.Albums())
+	http.HandleFunc("/api/albums/", api.GetAlbums())
 	// uploader service
-	http.HandleFunc("/api/upload/", utils.Upload())
+	http.HandleFunc("/api/upload/", api.UploadPhoto())
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -54,5 +59,11 @@ func main() {
 
 	log.Println("Listening on port " + port)
 	enableCORS := c.Handler(http.DefaultServeMux)
-	http.ListenAndServe(":"+port, enableCORS)
+	// Allow CORS Headers for development
+	_, dev := os.LookupEnv("REACT_APP_DEBUG_HOST")
+	if dev {
+		http.ListenAndServe(":"+port, enableCORS)
+	} else {
+		http.ListenAndServe(":"+port, nil)
+	}
 }
