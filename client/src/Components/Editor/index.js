@@ -7,23 +7,22 @@ import Preview from './Preview';
 import Controls from './Controls'; 
 import api from './api'
 import './Editor.css';
-import { timingSafeEqual } from 'crypto';
 
 class Editor extends Component {
     constructor (props) {
         super(props)
         this.editorRef = React.createRef()
         this.state = {
-            edit: true, 
-            isMobile: window.innerWidth <= 600 ? true : false, 
+            isMobile: window.innerWidth <= 600 ? true : false
         }
 
         if (this.props.draft) {
             this.state.new = false
-            this.state.markdown = props.draft.markdown
+            this.state.edit = false
             this.state.id = props.draft.id
         } else {
             this.state.new = true
+            this.state.edit = true
             this.state.markdown = PopplersMarkdown, 
             this.state.id = uuid()
         }
@@ -43,6 +42,8 @@ class Editor extends Component {
                 draft: draft, 
                 edit: false
             })
+            // Set parent state
+            this.props.handleSave()
         }
         
         if (this.state.new) {
@@ -72,9 +73,19 @@ class Editor extends Component {
     }
 
     componentDidMount () {
-        this.setState({
-            parsed: Marked(this.state.markdown)
-        })
+        if (!this.state.new) {
+            api.getDraft(this.state.id).then(response => {
+                const draft = response.data
+                this.setState({
+                    markdown: draft.markdown, 
+                    parsed: Marked(draft.markdown)
+                })
+            })
+        } else {
+            this.setState({
+                parsed: Marked(this.state.markdown)
+            })
+        }
     }
 
     render () {

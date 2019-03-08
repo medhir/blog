@@ -40,13 +40,30 @@ const BlogDrafts = "blog/drafts/"
 // AlbumPrefix is the string value associated with the S3 albums "Folder"
 const AlbumPrefix = "albums/"
 
-const postIndex = "blog/posts/index"
-const draftIndex = "blog/drafts/index"
+const postsIndexKey = "blog/posts.index.json"
+const draftsIndexKey = "blog/drafts.index.json"
 
 var sess = session.Must(session.NewSession(&aws.Config{Region: aws.String("us-west-2")}))
 var svc = s3.New(sess)
 var uploader = s3manager.NewUploaderWithClient(svc)
 var downloader = s3manager.NewDownloaderWithClient(svc)
+
+func getKeys(prefix string) ([]string, error) {
+	resp, err := svc.ListObjects(&s3.ListObjectsInput{
+		Bucket:    aws.String(BucketName),
+		Prefix:    aws.String(prefix),
+		Delimiter: aws.String("/")})
+
+	var keys []string
+	for _, obj := range resp.Contents {
+		key := aws.StringValue(obj.Key)
+		// Exclude "Folder" objects from response
+		if key[len(key)-1:] != "/" {
+			keys = append(keys, key)
+		}
+	}
+	return keys, err
+}
 
 // getAlbums returns a slice of folder names under AlbumPrefix in s3 bucket
 func getAlbums() ([]string, error) {
@@ -103,11 +120,11 @@ func getBytesForObject(key string) ([]byte, error) {
 	return buffer.Bytes(), err
 }
 
-// putJSON writes a .json file with key as the file name
-func putJSON(body io.Reader, key string) (*s3manager.UploadOutput, error) {
+// putObject writes a file with key as the file name
+func putObject(body io.Reader, key string) (*s3manager.UploadOutput, error) {
 	uploadParams := &s3manager.UploadInput{
 		Bucket: aws.String(BucketName),
-		Key:    aws.String(key + ".json"),
+		Key:    aws.String(key),
 		Body:   body,
 		ACL:    aws.String("public-read")}
 	result, err := uploader.Upload(uploadParams)
@@ -122,12 +139,12 @@ type BlogPostEntry struct {
 }
 
 func getBlogIndex() ([]byte, error) {
-	index, err := getBytesForObject(postIndex + ".json")
+	index, err := getBytesForObject(postsIndexKey)
 	return index, err
 }
 
 func getDraftIndex() ([]byte, error) {
-	index, err := getBytesForObject(draftIndex + ".json")
+	index, err := getBytesForObject(draftsIndexKey)
 	return index, err
 }
 
@@ -152,7 +169,7 @@ func updateBlogIndex(post []byte) error {
 	if err != nil {
 		return err
 	}
-	_, err = putJSON(bytes.NewReader(newJSON), postIndex)
+	_, err = putObject(bytes.NewReader(newJSON), postsIndexKey)
 	if err != nil {
 		return err
 	}
@@ -167,28 +184,39 @@ type BlogDraftEntry struct {
 	Title    string  `json:"title"`
 }
 
+type blogDraftIndexEntry struct {
+	ID    string  `json:"id"`
+	Saved float64 `json:"saved"`
+	Title string  `json:"title"`
+}
+
 func updateDraftIndex(body []byte) error {
-	entry := BlogDraftEntry{}
-	err := json.Unmarshal(body, &entry)
+	draftKeys, err := getKeys(BlogDrafts)
 	if err != nil {
-		return errors.New("Failed to construct draft. Method error - " + err.Error())
+		return errors.New("Failed to get draft object keys - " + err.Error())
 	}
-	var index []BlogDraftEntry
-	indexBytes, err := getDraftIndex()
-	if err != nil {
-		return errors.New("Failed to get draft index from S3")
+	var index []blogDraftIndexEntry
+	for _, key := range draftKeys {
+		draftBytes, err := getBytesForObject(key)
+		if err != nil {
+			return errors.New("Failed to get draft bytes for key " + key + " - " + err.Error())
+		}
+		entry := BlogDraftEntry{}
+		err = json.Unmarshal(draftBytes, &entry)
+		if err != nil {
+			return errors.New("Failed to construct draft entry. Method error - " + err.Error())
+		}
+		indexEntry := blogDraftIndexEntry{
+			ID:    entry.ID,
+			Saved: entry.Saved,
+			Title: entry.Title}
+		index = append(index, indexEntry)
 	}
-	fmt.Println(string(indexBytes))
-	err = json.Unmarshal(indexBytes, &index)
-	if err != nil {
-		return errors.New("Failed to construct index. Method error - " + err.Error())
-	}
-	index = append(index, entry)
 	newJSON, err := json.Marshal(index)
 	if err != nil {
-		return errors.New("Failed to create json response buffer")
+		return errors.New("Failed to create json for updated draft index")
 	}
-	_, err = putJSON(bytes.NewReader(newJSON), draftIndex)
+	_, err = putObject(bytes.NewReader(newJSON), draftsIndexKey)
 	if err != nil {
 		return errors.New("Failed to put updated draft index")
 	}

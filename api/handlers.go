@@ -174,7 +174,7 @@ func PutBlogDraft() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		response, err := putJSON(bytes.NewReader(body), BlogDrafts+id)
+		response, err := putObject(bytes.NewReader(body), BlogDrafts+id+".json")
 		if err != nil {
 			fmt.Println(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -205,18 +205,17 @@ func GetBlogDraft() http.HandlerFunc {
 		// get id parameter
 		id := r.URL.Query().Get("id")
 		// get bytes for draft
-		draftBytes, err := getBytesForObject(BlogDrafts + id)
+		draftBytes, err := getBytesForObject(BlogDrafts + id + ".json")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		obj, err := json.Marshal(draftBytes)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(obj)
+		w.Write(draftBytes)
 	})
 }

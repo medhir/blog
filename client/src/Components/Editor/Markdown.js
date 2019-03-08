@@ -22,7 +22,7 @@ const Markdown = (props) => {
 
     return (
         <TextareaAutosize
-            defaultValue={ props.markdown } 
+            value={ props.markdown } 
             onChange={ props.parse } 
             onDrop={ handleDrop }
             onPaste={ handlePaste }

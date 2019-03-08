@@ -34,7 +34,7 @@ const BlogDraft = (props) => {
             <Link to={ { 
                 pathname: `blog/drafts/edit/${ props.draft.id }`, 
                 state: props.draft
-            } }>Edit</Link>
+            } }>View in Editor</Link>
         </li>
     )
 }
@@ -85,6 +85,17 @@ class Blog extends Component {
         })
     }
 
+    // Re-call API on Blog Draft Save
+    handleSave = () => {
+        api.getPosts().then(success => {
+            const data = success.data
+            this.setState({
+                posts: data.posts, 
+                drafts: data.drafts
+            })
+        })
+    }
+
     render () {
         if (this.state.posts && this.state.drafts) {
             return (
@@ -93,9 +104,9 @@ class Blog extends Component {
                         exact path={ this.props.match.path } 
                         component={ () => <BlogView match={ this.props.match } posts={ this.state.posts } drafts={ this.state.drafts }/> } />
                     <Route exact path={ `${ this.props.match.path }/drafts/new` } 
-                           component={ () => <Editor markdown={ md } /> }/>
+                           component={ () => <Editor handleSave={ this.handleSave.bind(this) } markdown={ md } /> }/>
                     <Route path={ `${ this.props.match.path }/drafts/edit/:id` } 
-                           component={ () => <Editor draft={ this.props.location.state }/> }/>       
+                           component={ () => <Editor handleSave={ this.handleSave.bind(this) } draft={ this.props.location.state }/> }/>       
                 </Fragment>
             )
         } else {

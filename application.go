@@ -31,7 +31,7 @@ func main() {
 	c := cors.New(cors.Options{
 		Debug:            true,
 		AllowCredentials: true,
-	})
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut}})
 
 	// static js,css
 	staticfs := http.FileServer(http.Dir("build/static"))
@@ -43,8 +43,8 @@ func main() {
 	// blog API
 	http.HandleFunc("/api/blog/posts", api.GetBlogPosts())
 	http.HandleFunc("/api/blog/draft", api.GetBlogDraft())
-	// blog draft API
-	http.HandleFunc("/api/blog/draft", api.PutBlogDraft())
+	// blog draft editing API
+	http.HandleFunc("/api/blog/draft/edit", api.PutBlogDraft())
 	// photo name API
 	http.HandleFunc("/api/photos", api.GetPhotos())
 	// album API
