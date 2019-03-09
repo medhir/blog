@@ -7,7 +7,7 @@ import (
 )
 
 var reduceQuality = bimg.Options{
-	Quality: 50}
+	Quality: 30}
 
 var watermark = bimg.Watermark{
 	Text:        "(c) medhir 2019",
