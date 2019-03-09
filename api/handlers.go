@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
+
+	"github.com/google/uuid"
 )
 
 // Album semantially represents the name of an album storing photos in S3
@@ -91,7 +94,7 @@ func UploadPhoto() http.HandlerFunc {
 		r.ParseMultipartForm(32 << 20)
 		fileHeaders := r.MultipartForm.File["image"]
 		for _, fileHeader := range fileHeaders {
-			key := fileHeader.Filename
+			id := uuid.New().String()
 			file, err := fileHeader.Open()
 			if err != nil {
 				fmt.Println(err.Error())
@@ -99,10 +102,18 @@ func UploadPhoto() http.HandlerFunc {
 				return
 			}
 			defer file.Close()
-			result, err := uploadPhotoToS3(file, "feb.2019", key)
+			fileBuffer := bytes.NewBuffer(nil)
+			_, err = io.Copy(fileBuffer, file)
 			if err != nil {
 				fmt.Println(err.Error())
-				http.Error(w, "Could not upload file "+key, http.StatusInternalServerError)
+				http.Error(w, "Could not create buffer for file", http.StatusInternalServerError)
+				return
+			}
+			processedImage := reduceFileSizeAndConvertToJPG(fileBuffer.Bytes())
+			result, err := putObject(bytes.NewReader(processedImage), "albums/march.2019/"+id+".jpg")
+			if err != nil {
+				fmt.Println(err.Error())
+				http.Error(w, "Could not upload file "+id+".jpg", http.StatusInternalServerError)
 				return
 			}
 			uploadResult := s3UploadResult{
