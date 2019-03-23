@@ -31,7 +31,8 @@ func main() {
 	c := cors.New(cors.Options{
 		Debug:            true,
 		AllowCredentials: true,
-		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut}})
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut},
+		AllowedHeaders:   []string{"Authorization", "Content-Type"}})
 
 	// static js,css
 	staticfs := http.FileServer(http.Dir("build/static"))
@@ -50,7 +51,7 @@ func main() {
 	// album API
 	http.HandleFunc("/api/albums/", api.GetAlbums())
 	// uploader service
-	http.HandleFunc("/api/upload/", api.UploadPhoto())
+	http.HandleFunc("/api/upload/", api.Authorize(api.UploadPhoto()))
 
 	// login API
 	http.HandleFunc("/api/login", api.Login())

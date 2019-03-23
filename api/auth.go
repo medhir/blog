@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -17,6 +18,7 @@ var auth = &client.FusionAuthClient{
 	APIKey:     "4ZfWfFFkQGoIiskYJhNjaNJ48FkgEmNLc9buZeXp5YM",
 	HTTPClient: httpClient}
 
+// Credentials describes the JSON request for a user login
 type Credentials struct {
 	LoginID  string `json:"loginId"`
 	Password string `json:"password"`
@@ -43,4 +45,18 @@ func Login() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		w.Write(responseJSON)
 	})
+}
+
+// Authorize validates a request by checking for a valid jwt in the authorization header
+func Authorize(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		jwt := r.Header.Get("Authorization")
+		fmt.Println(jwt)
+		_, err := auth.ValidateJWT(jwt)
+		if err != nil {
+			http.Error(w, "Could not validate JWT - "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		h(w, r)
+	}
 }

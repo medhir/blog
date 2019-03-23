@@ -52,7 +52,8 @@ class Auth extends Component {
             return (
                 <Fragment>
                     { login }
-                    <p>Login failed with status code { this.state.error.response.status }</p>
+                    <p>Login failed</p>
+                    <pre>{ this.state.error }</pre>
                 </Fragment>
             )
         } else {
