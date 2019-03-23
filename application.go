@@ -52,6 +52,9 @@ func main() {
 	// uploader service
 	http.HandleFunc("/api/upload/", api.UploadPhoto())
 
+	// login API
+	http.HandleFunc("/api/login", api.Login())
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8000"

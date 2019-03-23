@@ -23,7 +23,7 @@ class Editor extends Component {
         } else {
             this.state.new = true
             this.state.edit = true
-            this.state.markdown = PopplersMarkdown, 
+            this.state.markdown = PopplersMarkdown 
             this.state.id = uuid()
         }
     }

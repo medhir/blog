@@ -1,15 +1,22 @@
-import auth0 from 'auth0-js'
-
 class AuthUtility {
-    auth0 = new auth0.WebAuth({
-        domain: 'medhir.auth0.com',
-        clientID: 'MkwsxMFT9oV5R77RAQt0fNOBa0bs8FYF',
-        responseType: 'token id_token',
-        scope: 'openid'
-    })
+    constructor () {
+        this.auth = null
+    }
 
-    login () {
-        this.auth0.authorize()
+    setAuth (auth) {
+        this.auth = auth
+    }
+
+    get authed () {
+        if (this.auth) return true 
+        return false
+    }
+
+    get token () {
+        if (!this.auth) {
+            return null
+        }
+        return this.auth.token
     }
 }
 

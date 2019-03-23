@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import Auth from '../../Auth'
 import api from './api'
 import './Uploader.css'
 
@@ -72,7 +73,7 @@ class Uploader extends Component {
 
     render () {
         return (
-            <Fragment>
+            <Auth>
                 <form className="imageForm">
                     <input 
                         type="file"
@@ -88,7 +89,7 @@ class Uploader extends Component {
                     <div style={{ width: this.state.progress }}></div>
                 </div>
                 <Locations locations={ this.state.successLocations }></Locations>
-            </Fragment>
+            </Auth>
         )
     }
 }
