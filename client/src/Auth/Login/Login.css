@@ -1,0 +1,28 @@
+.login {
+  padding: 30px 0px;
+}
+
+.login .username label, 
+.login .password label  {
+  display: block;
+  font-size: 1.5em;
+  font-weight: 600px;
+  margin-right: 20px;
+  margin-bottom: 5px;
+}
+
+.login .username input, 
+.login .password input {
+  font-size: 1.2em;
+  border: none;
+  width: 50%;
+  margin-bottom: 20px;
+  border: 1px solid black;
+  transition: all 200ms ease-in;
+  padding: 2px;
+}
+
+.login *:focus {
+	outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(12, 161, 247, 0.591)
+}

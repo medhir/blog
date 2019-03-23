@@ -32,7 +32,7 @@ class Auth extends Component {
                 })
             } else {
                 this.setState({
-                    error: response
+                    error: response.data
                 })
             }
         })
