@@ -5,17 +5,19 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 
 	client "github.com/medhir/fusionauth-go-client"
 )
 
 const host = "http://localhost:9011"
 
+var apiKey, _ = os.LookupEnv("FUSIONAUTH_APIKEY")
 var httpClient = &http.Client{}
 var baseURL, _ = url.Parse(host)
 var auth = &client.FusionAuthClient{
 	BaseURL:    baseURL,
-	APIKey:     "4ZfWfFFkQGoIiskYJhNjaNJ48FkgEmNLc9buZeXp5YM",
+	APIKey:     apiKey,
 	HTTPClient: httpClient}
 
 // Credentials describes the JSON request for a user login
