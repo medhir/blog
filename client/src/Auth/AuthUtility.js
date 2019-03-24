@@ -21,12 +21,15 @@ class AuthUtility {
     }
 
     checkExpiry () {
-        if (!this.auth) {
-            return
-        } 
-        api.validate(this.authorizationHeader).catch(() => {
-            localStorage.removeItem(StorageKey)
-            this.auth = null
+        return new Promise(resolve => {
+            if (!this.auth) {
+                resolve()
+            } 
+            api.validate(this.authorizationHeader).catch(() => {
+                localStorage.removeItem(StorageKey)
+                this.auth = null
+                resolve()
+            })
         })
     }
 

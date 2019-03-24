@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import Auth from '../../Auth'
 import Marked from 'marked';
 import uuid from 'uuid/v4';
 import Markdown from './Markdown';
@@ -122,9 +123,11 @@ class Editor extends Component {
         );
         // render layout
         return (
-            <section ref={ this.editorRef } className={ editorClasses }>
-                { this.state.isMobile ? mobileLayout : desktopLayout }
-            </section>
+            <Auth withLoginPrompt>
+                <section ref={ this.editorRef } className={ editorClasses }>
+                    { this.state.isMobile ? mobileLayout : desktopLayout }
+                </section>
+            </Auth>
         )
     }
 }

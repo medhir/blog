@@ -33,10 +33,6 @@ class Uploader extends Component {
         }
     }
 
-    componentDidMount () {
-        AuthUtil.checkExpiry()
-    }
-
     handleFileStateChange = (e) => {
         this.setState({
             files: e.target.files

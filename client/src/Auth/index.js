@@ -9,7 +9,6 @@ class Auth extends Component {
         super(props)
         this.state = {
             auth: AuthUtil.auth,
-            authed: AuthUtil.authed,
             error: null
         }
     }
@@ -23,7 +22,7 @@ class Auth extends Component {
         // Do the login 
         api.login(credentials)
         // Set the authentication
-        .then(response => {
+        .then(response => { 
             if (response.status = 200) {
                 AuthUtil.setAuth(response.data)
                 this.setState({
@@ -42,6 +41,16 @@ class Auth extends Component {
                 error: error
             })
         })
+    }
+
+    componentDidMount = () => {
+        if (this.state.auth) {
+            AuthUtil.checkExpiry().then(() => {
+                this.setState({
+                    auth: AuthUtil.auth
+                })
+            })
+        }
     }
 
     render () {
