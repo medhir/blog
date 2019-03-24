@@ -31,7 +31,8 @@ func main() {
 	c := cors.New(cors.Options{
 		Debug:            true,
 		AllowCredentials: true,
-		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut}})
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut},
+		AllowedHeaders:   []string{"Authorization", "Content-Type"}})
 
 	// static js,css
 	staticfs := http.FileServer(http.Dir("build/static"))
@@ -42,15 +43,19 @@ func main() {
 
 	// blog API
 	http.HandleFunc("/api/blog/posts", api.GetBlogPosts())
-	http.HandleFunc("/api/blog/draft", api.GetBlogDraft())
+	http.HandleFunc("/api/blog/draft", api.Authorize(api.GetBlogDraft()))
 	// blog draft editing API
-	http.HandleFunc("/api/blog/draft/edit", api.PutBlogDraft())
+	http.HandleFunc("/api/blog/draft/edit", api.Authorize(api.PutBlogDraft()))
 	// photo name API
 	http.HandleFunc("/api/photos", api.GetPhotos())
 	// album API
 	http.HandleFunc("/api/albums/", api.GetAlbums())
 	// uploader service
-	http.HandleFunc("/api/upload/", api.UploadPhoto())
+	http.HandleFunc("/api/upload/", api.Authorize(api.UploadPhoto()))
+
+	// auth API
+	http.HandleFunc("/api/login", api.Login())
+	http.HandleFunc("/api/jwt/validate", api.CheckExpiry())
 
 	port := os.Getenv("PORT")
 	if port == "" {

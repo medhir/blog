@@ -1,10 +1,12 @@
 import React, { Component, Fragment } from 'react';
+import Auth from '../../Auth'
 import Marked from 'marked';
 import uuid from 'uuid/v4';
 import Markdown from './Markdown';
 import PopplersMarkdown from '../Blog/popplers'
 import Preview from './Preview';
 import Controls from './Controls'; 
+import { AuthUtil } from '../../Auth/AuthUtility'
 import api from './api'
 import './Editor.css';
 
@@ -23,7 +25,7 @@ class Editor extends Component {
         } else {
             this.state.new = true
             this.state.edit = true
-            this.state.markdown = PopplersMarkdown, 
+            this.state.markdown = PopplersMarkdown 
             this.state.id = uuid()
         }
     }
@@ -37,7 +39,6 @@ class Editor extends Component {
         }
 
         const handleSuccess = (success) => {
-            console.log(success)
             this.setState({
                 draft: draft, 
                 edit: false
@@ -47,16 +48,23 @@ class Editor extends Component {
         }
         
         if (this.state.new) {
-            api.newDraft(draft).then(handleSuccess)
+            api.newDraft(draft, AuthUtil.authorizationHeader).then(handleSuccess)
         } else {
-            api.saveDraft(draft).then(handleSuccess)
+            api.saveDraft(draft, AuthUtil.authorizationHeader).then(handleSuccess)
         }
     }
 
     getTitle = () => {
         // grab the first h1 tag present in the article preview and return its innerText
-        const header = this.editorRef.current.querySelector('article > h1')
-        return header.innerText || 'Untitled'
+        const article = document.createElement('article')
+        article.innerHTML = this.state.parsed
+        const heading = article.querySelector('h1')
+        
+        if (heading) {
+            return heading.innerText
+        } else {
+            return 'Untitled'
+        }
     }
 
     openEditor = () => {
@@ -74,7 +82,7 @@ class Editor extends Component {
 
     componentDidMount () {
         if (!this.state.new) {
-            api.getDraft(this.state.id).then(response => {
+            api.getDraft(this.state.id, AuthUtil.authorizationHeader).then(response => {
                 const draft = response.data
                 this.setState({
                     markdown: draft.markdown, 
@@ -115,9 +123,11 @@ class Editor extends Component {
         );
         // render layout
         return (
-            <section ref={ this.editorRef } className={ editorClasses }>
-                { this.state.isMobile ? mobileLayout : desktopLayout }
-            </section>
+            <Auth withLoginPrompt>
+                <section ref={ this.editorRef } className={ editorClasses }>
+                    { this.state.isMobile ? mobileLayout : desktopLayout }
+                </section>
+            </Auth>
         )
     }
 }

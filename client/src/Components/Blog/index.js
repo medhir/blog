@@ -4,6 +4,7 @@ import Editor from '../Editor';
 import api from './api'
 import './Blog.css';
 import md from './popplers'
+import Auth from '../../Auth'
 import Loading from '../../Layout/Loading';
 
 const BlogPost = (props) => {
@@ -31,10 +32,12 @@ const BlogDraft = (props) => {
         <li className="draft">
             <h3>{ props.draft.title }</h3>
             <p>{ `Last saved at: ${ saved }` }</p>
-            <Link to={ { 
-                pathname: `blog/drafts/edit/${ props.draft.id }`, 
-                state: props.draft
-            } }>View in Editor</Link>
+            <Auth>
+                <Link to={ { 
+                    pathname: `blog/drafts/edit/${ props.draft.id }`, 
+                    state: props.draft
+                } }>View in Editor</Link>
+            </Auth>
         </li>
     )
 }

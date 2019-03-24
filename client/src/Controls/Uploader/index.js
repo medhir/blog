@@ -1,4 +1,6 @@
 import React, { Component, Fragment } from 'react';
+import Auth from '../../Auth'
+import { AuthUtil } from '../../Auth/AuthUtility'
 import api from './api'
 import './Uploader.css'
 
@@ -55,7 +57,10 @@ class Uploader extends Component {
                 formData.append("image", this.state.files[i])
             }
             api.upload(formData, {
-                headers: {'Content-Type': 'multipart/form-data' }, 
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `JWT ${ AuthUtil.token }`
+                }, 
                 onUploadProgress: this.handleProgressEvent
             }).then(success => {
                 const locations = success.data.map(successObj => successObj["Location"])
@@ -72,7 +77,7 @@ class Uploader extends Component {
 
     render () {
         return (
-            <Fragment>
+            <Auth withLoginPrompt>
                 <form className="imageForm">
                     <input 
                         type="file"
@@ -88,7 +93,7 @@ class Uploader extends Component {
                     <div style={{ width: this.state.progress }}></div>
                 </div>
                 <Locations locations={ this.state.successLocations }></Locations>
-            </Fragment>
+            </Auth>
         )
     }
 }
