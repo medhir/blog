@@ -43,9 +43,9 @@ func main() {
 
 	// blog API
 	http.HandleFunc("/api/blog/posts", api.GetBlogPosts())
-	http.HandleFunc("/api/blog/draft", api.GetBlogDraft())
+	http.HandleFunc("/api/blog/draft", api.Authorize(api.GetBlogDraft()))
 	// blog draft editing API
-	http.HandleFunc("/api/blog/draft/edit", api.PutBlogDraft())
+	http.HandleFunc("/api/blog/draft/edit", api.Authorize(api.PutBlogDraft()))
 	// photo name API
 	http.HandleFunc("/api/photos", api.GetPhotos())
 	// album API

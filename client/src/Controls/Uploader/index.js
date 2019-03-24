@@ -77,7 +77,7 @@ class Uploader extends Component {
 
     render () {
         return (
-            <Auth>
+            <Auth withLoginPrompt>
                 <form className="imageForm">
                     <input 
                         type="file"

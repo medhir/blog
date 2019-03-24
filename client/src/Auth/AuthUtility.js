@@ -1,10 +1,21 @@
+const StorageKey = 'medhirblogeditaccesstoken' 
+
 class AuthUtility {
     constructor () {
-        this.auth = null
+        const localAuth = localStorage.getItem(StorageKey)
+        if (localAuth) {
+            this.auth = JSON.parse(localAuth)
+        } else {
+            this.auth = null
+        }
     }
 
     setAuth (auth) {
-        this.auth = auth
+        const { token } = auth
+        this.auth = {
+            token: token
+        }
+        localStorage.setItem(StorageKey, JSON.stringify(this.auth))
     }
 
     get authed () {

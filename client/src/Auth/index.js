@@ -48,16 +48,18 @@ class Auth extends Component {
         const login = <Login login={ this.login }/>
         if (this.state.authed) {
             return (this.props.children)
-        } else if (this.state.error) {
+        } else if (this.state.error && this.props.withLoginPrompt) {
             return (
                 <Fragment>
                     { login }
                     <p>Login failed</p>
-                    <pre>{ this.state.error }</pre>
+                    <pre>{ JSON.stringify(this.state.error) }</pre>
                 </Fragment>
             )
-        } else {
+        } else if (this.props.withLoginPrompt) {
             return login
+        } else {
+            return null
         }
     }
 }
