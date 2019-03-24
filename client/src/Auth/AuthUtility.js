@@ -1,3 +1,5 @@
+import api from './api'
+
 const StorageKey = 'medhirblogeditaccesstoken' 
 
 class AuthUtility {
@@ -16,6 +18,24 @@ class AuthUtility {
             token: token
         }
         localStorage.setItem(StorageKey, JSON.stringify(this.auth))
+    }
+
+    checkExpiry () {
+        if (!this.auth) {
+            return
+        } 
+        api.validate(this.authorizationHeader).catch(() => {
+            localStorage.removeItem(StorageKey)
+            this.auth = null
+        })
+    }
+
+    get authorizationHeader() {
+        return {
+            headers: {
+                'Authorization': `JWT ${ this.auth.token }`
+            }
+        }
     }
 
     get authed () {

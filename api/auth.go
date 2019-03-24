@@ -62,3 +62,23 @@ func Authorize(h http.HandlerFunc) http.HandlerFunc {
 		h(w, r)
 	}
 }
+
+func CheckExpiry() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		jwt := r.Header.Get("Authorization")
+		fmt.Println(jwt)
+		resp, err := auth.ValidateJWT(jwt)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		responseJSON, err := json.Marshal(resp)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(responseJSON)
+	}
+}

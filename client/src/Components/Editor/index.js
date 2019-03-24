@@ -37,12 +37,6 @@ class Editor extends Component {
             id: this.state.id 
         }
 
-        const jwtAuth = {
-            headers: {
-                'Authorization': `JWT ${ AuthUtil.token }`
-            }
-        }
-
         const handleSuccess = (success) => {
             this.setState({
                 draft: draft, 
@@ -53,9 +47,9 @@ class Editor extends Component {
         }
         
         if (this.state.new) {
-            api.newDraft(draft, jwtAuth).then(handleSuccess)
+            api.newDraft(draft, AuthUtil.authorizationHeader).then(handleSuccess)
         } else {
-            api.saveDraft(draft, jwtAuth).then(handleSuccess)
+            api.saveDraft(draft, AuthUtil.authorizationHeader).then(handleSuccess)
         }
     }
 
@@ -87,11 +81,7 @@ class Editor extends Component {
 
     componentDidMount () {
         if (!this.state.new) {
-            api.getDraft(this.state.id, {
-                headers: {
-                    'Authorization': `JWT ${ AuthUtil.token }`
-                } 
-            }).then(response => {
+            api.getDraft(this.state.id, AuthUtil.authorizationHeader).then(response => {
                 const draft = response.data
                 this.setState({
                     markdown: draft.markdown, 

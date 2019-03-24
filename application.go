@@ -53,8 +53,9 @@ func main() {
 	// uploader service
 	http.HandleFunc("/api/upload/", api.Authorize(api.UploadPhoto()))
 
-	// login API
+	// auth API
 	http.HandleFunc("/api/login", api.Login())
+	http.HandleFunc("/api/jwt/validate", api.CheckExpiry())
 
 	port := os.Getenv("PORT")
 	if port == "" {

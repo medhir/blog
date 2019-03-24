@@ -8,7 +8,7 @@ class Auth extends Component {
     constructor (props) {
         super(props)
         this.state = {
-            auth: null,
+            auth: AuthUtil.auth,
             authed: AuthUtil.authed,
             error: null
         }
@@ -46,7 +46,7 @@ class Auth extends Component {
 
     render () {
         const login = <Login login={ this.login }/>
-        if (this.state.authed) {
+        if (this.state.auth) {
             return (this.props.children)
         } else if (this.state.error && this.props.withLoginPrompt) {
             return (

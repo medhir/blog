@@ -21,6 +21,7 @@
 }
 
 .editor article {
+    background-color: white;
     display: inline-block;
     overflow: scroll;
     width: 59%;
