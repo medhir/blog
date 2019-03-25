@@ -24,3 +24,5 @@ ProtectedConstants.js
 *.zip
 /assets
 application
+app
+.aws
