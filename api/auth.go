@@ -10,7 +10,7 @@ import (
 	client "github.com/medhir/fusionauth-go-client"
 )
 
-const host = "http://localhost:9011"
+const host = "https://auth.medhir.com"
 
 var apiKey, _ = os.LookupEnv("FUSIONAUTH_APIKEY")
 var httpClient = &http.Client{}

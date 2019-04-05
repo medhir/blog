@@ -24,3 +24,9 @@ ProtectedConstants.js
 *.zip
 /assets
 application
+app
+.aws
+
+# TLS Local Development
+cert.pem 
+key.pem
