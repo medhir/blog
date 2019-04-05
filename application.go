@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/medhir/blog/api"
 	"github.com/rs/cors"
+	"golang.org/x/crypto/acme/autocert"
 
 	// Provide runtime profiling data
 	// https://golang.org/pkg/net/http/pprof/
@@ -24,8 +26,9 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// index.html
-	http.HandleFunc("/", serveIndex)
+	mux := http.NewServeMux()
+	// serve index
+	mux.HandleFunc("/", serveIndex)
 
 	// CORS config for development purposes
 	c := cors.New(cors.Options{
@@ -36,26 +39,26 @@ func main() {
 
 	// static js,css
 	staticfs := http.FileServer(http.Dir("build/static"))
-	http.Handle("/static/", http.StripPrefix("/static/", staticfs))
+	mux.Handle("/static/", http.StripPrefix("/static/", staticfs))
 	// asset files
 	assetsfs := http.FileServer(http.Dir("assets/"))
-	http.Handle("/assets/", http.StripPrefix("/assets/", assetsfs))
+	mux.Handle("/assets/", http.StripPrefix("/assets/", assetsfs))
 
 	// blog API
-	http.HandleFunc("/api/blog/posts", api.GetBlogPosts())
-	http.HandleFunc("/api/blog/draft", api.Authorize(api.GetBlogDraft()))
+	mux.HandleFunc("/api/blog/posts", api.GetBlogPosts())
+	mux.HandleFunc("/api/blog/draft", api.Authorize(api.GetBlogDraft()))
 	// blog draft editing API
-	http.HandleFunc("/api/blog/draft/edit", api.Authorize(api.PutBlogDraft()))
+	mux.HandleFunc("/api/blog/draft/edit", api.Authorize(api.PutBlogDraft()))
 	// photo name API
-	http.HandleFunc("/api/photos", api.GetPhotos())
+	mux.HandleFunc("/api/photos", api.GetPhotos())
 	// album API
-	http.HandleFunc("/api/albums/", api.GetAlbums())
+	mux.HandleFunc("/api/albums/", api.GetAlbums())
 	// uploader service
-	http.HandleFunc("/api/upload/", api.Authorize(api.UploadPhoto()))
+	mux.HandleFunc("/api/upload/", api.Authorize(api.UploadPhoto()))
 
 	// auth API
-	http.HandleFunc("/api/login", api.Login())
-	http.HandleFunc("/api/jwt/validate", api.CheckExpiry())
+	mux.HandleFunc("/api/login", api.Login())
+	mux.HandleFunc("/api/jwt/validate", api.CheckExpiry())
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -63,12 +66,31 @@ func main() {
 	}
 
 	log.Println("Listening on port " + port)
-	enableCORS := c.Handler(http.DefaultServeMux)
+	enableCORS := c.Handler(mux)
 	// Allow CORS Headers for development
 	_, dev := os.LookupEnv("REACT_APP_DEBUG_HOST")
 	if dev {
-		http.ListenAndServe(":"+port, enableCORS)
+		server := &http.Server{
+			Addr:    ":" + port,
+			Handler: enableCORS}
+		server.ListenAndServeTLS("cert.pem", "key.pem")
+		log.Println("Listening on port " + port)
 	} else {
-		http.ListenAndServe(":"+port, nil)
+		certManager := autocert.Manager{
+			Prompt: autocert.AcceptTOS,
+			Cache:  autocert.DirCache("cert-cache"),
+			// Put your domain here:
+			HostPolicy: autocert.HostWhitelist("dev.medhir.com"),
+		}
+		server := &http.Server{
+			Addr:    ":443",
+			Handler: mux,
+			TLSConfig: &tls.Config{
+				GetCertificate: certManager.GetCertificate,
+			},
+		}
+		go http.ListenAndServe(":80", certManager.HTTPHandler(nil))
+		server.ListenAndServeTLS("", "")
+		log.Println("Listening on ports 80 and 443")
 	}
 }

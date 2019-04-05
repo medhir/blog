@@ -55,6 +55,7 @@ RUN apk add --no-cache \
 # CA Certs 
 RUN apk --no-cache add ca-certificates
 # Set host port
-ENV PORT="80"
+# ENV PORT="443"
+EXPOSE 443
 EXPOSE 80
 CMD ["./app"]

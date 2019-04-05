@@ -26,3 +26,7 @@ ProtectedConstants.js
 application
 app
 .aws
+
+# TLS Local Development
+cert.pem 
+key.pem
