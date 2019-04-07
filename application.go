@@ -65,7 +65,6 @@ func main() {
 		port = "8000"
 	}
 
-	log.Println("Listening on port " + port)
 	enableCORS := c.Handler(mux)
 	// Allow CORS Headers for development
 	_, dev := os.LookupEnv("REACT_APP_DEBUG_HOST")
@@ -73,8 +72,8 @@ func main() {
 		server := &http.Server{
 			Addr:    ":" + port,
 			Handler: enableCORS}
-		server.ListenAndServeTLS("cert.pem", "key.pem")
 		log.Println("Listening on port " + port)
+		server.ListenAndServeTLS("cert.pem", "key.pem")
 	} else {
 		certManager := autocert.Manager{
 			Prompt: autocert.AcceptTOS,
@@ -89,8 +88,8 @@ func main() {
 				GetCertificate: certManager.GetCertificate,
 			},
 		}
+		log.Println("Listening on ports 80 and 443")
 		go http.ListenAndServe(":80", certManager.HTTPHandler(nil))
 		server.ListenAndServeTLS("", "")
-		log.Println("Listening on ports 80 and 443")
 	}
 }
