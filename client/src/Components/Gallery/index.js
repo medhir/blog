@@ -3,7 +3,6 @@ import { Route, Link } from "react-router-dom";
 import './Gallery.css';
 import Photo from '../../Layout/Photo';
 import Loading from '../../Layout/Loading';
-import Uploader from '../../Controls/Uploader'
 import api from './api';
 
 const BASE_PHOTO_URL = 'https://s3-us-west-2.amazonaws.com/medhir-blog-dev'
@@ -33,7 +32,7 @@ const PhotoGallery = (props) => {
     return (
         <section className="photos">
         {
-            props.photos.map((photo) => <Photo className="photo" src={ `${ BASE_PHOTO_URL }/${ photo }`} />)
+            props.photos.map((photo) => <Photo className="photo" src={ `${ BASE_PHOTO_URL }/${ photo }`} key={ photo } />)
         }
         </section>  
     )
@@ -66,10 +65,9 @@ class Gallery extends Component {
     }
 
     addDisplayPhotos = () => {
-        const startIndex = this.state.displayPhotos.length-1
+        const startIndex = this.state.displayPhotos.length
         const newPhotoURLS = this.state.photos.slice(startIndex, startIndex+1)
         const newDisplayPhotos = this.state.displayPhotos.concat(newPhotoURLS)
-        console.dir(newDisplayPhotos)
         this.setState({ displayPhotos: newDisplayPhotos })
     }
 
@@ -93,7 +91,7 @@ class Gallery extends Component {
     }
 
     onScroll = () => {
-        if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 500) && this.state.displayPhotos.length <= this.state.photos.length) {
+        if ((window.innerHeight + window.scrollY) >= (document.body.scrollHeight - 50) && this.state.displayPhotos.length <= this.state.photos.length) {
             this.addDisplayPhotos()
         }
     }
