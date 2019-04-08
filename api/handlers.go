@@ -110,7 +110,7 @@ func UploadPhoto() http.HandlerFunc {
 				return
 			}
 			processedImage := reduceFileSizeAndConvertToJPG(fileBuffer.Bytes())
-			result, err := putObject(bytes.NewReader(processedImage), "albums/april/"+id+".jpg")
+			result, err := putObject(bytes.NewReader(processedImage), "albums/main/"+id+".jpg")
 			if err != nil {
 				fmt.Println(err.Error())
 				http.Error(w, "Could not upload file "+id+".jpg", http.StatusInternalServerError)

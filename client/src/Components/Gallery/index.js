@@ -72,7 +72,7 @@ class Gallery extends Component {
     }
 
     componentDidMount = () => {
-        const AlbumName = 'april'
+        const AlbumName = 'main'
         api.getPhotos(AlbumName)
             .then((response) => {
                 this.setState({ album: AlbumName, photos: response.data })
