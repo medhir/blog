@@ -7,18 +7,9 @@ import (
 )
 
 var reduceQuality = bimg.Options{
-	Quality: 30}
-
-var watermark = bimg.Watermark{
-	Text:        "(c) medhir 2019",
-	Opacity:     0.30,
-	Width:       300,
-	DPI:         100,
-	Margin:      100,
-	NoReplicate: true,
-	Font:        "sans bold 22",
-	Background:  bimg.Color{R: 255, G: 255, B: 255},
-}
+	Quality:       30,
+	NoAutoRotate:  false,
+	StripMetadata: true}
 
 func reduceFileSizeAndConvertToJPG(buffer []byte) []byte {
 	image := bimg.NewImage(buffer)
@@ -26,13 +17,11 @@ func reduceFileSizeAndConvertToJPG(buffer []byte) []byte {
 	if err != nil {
 		fmt.Println("Could not reduce image quality - ", err.Error())
 	}
-	_, err = image.Convert(bimg.JPEG)
+	metadata, _ := image.Metadata()
+	fmt.Println(metadata)
+	finalJpg, err := image.Convert(bimg.JPEG)
 	if err != nil {
 		fmt.Println("Could not convert to JPEG - ", err.Error())
-	}
-	finalJpg, err := image.Watermark(watermark)
-	if err != nil {
-		fmt.Println("Could not add watermark - ", err.Error())
 	}
 	return finalJpg
 }
