@@ -8,11 +8,11 @@ import Auth from '../../Auth'
 import Loading from '../../Layout/Loading';
 
 const BlogPost = (props) => {
-    const published = new Date(props.post.published).toString()
+    const publishedDate = new Date(props.post.published).toDateString()
     return (
         <li className="post">
             <h3>{ props.post.title }</h3>
-            <p>{ published }</p>
+            <p>{ publishedDate }</p>
         </li>
     )
 };

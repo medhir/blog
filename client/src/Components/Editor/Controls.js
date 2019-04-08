@@ -1,5 +1,5 @@
-import React from 'react';
-import { EditButton, SaveButton } from '../../Controls/Buttons';
+import React, { Fragment } from 'react';
+import { EditButton, SaveButton, PublishButton } from '../../Controls/Buttons';
 
 const Controls = (props) => {
     return (
@@ -7,7 +7,12 @@ const Controls = (props) => {
             { 
                 props.edit === true ? 
                 <SaveButton onClick={ props.saveDraft }>Save Draft</SaveButton> :
-                <EditButton onClick={ props.openEditor }>Edit</EditButton>
+                (
+                    <Fragment>
+                        <EditButton onClick={ props.openEditor }>Edit</EditButton>
+                        <PublishButton onClick={ props.publish }>Publish</PublishButton>
+                    </Fragment>
+                )
             }
         </div>
     )
