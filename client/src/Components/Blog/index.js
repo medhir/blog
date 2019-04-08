@@ -58,12 +58,14 @@ const AddPost = (props) => {
     )
 }
 
-const BlogView = (props) => {
+const BlogList = (props) => {
     return (
         <section className="blog">
             <BlogPosts posts={ props.posts } />
-            <BlogDrafts drafts = { props.drafts } />
-            <AddPost match={ props.match } />
+            <Auth>
+                <BlogDrafts drafts = { props.drafts } />
+                <AddPost match={ props.match } />
+            </Auth>
         </section>
     )
 }
@@ -105,7 +107,7 @@ class Blog extends Component {
                 <Fragment>
                     <Route 
                         exact path={ this.props.match.path } 
-                        component={ () => <BlogView match={ this.props.match } posts={ this.state.posts } drafts={ this.state.drafts }/> } />
+                        component={ () => <BlogList match={ this.props.match } posts={ this.state.posts } drafts={ this.state.drafts }/> } />
                     <Route exact path={ `${ this.props.match.path }/drafts/new` } 
                            component={ () => <Editor handleSave={ this.handleSave.bind(this) } markdown={ md } /> }/>
                     <Route path={ `${ this.props.match.path }/drafts/edit/:id` } 
