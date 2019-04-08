@@ -50,6 +50,7 @@ func main() {
 	mux.HandleFunc("/api/blog/draft", api.Authorize(api.GetBlogDraft()))
 	// blog draft editing API
 	mux.HandleFunc("/api/blog/draft/edit", api.Authorize(api.PutBlogDraft()))
+	mux.HandleFunc("/api/blog/post/", api.Authorize(api.PutBlogPost()))
 	// photo name API
 	mux.HandleFunc("/api/photos", api.GetPhotos())
 	// album API

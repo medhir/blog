@@ -133,9 +133,11 @@ func putObject(body io.Reader, key string) (*s3manager.UploadOutput, error) {
 
 // BlogPostEntry describes the json encoding for a blog post
 type BlogPostEntry struct {
-	Title     string `json:"title"`
-	Published int64  `json:"published"`
-	ID        string `json:"id"`
+	Title     string  `json:"title"`
+	TitlePath string  `json:"titlePath"`
+	Markdown  string  `json:"markdown"`
+	Published float64 `json:"published"`
+	ID        string  `json:"id"`
 }
 
 func getBlogIndex() ([]byte, error) {
