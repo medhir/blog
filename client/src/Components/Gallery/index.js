@@ -3,7 +3,6 @@ import { Route, Link } from "react-router-dom";
 import './Gallery.css';
 import Photo from '../../Layout/Photo';
 import Loading from '../../Layout/Loading';
-import Uploader from '../../Controls/Uploader'
 import api from './api';
 
 const BASE_PHOTO_URL = 'https://s3-us-west-2.amazonaws.com/medhir-blog-dev'
@@ -32,9 +31,8 @@ const Albums = (props) => {
 const PhotoGallery = (props) => {
     return (
         <section className="photos">
-            <h1>{ props.album }</h1>
         {
-            props.photos.map((photo) => <Photo className="photo" src={ `${ BASE_PHOTO_URL }/${ photo }`} />)
+            props.photos.map((photo) => <Photo className="photo" src={ `${ BASE_PHOTO_URL }/${ photo }`} key={ photo } />)
         }
         </section>  
     )
@@ -49,7 +47,8 @@ class Gallery extends Component {
         this.state = {
             albums: null, 
             album: null, 
-            photos: null, 
+            photos: [],
+            displayPhotos: [],
             error: null
         }
     }
@@ -65,26 +64,43 @@ class Gallery extends Component {
             })
     }
 
+    addDisplayPhotos = () => {
+        const startIndex = this.state.displayPhotos.length
+        const newPhotoURLS = this.state.photos.slice(startIndex, startIndex+1)
+        const newDisplayPhotos = this.state.displayPhotos.concat(newPhotoURLS)
+        this.setState({ displayPhotos: newDisplayPhotos })
+    }
+
     componentDidMount = () => {
-        api.getAlbums()
+        const AlbumName = 'main'
+        api.getPhotos(AlbumName)
             .then((response) => {
-                this.setState({
-                    albums: response.data
-                });
+                this.setState({ album: AlbumName, photos: response.data })
+                const displayPhotos = this.state.photos.slice(0, 2)
+                this.setState({ displayPhotos: displayPhotos })
             })
             .catch((error) => {
-                console.error(error);
-                this.setState({
-                    error: error
-                });
+                this.setState({ error: error });
             });
+
+        window.addEventListener('scroll', this.onScroll, false);
+    }
+
+    componentWillUnmount () {
+        window.removeEventListener('scroll', this.onScroll, false);
+    }
+
+    onScroll = () => {
+        if ((window.innerHeight + window.scrollY) >= (document.body.scrollHeight - 50) && this.state.displayPhotos.length <= this.state.photos.length) {
+            this.addDisplayPhotos()
+        }
     }
 
     render () {
         if (this.state.albums) {
             return <Albums albums={ this.state.albums } getPhotos={ this.getPhotos }/>;
         } else if (this.state.album) {
-            return <PhotoGallery album={ this.state.albums } photos={ this.state.photos }/>;
+            return <PhotoGallery album={ this.state.album } photos={ this.state.displayPhotos }/>;
         } else {
             return <Loading />;
         }

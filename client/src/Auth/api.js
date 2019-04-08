@@ -1,12 +1,7 @@
-import axios from 'axios'
+import http from '../Utils/http'
 
-const BaseURL = process.env.REACT_APP_DEBUG_HOST || ''
 const LoginEndpoint = '/api/login'
 const ValidateEndpoint = '/api/jwt/validate'
-
-const http = axios.create({
-    baseURL: BaseURL
-})
 
 const api = {
     login: (credentials) => http.post(LoginEndpoint, credentials),

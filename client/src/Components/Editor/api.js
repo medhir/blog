@@ -1,8 +1,4 @@
-import axios from 'axios'
-const BaseURL = process.env.REACT_APP_DEBUG_HOST || ''
-const http = axios.create({
-    baseURL: BaseURL
-})
+import http from '../../Utils/http'
 
 const api = {
     getDraft: (id, cfg) => http.get(`/api/blog/draft?id=${ id }`, cfg),

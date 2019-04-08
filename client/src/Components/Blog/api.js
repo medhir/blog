@@ -1,10 +1,4 @@
-import axios from 'axios'
-
-const BaseURL = process.env.REACT_APP_DEBUG_HOST || ''
-
-const http = axios.create({
-    baseURL: BaseURL
-})
+import http from '../../Utils/http'
 
 const api = {
     getPosts: () => http.get('/api/blog/posts'),
