@@ -6,7 +6,7 @@
 
 .photo {
     display: block;
-    width: 50%;
+    width: 40%;
     margin: 10px auto;
     cursor: pointer;
 }
@@ -45,7 +45,37 @@
     width: auto;
 }
 
-@media only screen and (max-width: 600px){
+@media only screen and (max-width: 1024px){
+    .photos {
+        text-align: center;
+    }
+    
+    .photo {
+        width: 60%;
+    }
+
+    .photo > img {
+        width: 99%;
+        height: auto;
+    }
+}
+
+@media only screen and (max-width: 768px){
+    .photos {
+        text-align: center;
+    }
+    
+    .photo {
+        width: 75%;
+    }
+
+    .photo > img {
+        width: 99%;
+        height: auto;
+    }
+}
+
+@media only screen and (max-width: 500px){
     .photos {
         text-align: center;
     }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/medhir/blog/api"
 	"github.com/rs/cors"
+	"golang.org/x/crypto/acme"
 	"golang.org/x/crypto/acme/autocert"
 
 	// Provide runtime profiling data
@@ -80,6 +81,10 @@ func main() {
 			Cache:  autocert.DirCache("cert-cache"),
 			// Put your domain here:
 			HostPolicy: autocert.HostWhitelist("dev.medhir.com"),
+		}
+		const stagingURL = "https://acme-staging.api.letsencrypt.org/directory"
+		certManager.Client = &acme.Client{
+			DirectoryURL: stagingURL,
 		}
 		server := &http.Server{
 			Addr:    ":443",
