@@ -1,7 +1,8 @@
 import React, { Component } from 'react' 
 import Marked from 'marked';
-import api from '../api'
-import Loading from '../../../Layout/Loading'
+import api from '../../api'
+import Loading from '../../../../Layout/Loading'
+import './Post.css';
 
 const Display = (props) => {
     const generateHTML = () => {
@@ -9,7 +10,11 @@ const Display = (props) => {
             __html: props.parsedContent
         }
     }
-    return <article dangerouslySetInnerHTML={generateHTML()}></article>
+    return (
+        <section className="display">
+            <article dangerouslySetInnerHTML={generateHTML()}></article>
+        </section>
+    )
 }
 
 class Post extends Component {
