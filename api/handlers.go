@@ -276,3 +276,17 @@ func GetBlogDraft() http.HandlerFunc {
 		w.Write(draftBytes)
 	})
 }
+
+// HandleBlogPost handles the requests associated with the blog post API
+func HandleBlogPost() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			handleGetBlogPost := GetBlogPost()
+			handleGetBlogPost(w, r)
+		case http.MethodPost:
+			handlePostBlogPost := Authorize(PutBlogPost())
+			handlePostBlogPost(w, r)
+		}
+	})
+}

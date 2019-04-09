@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Link, Route } from 'react-router-dom'
 import BlogList from './modules/BlogList'
+import Post from './modules/Post'
 import Editor from '../Editor';
 import api from './api'
 import './Blog.css';
@@ -48,7 +49,9 @@ class Blog extends Component {
                     <Route exact path={ `${ this.props.match.path }/drafts/new` } 
                            component={ () => <Editor handleSave={ this.handleSave.bind(this) } markdown={ md } /> }/>
                     <Route path={ `${ this.props.match.path }/drafts/edit/:id` } 
-                           component={ () => <Editor handleSave={ this.handleSave.bind(this) } draft={ this.props.location.state }/> }/>       
+                           component={ () => <Editor handleSave={ this.handleSave.bind(this) } draft={ this.props.location.state }/> }/>
+                    <Route path={ `${ this.props.match.path }/post/:titlePath` } 
+                           component={ Post } />
                 </Fragment>
             )
         } else {

@@ -1,9 +1,49 @@
 import React, { Component } from 'react' 
+import Marked from 'marked';
 import api from '../api'
 import Loading from '../../../Layout/Loading'
 
-class Post extends Component {
+const Display = (props) => {
+    const generateHTML = () => {
+        return {
+            __html: props.parsedContent
+        }
+    }
+    return <article dangerouslySetInnerHTML={generateHTML()}></article>
+}
 
+class Post extends Component {
+    constructor (props) {
+        super(props)
+        this.state = {
+            post: null
+        }
+    }
+
+    componentDidMount = () => {
+        api.getPost(this.props.match.params.titlePath)
+        .then((response) => {
+            this.setState({ post: response.data })
+        })
+    }
+
+    Display = (props) => {
+        const generateHTML = () => {
+            return {
+                __html: props.parsedContent
+            }
+        }
+        return <article dangerouslySetInnerHTML={generateHTML()}></article>
+    }
+
+    render () {
+        if (this.state.post) {
+            const parsed = Marked(this.state.post.markdown)
+            return <Display parsedContent={ parsed } />
+        } else {
+            return <Loading />
+        }
+    }
 }
 
 export default Post
