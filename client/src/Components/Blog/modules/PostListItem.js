@@ -1,13 +1,14 @@
 import React from 'react';
 
-const BlogPost = (props) => {
+const PostListItem = (props) => {
+    const publishedDate = new Date(props.post.published).toDateString()
     return (
         <li className="post">
             <h3>{ props.post.title }</h3>
             { props.post.subtitle &&  <h4>{ props.post.subtitle}</h4> }
-            <p>{ props.post.date }</p>
+            <p>{ publishedDate }</p>
         </li>
     )
 };
 
-export default BlogPost;
+export default PostListItem;

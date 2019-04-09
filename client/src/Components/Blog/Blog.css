@@ -30,6 +30,10 @@
     border: 1px solid white;
 }
 
+li.post {
+    cursor: pointer;
+}
+
 li.post h3, li.draft h3 {
     font-size: 2em;
     font-weight: 500;
