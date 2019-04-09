@@ -1,0 +1,101 @@
+.display {
+    height: 100%;
+    position: relative;
+}
+
+.display > article {
+    width: 50%;
+    margin: 0 auto;
+}
+
+.display > article > * {
+    margin: 15px 0px;
+}
+
+.display > article > h1 {
+    position: relative;
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.display > article > h1:after {
+    content:'';
+    width:100%;
+    position: absolute;
+    left:0;
+    bottom: -7px;
+    height: 3px;
+    background: linear-gradient(270deg, #1100ff, #6200ff, #1100ff);
+    background-size: 200% 200%;
+    animation: underanimate 5s infinite;
+}
+
+.display > article h2 {
+    font-size: 2.3rem;
+    font-weight: 500;
+}
+
+
+.display > article h3 {
+    font-size: 2.2rem;
+}
+
+.display > article h4 {
+    font-size: 2rem;
+}
+
+.display > article h5, h6 {
+    font-size: 1.7rem;
+}
+
+.display > article p {
+    font-size: 1.05rem;
+    margin: 25px 0px;
+}
+
+.display > article p em {
+    font-style: italic;
+}
+
+.display > article p strong {
+    font-weight: bolder;
+}
+
+@media only screen and (max-width: 1200px){
+    .display > article {
+        width: 60%;
+        margin: 0px auto;
+    }
+}
+
+@media only screen and (max-width: 1000px){
+    .display > article {
+        width: 75%;
+        margin: 0px auto;
+    }
+
+    .display > article {
+        padding: 10px;
+    }
+}
+
+@media only screen and (max-width: 800px){
+    .display > article {
+        width: 85%;
+        margin: 0px auto;
+    }
+
+    .display > article {
+        padding: 10px;
+    }
+}
+
+@media only screen and (max-width: 600px){
+    .display > article {
+        width: 96%;
+    }
+
+    .display > article {
+        padding: 10px;
+    }
+}

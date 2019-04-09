@@ -1,12 +1,12 @@
 button {
     font-size: 1em;
-    margin: 10px;
+    margin: 5px;
     padding: 5px 10px;
     border-radius: 5px;
     outline: none;
     cursor: pointer;
     transition: all 0.5s ease-out;
-    width: 70px;
+    width: auto;
 }
 
 .button-save {
@@ -27,4 +27,14 @@ button {
 
 .button-edit:hover {
     background-color: rgb(212, 44, 14);
+}
+
+.button-publish {
+    background-color: rgb(255, 0, 200);
+    border: 2px solid rgb(197, 0, 154);
+    color: white;
+}
+
+.button-publish:hover {
+    background-color: rgb(197, 0, 154);
 }

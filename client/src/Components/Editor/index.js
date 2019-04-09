@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { Redirect } from 'react-router'
 import Auth from '../../Auth'
 import Marked from 'marked';
 import uuid from 'uuid/v4';
@@ -38,7 +39,7 @@ class Editor extends Component {
             id: this.state.id 
         }
 
-        const handleSuccess = (success) => {
+        const handleSuccess = () => {
             this.setState({
                 draft: draft, 
                 edit: false
@@ -54,6 +55,21 @@ class Editor extends Component {
         }
     }
 
+    publish = () => {
+        const title = this.getTitle()
+        const titlePath = this.getTitlePath(title)
+        const post = {
+            title: title, 
+            titlePath: titlePath, 
+            published: new Date().getTime(), 
+            markdown: this.state.markdown, 
+            id: this.state.id
+        }
+        api.publish(post, AuthUtil.authorizationHeader).then(() => {
+            this.setState({ published: true })
+        })
+    }
+
     getTitle = () => {
         // grab the first h1 tag present in the article preview and return its innerText
         const article = document.createElement('article')
@@ -65,6 +81,12 @@ class Editor extends Component {
         } else {
             return 'Untitled'
         }
+    }
+
+    getTitlePath = (title) => {
+        let path = title.replace(/\W/g, '-')
+        path = path.toLowerCase()
+        return path
     }
 
     openEditor = () => {
@@ -102,7 +124,7 @@ class Editor extends Component {
         // local components
         const markdown = <Markdown markdown={ this.state.markdown } parse={ this.parseMarkdown } />;
         const preview = <Preview parsedContent={ this.state.parsed } />;
-        const controls = <Controls edit={ this.state.edit } saveDraft={ this.saveDraft.bind(this) } openEditor={ this.openEditor.bind(this) } />;
+        const controls = <Controls edit={ this.state.edit } saveDraft={ this.saveDraft.bind(this) } openEditor={ this.openEditor.bind(this) } publish={ this.publish.bind(this) } />;
         // layouts
         const mobileLayout = (
             <Fragment>

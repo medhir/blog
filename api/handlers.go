@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
+	"path"
 
 	"github.com/google/uuid"
 )
@@ -203,10 +204,55 @@ func PutBlogDraft() http.HandlerFunc {
 	})
 }
 
-// PutBlogPost saves an object with its id as the key under the "blog/posts/" folder
+// PutBlogPost saves an object with its title as the key under the "blog/posts/" folder
 func PutBlogPost() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// get title
+		title := path.Base(r.URL.Path)
+		fmt.Println(title)
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		response, err := putObject(bytes.NewReader(body), BlogPosts+title+".json")
+		if err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		obj, _ := json.Marshal(response)
+		err = updateBlogIndex(body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(obj)
+	})
+}
 
+// GetBlogPost gets an object with under the `blog/posts` folder and returns it as json
+func GetBlogPost() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// get title
+		title := path.Base(r.URL.Path)
+		fmt.Println(title)
+		// get bytes for post
+		postBytes, err := getBytesForObject(BlogPosts + title + ".json")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(postBytes)
 	})
 }
 
@@ -228,5 +274,19 @@ func GetBlogDraft() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write(draftBytes)
+	})
+}
+
+// HandleBlogPost handles the requests associated with the blog post API
+func HandleBlogPost() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			handleGetBlogPost := GetBlogPost()
+			handleGetBlogPost(w, r)
+		case http.MethodPost:
+			handlePostBlogPost := Authorize(PutBlogPost())
+			handlePostBlogPost(w, r)
+		}
 	})
 }
