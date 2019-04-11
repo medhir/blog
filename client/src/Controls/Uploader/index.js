@@ -59,7 +59,7 @@ class Uploader extends Component {
             api.upload(formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `JWT ${ AuthUtil.token }`
+                    'Authorization': `${ AuthUtil.token }`
                 }, 
                 onUploadProgress: this.handleProgressEvent
             }).then(success => {
