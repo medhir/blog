@@ -91,7 +91,7 @@ class Gallery extends Component {
     }
 
     onScroll = () => {
-        if ((window.innerHeight + window.scrollY) >= (document.body.scrollHeight - 50) && this.state.displayPhotos.length <= this.state.photos.length) {
+        if ((window.innerHeight + window.scrollY) >= (document.body.scrollHeight - 300) && this.state.displayPhotos.length <= this.state.photos.length) {
             this.addDisplayPhotos()
         }
     }

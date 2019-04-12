@@ -79,6 +79,7 @@ article > p > img {
 }
 
 .editor article p {
+    line-height: 1.15rem;
     font-size: 1.05rem;
     margin: 25px 0px;
 }
