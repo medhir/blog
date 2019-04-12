@@ -9,7 +9,6 @@ const Header = () => (
       <ul>
         <li><Link to="/about">about</Link></li>
         <li><Link to="/blog">blog</Link></li>
-        <li><Link to="/projects">projects</Link></li>
         <li><Link to="/photos">photos</Link></li>
       </ul>
     </nav>
