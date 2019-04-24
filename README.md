@@ -7,7 +7,7 @@ The back-end is written in Go. The main driver is `application.go`. The files ar
 - A blog editing REST API
 - Static HTML templating (coming soon)
 
-The front-end is in React / ES6 Javascript. There are a few high-level folders for organization of components by purpose:
+The front-end is writted in ES6 Javascript and makes use of the React framework. There are a few high-level folders for organization of components by purpose:
 - **Auth** is for all relevant logic pertaining to authentication initiation and verification
 - **Components** define areas of the site driven by more complex UI logic, may require state. (e.g. a Markdown editor)
 - **Controls** are actionable elements. These include inputs, forms, and buttons.
