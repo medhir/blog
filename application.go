@@ -57,7 +57,6 @@ func main() {
 	mux.HandleFunc("/api/albums/", api.GetAlbums())
 	// uploader service
 	mux.HandleFunc("/api/upload/", api.Authorize(api.UploadPhoto()))
-
 	// auth API
 	mux.HandleFunc("/api/login", api.Login())
 	mux.HandleFunc("/api/jwt/validate", api.CheckExpiry())
@@ -81,7 +80,7 @@ func main() {
 			Prompt: autocert.AcceptTOS,
 			Cache:  autocert.DirCache("cert-cache"),
 			// Put your domain here:
-			HostPolicy: autocert.HostWhitelist("dev.medhir.com"),
+			HostPolicy: autocert.HostWhitelist("dev.medhir.com", "medhir.com"),
 		}
 		const stagingURL = "https://acme-staging.api.letsencrypt.org/directory"
 		certManager.Client = &acme.Client{
