@@ -1,0 +1,14 @@
+{{ define "content" }}
+<section class="blog">
+    <ul class="posts">
+        {{ range .Posts }}
+        <li class="post">
+            <a href="/blog/post/{{ .TitlePath }}">
+                <h3>{{.Title}}</h3>
+                <p>{{.PublishedDate}}</p>
+            </a>
+        </li>
+        {{ end }}
+    </ul>
+</section>
+{{ end }}

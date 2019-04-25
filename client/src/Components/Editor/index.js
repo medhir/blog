@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import { Redirect } from 'react-router'
 import Auth from '../../Auth'
 import Marked from 'marked';
 import uuid from 'uuid/v4';

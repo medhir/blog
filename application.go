@@ -45,7 +45,8 @@ func main() {
 	assetsfs := http.FileServer(http.Dir("assets/"))
 	mux.Handle("/assets/", http.StripPrefix("/assets/", assetsfs))
 
-	mux.HandleFunc("/blogtest/", api.GetPost())
+	mux.HandleFunc("/blog", api.GetIndex())
+	mux.HandleFunc("/blog/post/", api.GetPost())
 
 	// blog API
 	mux.HandleFunc("/api/blog/posts", api.GetBlogPosts())

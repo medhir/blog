@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"time"
 
 	"gopkg.in/russross/blackfriday.v2"
 )
@@ -18,11 +19,25 @@ type BlogPost struct {
 	Body    template.HTML
 }
 
-var blogTemplateFiles = []string{"templates/main.html", "templates/header.html", "templates/footer.html", "templates/blogPost.html"}
+type blogIndexEntry struct {
+	Title         string `json:"title"`
+	TitlePath     string `json:"titlePath"`
+	PublishedDate string `json:"publishedDate"`
+}
+
+type BlogIndex struct {
+	CSSPath string
+	Title   string
+	Posts   []blogIndexEntry
+}
+
+var blogIndexTemplateFiles = []string{"templates/main.html", "templates/header.html", "templates/footer.html", "templates/blogIndex.html"}
+var blogPostTemplateFiles = []string{"templates/main.html", "templates/header.html", "templates/footer.html", "templates/blogPost.html"}
 var notFoundFiles = []string{"templates/main.html", "templates/header.html", "templates/footer.html", "templates/notFound.html"}
 var (
-	blogTemplates     = template.Must(template.ParseFiles(blogTemplateFiles...))
-	notFoundTemplates = template.Must(template.ParseFiles(notFoundFiles...))
+	blogIndexTemplates = template.Must(template.ParseFiles(blogIndexTemplateFiles...))
+	blogPostTemplates  = template.Must(template.ParseFiles(blogPostTemplateFiles...))
+	notFoundTemplates  = template.Must(template.ParseFiles(notFoundFiles...))
 )
 var cssPath string
 
@@ -72,6 +87,49 @@ func GetPost() http.HandlerFunc {
 			Title:   post.Title,
 			CSSPath: cssPath,
 			Body:    template.HTML(blackfriday.Run([]byte(post.Markdown)))}
-		blogTemplates.ExecuteTemplate(w, "main", data)
+		blogPostTemplates.ExecuteTemplate(w, "main", data)
+	})
+}
+
+func msToTime(ms float64) (time.Time, error) {
+	return time.Unix(0, int64(ms)*int64(time.Millisecond)), nil
+}
+
+func GetIndex() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" {
+			http.Error(w, "Invalid request", http.StatusBadRequest)
+			return
+		}
+
+		indexBytes, err := getBlogIndex()
+		if err != nil {
+			http.Error(w, "Could not get index", http.StatusInternalServerError)
+			return
+		}
+
+		var index []blogPostIndexEntry
+		json.Unmarshal(indexBytes, &index)
+
+		var indexView []blogIndexEntry
+		for _, entry := range index {
+			published, err := msToTime(entry.Published)
+			dateString := published.Format("Jan 2, 2006")
+			log.Println(dateString)
+			if err != nil {
+				log.Println(err)
+			}
+			indexViewEntry := blogIndexEntry{
+				Title:         entry.Title,
+				TitlePath:     entry.TitlePath,
+				PublishedDate: dateString}
+			indexView = append(indexView, indexViewEntry)
+		}
+
+		viewData := BlogIndex{
+			Title:   "medhir.blog",
+			CSSPath: cssPath,
+			Posts:   indexView}
+		blogIndexTemplates.ExecuteTemplate(w, "main", viewData)
 	})
 }
