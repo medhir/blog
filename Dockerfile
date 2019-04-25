@@ -23,6 +23,7 @@ FROM alpine
 COPY --from=go-build-env /go/src/github.com/medhir/blog/app ./
 # Copy Client build artifacts
 COPY --from=node-build-env ./build/ ./build/
+COPY ./templates/ ./templates/
 # BIMG config 
 ARG VIPS_VERSION=8.6.4
 RUN set -x -o pipefail \
