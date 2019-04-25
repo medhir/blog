@@ -2,18 +2,20 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 
-	client "github.com/medhir/fusionauth-go-client"
+	client "github.com/FusionAuth/fusionauth-go-client/pkg/fusionauth"
 )
 
 const host = "https://auth.medhir.com"
 
 var apiKey, _ = os.LookupEnv("FUSIONAUTH_APIKEY")
-var httpClient = &http.Client{}
+var httpClient = &http.Client{
+	Timeout: time.Second * 10}
+
 var baseURL, _ = url.Parse(host)
 var auth = &client.FusionAuthClient{
 	BaseURL:    baseURL,
@@ -53,7 +55,6 @@ func Login() http.HandlerFunc {
 func Authorize(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		jwt := r.Header.Get("Authorization")
-		fmt.Println(jwt)
 		_, err := auth.ValidateJWT(jwt)
 		if err != nil {
 			http.Error(w, "Could not validate JWT - "+err.Error(), http.StatusBadRequest)
@@ -63,10 +64,10 @@ func Authorize(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// CheckExpiry validates that the provided JWT is valid for authenticating a user
 func CheckExpiry() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		jwt := r.Header.Get("Authorization")
-		fmt.Println(jwt)
 		resp, err := auth.ValidateJWT(jwt)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
