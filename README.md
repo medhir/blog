@@ -12,3 +12,15 @@ The front-end is writted in ES6 Javascript and makes use of the React framework.
 - **Components** define areas of the site driven by more complex UI logic, may require state. (e.g. a Markdown editor)
 - **Controls** are actionable elements. These include inputs, forms, and buttons.
 - **Layout** defines the high-level layout of the entire web page.
+
+## Running Locally 
+Make sure you are in the local `blog` directory, and then you can run the following commands. 
+
+For building client assets and starting the Go server:
+```sh
+restartblog
+```
+For building client assets and starting to Go server for testing on mobile: 
+```sh
+restartblogmobile
+```
