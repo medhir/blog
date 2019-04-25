@@ -57,7 +57,7 @@ func GetPost() http.HandlerFunc {
 		postBytes, err := getBytesForObject(BlogPosts + base + ".json")
 		if err != nil {
 			data := BlogPost{
-				Title:   "Oopsie Daisy!",
+				Title:   "I Do Not Exist!",
 				CSSPath: cssPath}
 			notFoundTemplates.ExecuteTemplate(w, "main", data)
 			return
