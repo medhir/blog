@@ -14,7 +14,7 @@ class Main extends Component {
       <main>
         <Switch>
           <Route path="/about" component={ About } />
-          <Route path="/edit/blog" component={ Blog } />
+          <Route path="/blog/edit" component={ Blog } />
           <Route path="/photos" component={ Gallery } />
           <Route path="/upload" component={ Uploader } />
           <Redirect from="/" to="/about" />

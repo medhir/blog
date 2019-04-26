@@ -35,7 +35,7 @@ func main() {
 	c := cors.New(cors.Options{
 		Debug:            true,
 		AllowCredentials: true,
-		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut},
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 		AllowedHeaders:   []string{"Authorization", "Content-Type"}})
 
 	// static js,css
@@ -54,8 +54,9 @@ func main() {
 	// blog draft editing API
 	mux.HandleFunc("/api/blog/draft/edit", api.Authorize(api.PutBlogDraft()))
 	mux.HandleFunc("/api/blog/post/", api.HandleBlogPost())
-	// photo name API
+	// photo API
 	mux.HandleFunc("/api/photos", api.GetPhotos())
+	mux.Handle("/api/photo", api.Authorize(api.DeletePhoto()))
 	// album API
 	mux.HandleFunc("/api/albums/", api.GetAlbums())
 	// uploader service

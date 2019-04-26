@@ -6,13 +6,13 @@ import Auth from '../../../Auth'
 
 const BlogList = (props) => {
     return (
-        <section className="blog">
-            <PostsList posts={ props.posts } />
-            <Auth>
+        <Auth withLoginPrompt>
+            <section className="blog">
+                <PostsList posts={ props.posts } />
                 <DraftsList drafts = { props.drafts } />
                 <AddPost match={ props.match } />
-            </Auth>
-        </section>
+            </section>
+        </Auth>
     )
 }
 
