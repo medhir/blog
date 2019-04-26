@@ -9,7 +9,7 @@ const DraftListItem = (props) => {
             <h3>{ props.draft.title }</h3>
             <p>{ `Last saved at: ${ saved }` }</p>
             <Link to={ { 
-                pathname: `blog/drafts/edit/${ props.draft.id }`, 
+                pathname: `/blog/edit/drafts/${ props.draft.id }`, 
                 state: props.draft
             } }>View in Editor</Link>
         </li>

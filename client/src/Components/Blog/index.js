@@ -48,7 +48,7 @@ class Blog extends Component {
                         component={ () => <BlogList match={ this.props.match } posts={ this.state.posts } drafts={ this.state.drafts }/> } />
                     <Route exact path={ `${ this.props.match.path }/drafts/new` } 
                            component={ () => <Editor handleSave={ this.handleSave.bind(this) } markdown={ md } /> }/>
-                    <Route path={ `${ this.props.match.path }/drafts/edit/:id` } 
+                    <Route path={ `${ this.props.match.path }/drafts/:id` } 
                            component={ () => <Editor handleSave={ this.handleSave.bind(this) } draft={ this.props.location.state }/> }/>
                     <Route path={ `${ this.props.match.path }/post/:titlePath` } 
                            component={ Post } />
