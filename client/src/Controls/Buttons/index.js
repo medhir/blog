@@ -5,6 +5,10 @@ export const EditButton = (props) => {
     return <button className="button-edit" onClick={ props.onClick }>{ props.children }</button>
 }
 
+export const DeleteButton = (props) => {
+    return <button className="button-edit" onClick={ props.onClick }>{ props.children }</button>
+}
+
 export const SaveButton = (props) => {
     return <button className="button-save" onClick={ props.onClick }>{ props.children }</button>
 }

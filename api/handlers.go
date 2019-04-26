@@ -82,6 +82,28 @@ func GetPhotos() http.HandlerFunc {
 	})
 }
 
+// DeletePhoto handles deletion of a photo from s3
+func DeletePhoto() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodDelete {
+			http.Error(w, "Invalid request", http.StatusBadRequest)
+			return
+		}
+
+		id := r.URL.Query().Get("id")
+		photoKey := "albums/main/" + id + ".jpg"
+		result, err := deleteObject(photoKey)
+		if err != nil {
+			http.Error(w, "Object could not be deleted - "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		resultJSON, _ := json.Marshal(result)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(resultJSON)
+	})
+}
+
 type s3UploadResult struct {
 	Location string
 	UploadID string

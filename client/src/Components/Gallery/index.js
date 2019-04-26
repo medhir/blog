@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react';
-import { Route, Link } from "react-router-dom";
 import './Gallery.css';
-import Photo from '../../Layout/Photo';
+import Photo from './Photo';
 import Loading from '../../Layout/Loading';
 import api from './api';
 
@@ -32,7 +31,7 @@ const PhotoGallery = (props) => {
     return (
         <section className="photos">
         {
-            props.photos.map((photo) => <Photo className="photo" src={ `${ BASE_PHOTO_URL }/${ photo }`} key={ photo } />)
+            props.photos.map((photo) => <Photo className="photo" src={ `${ BASE_PHOTO_URL }/${ photo }`} key={ photo } s3key={ photo } />)
         }
         </section>  
     )
@@ -76,7 +75,7 @@ class Gallery extends Component {
         api.getPhotos(AlbumName)
             .then((response) => {
                 this.setState({ album: AlbumName, photos: response.data })
-                const displayPhotos = this.state.photos.slice(0, 2)
+                const displayPhotos = this.state.photos.slice(0, 3)
                 this.setState({ displayPhotos: displayPhotos })
             })
             .catch((error) => {
@@ -91,7 +90,7 @@ class Gallery extends Component {
     }
 
     onScroll = () => {
-        if ((window.innerHeight + window.scrollY) >= (document.body.scrollHeight - 300) && this.state.displayPhotos.length <= this.state.photos.length) {
+        if ((window.innerHeight + window.scrollY) >= (document.body.scrollHeight - 500) && this.state.displayPhotos.length <= this.state.photos.length) {
             this.addDisplayPhotos()
         }
     }

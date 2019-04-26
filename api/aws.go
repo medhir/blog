@@ -132,3 +132,11 @@ func putObject(body io.Reader, key string) (*s3manager.UploadOutput, error) {
 	result, err := uploader.Upload(uploadParams)
 	return result, err
 }
+
+func deleteObject(key string) (*s3.DeleteObjectOutput, error) {
+	deleteParams := &s3.DeleteObjectInput{
+		Bucket: aws.String(BucketName),
+		Key:    aws.String(key)}
+	result, err := svc.DeleteObject(deleteParams)
+	return result, err
+}
