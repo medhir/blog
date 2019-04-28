@@ -1,17 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Auth from '../../Auth'
-import { AuthUtil } from '../../Auth/AuthUtility'
 import './Header.css';
 
 class Header extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      auth: AuthUtil.authed // -> This does not work. Using Redux for auth state would be nice for sharing between components
-    }
-  }
-
   render () {
     return (
       <header>
@@ -22,7 +14,6 @@ class Header extends Component {
             <Auth fallback={ <li><a href="/blog">blog</a></li> }>
               <li><Link to="/blog/edit">blog</Link></li>
             </Auth>
-            {/* { this.state.auth ? <li><Link to="/edit/blog">blog</Link></li> : <li><a href="/blog">blog</a></li> } */}
             <li><Link to="/photos">photos</Link></li>
           </ul>
         </nav>

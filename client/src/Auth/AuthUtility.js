@@ -36,7 +36,7 @@ class AuthUtility {
     get authorizationHeader() {
         return {
             headers: {
-                'Authorization': `${ this.auth.token }`
+                'Authorization': `${ this.auth.token || '' }`
             }
         }
     }
