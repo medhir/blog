@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { DeleteButton, SaveButton } from '../Buttons/index'
+import { RedButton, GreenButton } from '../Buttons'
 import { AuthUtil } from '../../Auth/AuthUtility'
 import http from '../../Utils/http'
 import './Deleter.css'
 
 /*
-    Deleter is a component for targeted resource deletion on S3. 
+    Deleter is a component for targeted resource deletion. 
     'endpoint' prop specifies an api endpoint, which deleter then uses to submit a DELETE http request
     'callback' prop specifies a callback function that is called once deletion request is successful
  */
@@ -68,21 +68,21 @@ class Deleter extends Component {
 
     render () {
         if (this.state.initial) {
-            return <DeleteButton onClick={ this.setToConfirm.bind(this) }>Delete</DeleteButton>
+            return <RedButton onClick={ this.setToConfirm.bind(this) }>Delete</RedButton>
         } else if (this.state.confirmDelete) {
             return (
                 <div className="confirmation">
                     <p>Are you sure?</p>
-                    <DeleteButton onClick={ this.deleteResource.bind(this) }>Yes</DeleteButton>
-                    <SaveButton onClick={ this.revert.bind(this) }>No</SaveButton>
+                    <RedButton onClick={ this.deleteResource.bind(this) }>Yes</RedButton>
+                    <GreenButton onClick={ this.revert.bind(this) }>No</GreenButton>
                 </div>
             )
         } else if (this.state.deletionOccuring) {
-            return <DeleteButton>Deleting...</DeleteButton>
+            return <RedButton>Deleting...</RedButton>
         } else if (this.state.success) {
-            return <DeleteButton>Resource Deleted</DeleteButton>
+            return <RedButton>Resource Deleted</RedButton>
         } else if (this.state.error) {
-            return <DeleteButton>Can't Delete :-(</DeleteButton>
+            return <RedButton>Can't Delete :-(</RedButton>
         }
     }
 }

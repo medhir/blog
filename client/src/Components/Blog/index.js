@@ -29,7 +29,7 @@ class Blog extends Component {
     }
 
     // Re-call API on Blog Draft Save
-    handleSave = () => {
+    handleUpdate = () => {
         api.getPosts().then(success => {
             const data = success.data
             this.setState({
@@ -46,10 +46,10 @@ class Blog extends Component {
                     <Route 
                         exact path={ this.props.match.path } 
                         component={ () => <BlogList match={ this.props.match } posts={ this.state.posts } drafts={ this.state.drafts }/> } />
-                    <Route exact path={ `${ this.props.match.path }/drafts/new` } 
-                           component={ () => <Editor handleSave={ this.handleSave.bind(this) } markdown={ md } /> }/>
-                    <Route path={ `${ this.props.match.path }/drafts/:id` } 
-                           component={ () => <Editor handleSave={ this.handleSave.bind(this) } draft={ this.props.location.state }/> }/>
+                    <Route exact path={ `${ this.props.match.path }/new/draft` } 
+                           component={ () => <Editor handleUpdate={ this.handleUpdate.bind(this) } markdown={ md } { ...this.props }/> }/>
+                    <Route path={ `${ this.props.match.path }/draft/:id` } 
+                           component={ () => <Editor handleUpdate={ this.handleUpdate.bind(this) } draft={ this.props.location.state } { ...this.props }/> }/>
                     <Route path={ `${ this.props.match.path }/post/:titlePath` } 
                            component={ Post } />
                 </Fragment>

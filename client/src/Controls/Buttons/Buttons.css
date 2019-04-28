@@ -9,32 +9,32 @@ button {
     width: auto;
 }
 
-.button-save {
+.button-green {
     background-color: rgb(15, 175, 0);
     border: 2px solid rgb(12, 129, 1);
     color: white;
 }
 
-.button-save:hover {
+.button-green:hover {
     background-color: rgb(12, 129, 1);
 }
 
-.button-edit {
+.button-red {
     background-color: rgb(253, 68, 36);
     border: 2px solid rgb(212, 44, 14);
     color: white;
 }
 
-.button-edit:hover {
+.button-red:hover {
     background-color: rgb(212, 44, 14);
 }
 
-.button-publish {
+.button-magenta {
     background-color: rgb(255, 0, 200);
     border: 2px solid rgb(197, 0, 154);
     color: white;
 }
 
-.button-publish:hover {
+.button-magenta:hover {
     background-color: rgb(197, 0, 154);
 }

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 const AddPost = (props) => {
     return (
-        <Link to={ `${ props.match.path }/drafts/new` }>
+        <Link to={ `${ props.match.path }/new/draft` }>
             <button className="addPost">New Post</button>
         </Link>
     )

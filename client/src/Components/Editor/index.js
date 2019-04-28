@@ -31,6 +31,7 @@ class Editor extends Component {
     }
 
     saveDraft = () => {
+        let wasNew = this.state.new ? true : false;
         const draft = {
             title: this.getTitle(), 
             saved: new Date().getTime(), 
@@ -40,18 +41,24 @@ class Editor extends Component {
 
         const handleSuccess = () => {
             this.setState({
-                draft: draft, 
+                draft: draft,
+                new: false,
                 edit: false
+            }, () => {
+                // Set parent state
+                this.props.handleUpdate()
+                if (wasNew) {
+                    this.props.history.push(`/blog/edit/draft/${ this.state.id }`)
+                }
             })
-            // Set parent state
-            this.props.handleSave()
         }
-        
-        if (this.state.new) {
-            api.newDraft(draft, AuthUtil.authorizationHeader).then(handleSuccess)
-        } else {
-            api.saveDraft(draft, AuthUtil.authorizationHeader).then(handleSuccess)
-        }
+    
+        api.saveDraft(draft, AuthUtil.authorizationHeader).then(handleSuccess)
+    }
+
+    handleDelete () {
+        this.props.handleUpdate()
+        this.props.history.push('/blog/edit')
     }
 
     publish = () => {
@@ -123,7 +130,13 @@ class Editor extends Component {
         // local components
         const markdown = <Markdown markdown={ this.state.markdown } parse={ this.parseMarkdown } />;
         const preview = <Preview parsedContent={ this.state.parsed } />;
-        const controls = <Controls edit={ this.state.edit } saveDraft={ this.saveDraft.bind(this) } openEditor={ this.openEditor.bind(this) } publish={ this.publish.bind(this) } />;
+        const controls = <Controls 
+                            edit={ this.state.edit }
+                            deleteURI={ `/api/blog/draft/${ this.state.id }` }
+                            deleteCallback={ this.handleDelete.bind(this) }
+                            saveDraft={ this.saveDraft.bind(this) } 
+                            openEditor={ this.openEditor.bind(this) } 
+                            publish={ this.publish.bind(this) } />;
         // layouts
         const mobileLayout = (
             <Fragment>

@@ -1,16 +1,23 @@
 import React, { Fragment } from 'react';
-import { EditButton, SaveButton, PublishButton } from '../../Controls/Buttons';
+import Deleter from '../../Controls/Deleter'
+import { GreenButton, RedButton, MagentaButton} from '../../Controls/Buttons';
 
 const Controls = (props) => {
     return (
         <div className="editor-controls">
             { 
                 props.edit === true ? 
-                <SaveButton onClick={ props.saveDraft }>Save Draft</SaveButton> :
                 (
                     <Fragment>
-                        <EditButton onClick={ props.openEditor }>Edit</EditButton>
-                        <PublishButton onClick={ props.publish }>Publish</PublishButton>
+                        <GreenButton onClick={ props.saveDraft }>Save Draft</GreenButton>
+                        <Deleter endpoint={ props.deleteURI } callback={ props.deleteCallback }/>
+                    </Fragment> 
+                )
+                :
+                (
+                    <Fragment>
+                        <RedButton onClick={ props.openEditor }>Edit</RedButton>
+                        <MagentaButton onClick={ props.publish }>Publish</MagentaButton>
                     </Fragment>
                 )
             }
