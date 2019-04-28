@@ -198,34 +198,6 @@ func GetBlogPosts() http.HandlerFunc {
 	})
 }
 
-// PutBlogDraft saves an object as json with its id as the filename under the "blog/drafts/" folder
-func PutBlogDraft() http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		id := r.URL.Query().Get("id")
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			fmt.Println(err.Error())
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		response, err := putObject(bytes.NewReader(body), BlogDrafts+id+".json")
-		if err != nil {
-			fmt.Println(err.Error())
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		obj, _ := json.Marshal(response)
-		err = updateDraftIndex(body)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(obj)
-	})
-}
-
 // PutBlogPost saves an object with its title as the key under the "blog/posts/" folder
 func PutBlogPost() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -245,7 +217,35 @@ func PutBlogPost() http.HandlerFunc {
 			return
 		}
 		obj, _ := json.Marshal(response)
-		err = updateBlogIndex(body)
+		err = updateBlogIndex()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(obj)
+	})
+}
+
+// PutBlogDraft saves an object as json with its id as the filename under the "blog/drafts/" folder
+func PutBlogDraft() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id := path.Base(r.URL.Path)
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		response, err := putObject(bytes.NewReader(body), BlogDrafts+id+".json")
+		if err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		obj, _ := json.Marshal(response)
+		err = updateDraftIndex()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -282,7 +282,7 @@ func GetBlogPost() http.HandlerFunc {
 func GetBlogDraft() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// get id parameter
-		id := r.URL.Query().Get("id")
+		id := path.Base(r.URL.Path)
 		// get bytes for draft
 		draftBytes, err := getBytesForObject(BlogDrafts + id + ".json")
 		if err != nil {
@@ -299,6 +299,28 @@ func GetBlogDraft() http.HandlerFunc {
 	})
 }
 
+// DeleteBlogDraft deletes a blog post draft
+func DeleteBlogDraft() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// if r.Method != http.MethodDelete {
+		// 	http.Error(w, "Invalid request", http.StatusBadRequest)
+		// 	return
+		// }
+		id := path.Base(r.URL.Path)
+		draftKey := BlogDrafts + id + ".json"
+		result, err := deleteObject(draftKey)
+		if err != nil {
+			http.Error(w, "Object could not be deleted - "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		_ = updateDraftIndex()
+		resultJSON, _ := json.Marshal(result)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(resultJSON)
+	})
+}
+
 // HandleBlogPost handles the requests associated with the blog post API
 func HandleBlogPost() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -309,6 +331,26 @@ func HandleBlogPost() http.HandlerFunc {
 		case http.MethodPost:
 			handlePostBlogPost := Authorize(PutBlogPost())
 			handlePostBlogPost(w, r)
+		}
+	})
+}
+
+// HandleBlogDraft handles the requests associated with the blog draft API
+func HandleBlogDraft() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			handleGetBlogDraft := Authorize(GetBlogDraft())
+			handleGetBlogDraft(w, r)
+		case http.MethodPost:
+		case http.MethodPut:
+			handlePostBlogDraft := Authorize(PutBlogDraft())
+			handlePostBlogDraft(w, r)
+		case http.MethodDelete:
+			handleDeleteBlogDraft := Authorize(DeleteBlogDraft())
+			handleDeleteBlogDraft(w, r)
+		default:
+			w.WriteHeader(http.StatusBadRequest)
 		}
 	})
 }

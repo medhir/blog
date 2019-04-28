@@ -45,6 +45,7 @@ func main() {
 	assetsfs := http.FileServer(http.Dir("assets/"))
 	mux.Handle("/assets/", http.StripPrefix("/assets/", assetsfs))
 
+	// blog views
 	mux.HandleFunc("/blog", api.GetIndex())
 	mux.HandleFunc("/blog/post/", api.GetPost())
 
@@ -52,11 +53,11 @@ func main() {
 	mux.HandleFunc("/api/blog/posts", api.GetBlogPosts())
 	mux.HandleFunc("/api/blog/draft", api.Authorize(api.GetBlogDraft()))
 	// blog draft editing API
-	mux.HandleFunc("/api/blog/draft/edit", api.Authorize(api.PutBlogDraft()))
+	mux.HandleFunc("/api/blog/draft/", api.HandleBlogDraft())
 	mux.HandleFunc("/api/blog/post/", api.HandleBlogPost())
 	// photo API
 	mux.HandleFunc("/api/photos", api.GetPhotos())
-	mux.Handle("/api/photo", api.Authorize(api.DeletePhoto()))
+	mux.HandleFunc("/api/photo", api.Authorize(api.DeletePhoto()))
 	// album API
 	mux.HandleFunc("/api/albums/", api.GetAlbums())
 	// uploader service

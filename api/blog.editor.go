@@ -55,7 +55,7 @@ type blogDraftIndexEntry struct {
 	Title string  `json:"title"`
 }
 
-func updateDraftIndex(body []byte) error {
+func updateDraftIndex() error {
 	draftKeys, err := getKeysByMostRecent(BlogDrafts)
 	if err != nil {
 		return errors.New("Failed to get draft object keys - " + err.Error())
@@ -89,7 +89,7 @@ func updateDraftIndex(body []byte) error {
 }
 
 // updateBlogIndex writes an updated json file of all blog posts
-func updateBlogIndex(post []byte) error {
+func updateBlogIndex() error {
 	postKeys, err := getKeysByMostRecent(BlogPosts)
 	if err != nil {
 		return errors.New("Failed to get post object keys - " + err.Error())
