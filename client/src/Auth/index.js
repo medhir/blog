@@ -68,7 +68,8 @@ class Auth extends Component {
         } else if (this.props.withLoginPrompt) {
             return login
         } else {
-            return null
+            if (this.props.fallback) return this.props.fallback
+            else return null
         }
     }
 }

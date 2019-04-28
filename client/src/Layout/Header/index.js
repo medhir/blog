@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import Auth from '../../Auth'
 import { AuthUtil } from '../../Auth/AuthUtility'
 import './Header.css';
 
@@ -18,7 +19,9 @@ class Header extends Component {
         <nav>
           <ul>
             <li><Link to="/about">about</Link></li>
-            <li><a href="/blog">blog</a></li>
+            <Auth fallback={ <li><a href="/blog">blog</a></li> }>
+              <li><Link to="/blog/edit">blog</Link></li>
+            </Auth>
             {/* { this.state.auth ? <li><Link to="/edit/blog">blog</Link></li> : <li><a href="/blog">blog</a></li> } */}
             <li><Link to="/photos">photos</Link></li>
           </ul>
