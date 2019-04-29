@@ -41,6 +41,7 @@ class Markdown extends Component {
     }
 
     handleImageItems (e, items) {
+        e.persist()
         // store selection start/end positions
         const start = e.target.selectionStart;
         const end = e.target.selectionEnd;
@@ -58,7 +59,7 @@ class Markdown extends Component {
             this.insertAtCursor(start, end, '![](Uploading...)', e.target)
             // upload file
             const data = new FormData()
-            data.append('file', blob)
+            data.append('image', blob)
             http.post(`/api/blog/assets/${ this.props.id }`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -66,6 +67,7 @@ class Markdown extends Component {
                 }
             }).then(response => {
                 console.log(response)
+                this.insertAtCursor(start, end, `![image](${ response.data[0]["Location"] })`, e.target)
             }).catch(err => {
                 console.error(err)
             })

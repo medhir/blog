@@ -110,8 +110,9 @@ type s3UploadResult struct {
 }
 
 // UploadPhoto returns a HandlerFunc that uploads a Multipart Form with
-// image data as an object in the S3 bucket specified by BucketName
-func UploadPhoto() http.HandlerFunc {
+// image data as a jpg image in the S3 bucket specified by BucketName
+// 		prefix string specifies the string prefix for the S3 Object key.
+func UploadPhoto(prefix string) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var uploadResults []s3UploadResult
 		r.ParseMultipartForm(32 << 20)
@@ -133,7 +134,7 @@ func UploadPhoto() http.HandlerFunc {
 				return
 			}
 			processedImage := reduceFileSizeAndConvertToJPG(fileBuffer.Bytes())
-			result, err := putObject(bytes.NewReader(processedImage), "albums/main/"+id+".jpg")
+			result, err := putObject(bytes.NewReader(processedImage), prefix+id+".jpg")
 			if err != nil {
 				fmt.Println(err.Error())
 				http.Error(w, "Could not upload file "+id+".jpg", http.StatusInternalServerError)
@@ -349,6 +350,20 @@ func HandleBlogDraft() http.HandlerFunc {
 		case http.MethodDelete:
 			handleDeleteBlogDraft := Authorize(DeleteBlogDraft())
 			handleDeleteBlogDraft(w, r)
+		default:
+			w.WriteHeader(http.StatusBadRequest)
+		}
+	})
+}
+
+// HandleBlogAssetUpload handles the requests associated with the blog draft API
+func HandleBlogAssetUpload() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id := path.Base(r.URL.Path)
+		switch r.Method {
+		case http.MethodPost:
+			handleImageUpload := Authorize(UploadPhoto("blog/assets/" + id + "/"))
+			handleImageUpload(w, r)
 		default:
 			w.WriteHeader(http.StatusBadRequest)
 		}
