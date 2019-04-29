@@ -9,6 +9,12 @@ article > p > img {
     margin: auto;
 }
 
+article > p > img + em {
+    display: block;
+    margin-top: 10px;
+    text-align: center;
+} 
+
 .editor {
     height: 100%;
     display: flex;

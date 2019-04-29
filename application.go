@@ -55,13 +55,14 @@ func main() {
 	// blog draft editing API
 	mux.HandleFunc("/api/blog/draft/", api.HandleBlogDraft())
 	mux.HandleFunc("/api/blog/post/", api.HandleBlogPost())
+	mux.HandleFunc("/api/blog/assets/", api.HandleBlogAssetUpload())
 	// photo API
 	mux.HandleFunc("/api/photos", api.GetPhotos())
 	mux.HandleFunc("/api/photo", api.Authorize(api.DeletePhoto()))
 	// album API
 	mux.HandleFunc("/api/albums/", api.GetAlbums())
-	// uploader service
-	mux.HandleFunc("/api/upload/", api.Authorize(api.UploadPhoto()))
+	// photos uploader service
+	mux.HandleFunc("/api/upload/", api.Authorize(api.UploadPhoto("albums/main/")))
 	// auth API
 	mux.HandleFunc("/api/login", api.Login())
 	mux.HandleFunc("/api/jwt/validate", api.CheckExpiry())

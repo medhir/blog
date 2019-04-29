@@ -108,6 +108,13 @@ class Editor extends Component {
         })
     }
 
+    updateMarkdown (md, cb) {
+        this.setState({
+            markdown: md,
+            parsed: Marked(md)
+        }, cb)
+    }
+
     componentDidMount () {
         if (!this.state.new) {
             api.getDraft(this.state.id, AuthUtil.authorizationHeader).then(response => {
@@ -128,7 +135,10 @@ class Editor extends Component {
         // local variables
         const editorClasses = `editor ${ this.state.edit ? '' : 'preview' }`;
         // local components
-        const markdown = <Markdown markdown={ this.state.markdown } parse={ this.parseMarkdown } />;
+        const markdown = <Markdown markdown={ this.state.markdown } 
+                                   parse={ this.parseMarkdown } 
+                                   updateMarkdown={ this.updateMarkdown.bind(this) }
+                                   id={ this.state.id } />;
         const preview = <Preview parsedContent={ this.state.parsed } />;
         const controls = <Controls 
                             edit={ this.state.edit }
@@ -137,12 +147,13 @@ class Editor extends Component {
                             saveDraft={ this.saveDraft.bind(this) } 
                             openEditor={ this.openEditor.bind(this) } 
                             publish={ this.publish.bind(this) } />;
+                            
         // layouts
         const mobileLayout = (
             <Fragment>
                 {   
                     this.state.edit 
-                    ? markdown 
+                    ? markdown
                     : preview
                 }
                 { controls }
