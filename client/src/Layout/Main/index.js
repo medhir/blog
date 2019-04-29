@@ -4,7 +4,6 @@ import About from '../../Components/About'
 import Gallery from '../../Components/Gallery'
 import Blog from '../../Components/Blog'
 import Uploader from '../../Controls/Uploader'
-import Login from '../../Auth/Login';
 
 import './Main.css'
 
@@ -17,7 +16,7 @@ class Main extends Component {
           <Route path="/blog/edit" component={ Blog } />
           <Route path="/photos" component={ Gallery } />
           <Route path="/upload" component={ Uploader } />
-          <Redirect from="/" to="/about" />
+          <Redirect from="/" to="/photos" />
         </Switch>
       </main>
       )
