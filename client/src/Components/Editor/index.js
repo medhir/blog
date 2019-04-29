@@ -153,7 +153,7 @@ class Editor extends Component {
             <Fragment>
                 {   
                     this.state.edit 
-                    ? <Markdown markdown={ this.state.markdown } parse={ this.parseMarkdown } /> 
+                    ? markdown
                     : preview
                 }
                 { controls }
