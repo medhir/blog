@@ -4,12 +4,9 @@ import http from '../../Utils/http'
 import TextareaAutosize from 'react-textarea-autosize';
 
 const IMAGE_MIME_REGEX = /^image\/(p?jpeg|gif|png)$/i;
+const LoadingText = '![](Uploading...)';
 
 class Markdown extends Component {
-    constructor (props) {
-        super(props)
-    }
-
     containsImage (dtItems) {
         let containsImage = false;
         for (let i = 0; i < dtItems.length; i++) {
@@ -21,12 +18,22 @@ class Markdown extends Component {
         return containsImage;
     }
 
-    insertAtCursor (start, end, textToInsert, input) {
+    insertAtCursor (start, end, textToInsert, input, lastInsert = false) {
         // get current text of the input
         const value = input.value;
         // update the value with new text
         this.props.updateMarkdown(value.slice(0, start) + textToInsert + value.slice(end), () => {
-            input.selectionStart = input.selectionEnd = start + textToInsert.length;
+            if (lastInsert) {
+                // Update cursor position
+                input.selectionStart = input.selectionEnd = start + textToInsert.length;
+            }
+        })
+    }
+
+    removeAtCursor(start, end, textToRemove, input) {
+        const value = input.value;
+        this.props.updateMarkdown(value.slice(0, start-textToRemove.length) + value.slice(end-textToRemove.length), () => {
+            input.selectionStart = input.selectionEnd = start - textToRemove.length;
         })
     }
 
@@ -42,9 +49,10 @@ class Markdown extends Component {
 
     handleImageItems (e, items) {
         e.persist()
-        // store selection start/end positions
+        // store selection start/end positions, original value
         const start = e.target.selectionStart;
         const end = e.target.selectionEnd;
+        const originalValue = e.target.value;
 
         let blob;
         if (this.containsImage(items)) {
@@ -56,7 +64,7 @@ class Markdown extends Component {
                 }
             }
             // Set uploading message in textarea
-            this.insertAtCursor(start, end, '![](Uploading...)', e.target)
+            this.insertAtCursor(start, end, LoadingText, e.target)
             // upload file
             const data = new FormData()
             data.append('image', blob)
@@ -67,7 +75,9 @@ class Markdown extends Component {
                 }
             }).then(response => {
                 console.log(response)
-                this.insertAtCursor(start, end, `![image](${ response.data[0]["Location"] })`, e.target)
+                this.props.updateMarkdown(originalValue, () => {
+                    this.insertAtCursor(start, end, `![image](${ response.data[0]["Location"] })`, e.target, true)
+                })
             }).catch(err => {
                 console.error(err)
             })

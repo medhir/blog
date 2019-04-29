@@ -135,7 +135,10 @@ class Editor extends Component {
         // local variables
         const editorClasses = `editor ${ this.state.edit ? '' : 'preview' }`;
         // local components
-        const markdown = <Markdown markdown={ this.state.markdown } parse={ this.parseMarkdown } updateMarkdown={ this.updateMarkdown.bind(this) }/>;
+        const markdown = <Markdown markdown={ this.state.markdown } 
+                                   parse={ this.parseMarkdown } 
+                                   updateMarkdown={ this.updateMarkdown.bind(this) }
+                                   id={ this.state.id } />;
         const preview = <Preview parsedContent={ this.state.parsed } />;
         const controls = <Controls 
                             edit={ this.state.edit }
