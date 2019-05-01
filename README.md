@@ -5,7 +5,7 @@ The back-end is written in Go. The main driver is `application.go`. The files ar
 - Image Processing / Uploading
 - Authentication
 - A blog editing REST API
-- Static HTML templating (coming soon)
+- Static HTML template-driven endpoints
 
 The front-end is writted in ES6 Javascript and makes use of the React framework. There are a few high-level folders for organization of components by purpose:
 - **Auth** is for all relevant logic pertaining to authentication initiation and verification
