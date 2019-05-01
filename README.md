@@ -1,6 +1,6 @@
-A blog engine written in Go and React. 
+A personal blog engine written in Go and React. 
 
-# Architecture 
+## Architecture 
 The back-end is written in Go. The main driver is `application.go`. The files are broken out into different functionalities under package `api`. Examples of functions include
 - Image Processing / Uploading
 - Authentication
@@ -20,7 +20,7 @@ For building client assets and starting the Go server:
 ```sh
 restartblog
 ```
-For building client assets and starting to Go server for testing on mobile: 
+For building client assets and starting the Go server for testing on mobile: 
 ```sh
 restartblogmobile
 ```
