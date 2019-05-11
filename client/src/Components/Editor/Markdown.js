@@ -30,20 +30,15 @@ class Markdown extends Component {
         })
     }
 
-    removeAtCursor(start, end, textToRemove, input) {
-        const value = input.value;
-        this.props.updateMarkdown(value.slice(0, start-textToRemove.length) + value.slice(end-textToRemove.length), () => {
-            input.selectionStart = input.selectionEnd = start - textToRemove.length;
-        })
-    }
-
     handleDrop (e) {
         const items = e.dataTransfer.items;
+        console.log(items)
         this.handleImageItems(e, items)
     }
 
     handlePaste (e) {
         const items = e.clipboardData.items;
+        console.log(items)
         this.handleImageItems(e, items)
     }
 
@@ -60,6 +55,7 @@ class Markdown extends Component {
             for (let i = 0; i < items.length; i++) {
                 if (IMAGE_MIME_REGEX.test(items[i].type)) {
                     blob = items[i].getAsFile();
+                    console.log(blob)
                     break;
                 }
             }
@@ -74,7 +70,6 @@ class Markdown extends Component {
                     'Authorization': `${ AuthUtil.token }`
                 }
             }).then(response => {
-                console.log(response)
                 this.props.updateMarkdown(originalValue, () => {
                     this.insertAtCursor(start, end, `![image](${ response.data[0]["Location"] })`, e.target, true)
                 })
