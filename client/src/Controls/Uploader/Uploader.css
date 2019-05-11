@@ -68,3 +68,28 @@
 .progressIndicator, .progressIndicator > div {
     height: 20px;
 }
+
+.locations, .files {
+    margin: 20px 45px;
+    padding: 10px;
+}
+
+.locations > ul, .files > ul {
+    list-style-type: square;
+    padding: 0px 45px;
+}
+
+.locations > p, .files > p {
+    text-decoration: underline;
+    margin-bottom: 10px;
+}
+
+.files {
+    border: 2px solid rgb(255, 0, 0);
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+.locations {
+    border: 2px solid rgb(0, 255, 0);
+    background-color: rgba(0, 255, 0, 0.1);
+}
