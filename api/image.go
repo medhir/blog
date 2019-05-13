@@ -6,15 +6,21 @@ import (
 	"gopkg.in/h2non/bimg.v1"
 )
 
-var reduceQuality = bimg.Options{
-	Quality:       85,
+var stripMetadata = bimg.Options{
 	NoAutoRotate:  false,
-	StripMetadata: true,
-	Interlace:     true}
+	StripMetadata: true}
+
+var reduceQualityAndInterlace = bimg.Options{
+	Quality:   85,
+	Interlace: true}
 
 func reduceFileSizeAndConvertToJPG(buffer []byte) []byte {
 	image := bimg.NewImage(buffer)
-	_, err := image.Convert(bimg.JPEG)
+	_, err := image.Process(stripMetadata)
+	if err != nil {
+		fmt.Println("Could not convert to JPEG - ", err.Error())
+	}
+	_, err = image.Convert(bimg.JPEG)
 	if err != nil {
 		fmt.Println("Could not convert to JPEG - ", err.Error())
 	}
@@ -31,7 +37,7 @@ func reduceFileSizeAndConvertToJPG(buffer []byte) []byte {
 			fmt.Println("Could not resize image - ", err.Error())
 		}
 	}
-	_, err = image.Process(reduceQuality)
+	_, err = image.Process(reduceQualityAndInterlace)
 	if err != nil {
 		fmt.Println("Could not reduce image quality - ", err.Error())
 	}
