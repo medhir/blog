@@ -32,13 +32,11 @@ class Markdown extends Component {
 
     handleDrop (e) {
         const items = e.dataTransfer.items;
-        console.log(items)
         this.handleImageItems(e, items)
     }
 
     handlePaste (e) {
         const items = e.clipboardData.items;
-        console.log(items)
         this.handleImageItems(e, items)
     }
 
@@ -55,7 +53,6 @@ class Markdown extends Component {
             for (let i = 0; i < items.length; i++) {
                 if (IMAGE_MIME_REGEX.test(items[i].type)) {
                     blob = items[i].getAsFile();
-                    console.log(blob)
                     break;
                 }
             }
