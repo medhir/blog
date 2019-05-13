@@ -48,7 +48,10 @@ class Editor extends Component {
                 // Set parent state
                 this.props.handleUpdate()
                 if (wasNew) {
-                    this.props.history.push(`/blog/edit/draft/${ this.state.id }`)
+                    this.props.history.push({
+                        pathname: `/blog/edit/draft/${ this.state.id }`, 
+                        state: draft
+                    })
                 }
             })
         }
