@@ -4,18 +4,35 @@ import { AuthUtil } from '../../Auth/AuthUtility'
 import api from './api'
 import './Uploader.css'
 
+const Files = (props) => {
+    if (props.files) {
+        const files = Array.from(props.files)
+        return (
+            <div className="files">
+                <p>Photos to save:</p>
+                <ul>
+                    {
+                        files.map(file => <li>{ file.name }</li>)
+                    }
+                </ul>
+            </div>
+        )
+    } else {
+        return null
+    }
+}
 
 const Locations = (props) => {
     if (props.locations) {
         return (
-            <Fragment>
+            <div className="locations">
                 <p>Photos saved at:</p>
                 <ul>
                     {
                         props.locations.map(location => <li><a href={ location }>{ location }</a></li>)
                     }
                 </ul>
-            </Fragment>
+            </div>
         )
     } else {
         return null
@@ -34,13 +51,13 @@ class Uploader extends Component {
     }
 
     handleFileStateChange = (e) => {
+        console.dir(e.target.files)
         this.setState({
             files: e.target.files
         })
     }
 
     handleProgressEvent = (e) => {
-        console.warn('fired')
         if (e.lengthComputable) {
             const percentage = Math.round((e.loaded * 100) / e.total)
             this.setState({
@@ -65,6 +82,7 @@ class Uploader extends Component {
             }).then(success => {
                 const locations = success.data.map(successObj => successObj["Location"])
                 this.setState({
+                    files: null,
                     successLocations: locations
                 })
             }).catch(error => {
@@ -92,7 +110,8 @@ class Uploader extends Component {
                 <div className="progressIndicator">
                     <div style={{ width: this.state.progress }}></div>
                 </div>
-                <Locations locations={ this.state.successLocations }></Locations>
+                <Files files={ this.state.files } />
+                <Locations locations={ this.state.successLocations } />
             </Auth>
         )
     }

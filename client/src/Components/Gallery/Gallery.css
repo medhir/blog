@@ -77,7 +77,7 @@
 
 @media only screen and (max-width: 500px){
     .photos {
-        text-align: center;
+        margin: 0;
     }
     
     .photo {
@@ -85,7 +85,9 @@
     }
 
     .photo > img {
-        width: 99%;
+        border-right: none;
+        border-left: none;
+        width: 100%;
         height: auto;
     }
 }
