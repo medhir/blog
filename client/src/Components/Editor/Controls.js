@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import Deleter from '../../Controls/Deleter'
-import { GreenButton, RedButton, MagentaButton} from '../../Controls/Buttons';
+import { GreenButton, RedButton, MagentaButton } from '../../Controls/Buttons';
 
 const Controls = (props) => {
     return (

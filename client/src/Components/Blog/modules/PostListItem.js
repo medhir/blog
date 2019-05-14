@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom'
 
 const PostListItem = (props) => {
     const publishedDate = new Date(props.post.published).toDateString()
