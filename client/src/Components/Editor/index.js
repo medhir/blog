@@ -8,7 +8,8 @@ import Preview from './Preview';
 import Controls from './Controls'; 
 import { AuthUtil } from '../../Auth/AuthUtility'
 import api from './api'
-import './Editor.css';
+import './Editor.css'
+import './Article.css'
 
 class Editor extends Component {
     constructor (props) {

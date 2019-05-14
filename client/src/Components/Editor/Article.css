@@ -1,24 +1,20 @@
-.display {
-    height: 100%;
-    position: relative;
-}
-
-.display > article {
+article {
+    font-family: Palatino, Times, serif;
     width: 50%;
-    margin: 0 auto;
+    margin: 0 auto !important;
 }
 
-.display > article > * {
+article > * {
     margin: 15px 0px;
 }
 
-.display > article > h1 {
-    position: relative;
+article > h1 {
     font-size: 3rem;
     margin-bottom: 20px;
+    position: relative;
 }
 
-.display > article > h1:after {
+article > h1:after {
     content:'';
     width:100%;
     position: absolute;
@@ -30,76 +26,71 @@
     animation: underanimate 5s infinite;
 }
 
-.display > article h2 {
+article > h2 {
     font-size: 2.3rem;
     font-weight: 500;
 }
 
-
-.display > article h3 {
+article > h3 {
     font-size: 2.2rem;
 }
 
-.display > article h4 {
+article > h4 {
     font-size: 2rem;
 }
 
-.display > article h5, h6 {
+article > h5, article > h6 {
     font-size: 1.7rem;
 }
 
-.display > article p {
+article > p {
+    line-height: 1.15rem;
     font-size: 1.05rem;
     margin: 25px 0px;
 }
 
-.display > article p em {
+article > p > em {
     font-style: italic;
 }
 
-.display > article p strong {
+article > p > strong {
     font-weight: bolder;
 }
 
-.display > article > p {
-    line-height: 1.15em;
+article > p > img {
+    display: block;
+    width: 80%;
+    border: 1px solid black;
+    margin: auto;
 }
 
+article > p > img + em {
+    display: block;
+    margin-top: 10px;
+    text-align: center;
+} 
+
 @media only screen and (max-width: 1200px){
-    .display > article {
+    article {
         width: 60%;
-        margin: 0px auto;
+        padding: 10px;
     }
 }
 
 @media only screen and (max-width: 1000px){
-    .display > article {
+    article {
         width: 75%;
-        margin: 0px auto;
-    }
-
-    .display > article {
-        padding: 10px;
     }
 }
 
 @media only screen and (max-width: 800px){
-    .display > article {
+    article {
         width: 85%;
-        margin: 0px auto;
-    }
-
-    .display > article {
-        padding: 10px;
     }
 }
 
 @media only screen and (max-width: 600px){
-    .display > article {
+    article {
         width: 96%;
-    }
-
-    .display > article {
-        padding: 10px;
     }
 }
