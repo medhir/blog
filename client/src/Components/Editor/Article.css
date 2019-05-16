@@ -2,6 +2,7 @@ article {
     font-family: Palatino, Times, serif;
     width: 50%;
     margin: 0 auto !important;
+    box-sizing: border-box;
 }
 
 article > * {
