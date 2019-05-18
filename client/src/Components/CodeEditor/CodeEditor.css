@@ -1,0 +1,14 @@
+.codeEditor {
+    display: flex;
+    height: 100%;
+    align-items: stretch;
+}
+
+.textEditor {
+    padding-right: 10px;
+    border-right: 2px dashed darkblue;
+    margin-right: 10px;
+}
+.textEditor, .mdxView {
+    flex: 1;
+}

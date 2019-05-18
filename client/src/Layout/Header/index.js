@@ -15,6 +15,9 @@ class Header extends Component {
               <li><Link to="/blog/edit">blog</Link></li>
             </Auth>
             <li><Link to="/photos">photos</Link></li>
+            <Auth>
+              <li><Link to="/code">code</Link></li>
+            </Auth>
           </ul>
         </nav>
       </header>
