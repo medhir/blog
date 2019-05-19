@@ -29,7 +29,7 @@ class CodeMirror extends Component {
         return (
         <div className="textEditor">
             <CodeMirrorBase value={ this.props.value } options={ cmOptions } onChange={ this.props.onChange } />
-            <GreenButton onClick={ this.props.parse }>Run</GreenButton>
+            <GreenButton onClick={ this.props.parse } parsing={ this.props.parsing }>{ this.props.parsing ? 'Running...' : 'Run' }</GreenButton>
         </div>
         )
     }

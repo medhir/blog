@@ -1,7 +1,11 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
-# dependencies
+# client dependencies
 /client/node_modules
+
+# mdx Next.js server dependencies / artifacts
+/mdx_server/node_modules
+/mdx_server/.next
 
 # testing
 /client/coverage

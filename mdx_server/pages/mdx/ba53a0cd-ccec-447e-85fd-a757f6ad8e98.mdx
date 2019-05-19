@@ -1,0 +1,14 @@
+export const Greeter = (props) => <h1>Hello, {props.name}! 💩</h1>
+
+export const ImageStyle = {
+	width: 50+"%",
+    border: "1px solid black"
+}
+
+export const BorderedImage = (props) => <img src={props.src} style={ ImageStyle } />
+
+<Greeter name="world" />
+
+<BorderedImage src="https://s3-us-west-2.amazonaws.com/medhir-blog-dev/albums/main/960bcc72-32fc-44b2-a3fe-61c13d07fc92.jpg"/>
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at sem dolor. Morbi ut convallis justo, in varius ex. Quisque posuere sapien at molestie hendrerit. Curabitur in tellus tellus. Curabitur vel tempus mi, vitae convallis lorem. Aenean aliquet, arcu ac pellentesque pretium, mi elit cursus mi, eget rhoncus arcu mauris eget libero. Nullam efficitur sollicitudin purus eget feugiat. Sed auctor vestibulum turpis at condimentum. Sed laoreet nulla gravida nisl elementum porttitor. Etiam nibh tellus, feugiat a vestibulum ut, consequat quis magna.
