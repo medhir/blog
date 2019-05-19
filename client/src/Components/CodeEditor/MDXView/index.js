@@ -1,17 +1,33 @@
 import React, { Component } from 'react'
 import MDX from '@mdx-js/runtime'
 
-const Greeting = (props) => <p>{ `Hello, ${ props.name }` }</p>
-
-const components = {
-    Greeting: Greeting
-}
-
 class MDXView extends Component {
+    constructor (props) {
+        super(props)
+        this.state = {
+            error: null
+        }
+    }
+
+    componentDidCatch(error, info) {
+        console.dir(error)
+        this.setState({
+            error: error
+        })
+    }
+
+    componentDidUpdate (prevProps) {
+        if (prevProps.mdx !== this.props.mdx) {
+            this.setState({
+                error: null
+            })
+        }
+    }
+
     render () {
         return (
             <div className="mdxView">
-                <MDX components={ components }>{ this.props.mdx }</MDX>
+                { this.state.error ? <pre className="mdxError">{ this.state.error.toString() }</pre> : <MDX>{ this.props.mdx }</MDX> }
             </div>
         )
     }

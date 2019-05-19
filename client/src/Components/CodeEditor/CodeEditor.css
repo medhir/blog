@@ -4,11 +4,20 @@
     align-items: stretch;
 }
 
-.textEditor {
-    padding-right: 10px;
-    border-right: 2px dashed darkblue;
-    margin-right: 10px;
-}
 .textEditor, .mdxView {
     flex: 1;
+}
+
+.textEditor {
+    position: relative;
+    border-right: 2px dashed darkblue;
+    margin-right: 10px;
+    z-index: 1;
+}
+
+.textEditor > button {
+    z-index: 2;
+    position: absolute;
+    right: 0;
+    top: 0;
 }

@@ -2,19 +2,21 @@ import React, { Component } from 'react'
 import CodeMirrorBase from 'react-codemirror'
 
 import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/blackboard.css'
+import 'codemirror/theme/duotone-light.css'
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/markdown/markdown'
+import 'codemirror/mode/jsx/jsx'
 import 'codemirror/mode/xml/xml'
 import 'codemirror/addon/selection/active-line'
 
 import './cm.css'
+import { GreenButton } from '../../../Controls/Buttons';
 
 const cmOptions = {
     lineNumbers: true, 
-    mode: 'markdown', 
+    mode: 'jsx', 
     addModeClass: true,
-    theme: 'blackboard',
+    theme: 'duotone-light',
     lineWrapping: true, 
     styleActiveLine: {
         nonEmpty: true
@@ -27,6 +29,7 @@ class CodeMirror extends Component {
         return (
         <div className="textEditor">
             <CodeMirrorBase value={ this.props.value } options={ cmOptions } onChange={ this.props.onChange } />
+            <GreenButton onClick={ this.props.parse }>Run</GreenButton>
         </div>
         )
     }
