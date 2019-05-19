@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
+import { mdx } from 'mdx.macro'
 import MDX from '@mdx-js/runtime'
+import { MDXProvider } from '@mdx-js/react';
 
 class MDXView extends Component {
     constructor (props) {
@@ -9,7 +11,7 @@ class MDXView extends Component {
         }
     }
 
-    componentDidCatch(error, info) {
+    componentDidCatch(error) {
         console.dir(error)
         this.setState({
             error: error
