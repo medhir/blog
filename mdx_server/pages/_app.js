@@ -9,7 +9,7 @@ import CodeBlock from '../components/CodeBlock'
 
 /* MDX Components */
 const components = {
-  h1: props => <h1 style={{color: 'tomato'}} {...props} />,
+  h1: props => <h1 {...props} />,
   pre: props => <div {...props} />,
   code: CodeBlock
 }
