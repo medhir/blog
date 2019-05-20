@@ -3,12 +3,12 @@ import axios from 'axios'
 import uuid from 'uuid/v4'
 import CodeMirror from './CodeMirror'
 import MDXView from './MDXView'
-import PopplerMarkdown from '../Blog/popplers'
+import DefaultMDX from './defaultMDX'
 import './CodeEditor.css'
 
 class CodeEditor extends Component {
     constructor (props) {
-        const mdx = props.mdx || PopplerMarkdown
+        const mdx = props.mdx || DefaultMDX
         super(props)
         this.state = {
             mdx: mdx,
@@ -16,6 +16,10 @@ class CodeEditor extends Component {
             parsing: false,
             parsedUrl: null
         }
+    }
+
+    componentDidMount () {
+        this.updateParsed()
     }
 
     updateMDX (newMDX) {

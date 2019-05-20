@@ -6,6 +6,7 @@
 # mdx Next.js server dependencies / artifacts
 /mdx_server/node_modules
 /mdx_server/.next
+/mdx_server/pages/mdx
 
 # testing
 /client/coverage
