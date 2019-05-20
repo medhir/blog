@@ -14,7 +14,7 @@ import { GreenButton } from '../../../Controls/Buttons';
 
 const cmOptions = {
     lineNumbers: true, 
-    mode: 'jsx', 
+    mode: 'markdown', 
     addModeClass: true,
     theme: 'duotone-light',
     lineWrapping: true, 
