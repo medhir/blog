@@ -3,6 +3,7 @@ import React from 'react'
 import {MDXProvider} from '@mdx-js/react'
 import {Provider, mdComponents} from 'unified-ui'
 import CodeBlock from '../components/CodeBlock'
+import '../styles.css'
 
 // Override the App class to put layout component around the page contents
 // https://github.com/zeit/next.js#custom-app

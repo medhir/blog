@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import CodeMirrorBase from 'react-codemirror'
 
 import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/duotone-light.css'
+import 'code-mirror-themes/themes/coda.css'
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/markdown/markdown'
 import 'codemirror/mode/jsx/jsx'
@@ -16,7 +16,7 @@ const cmOptions = {
     lineNumbers: true, 
     mode: 'markdown', 
     addModeClass: true,
-    theme: 'duotone-light',
+    theme: 'coda',
     lineWrapping: true, 
     styleActiveLine: {
         nonEmpty: true

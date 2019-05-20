@@ -9,8 +9,8 @@ export default ({children, className, live}) => {
     return (
       <div style={{marginTop: '40px'}}>
         <LiveProvider code={children}>
-          <LivePreview />
           <LiveEditor theme={theme}/>
+          <LivePreview />
           <LiveError />
         </LiveProvider>
       </div>
