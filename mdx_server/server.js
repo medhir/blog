@@ -22,8 +22,9 @@ app.prepare().then(() => {
         res.status(500).json({
           error: err.message
         })
+      } else {
+        res.sendStatus(200)
       }
-      res.send(200)
     })
   })
 
