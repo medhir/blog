@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import CodeMirrorBase from 'react-codemirror'
 
 import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/duotone-light.css'
+import 'code-mirror-themes/themes/coda.css'
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/markdown/markdown'
 import 'codemirror/mode/jsx/jsx'
@@ -13,9 +13,9 @@ import './cm.css'
 
 const cmOptions = {
     lineNumbers: true, 
-    mode: 'markdown', 
+    mode: 'javascript', 
     addModeClass: true,
-    theme: 'duotone-light',
+    theme: 'coda',
     lineWrapping: true, 
     styleActiveLine: {
         nonEmpty: true
@@ -24,21 +24,8 @@ const cmOptions = {
 }
 
 class CodeMirror extends Component {
-    constructor (props) {
-        super(props)
-        this.state = {
-            cmReady: false
-        }
-    }
-    componentDidMount () {
-        this.setState({ cmReady: true })
-    }
     render () {
-        if (cmReady) {
-            return <CodeMirrorBase value={ this.props.value } options={ cmOptions } onChange={ this.props.onChange } />;
-        } else {
-            return null;
-        }
+        return <CodeMirrorBase value={ this.props.value } options={ cmOptions } onChange={ this.props.onChange } />;
     }
 }
 

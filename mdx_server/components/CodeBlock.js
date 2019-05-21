@@ -3,16 +3,18 @@ import React from 'react'
 import Highlight, {defaultProps} from 'prism-react-renderer'
 import theme from 'prism-react-renderer/themes/dracula'
 import {LiveProvider, LiveEditor, LiveError, LivePreview} from 'react-live'
-import CodeMirror from './CodeMirror'
+import dynamic from 'next/dynamic'
+const CodeMirror = dynamic(import('./CodeMirror'), {ssr: false})
+
 export default ({children, className, live}) => {
   const language = className.replace(/language-/, '')
   if (live) {
     return (
       <div style={{marginTop: '40px'}}>
         <LiveProvider code={children}>
-          <LivePreview />
           {/* <LiveEditor theme={theme}/> */}
           <CodeMirror value={children} />
+          <LivePreview />
           <LiveError />
         </LiveProvider>
       </div>
