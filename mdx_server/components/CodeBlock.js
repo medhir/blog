@@ -1,10 +1,22 @@
 // src/components/CodeBlock.js
 import React from 'react'
-import Highlight, {defaultProps} from 'prism-react-renderer'
-import theme from 'prism-react-renderer/themes/dracula'
-import {LiveProvider, LiveEditor, LiveError, LivePreview} from 'react-live'
+import { LiveProvider, LiveError, LivePreview, LiveContext } from 'react-live'
 import dynamic from 'next/dynamic'
 const CodeMirror = dynamic(import('./CodeMirror'), {ssr: false})
+
+const LiveCodeMirror = () => {
+  return (
+    <LiveContext.Consumer>
+      {({ code, language, onChange }) => (
+        <CodeMirror 
+          value={code}
+          onChange={onChange}
+        />
+      )}
+    </LiveContext.Consumer>
+  );
+}
+
 
 export default ({children, className, live}) => {
   const language = className.replace(/language-/, '')
@@ -12,8 +24,7 @@ export default ({children, className, live}) => {
     return (
       <div style={{marginTop: '40px'}}>
         <LiveProvider code={children}>
-          {/* <LiveEditor theme={theme}/> */}
-          <CodeMirror value={children} />
+          <LiveCodeMirror />
           <LivePreview />
           <LiveError />
         </LiveProvider>
@@ -21,18 +32,19 @@ export default ({children, className, live}) => {
     )
   }
   return (
-    <Highlight {...defaultProps} code={children} language={language} theme={theme}>
-      {({className, style, tokens, getLineProps, getTokenProps}) => (
-        <pre className={className} style={{...style, padding: '20px'}}>
-          {tokens.map((line, i) => (
-            <div key={i} {...getLineProps({line, key: i})}>
-              {line.map((token, key) => (
-                <span key={key} {...getTokenProps({token, key})} />
-              ))}
-            </div>
-          ))}
-        </pre>
-      )}
-    </Highlight>
+    // <Highlight {...defaultProps} code={children} language={language} theme={theme}>
+    //   {({className, style, tokens, getLineProps, getTokenProps}) => (
+    //     <pre className={className} style={{...style, padding: '20px'}}>
+    //       {tokens.map((line, i) => (
+    //         <div key={i} {...getLineProps({line, key: i})}>
+    //           {line.map((token, key) => (
+    //             <span key={key} {...getTokenProps({token, key})} />
+    //           ))}
+    //         </div>
+    //       ))}
+    //     </pre>
+    //   )}
+    // </Highlight>
+    <CodeMirror value={children} />
   )
 }
