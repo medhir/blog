@@ -12,7 +12,7 @@ class App extends Component {
         <Main />
         <Footer />
       </Fragment>
-    )
+    );
   }
 }
 

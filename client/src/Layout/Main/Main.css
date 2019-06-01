@@ -1,25 +1,31 @@
 main {
-    min-height: 100%;
-    padding: 0.1px; /* to prevent margin collapsing */
-    /* background: linear-gradient(45deg, rgb(0,0,255), rgb(255, 50, 231));
+  min-height: 100%;
+  padding: 0.1px; /* to prevent margin collapsing */
+  /* background: linear-gradient(45deg, rgb(0,0,255), rgb(255, 50, 231));
     background-size: 400% 200%;
     animation: underanimate 30s infinite; */
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
 }
 
 main > * {
-    margin: 0 45px;
+  margin: 0 45px;
 }
 
-@media only screen and (max-width: 600px){
-    main > * {
-        margin: 0 10px;
-    }
-}
-
-@keyframes underanimate { 
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
+@media only screen and (max-width: 600px) {
+  main > * {
+    margin: 0 10px;
   }
+}
+
+@keyframes underanimate {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

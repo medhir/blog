@@ -1,40 +1,40 @@
 button {
-    font-size: 1em;
-    margin: 5px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    outline: none;
-    cursor: pointer;
-    transition: all 0.5s ease-out;
-    width: auto;
+  font-size: 1em;
+  margin: 5px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.5s ease-out;
+  width: auto;
 }
 
 .button-green {
-    background-color: rgb(15, 175, 0);
-    border: 2px solid rgb(12, 129, 1);
-    color: white;
+  background-color: rgb(15, 175, 0);
+  border: 2px solid rgb(12, 129, 1);
+  color: white;
 }
 
 .button-green:hover {
-    background-color: rgb(12, 129, 1);
+  background-color: rgb(12, 129, 1);
 }
 
 .button-red {
-    background-color: rgb(253, 68, 36);
-    border: 2px solid rgb(212, 44, 14);
-    color: white;
+  background-color: rgb(253, 68, 36);
+  border: 2px solid rgb(212, 44, 14);
+  color: white;
 }
 
 .button-red:hover {
-    background-color: rgb(212, 44, 14);
+  background-color: rgb(212, 44, 14);
 }
 
 .button-magenta {
-    background-color: rgb(255, 0, 200);
-    border: 2px solid rgb(197, 0, 154);
-    color: white;
+  background-color: rgb(255, 0, 200);
+  border: 2px solid rgb(197, 0, 154);
+  color: white;
 }
 
 .button-magenta:hover {
-    background-color: rgb(197, 0, 154);
+  background-color: rgb(197, 0, 154);
 }

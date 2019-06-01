@@ -1,98 +1,99 @@
 article {
-    font-family: Palatino, Times, serif;
-    width: 50%;
-    margin: 0 auto !important;
-    box-sizing: border-box;
+  font-family: Palatino, Times, serif;
+  width: 50%;
+  margin: 0 auto !important;
+  box-sizing: border-box;
 }
 
 article > * {
-    margin: 15px 0px;
+  margin: 15px 0px;
 }
 
 article > h1 {
-    font-size: 3rem;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    position: relative;
+  font-size: 3rem;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  position: relative;
 }
 
 article > h1:after {
-    content:'';
-    width:100%;
-    position: absolute;
-    left:0;
-    bottom: -7px;
-    height: 3px;
-    background: linear-gradient(270deg, #1100ff, #6200ff, #1100ff);
-    background-size: 200% 200%;
-    animation: underanimate 5s infinite;
+  content: '';
+  width: 100%;
+  position: absolute;
+  left: 0;
+  bottom: -7px;
+  height: 3px;
+  background: linear-gradient(270deg, #1100ff, #6200ff, #1100ff);
+  background-size: 200% 200%;
+  animation: underanimate 5s infinite;
 }
 
 article > h2 {
-    font-size: 2.3rem;
-    font-weight: 500;
+  font-size: 2.3rem;
+  font-weight: 500;
 }
 
 article > h3 {
-    font-size: 2.2rem;
+  font-size: 2.2rem;
 }
 
 article > h4 {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 
-article > h5, article > h6 {
-    font-size: 1.7rem;
+article > h5,
+article > h6 {
+  font-size: 1.7rem;
 }
 
 article > p {
-    line-height: 1.15rem;
-    font-size: 1.05rem;
-    margin: 25px 0px;
+  line-height: 1.15rem;
+  font-size: 1.05rem;
+  margin: 25px 0px;
 }
 
 article > p > em {
-    font-style: italic;
+  font-style: italic;
 }
 
 article > p > strong {
-    font-weight: bolder;
+  font-weight: bolder;
 }
 
 article > p > img {
-    display: block;
-    width: 80%;
-    border: 1px solid black;
-    margin: auto;
+  display: block;
+  width: 80%;
+  border: 1px solid black;
+  margin: auto;
 }
 
 article > p > img + em {
-    display: block;
-    margin-top: 10px;
-    text-align: center;
-} 
-
-@media only screen and (max-width: 1200px){
-    article {
-        width: 60%;
-        padding: 10px;
-    }
+  display: block;
+  margin-top: 10px;
+  text-align: center;
 }
 
-@media only screen and (max-width: 1000px){
-    article {
-        width: 75%;
-    }
+@media only screen and (max-width: 1200px) {
+  article {
+    width: 60%;
+    padding: 10px;
+  }
 }
 
-@media only screen and (max-width: 800px){
-    article {
-        width: 85%;
-    }
+@media only screen and (max-width: 1000px) {
+  article {
+    width: 75%;
+  }
 }
 
-@media only screen and (max-width: 600px){
-    article {
-        width: 96%;
-    }
+@media only screen and (max-width: 800px) {
+  article {
+    width: 85%;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  article {
+    width: 96%;
+  }
 }
