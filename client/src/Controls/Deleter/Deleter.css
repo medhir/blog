@@ -1,13 +1,13 @@
 .confirmation {
-    display: inline-block;
-    background-color: white;
-    border: 1px dashed black;
-    margin: 5px;
-    padding: 5px 10px;
-    border-radius: 5px;
+  display: inline-block;
+  background-color: white;
+  border: 1px dashed black;
+  margin: 5px;
+  padding: 5px 10px;
+  border-radius: 5px;
 }
 
 .confirmation > p {
-    margin-right: 5px;
-    display: inline-block;
+  margin-right: 5px;
+  display: inline-block;
 }

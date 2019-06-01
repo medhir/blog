@@ -2,8 +2,8 @@
   padding: 30px 0px;
 }
 
-.login .username label, 
-.login .password label  {
+.login .username label,
+.login .password label {
   display: block;
   font-size: 1.5em;
   font-weight: 600px;
@@ -11,7 +11,7 @@
   margin-bottom: 7px;
 }
 
-.login .username input, 
+.login .username input,
 .login .password input {
   font-size: 1.2em;
   border: none;
@@ -23,6 +23,6 @@
 }
 
 .login *:focus {
-	outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(12, 161, 247, 0.591)
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(12, 161, 247, 0.591);
 }

@@ -1,20 +1,20 @@
 footer {
-    height: auto;
-    padding: 15px 45px;
-    background: linear-gradient(45deg, rgb(0,0,255), rgb(255, 50, 231));
-    background-size: 400% 200%;
-    animation: underanimate 30s infinite;
+  height: auto;
+  padding: 15px 45px;
+  background: linear-gradient(45deg, rgb(0, 0, 255), rgb(255, 50, 231));
+  background-size: 400% 200%;
+  animation: underanimate 30s infinite;
 }
 
 footer p {
-    display: inline-block;
-    padding: 2px 4px;
-    background-color: white;
-    border: 1px solid black;
+  display: inline-block;
+  padding: 2px 4px;
+  background-color: white;
+  border: 1px solid black;
 }
 
 @media only screen and (max-width: 600px) {
-    footer {
-      padding: 15px 20px;
-    }
+  footer {
+    padding: 15px 20px;
+  }
 }

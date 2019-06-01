@@ -1,64 +1,64 @@
 .editor {
-    height: 100%;
-    display: flex;
-    position: relative;
+  height: 100%;
+  display: flex;
+  position: relative;
 }
 
-.editor > textarea, 
+.editor > textarea,
 .editor > article {
-    padding: 10px 10px;
+  padding: 10px 10px;
 }
 
 .editor > textarea {
-    border: none;
-    resize: none;
-    outline: none;
-    font-size: 1em;
-    box-sizing: border-box;
-    background-color: rgb(252, 247, 231);
-    border-right: 2px dashed rgb(0,0,0);
-    width: 40%;
+  border: none;
+  resize: none;
+  outline: none;
+  font-size: 1em;
+  box-sizing: border-box;
+  background-color: rgb(252, 247, 231);
+  border-right: 2px dashed rgb(0, 0, 0);
+  width: 40%;
 }
 
 .editor > article {
-    background-color: white;
-    display: inline-block;
-    overflow: scroll;
-    width: 59%;
-    margin: auto;
+  background-color: white;
+  display: inline-block;
+  overflow: scroll;
+  width: 59%;
+  margin: auto;
 }
 
 .preview textarea {
-    display: none;
+  display: none;
 }
 
 .editor-controls {
-    position: absolute;
-    right: 0;
-    top: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
-@media only screen and (max-width: 600px){
-    main > .editor {
-        margin: 0 0px;
-    }
-    main > .editor.preview {
-        margin: 0 10px;
-    }
+@media only screen and (max-width: 600px) {
+  main > .editor {
+    margin: 0 0px;
+  }
+  main > .editor.preview {
+    margin: 0 10px;
+  }
 
-    .editor > textarea, 
-    .editor > article {
-        width: 100%;
-        margin: 0px;
-    }
+  .editor > textarea,
+  .editor > article {
+    width: 100%;
+    margin: 0px;
+  }
 
-    .editor > article {
-        padding: 10px;
-    }
+  .editor > article {
+    padding: 10px;
+  }
 
-    .editor > textarea {
-        margin: 0px;
-        font-size: 1.2em;
-        border: none;
-    }
+  .editor > textarea {
+    margin: 0px;
+    font-size: 1.2em;
+    border: none;
+  }
 }
