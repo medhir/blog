@@ -3,33 +3,26 @@ export default `# Adventures in Building a Dev-Centric Blogging System
 Since first endeavoring on a mission to build a blogging platform from scratch, I've desired a way to share my technical learnings.
 
 \`\`\`jsx live=true
-class Counter extends React.Component {
-  constructor() {
-    super()
-    this.state = { count: 0 }
+class Hello extends React.Component {
+  constructor(props) {
+    super(props)
+    this.names = ['World', 'Blog', 'Code', 'React']
+    this.state = { currentName: this.names[0] }
   }
 
   componentDidMount() {
     this.interval = setInterval(() => {
-      this.setState(state => ({ count: state.count + 0.01 }))
-    }, 10)
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.interval)
+      const randIndex = Math.floor(Math.random()*this.names.length)
+      const newName = this.names[randIndex]
+      this.setState({ currentName: newName })
+    }, 1000)
   }
 
   render() {
     return (
-      <center style={
-        { border: '1px dotted darkblue',
-          padding: '10px',
-          margin: '10px auto',
-          backgroundColor: 'lightblue',
-          width: '60px', 
-          borderRadius: '40px' }}>
+      <center>
         <h3>
-          {Number.parseFloat(this.state.count).toFixed(2)}
+          Hello, { this.state.currentName }!
         </h3>
       </center>
     )
