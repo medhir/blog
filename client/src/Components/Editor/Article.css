@@ -47,7 +47,7 @@ article > h6 {
 }
 
 article > p {
-  line-height: 1.15rem;
+  line-height: 1.3rem;
   font-size: 1.05rem;
   margin: 25px 0px;
 }
@@ -62,7 +62,7 @@ article > p > strong {
 
 article > p > img {
   display: block;
-  width: 80%;
+  width: 100%;
   border: 1px solid black;
   margin: auto;
 }
