@@ -41,10 +41,10 @@ RUN set -x -o pipefail \
     py-gobject3-dev \
     && cd /tmp/vips-${VIPS_VERSION} \
     && ./configure --prefix=/usr \
-                   --disable-static \
-                   --disable-dependency-tracking \
-                   --enable-silent-rules \
-                   --enable-pyvips8 \
+    --disable-static \
+    --disable-dependency-tracking \
+    --enable-silent-rules \
+    --enable-pyvips8 \
     && make -s install-strip \
     && cd $OLDPWD \
     && rm -rf /tmp/vips-${VIPS_VERSION} \
@@ -52,7 +52,7 @@ RUN set -x -o pipefail \
     && rm -rf /var/cache/apk/*
 # CGO config
 RUN apk add --no-cache \
-        libc6-compat
+    libc6-compat
 # CA Certs 
 RUN apk --no-cache add ca-certificates
 # Set host port
