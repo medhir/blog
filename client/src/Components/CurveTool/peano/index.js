@@ -35,27 +35,6 @@ const Mover = radius => ({
   }),
 })
 
-const generateBoundingSquare = size => {
-  return {
-    TopLeft: {
-      x: 0,
-      y: 0,
-    },
-    TopRight: {
-      x: size,
-      y: 0,
-    },
-    BottomLeft: {
-      x: 0,
-      y: size,
-    },
-    BottomRight: {
-      x: size,
-      y: size,
-    },
-  }
-}
-
 const generateArcSegment = (start, end, radius, largeArc, sweep) => {
   return `M ${start.x} ${start.y} A ${radius} ${radius}, 0, ${
     largeArc ? '1' : '0'

@@ -19,8 +19,7 @@ class CurveTool extends React.Component {
           <PeanoCurves.RightUp size={150} origin={{ x: 400, y: 75 }} />
         </svg>
         <p>
-          open source space-filling curve generator for stretchable electrode
-          patterning.
+          space-filling curve generator for stretchable electrode patterning.
         </p>
       </section>
     )
