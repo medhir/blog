@@ -6,6 +6,7 @@ import Blog from '../../Components/Blog';
 import Uploader from '../../Controls/Uploader';
 
 import './Main.css';
+import CurveTool from '../../Components/CurveTool';
 
 class Main extends Component {
   render() {
@@ -16,6 +17,7 @@ class Main extends Component {
           <Route path="/blog/edit" component={Blog} />
           <Route path="/photos" component={Gallery} />
           <Route path="/upload" component={Uploader} />
+          <Route path="/curve.tool" component={CurveTool} />
           <Redirect from="/" to="/photos" />
         </Switch>
       </main>

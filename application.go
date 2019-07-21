@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -80,7 +81,10 @@ func main() {
 			Addr:    ":" + port,
 			Handler: enableCORS}
 		log.Println("Listening on port " + port)
-		server.ListenAndServeTLS("cert.pem", "key.pem")
+		err := server.ListenAndServeTLS("cert.pem", "key.pem")
+		if err != nil {
+			fmt.Println("Cannot serve local TLS connection: " + err.Error())
+		}
 	} else {
 		certManager := autocert.Manager{
 			Prompt: autocert.AcceptTOS,

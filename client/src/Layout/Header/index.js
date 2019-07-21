@@ -27,6 +27,9 @@ class Header extends Component {
             <li>
               <Link to="/photos">photos</Link>
             </li>
+            <li>
+              <Link to="/curve.tool">curve.tool</Link>
+            </li>
           </ul>
         </nav>
       </header>
