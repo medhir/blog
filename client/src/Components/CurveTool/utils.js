@@ -47,34 +47,66 @@ const StatefulMover = start => {
   let cursor = start
   return {
     Cursor: () => cursor,
-    RightDown: radius => {
+    Up: distance => {
       const newPosition = {
-        x: cursor.x + radius,
-        y: cursor.y + radius,
+        x: cursor.x,
+        y: cursor.y - distance,
       }
       cursor = newPosition
       return newPosition
     },
-    RightUp: radius => {
+    Down: distance => {
       const newPosition = {
-        x: cursor.x + radius,
-        y: cursor.y - radius,
+        x: cursor.x,
+        y: cursor.y + distance,
       }
       cursor = newPosition
       return newPosition
     },
-    LeftDown: radius => {
+    Right: distance => {
       const newPosition = {
-        x: cursor.x - radius,
-        y: cursor.y + radius,
+        x: cursor.x + distance,
+        y: cursor.y,
       }
       cursor = newPosition
       return newPosition
     },
-    LeftUp: radius => {
+    Left: distance => {
       const newPosition = {
-        x: cursor.x - radius,
-        y: cursor.y - radius,
+        x: cursor.x - distance,
+        y: cursor.y,
+      }
+      cursor = newPosition
+      return newPosition
+    },
+    RightDown: distance => {
+      const newPosition = {
+        x: cursor.x + distance,
+        y: cursor.y + distance,
+      }
+      cursor = newPosition
+      return newPosition
+    },
+    RightUp: distance => {
+      const newPosition = {
+        x: cursor.x + distance,
+        y: cursor.y - distance,
+      }
+      cursor = newPosition
+      return newPosition
+    },
+    LeftDown: distance => {
+      const newPosition = {
+        x: cursor.x - distance,
+        y: cursor.y + distance,
+      }
+      cursor = newPosition
+      return newPosition
+    },
+    LeftUp: distance => {
+      const newPosition = {
+        x: cursor.x - distance,
+        y: cursor.y - distance,
       }
       cursor = newPosition
       return newPosition

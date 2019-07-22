@@ -87,7 +87,7 @@ const Vertical = ({ size, origin }) => {
     <g>
       <g transform={`rotate(0, ${origin.x}, ${origin.y})`}>
         {arcs}
-        <circle cx={origin.x} cy={origin.y} r="3" style={{ fill: 'red' }} />
+        {/* <circle cx={origin.x} cy={origin.y} r="3" style={{ fill: 'red' }} /> */}
       </g>
     </g>
   )
