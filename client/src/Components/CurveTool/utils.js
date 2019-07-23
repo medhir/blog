@@ -1,4 +1,18 @@
 /**
+ * Directions enumerates possible directions for the cursor to move
+ */
+export const Directions = {
+  Up: 0,
+  Down: 1,
+  Left: 2,
+  Right: 3,
+  RightUp: 4,
+  RightDown: 5,
+  LeftUp: 6,
+  LeftDown: 7,
+}
+
+/**
  * Mover is a utility that creates functions to move the cursor by the
  * specified direction.
  * @param {number} radius Arc radius
@@ -47,66 +61,59 @@ const StatefulMover = start => {
   let cursor = start
   return {
     Cursor: () => cursor,
-    Up: distance => {
-      const newPosition = {
-        x: cursor.x,
-        y: cursor.y - distance,
-      }
-      cursor = newPosition
-      return newPosition
-    },
-    Down: distance => {
-      const newPosition = {
-        x: cursor.x,
-        y: cursor.y + distance,
-      }
-      cursor = newPosition
-      return newPosition
-    },
-    Right: distance => {
-      const newPosition = {
-        x: cursor.x + distance,
-        y: cursor.y,
-      }
-      cursor = newPosition
-      return newPosition
-    },
-    Left: distance => {
-      const newPosition = {
-        x: cursor.x - distance,
-        y: cursor.y,
-      }
-      cursor = newPosition
-      return newPosition
-    },
-    RightDown: distance => {
-      const newPosition = {
-        x: cursor.x + distance,
-        y: cursor.y + distance,
-      }
-      cursor = newPosition
-      return newPosition
-    },
-    RightUp: distance => {
-      const newPosition = {
-        x: cursor.x + distance,
-        y: cursor.y - distance,
-      }
-      cursor = newPosition
-      return newPosition
-    },
-    LeftDown: distance => {
-      const newPosition = {
-        x: cursor.x - distance,
-        y: cursor.y + distance,
-      }
-      cursor = newPosition
-      return newPosition
-    },
-    LeftUp: distance => {
-      const newPosition = {
-        x: cursor.x - distance,
-        y: cursor.y - distance,
+    Move: (distance, direction) => {
+      let newPosition
+      switch (direction) {
+        case Directions.Up:
+          newPosition = {
+            x: cursor.x,
+            y: cursor.y - distance,
+          }
+          break
+        case Directions.Down:
+          newPosition = {
+            x: cursor.x,
+            y: cursor.y + distance,
+          }
+          break
+        case Directions.Right:
+          newPosition = {
+            x: cursor.x + distance,
+            y: cursor.y,
+          }
+          break
+        case Directions.Left:
+          newPosition = {
+            x: cursor.x - distance,
+            y: cursor.y,
+          }
+          break
+        case Directions.RightUp:
+          newPosition = {
+            x: cursor.x + distance,
+            y: cursor.y - distance,
+          }
+          break
+        case Directions.RightDown:
+          newPosition = {
+            x: cursor.x + distance,
+            y: cursor.y + distance,
+          }
+          break
+        case Directions.LeftUp:
+          newPosition = {
+            x: cursor.x - distance,
+            y: cursor.y - distance,
+          }
+          break
+        case Directions.LeftDown:
+          newPosition = {
+            x: cursor.x - distance,
+            y: cursor.y + distance,
+          }
+          break
+        default:
+          break
       }
       cursor = newPosition
       return newPosition

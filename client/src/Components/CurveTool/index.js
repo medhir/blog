@@ -1,9 +1,8 @@
 import React from 'react'
-import { PeanoCurves } from './peano'
-import Pattern0 from './peano/pattern0'
+
+import { Tiles, TilePath } from './tiles'
 
 import './index.css'
-import { Arc, Directions } from './arc'
 
 class CurveTool extends React.Component {
   constructor(props) {
@@ -18,8 +17,14 @@ class CurveTool extends React.Component {
           patterning.
         </p>
         <svg className="headerVector">
-          <Pattern0 tileSize={40} start={{ x: 100, y: 30 }} />
-          <Pattern0 tileSize={40} start={{ x: 280, y: 30 }} />
+          <TilePath
+            start={{
+              x: 100,
+              y: 100,
+            }}
+            radius={10}
+            tile={Tiles.RightUpHorizontal}
+          />
         </svg>
 
         <h3>Tile-based Interface</h3>

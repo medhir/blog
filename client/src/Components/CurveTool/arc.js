@@ -16,6 +16,49 @@ const ArcPath = ({ d }) => (
   <path stroke="black" strokeWidth="3" fill="transparent" d={d} />
 )
 
+const PolarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
+  var angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0
+
+  return {
+    x: centerX + radius * Math.cos(angleInRadians),
+    y: centerY + radius * Math.sin(angleInRadians),
+  }
+}
+const DescribePolarArc = (center, radius, startAngle, endAngle) => {
+  var start = PolarToCartesian(center.x, center.y, radius, endAngle)
+  var end = PolarToCartesian(center.x, center.y, radius, startAngle)
+
+  var largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1'
+
+  var d = [
+    'M',
+    start.x,
+    start.y,
+    'A',
+    radius,
+    radius,
+    0,
+    largeArcFlag,
+    0,
+    end.x,
+    end.y,
+  ].join(' ')
+
+  return d + ' '
+}
+
+const PolarArc = ({ center, radius, startDegree, endDegree, options }) => (
+  <g>
+    <circle cx={center.x} cy={center.y} r="3" style={{ fill: 'red' }} />
+    <path
+      stroke="black"
+      strokeWidth="3"
+      fill="transparent"
+      d={DescribePolarArc(center, radius, startDegree, endDegree)}
+    />
+  </g>
+)
+
 const Arc = ({ start, radius, direction }) => {
   // Create mover utility functions to determine arc end point
   const mover = Mover(radius)
@@ -61,4 +104,4 @@ const Arc = ({ start, radius, direction }) => {
   return path
 }
 
-export { Arc, Directions }
+export { Arc, PolarArc, DescribePolarArc, Directions }
