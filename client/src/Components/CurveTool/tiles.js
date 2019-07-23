@@ -56,7 +56,7 @@ const Rules = {
     },
     {
       angles: [45, 225],
-      direction: null,
+      direction: Directions.RightUp,
     },
   ],
   RightUpVertical: [
@@ -96,6 +96,7 @@ const Rules = {
     },
     {
       angles: [135, 315],
+      direction: Directions.LeftUp,
     },
   ],
   LeftUpVertical: [
@@ -117,6 +118,7 @@ const Rules = {
     },
     {
       angles: [225, 315],
+      direction: Directions.LeftUp,
     },
   ],
   RightDownHorizontal: [
@@ -197,7 +199,7 @@ const Rules = {
   ],
 }
 
-export const TilePath = ({ radius, start, tile, mover }) => {
+export const TilePath = ({ radius, start, tile, mover, strokeWidth }) => {
   const MoveDistance = DistanceCartesian(radius) * 2
   if (!mover) {
     mover = StatefulMover(start)
@@ -212,10 +214,63 @@ export const TilePath = ({ radius, start, tile, mover }) => {
       tileRules[i].angles[0],
       tileRules[i].angles[1]
     )
-    if (i < tileRules.length - 1) {
+    if (tileRules[i].direction !== null) {
       // Move cursor
       mover.Move(MoveDistance, tileRules[i].direction)
     }
   }
-  return <path stroke="black" strokeWidth="3" fill="transparent" d={d} />
+  return (
+    <path
+      stroke="black"
+      strokeWidth={strokeWidth ? strokeWidth : '4'}
+      fill="transparent"
+      d={d}
+    />
+  )
+}
+
+// Manual tile generator
+// TODO: Automate
+export const Curve0 = ({ radius, start, strokeWidth }) => {
+  const MoveDistance = DistanceCartesian(radius) * 2
+  const paths = []
+  const mover = StatefulMover(start)
+  paths.push(
+    <TilePath
+      start={mover.Cursor()}
+      radius={radius}
+      tile={Tiles.RightUpHorizontal}
+      mover={mover}
+      strokeWidth={strokeWidth}
+    />
+  )
+  paths.push(
+    <TilePath
+      start={mover.Cursor()}
+      radius={radius}
+      tile={Tiles.LeftUpVertical}
+      mover={mover}
+      strokeWidth={strokeWidth}
+    />
+  )
+  paths.push(
+    <TilePath
+      start={mover.Cursor()}
+      radius={radius}
+      tile={Tiles.RightUpVertical}
+      mover={mover}
+      strokeWidth={strokeWidth}
+    />
+  )
+  paths.push(
+    <TilePath
+      start={mover.Cursor()}
+      radius={radius}
+      tile={Tiles.LeftUpHorizontal}
+      mover={mover}
+      strokeWidth={strokeWidth}
+    />
+  )
+
+  return <g>{paths}</g>
 }
