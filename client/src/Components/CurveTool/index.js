@@ -5,9 +5,6 @@ import { Tiles, TilePath } from './tiles'
 import './index.css'
 
 class CurveTool extends React.Component {
-  constructor(props) {
-    super(props)
-  }
   render() {
     return (
       <section className="curveTool">
@@ -19,11 +16,19 @@ class CurveTool extends React.Component {
         <svg className="headerVector">
           <TilePath
             start={{
-              x: 100,
+              x: 50,
               y: 100,
             }}
             radius={10}
-            tile={Tiles.RightUpHorizontal}
+            tile={Tiles.LeftDownHorizontal}
+          />
+          <TilePath
+            start={{
+              x: 200,
+              y: 100,
+            }}
+            radius={10}
+            tile={Tiles.LeftDownVertical}
           />
         </svg>
 

@@ -9,14 +9,28 @@ export const Tiles = {
   LeftUpVertical: 3,
   RightDownHorizontal: 4,
   RightDownVertical: 5,
-  RightUpHorizontal: 6,
-  RightUpVertical: 7,
+  LeftDownHorizontal: 6,
+  LeftDownVertical: 7,
 }
 
 const GetRulesForTile = tile => {
   switch (tile) {
     case Tiles.RightUpHorizontal:
       return Rules.RightUpHorizontal
+    case Tiles.RightUpVertical:
+      return Rules.RightUpVertical
+    case Tiles.LeftUpHorizontal:
+      return Rules.LeftUpHorizontal
+    case Tiles.LeftUpVertical:
+      return Rules.LeftUpVertical
+    case Tiles.RightDownHorizontal:
+      return Rules.RightDownHorizontal
+    case Tiles.RightDownVertical:
+      return Rules.RightDownVertical
+    case Tiles.LeftDownHorizontal:
+      return Rules.LeftDownHorizontal
+    case Tiles.LeftDownVertical:
+      return Rules.LeftDownVertical
     default:
       return null
   }
@@ -42,6 +56,142 @@ const Rules = {
     },
     {
       angles: [45, 225],
+      direction: null,
+    },
+  ],
+  RightUpVertical: [
+    {
+      angles: [45, 135],
+      direction: Directions.RightUp,
+    },
+    {
+      angles: [-135, 135],
+      direction: Directions.RightDown,
+    },
+    {
+      angles: [45, 315],
+      direction: Directions.RightUp,
+    },
+    {
+      angles: [225, 315],
+      direction: Directions.LeftUp,
+    },
+    {
+      angles: [45, 135],
+      direction: null,
+    },
+  ],
+  LeftUpHorizontal: [
+    {
+      angles: [-45, 45],
+      direction: Directions.LeftUp,
+    },
+    {
+      angles: [-225, 45],
+      direction: Directions.RightUp,
+    },
+    {
+      angles: [-45, 225],
+      direction: Directions.LeftUp,
+    },
+    {
+      angles: [135, 315],
+    },
+  ],
+  LeftUpVertical: [
+    {
+      angles: [225, 315],
+      direction: Directions.LeftUp,
+    },
+    {
+      angles: [-135, 135],
+      direction: Directions.LeftDown,
+    },
+    {
+      angles: [45, 315],
+      direction: Directions.LeftUp,
+    },
+    {
+      angles: [45, 135],
+      direction: Directions.RightUp,
+    },
+    {
+      angles: [225, 315],
+    },
+  ],
+  RightDownHorizontal: [
+    {
+      angles: [135, 225],
+      direction: Directions.RightDown,
+    },
+    {
+      angles: [-45, 225],
+      direction: Directions.LeftDown,
+    },
+    {
+      angles: [-225, 45],
+      direction: Directions.RightDown,
+    },
+    {
+      angles: [-45, 135],
+      direction: null,
+    },
+  ],
+  RightDownVertical: [
+    {
+      angles: [45, 135],
+      direction: Directions.RightDown,
+    },
+    {
+      angles: [45, 315],
+      direction: Directions.RightUp,
+    },
+    {
+      angles: [-135, 135],
+      direction: Directions.RightDown,
+    },
+    {
+      angles: [135, 315],
+      direction: null,
+    },
+  ],
+  LeftDownHorizontal: [
+    {
+      angles: [135, 225],
+      direction: Directions.LeftDown,
+    },
+    {
+      angles: [-225, 45],
+      direction: Directions.RightDown,
+    },
+    {
+      angles: [-45, 225],
+      direction: Directions.LeftDown,
+    },
+    {
+      angles: [-135, 45],
+      direction: null,
+    },
+  ],
+  LeftDownVertical: [
+    {
+      angles: [225, 315],
+      direction: Directions.LeftDown,
+    },
+    {
+      angles: [45, 315],
+      direction: Directions.LeftUp,
+    },
+    {
+      angles: [-135, 135],
+      direction: Directions.LeftDown,
+    },
+    {
+      angles: [45, 135],
+      direction: Directions.RightDown,
+    },
+    {
+      angles: [225, 315],
       direction: null,
     },
   ],
