@@ -197,9 +197,11 @@ const Rules = {
   ],
 }
 
-export const TilePath = ({ radius, start, tile }) => {
+export const TilePath = ({ radius, start, tile, mover }) => {
   const MoveDistance = DistanceCartesian(radius) * 2
-  const mover = StatefulMover(start)
+  if (!mover) {
+    mover = StatefulMover(start)
+  }
   const tileRules = GetRulesForTile(tile)
   let d = ''
   for (let i = 0; i < tileRules.length; i++) {

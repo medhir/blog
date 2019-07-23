@@ -13,30 +13,33 @@ class CurveTool extends React.Component {
           vector-based space filling curve generator for stretchable electrode
           patterning.
         </p>
-        <svg className="headerVector">
-          <TilePath
-            start={{
-              x: 50,
-              y: 100,
-            }}
-            radius={10}
-            tile={Tiles.LeftDownHorizontal}
-          />
-          <TilePath
-            start={{
-              x: 200,
-              y: 100,
-            }}
-            radius={10}
-            tile={Tiles.LeftDownVertical}
-          />
-        </svg>
-
         <h3>Tile-based Interface</h3>
         <p>
           Tile primitives that scale / connect seamlessly. Randomize orientation
-          on a path to minimize strain for the entire electrode system.
+          on a path to minimize strain on electrode wires.
         </p>
+        <svg className="fullHeight">
+          <TilePath
+            radius={10}
+            start={{ x: 20, y: 20 }}
+            tile={Tiles.RightDownHorizontal}
+          />
+          <TilePath
+            radius={10}
+            start={{ x: 100, y: 20 }}
+            tile={Tiles.RightDownVertical}
+          />
+          <TilePath
+            radius={10}
+            start={{ x: 200, y: 20 }}
+            tile={Tiles.LeftDownHorizontal}
+          />
+          <TilePath
+            radius={10}
+            start={{ x: 300, y: 20 }}
+            tile={Tiles.LeftDownVertical}
+          />
+        </svg>
       </section>
     )
   }
