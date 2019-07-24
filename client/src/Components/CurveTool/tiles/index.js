@@ -11,42 +11,42 @@ export const Tile = ({
   radius,
   start,
   rule,
+  direction,
   mover,
   strokeWidth,
-  connector,
 }) => {
   const MoveDistance = DistanceCartesian(radius) * 2
+  // init mover if not one provided
   if (!mover) {
     mover = StatefulMover(start)
   }
   let d = ''
-  let commonRule = rule.common
-  for (let i = 0; i < commonRule.length; i++) {
-    // Draw arc
-    d += DescribePolarArc(
-      mover.Cursor(),
-      radius,
-      commonRule[i].angles[0],
-      commonRule[i].angles[1]
-    )
-    // Move cursor
-    mover.Move(MoveDistance, commonRule[i].direction)
-  }
-  if (connector) {
-    const connectorRule = rule.connectors[connector]
-    for (let i = 0; i < connectorRule.length; i++) {
-      d += DescribePolarArc(
-        mover.Cursor(),
-        radius,
-        connectorRule[i].angles[0],
-        connectorRule[i].angles[1]
-      )
-      if (connectorRule[i].direction) {
+
+  const ProcessRule = rule => {
+    for (let i = 0; i < rule.length; i++) {
+      if (rule[i].angles) {
+        // Draw arc
+        d += DescribePolarArc(
+          mover.Cursor(),
+          radius,
+          rule[i].angles[0],
+          rule[i].angles[1]
+        )
+      }
+      if (rule[i].direction) {
         // Move cursor
-        mover.Move(MoveDistance, connectorRule[i].direction)
+        mover.Move(MoveDistance, rule[i].direction)
       }
     }
   }
+
+  let commonRule = rule.common
+  ProcessRule(commonRule)
+  if (direction) {
+    const connectorRule = rule.connector[direction]
+    ProcessRule(connectorRule)
+  }
+
   return (
     <path
       stroke="black"
@@ -64,37 +64,20 @@ export const Curve0 = ({ radius, start, strokeWidth }) => {
   const paths = []
   const mover = StatefulMover(start)
   paths.push(
-    <TilePath
+    <Tile
       start={mover.Cursor()}
       radius={radius}
-      tile={Tiles.RightUpHorizontal}
+      rule={Rules.RightUp.Vertical}
+      direction={Directions.Right}
       mover={mover}
       strokeWidth={strokeWidth}
     />
   )
   paths.push(
-    <TilePath
+    <Tile
       start={mover.Cursor()}
       radius={radius}
-      tile={Tiles.LeftUpVertical}
-      mover={mover}
-      strokeWidth={strokeWidth}
-    />
-  )
-  paths.push(
-    <TilePath
-      start={mover.Cursor()}
-      radius={radius}
-      tile={Tiles.RightUpVertical}
-      mover={mover}
-      strokeWidth={strokeWidth}
-    />
-  )
-  paths.push(
-    <TilePath
-      start={mover.Cursor()}
-      radius={radius}
-      tile={Tiles.LeftUpHorizontal}
+      rule={Rules.RightDown.Horizontal}
       mover={mover}
       strokeWidth={strokeWidth}
     />

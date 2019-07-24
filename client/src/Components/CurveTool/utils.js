@@ -2,14 +2,14 @@
  * Directions enumerates possible directions for the cursor to move
  */
 export const Directions = {
-  Up: 0,
-  Down: 1,
-  Left: 2,
-  Right: 3,
-  RightUp: 4,
-  RightDown: 5,
-  LeftUp: 6,
-  LeftDown: 7,
+  Up: 'Up',
+  Down: 'Down',
+  Left: 'Left',
+  Right: 'Right',
+  RightUp: 'RightUp',
+  RightDown: 'RightDown',
+  LeftUp: 'LeftUp',
+  LeftDown: 'LeftDown',
 }
 
 /**

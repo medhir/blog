@@ -27,10 +27,24 @@ export const Rules = {
           direction: Directions.RightUp,
         },
         {
-          angles: [45, 225],
-          direction: Directions.RightUp,
+          angles: [135, 225],
         },
       ],
+      connector: {
+        Right: [
+          {
+            direction: Directions.RightDown,
+          },
+          {
+            angles: [-45, 45],
+          },
+        ],
+        Up: [
+          {
+            angles: [45, 225],
+          },
+        ],
+      },
     },
     Vertical: {
       common: [
@@ -48,13 +62,26 @@ export const Rules = {
         },
         {
           angles: [225, 315],
-          direction: Directions.LeftUp,
-        },
-        {
-          angles: [45, 135],
-          direction: null,
         },
       ],
+      connector: {
+        Right: [
+          {
+            angles: [-45, 45],
+          },
+          {
+            direction: Directions.RightUp,
+          },
+        ],
+        Up: [
+          {
+            direction: Directions.LeftUp,
+          },
+          {
+            angles: [45, 135],
+          },
+        ],
+      },
     },
   },
   LeftUp: {
@@ -120,7 +147,6 @@ export const Rules = {
         },
         {
           angles: [-45, 135],
-          direction: null,
         },
       ],
     },
@@ -140,7 +166,6 @@ export const Rules = {
         },
         {
           angles: [135, 315],
-          direction: null,
         },
       ],
     },
@@ -162,7 +187,6 @@ export const Rules = {
         },
         {
           angles: [-135, 45],
-          direction: null,
         },
       ],
     },
@@ -186,7 +210,6 @@ export const Rules = {
         },
         {
           angles: [225, 315],
-          direction: null,
         },
       ],
     },
