@@ -74,8 +74,8 @@ export const Curve0 = ({ radius, start, strokeWidth }) => {
     <Tile
       start={start}
       radius={radius}
-      rule={Rules.RightDown.Vertical}
-      direction={Directions.Right}
+      rule={Rules.LeftDown.Vertical}
+      direction={Directions.Down}
       strokeWidth={strokeWidth}
     />
   )

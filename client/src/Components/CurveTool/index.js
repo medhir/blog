@@ -18,7 +18,7 @@ class CurveTool extends React.Component {
           on a path to minimize strain on electrode wires.
         </p>
         <svg className="fullHeight">
-          <Curve0 radius={10} strokeWidth={2} start={{ x: 150, y: 150 }} />
+          <Curve0 radius={20} strokeWidth={7} start={{ x: 150, y: 150 }} />
         </svg>
       </section>
     )

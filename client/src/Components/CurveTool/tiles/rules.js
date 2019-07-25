@@ -3,7 +3,8 @@ import { Directions } from '../utils'
 /**
  * The Rules object stores rules that define the path for a particular Peano curve.
  * Each key in the Rules object describes the direction of the generated curve.
- * Each direction contains both a horizontally and vertically oriented curve
+ * Each direction contains both a horizontally and vertically oriented curve.
+ * startPoint describes instructions for moving the cursor to where the path should start.
  * common describes the path of the tile:
  *  - angles describes the start and end angle of the arc section
  *  - direction describes the direction to move the cursor to generate the next arc section.
@@ -286,6 +287,16 @@ export const Rules = {
   },
   LeftDown: {
     Horizontal: {
+      startPoint: [
+        {
+          direction: Directions.LeftUp,
+          scale: 1,
+        },
+        {
+          direction: Directions.RightUp,
+          scale: 2,
+        },
+      ],
       common: [
         {
           angles: [135, 225],
@@ -300,11 +311,36 @@ export const Rules = {
           direction: Directions.LeftDown,
         },
         {
-          angles: [-135, 45],
+          angles: [-45, 45],
         },
       ],
+      connector: {
+        Left: [
+          {
+            direction: Directions.LeftUp,
+          },
+          {
+            angles: [135, 225],
+          },
+        ],
+        Down: [
+          {
+            angles: [225, 315],
+          },
+        ],
+      },
     },
     Vertical: {
+      startPoint: [
+        {
+          direction: Directions.RightDown,
+          scale: 1,
+        },
+        {
+          direction: Directions.RightUp,
+          scale: 2,
+        },
+      ],
       common: [
         {
           angles: [225, 315],
@@ -320,12 +356,23 @@ export const Rules = {
         },
         {
           angles: [45, 135],
-          direction: Directions.RightDown,
-        },
-        {
-          angles: [225, 315],
         },
       ],
+      connector: {
+        Left: [
+          {
+            angles: [135, 225],
+          },
+        ],
+        Down: [
+          {
+            direction: Directions.RightDown,
+          },
+          {
+            angles: [225, 315],
+          },
+        ],
+      },
     },
   },
 }
