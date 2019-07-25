@@ -70,13 +70,12 @@ export const Tile = ({ radius, start, rule, direction, strokeWidth }) => {
 export const Curve0 = ({ radius, start, strokeWidth }) => {
   const MoveDistance = DistanceCartesian(radius) * 2
   const paths = []
-  const mover = StatefulMover(start)
   paths.push(
     <Tile
-      start={mover.Cursor()}
+      start={start}
       radius={radius}
-      rule={Rules.RightUp.Vertical}
-      direction={Directions.Right}
+      rule={Rules.LeftUp.Vertical}
+      direction={Directions.Up}
       strokeWidth={strokeWidth}
     />
   )
