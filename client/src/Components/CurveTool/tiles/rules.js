@@ -13,6 +13,16 @@ import { Directions } from '../utils'
 export const Rules = {
   RightUp: {
     Horizontal: {
+      startPoint: [
+        {
+          direction: Directions.RightDown,
+          scale: 1,
+        },
+        {
+          direction: Directions.LeftDown,
+          scale: 2,
+        },
+      ],
       common: [
         {
           angles: [-45, 45],
@@ -47,6 +57,16 @@ export const Rules = {
       },
     },
     Vertical: {
+      startPoint: [
+        {
+          direction: Directions.LeftUp,
+          scale: 1,
+        },
+        {
+          direction: Directions.LeftDown,
+          scale: 2,
+        },
+      ],
       common: [
         {
           angles: [45, 135],

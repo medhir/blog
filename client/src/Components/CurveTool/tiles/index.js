@@ -7,19 +7,10 @@ const DistanceCartesian = radius => {
   return Math.sqrt(Math.pow(radius, 2) / 2)
 }
 
-export const Tile = ({
-  radius,
-  start,
-  rule,
-  direction,
-  mover,
-  strokeWidth,
-}) => {
+export const Tile = ({ radius, start, rule, direction, strokeWidth }) => {
+  const RadiusInCartesian = DistanceCartesian(radius)
   const MoveDistance = DistanceCartesian(radius) * 2
-  // init mover if not one provided
-  if (!mover) {
-    mover = StatefulMover(start)
-  }
+  let mover = StatefulMover(start)
   let d = ''
 
   const ProcessRule = rule => {
@@ -40,6 +31,15 @@ export const Tile = ({
     }
   }
 
+  // Move cursor to path start
+  let startPointRule = rule.startPoint
+  for (let i = 0; i < startPointRule.length; i++) {
+    mover.Move(
+      RadiusInCartesian * startPointRule[i].scale,
+      startPointRule[i].direction
+    )
+  }
+
   let commonRule = rule.common
   ProcessRule(commonRule)
   if (direction) {
@@ -48,12 +48,20 @@ export const Tile = ({
   }
 
   return (
-    <path
-      stroke="black"
-      strokeWidth={strokeWidth ? strokeWidth : '4'}
-      fill="transparent"
-      d={d}
-    />
+    <g>
+      <circle
+        cx={start.x}
+        cy={start.y}
+        fill="red"
+        r={strokeWidth ? strokeWidth : '4'}
+      />
+      <path
+        stroke="black"
+        strokeWidth={strokeWidth ? strokeWidth : '4'}
+        fill="transparent"
+        d={d}
+      />
+    </g>
   )
 }
 
@@ -69,16 +77,6 @@ export const Curve0 = ({ radius, start, strokeWidth }) => {
       radius={radius}
       rule={Rules.RightUp.Vertical}
       direction={Directions.Right}
-      mover={mover}
-      strokeWidth={strokeWidth}
-    />
-  )
-  paths.push(
-    <Tile
-      start={mover.Cursor()}
-      radius={radius}
-      rule={Rules.RightDown.Horizontal}
-      mover={mover}
       strokeWidth={strokeWidth}
     />
   )
