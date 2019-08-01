@@ -1,4 +1,4 @@
-import { Directions } from '../utils'
+import { Directions } from './utils'
 
 /**
  * The Rules object stores rules that define the path for a particular Peano curve.
@@ -6,8 +6,8 @@ import { Directions } from '../utils'
  * Each direction contains both a horizontally and vertically oriented curve.
  * startPoint describes instructions for moving the cursor to where the path should start.
  * common describes the path of the tile:
- *  - angles describes the start and end angle of the arc section
- *  - direction describes the direction to move the cursor to generate the next arc section.
+ *  - angles provides the start and end angle of the arc section
+ *  - direction provides the direction to move the cursor to generate the next arc section.
  * connector contains path information for connecting a tile in a certain direction.
  * next contains valid directions for the next tile on the path
  */

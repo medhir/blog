@@ -1,13 +1,13 @@
 import React from 'react'
-import { DescribePolarArc } from '../arc'
-import { Directions, StatefulMover } from '../utils'
+import { DescribePolarArc } from './arc'
+import { Directions, StatefulMover } from './utils'
 import { Rules } from './rules'
 
 const DistanceCartesian = radius => {
   return Math.sqrt(Math.pow(radius, 2) / 2)
 }
 
-export const Tile = ({ radius, start, rule, direction, strokeWidth }) => {
+const Tile = ({ radius, start, rule, direction, strokeWidth }) => {
   const RadiusInCartesian = DistanceCartesian(radius)
   const MoveDistance = DistanceCartesian(radius) * 2
   let mover = StatefulMover(start)
@@ -82,3 +82,5 @@ export const Curve0 = ({ radius, start, strokeWidth }) => {
 
   return <g>{paths}</g>
 }
+
+export default Tile

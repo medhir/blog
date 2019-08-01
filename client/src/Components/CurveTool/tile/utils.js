@@ -17,7 +17,7 @@ export const Directions = {
  * specified direction.
  * @param {number} radius Arc radius
  */
-const Mover = radius => ({
+export const Mover = radius => ({
   Right: cursor => ({
     x: cursor.x + radius,
     y: cursor.y,
@@ -57,7 +57,7 @@ const Mover = radius => ({
  * the new position of the cursor. Calls to these methods are NOT idempotent as a result. Useful for tile generation.
  * @param {object} start The (x, y) coordinates to intialize StatefulMover
  */
-const StatefulMover = start => {
+export const StatefulMover = start => {
   let cursor = start
   return {
     Cursor: () => cursor,
@@ -130,10 +130,8 @@ const StatefulMover = start => {
  * @param {boolean} largeArc Large part of arc drawn between start and end.
  * @param {boolean} sweep Direction of arc.
  */
-const GenerateArcPath = (start, end, radius, largeArc, sweep) => {
+export const GenerateArcPath = (start, end, radius, largeArc, sweep) => {
   return `M ${start.x} ${start.y} A ${radius} ${radius}, 0, ${
     largeArc ? '1' : '0'
   }, ${sweep ? '1' : '0'}, ${end.x} ${end.y} `
 }
-
-export { GenerateArcPath, Mover, StatefulMover }
