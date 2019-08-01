@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Curve0, Tiles, TilePath } from './tile'
+import { Curve0 } from './tile'
 
 import './index.css'
 
