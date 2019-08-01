@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Curve0 } from './tile'
+import { SampleCurve } from './tile'
 
 import './index.css'
 
@@ -18,7 +18,7 @@ class CurveTool extends React.Component {
           on a path to minimize strain on electrode wires.
         </p>
         <svg className="fullHeight">
-          <Curve0 radius={20} strokeWidth={7} start={{ x: 150, y: 150 }} />
+          <SampleCurve radius={20} strokeWidth={8} start={{ x: 50, y: 50 }} />
         </svg>
       </section>
     )

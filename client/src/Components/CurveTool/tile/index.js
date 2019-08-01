@@ -15,8 +15,8 @@ const Tile = ({ radius, start, rule, direction, strokeWidth }) => {
 
   const ProcessRule = rule => {
     for (let i = 0; i < rule.length; i++) {
+      // draw arc if angles provided
       if (rule[i].angles) {
-        // Draw arc
         d += DescribePolarArc(
           mover.Cursor(),
           radius,
@@ -42,40 +42,127 @@ const Tile = ({ radius, start, rule, direction, strokeWidth }) => {
 
   let commonRule = rule.common
   ProcessRule(commonRule)
+
   if (direction) {
     const connectorRule = rule.connector[direction]
     ProcessRule(connectorRule)
   }
 
   return (
-    <g>
-      <circle
-        cx={start.x}
-        cy={start.y}
-        fill="red"
-        r={strokeWidth ? strokeWidth : '4'}
-      />
-      <path
-        stroke="black"
-        strokeWidth={strokeWidth ? strokeWidth : '4'}
-        fill="transparent"
-        d={d}
-      />
-    </g>
+    <path
+      stroke="black"
+      strokeWidth={strokeWidth ? strokeWidth : '4'}
+      fill="transparent"
+      d={d}
+    />
   )
 }
 
-// Manual tile generator
-// TODO: Automate
-export const Curve0 = ({ radius, start, strokeWidth }) => {
+export const SampleCurve = ({ radius, start, strokeWidth }) => {
   const MoveDistance = DistanceCartesian(radius) * 2
   const paths = []
   paths.push(
     <Tile
       start={start}
       radius={radius}
-      rule={Rules.LeftDown.Vertical}
+      rule={Rules.RightDown.Vertical}
+      direction={Directions.Right}
+      strokeWidth={strokeWidth}
+    />
+  )
+  paths.push(
+    <Tile
+      start={{
+        x: start.x + DistanceCartesian(radius) * 6,
+        y: start.y,
+      }}
+      radius={radius}
+      rule={Rules.RightUp.Horizontal}
+      direction={Directions.Right}
+      strokeWidth={strokeWidth}
+    />
+  )
+  paths.push(
+    <Tile
+      start={{
+        x: start.x + DistanceCartesian(radius) * 12,
+        y: start.y,
+      }}
+      radius={radius}
+      rule={Rules.RightDown.Vertical}
       direction={Directions.Down}
+      strokeWidth={strokeWidth}
+    />
+  )
+  paths.push(
+    <Tile
+      start={{
+        x: start.x + DistanceCartesian(radius) * 12,
+        y: start.y + DistanceCartesian(radius) * 6,
+      }}
+      radius={radius}
+      rule={Rules.LeftDown.Horizontal}
+      direction={Directions.Left}
+      strokeWidth={strokeWidth}
+    />
+  )
+  paths.push(
+    <Tile
+      start={{
+        x: start.x + DistanceCartesian(radius) * 6,
+        y: start.y + DistanceCartesian(radius) * 6,
+      }}
+      radius={radius}
+      rule={Rules.LeftUp.Vertical}
+      direction={Directions.Left}
+      strokeWidth={strokeWidth}
+    />
+  )
+  paths.push(
+    <Tile
+      start={{
+        x: start.x,
+        y: start.y + DistanceCartesian(radius) * 6,
+      }}
+      radius={radius}
+      rule={Rules.LeftDown.Horizontal}
+      direction={Directions.Down}
+      strokeWidth={strokeWidth}
+    />
+  )
+  paths.push(
+    <Tile
+      start={{
+        x: start.x,
+        y: start.y + DistanceCartesian(radius) * 12,
+      }}
+      radius={radius}
+      rule={Rules.RightDown.Vertical}
+      direction={Directions.Right}
+      strokeWidth={strokeWidth}
+    />
+  )
+  paths.push(
+    <Tile
+      start={{
+        x: start.x + DistanceCartesian(radius) * 6,
+        y: start.y + DistanceCartesian(radius) * 12,
+      }}
+      radius={radius}
+      rule={Rules.RightUp.Horizontal}
+      direction={Directions.Right}
+      strokeWidth={strokeWidth}
+    />
+  )
+
+  paths.push(
+    <Tile
+      start={{
+        x: start.x + DistanceCartesian(radius) * 12,
+        y: start.y + DistanceCartesian(radius) * 12,
+      }}
+      radius={radius}
+      rule={Rules.RightDown.Vertical}
       strokeWidth={strokeWidth}
     />
   )
