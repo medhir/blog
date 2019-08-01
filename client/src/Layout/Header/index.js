@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import Auth from '../../Auth';
-import './Header.css';
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
+import Auth from '../../Auth'
+import './Header.css'
 
 class Header extends Component {
   render() {
@@ -30,8 +30,8 @@ class Header extends Component {
           </ul>
         </nav>
       </header>
-    );
+    )
   }
 }
 
-export default Header;
+export default Header

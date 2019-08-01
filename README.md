@@ -14,13 +14,10 @@ The front-end is written with Javascript and makes use of the Create React App f
 - **Layout** defines the high-level layout of the entire web page.
 
 ## Running Locally 
-Make sure you are in the local `blog` directory, and then you can run the following commands. 
+Make sure you are in the local `blog` working directory. Then, run the following command in your terminal: 
 
-For building client assets and starting the Go server:
 ```sh
-restartblog
+make blog
 ```
-For building client assets and starting the Go server for testing on mobile: 
-```sh
-restartblogmobile
-```
+
+This command builds client assets and starts the Go server, and is set up to allow for testing on both desktop and mobile. 

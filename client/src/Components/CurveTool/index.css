@@ -1,0 +1,17 @@
+section.curveTool {
+  margin: 20px 50px;
+}
+
+section p {
+  margin: 20px 0px;
+}
+
+svg.headerVector {
+  width: 100%;
+  height: 200px;
+}
+
+svg.fullHeight {
+  width: 100%;
+  height: 100vh;
+}
