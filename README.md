@@ -20,4 +20,7 @@ Make sure you are in the local `blog` working directory. Then, run the following
 make blog
 ```
 
-This command builds client assets and starts the Go server, and is set up to allow for testing on both desktop and mobile. 
+This command builds client assets and starts the Go server. To hot-reload the React client, run 
+```sh
+make webapp
+```
