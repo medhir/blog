@@ -6,6 +6,6 @@ blog:
 webapp:
 	cd client && npm run start
 
-.PHONY: workspace 
-workspace:
+.PHONY: code 
+code:
 	code blog.code-workspace
