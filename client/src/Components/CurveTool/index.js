@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { SampleCurve } from './tile'
+import Grid from './grid'
 
 import './index.css'
 
@@ -59,13 +60,14 @@ class CurveTool extends React.Component {
           id="radius"
           onChange={this.updateRadius.bind(this)}
         />
-        <svg className="fullHeight">
+        <Grid dimensions={{ x: 200, y: 200 }} />
+        {/* <svg className="fullHeight">
           <SampleCurve
             radius={radius}
             strokeWidth={strokeWidth}
             start={{ x: 50, y: 50 }}
           />
-        </svg>
+        </svg> */}
       </section>
     )
   }
