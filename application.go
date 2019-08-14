@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/tls"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -70,7 +69,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8000"
+		port = "9000"
 	}
 
 	enableCORS := c.Handler(mux)
@@ -83,7 +82,7 @@ func main() {
 		log.Println("Listening on port " + port)
 		err := server.ListenAndServeTLS("cert.pem", "key.pem")
 		if err != nil {
-			fmt.Println("Cannot serve local TLS connection: " + err.Error())
+			log.Fatal(err)
 		}
 	} else {
 		certManager := autocert.Manager{
@@ -92,9 +91,9 @@ func main() {
 			// Put your domain here:
 			HostPolicy: autocert.HostWhitelist("dev.medhir.com", "medhir.com"),
 		}
-		const stagingURL = "https://acme-staging.api.letsencrypt.org/directory"
+		const AcmeURL = "https://acme-v02.api.letsencrypt.org/directory"
 		certManager.Client = &acme.Client{
-			DirectoryURL: stagingURL,
+			DirectoryURL: AcmeURL,
 		}
 		server := &http.Server{
 			Addr:    ":443",
