@@ -41,10 +41,10 @@ RUN set -x -o pipefail \
     py-gobject3-dev \
     && cd /tmp/vips-${VIPS_VERSION} \
     && ./configure --prefix=/usr \
-                   --disable-static \
-                   --disable-dependency-tracking \
-                   --enable-silent-rules \
-                   --enable-pyvips8 \
+    --disable-static \
+    --disable-dependency-tracking \
+    --enable-silent-rules \
+    --enable-pyvips8 \
     && make -s install-strip \
     && cd $OLDPWD \
     && rm -rf /tmp/vips-${VIPS_VERSION} \
@@ -52,9 +52,12 @@ RUN set -x -o pipefail \
     && rm -rf /var/cache/apk/*
 # CGO config
 RUN apk add --no-cache \
-        libc6-compat
+    libc6-compat
 # CA Certs 
 RUN apk --no-cache add ca-certificates
+# Mount the certificate cache directory as a volume, so it remains even after
+# we deploy a new version - https://brendanr.net/blog/go-docker-https/
+VOLUME ["/cert-cache"]
 # Set host port
 # ENV PORT="443"
 EXPOSE 443
