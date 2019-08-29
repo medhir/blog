@@ -2,7 +2,7 @@ section.curveTool {
   margin: 20px 50px;
 }
 
-section p {
+section.curveTool > p {
   margin: 20px 0px;
 }
 

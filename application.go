@@ -91,10 +91,9 @@ func main() {
 			// Put your domain here:
 			HostPolicy: autocert.HostWhitelist("dev.medhir.com", "medhir.com"),
 		}
-		const AcmeURL = "https://acme-v02.api.letsencrypt.org/directory"
-		certManager.Client = &acme.Client{
-			DirectoryURL: AcmeURL,
-		}
+		// const AcmeURL = "https://acme-staging-v02.api.letsencrypt.org/directory"
+		// TODO: Add staging environment
+		certManager.Client = &acme.Client{}
 		server := &http.Server{
 			Addr:    ":443",
 			Handler: mux,
@@ -104,6 +103,9 @@ func main() {
 		}
 		log.Println("Listening on ports 80 and 443")
 		go http.ListenAndServe(":80", certManager.HTTPHandler(nil))
-		server.ListenAndServeTLS("", "")
+		err := server.ListenAndServeTLS("", "")
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
