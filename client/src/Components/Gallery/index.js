@@ -8,8 +8,8 @@ const BASE_PHOTO_URL = 'https://s3-us-west-2.amazonaws.com/medhir-blog-dev'
 
 const Album = (props) => {
     return (
-        <div className="album" album={ props.album } onClick={ () => props.getPhotos(props.album) }>
-            <h1>{ props.album }</h1>
+        <div className="album" album={props.album} onClick={() => props.getPhotos(props.album)}>
+            <h1>{props.album}</h1>
         </div>
     );
 };
@@ -19,7 +19,7 @@ const Albums = (props) => {
         <Fragment>
             <section className="albums">
                 {
-                    props.albums.map((album) => <Album album={ album } key={ album } getPhotos={ props.getPhotos }/>)
+                    props.albums.map((album) => <Album album={album} key={album} getPhotos={props.getPhotos} />)
                 }
             </section>
             <section className="addAlbum"></section>
@@ -30,10 +30,10 @@ const Albums = (props) => {
 const PhotoGallery = (props) => {
     return (
         <section className="photos">
-        {
-            props.photos.map((photo) => <Photo className="photo" src={ `${ BASE_PHOTO_URL }/${ photo }`} key={ photo } s3key={ photo } />)
-        }
-        </section>  
+            {
+                props.photos.map((photo) => <Photo className="photo" src={`${BASE_PHOTO_URL}/${photo}`} key={photo} s3key={photo} />)
+            }
+        </section>
     )
 }
 
@@ -41,11 +41,11 @@ const PhotoGallery = (props) => {
 // as a Gallery
 
 class Gallery extends Component {
-    constructor (props) {
+    constructor(props) {
         super(props);
         this.state = {
-            albums: null, 
-            album: null, 
+            albums: null,
+            album: null,
             photos: [],
             displayPhotos: [],
             error: null
@@ -56,7 +56,7 @@ class Gallery extends Component {
         api.getPhotos(album)
             .then(response => {
                 this.setState({
-                    albums: null, 
+                    albums: null,
                     album: album,
                     photos: response.data
                 })
@@ -65,7 +65,7 @@ class Gallery extends Component {
 
     addDisplayPhotos = () => {
         const startIndex = this.state.displayPhotos.length
-        const newPhotoURLS = this.state.photos.slice(startIndex, startIndex+1)
+        const newPhotoURLS = this.state.photos.slice(startIndex, startIndex + 1)
         const newDisplayPhotos = this.state.displayPhotos.concat(newPhotoURLS)
         this.setState({ displayPhotos: newDisplayPhotos })
     }
@@ -85,21 +85,21 @@ class Gallery extends Component {
         window.addEventListener('scroll', this.onScroll, false);
     }
 
-    componentWillUnmount () {
+    componentWillUnmount() {
         window.removeEventListener('scroll', this.onScroll, false);
     }
 
     onScroll = () => {
-        if ((window.innerHeight + window.scrollY) >= (document.body.scrollHeight - 500) && this.state.displayPhotos.length <= this.state.photos.length) {
+        if ((window.innerHeight + window.scrollY) >= (document.body.scrollHeight - 900) && this.state.displayPhotos.length <= this.state.photos.length) {
             this.addDisplayPhotos()
         }
     }
 
-    render () {
+    render() {
         if (this.state.albums) {
-            return <Albums albums={ this.state.albums } getPhotos={ this.getPhotos }/>;
+            return <Albums albums={this.state.albums} getPhotos={this.getPhotos} />;
         } else if (this.state.album) {
-            return <PhotoGallery album={ this.state.album } photos={ this.state.displayPhotos }/>;
+            return <PhotoGallery album={this.state.album} photos={this.state.displayPhotos} />;
         } else {
             return <Loading />;
         }

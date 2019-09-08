@@ -9,3 +9,7 @@ webapp:
 .PHONY: code 
 code:
 	code blog.code-workspace
+
+.PHONY: image
+image:
+	docker build -t medhir/blog:latest .
