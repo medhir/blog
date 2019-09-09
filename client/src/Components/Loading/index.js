@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import './index.css'
 
 class Loading extends Component {
   constructor(props) {
@@ -39,7 +40,7 @@ class Loading extends Component {
   render() {
     return (
       <section>
-        <h2>Loading{this.getEllipsis()}</h2>
+        <h2 class="loading">Loading{this.getEllipsis()}</h2>
       </section>
     )
   }
