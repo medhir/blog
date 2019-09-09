@@ -1,44 +1,46 @@
-import React, { Component, Fragment } from 'react';
-import Auth from '../../Auth';
-import Marked from 'marked';
-import uuid from 'uuid/v4';
-import Markdown from './Markdown';
-import PopplersMarkdown from '../Blog/popplers';
-import Preview from './Preview';
-import Controls from './Controls';
-import { AuthUtil } from '../../Auth/AuthUtility';
-import api from './api';
-import './Editor.css';
-import './Article.css';
+import React, { Component, Fragment } from 'react'
+import Marked from 'marked'
+import uuid from 'uuid/v4'
+
+import Auth from 'Auth'
+import { AuthUtil } from 'Auth/AuthUtility'
+import PopplersMarkdown from 'Components/Blog/popplers'
+
+import Markdown from './Markdown'
+import Preview from './Preview'
+import Controls from './Controls'
+import api from './api'
+import './Editor.css'
+import './Article.css'
 
 class Editor extends Component {
   constructor(props) {
-    super(props);
-    this.editorRef = React.createRef();
+    super(props)
+    this.editorRef = React.createRef()
     this.state = {
       isMobile: window.innerWidth <= 600 ? true : false,
-    };
+    }
 
     if (this.props.draft) {
-      this.state.new = false;
-      this.state.edit = false;
-      this.state.id = props.draft.id;
+      this.state.new = false
+      this.state.edit = false
+      this.state.id = props.draft.id
     } else {
-      this.state.new = true;
-      this.state.edit = true;
-      this.state.markdown = PopplersMarkdown;
-      this.state.id = uuid();
+      this.state.new = true
+      this.state.edit = true
+      this.state.markdown = PopplersMarkdown
+      this.state.id = uuid()
     }
   }
 
   saveDraft = () => {
-    let wasNew = this.state.new ? true : false;
+    let wasNew = this.state.new ? true : false
     const draft = {
       title: this.getTitle(),
       saved: new Date().getTime(),
       markdown: this.state.markdown,
       id: this.state.id,
-    };
+    }
 
     const handleSuccess = () => {
       this.setState(
@@ -49,71 +51,71 @@ class Editor extends Component {
         },
         () => {
           // Set parent state
-          this.props.handleUpdate();
+          this.props.handleUpdate()
           if (wasNew) {
             this.props.history.push({
               pathname: `/blog/edit/draft/${this.state.id}`,
               state: draft,
-            });
+            })
           }
         }
-      );
-    };
+      )
+    }
 
-    api.saveDraft(draft, AuthUtil.authorizationHeader).then(handleSuccess);
-  };
+    api.saveDraft(draft, AuthUtil.authorizationHeader).then(handleSuccess)
+  }
 
   handleDelete() {
-    this.props.handleUpdate();
-    this.props.history.push('/blog/edit');
+    this.props.handleUpdate()
+    this.props.history.push('/blog/edit')
   }
 
   publish = () => {
-    const title = this.getTitle();
-    const titlePath = this.getTitlePath(title);
+    const title = this.getTitle()
+    const titlePath = this.getTitlePath(title)
     const post = {
       title: title,
       titlePath: titlePath,
       published: new Date().getTime(),
       markdown: this.state.markdown,
       id: this.state.id,
-    };
+    }
     api.publish(post, AuthUtil.authorizationHeader).then(() => {
-      this.setState({ published: true });
-    });
-  };
+      this.setState({ published: true })
+    })
+  }
 
   getTitle = () => {
     // grab the first h1 tag present in the article preview and return its innerText
-    const article = document.createElement('article');
-    article.innerHTML = this.state.parsed;
-    const heading = article.querySelector('h1');
+    const article = document.createElement('article')
+    article.innerHTML = this.state.parsed
+    const heading = article.querySelector('h1')
 
     if (heading) {
-      return heading.innerText;
+      return heading.innerText
     } else {
-      return 'Untitled';
+      return 'Untitled'
     }
-  };
+  }
 
   getTitlePath = title => {
-    let path = title.replace(/\W/g, '-');
-    path = path.toLowerCase();
-    return path;
-  };
+    let path = title.replace(/\W/g, '-')
+    path = path.toLowerCase()
+    return path
+  }
 
   openEditor = () => {
     this.setState({
       edit: true,
-    });
-  };
+    })
+  }
 
   parseMarkdown = e => {
     this.setState({
       markdown: e.target.value,
       parsed: Marked(e.target.value),
-    });
-  };
+    })
+  }
 
   updateMarkdown(md, cb) {
     this.setState(
@@ -122,7 +124,7 @@ class Editor extends Component {
         parsed: Marked(md),
       },
       cb
-    );
+    )
   }
 
   componentDidMount() {
@@ -130,22 +132,22 @@ class Editor extends Component {
       api
         .getDraft(this.state.id, AuthUtil.authorizationHeader)
         .then(response => {
-          const draft = response.data;
+          const draft = response.data
           this.setState({
             markdown: draft.markdown,
             parsed: Marked(draft.markdown),
-          });
-        });
+          })
+        })
     } else {
       this.setState({
         parsed: Marked(this.state.markdown),
-      });
+      })
     }
   }
 
   render() {
     // local variables
-    const editorClasses = `editor ${this.state.edit ? '' : 'preview'}`;
+    const editorClasses = `editor ${this.state.edit ? '' : 'preview'}`
     // local components
     const markdown = (
       <Markdown
@@ -154,8 +156,8 @@ class Editor extends Component {
         updateMarkdown={this.updateMarkdown.bind(this)}
         id={this.state.id}
       />
-    );
-    const preview = <Preview parsedContent={this.state.parsed} />;
+    )
+    const preview = <Preview parsedContent={this.state.parsed} />
     const controls = (
       <Controls
         edit={this.state.edit}
@@ -165,7 +167,7 @@ class Editor extends Component {
         openEditor={this.openEditor.bind(this)}
         publish={this.publish.bind(this)}
       />
-    );
+    )
 
     // layouts
     const mobileLayout = (
@@ -173,14 +175,14 @@ class Editor extends Component {
         {this.state.edit ? markdown : preview}
         {controls}
       </Fragment>
-    );
+    )
     const desktopLayout = (
       <Fragment>
         {markdown}
         {preview}
         {controls}
       </Fragment>
-    );
+    )
     // render layout
     return (
       <Auth withLoginPrompt>
@@ -188,8 +190,8 @@ class Editor extends Component {
           {this.state.isMobile ? mobileLayout : desktopLayout}
         </section>
       </Auth>
-    );
+    )
   }
 }
 
-export default Editor;
+export default Editor

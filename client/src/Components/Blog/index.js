@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import { Route } from 'react-router-dom'
 import BlogList from './modules/BlogList'
-import Editor from '../Editor'
+import Editor from 'Components/Editor'
 import api from './api'
 import './Blog.css'
 import md from './popplers'

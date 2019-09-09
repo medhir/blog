@@ -1,7 +1,7 @@
-import React from 'react';
+import React from 'react'
 
 const PostListItem = props => {
-  const publishedDate = new Date(props.post.published).toDateString();
+  const publishedDate = new Date(props.post.published).toDateString()
   return (
     <li className="post">
       <a href={`/blog/post/${props.post.titlePath}`} key={props.post.id}>
@@ -10,7 +10,7 @@ const PostListItem = props => {
         <p>{publishedDate}</p>
       </a>
     </li>
-  );
-};
+  )
+}
 
-export default PostListItem;
+export default PostListItem

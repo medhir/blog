@@ -1,93 +1,93 @@
 .photos {
-    display: block;
-    overflow: hidden;
-    min-height: 100%;
+  display: block;
+  overflow: hidden;
+  min-height: 100%;
 }
 
 .photo {
-    display: block;
-    width: 40%;
-    margin: 10px auto;
-    cursor: pointer;
+  display: block;
+  width: 40%;
+  margin: 10px auto;
+  cursor: pointer;
 }
 
 .photos:first-child {
-    margin-top: 0px;
+  margin-top: 0px;
 }
 
 .photo > img {
-    width: 100%;
-    border: 1px solid black;
+  width: 100%;
+  border: 1px solid black;
 }
 
 .albums a {
-    color: black;
+  color: black;
 }
 
 .album {
-    margin: 10px 0px;
+  margin: 10px 0px;
 }
 
 .album h1 {
-    height: 100%;
-    background-color: white;
-    display: inline-block;
-    padding-right: 30px;
+  height: 100%;
+  background-color: white;
+  display: inline-block;
+  padding-right: 30px;
 }
 
 .album .thumbnails {
-    display: inline-block;
-    height: 100%;
+  display: inline-block;
+  height: 100%;
 }
 
 .thumbnails > img {
-    height: 75px;
-    width: auto;
+  height: 75px;
+  width: auto;
 }
 
-@media only screen and (max-width: 1024px){
-    .photos {
-        text-align: center;
-    }
-    
-    .photo {
-        width: 60%;
-    }
+@media only screen and (max-width: 1024px) {
+  .photos {
+    text-align: center;
+  }
 
-    .photo > img {
-        width: 99%;
-        height: auto;
-    }
+  .photo {
+    width: 60%;
+  }
+
+  .photo > img {
+    width: 99%;
+    height: auto;
+  }
 }
 
-@media only screen and (max-width: 768px){
-    .photos {
-        text-align: center;
-    }
-    
-    .photo {
-        width: 75%;
-    }
+@media only screen and (max-width: 768px) {
+  .photos {
+    text-align: center;
+  }
 
-    .photo > img {
-        width: 99%;
-        height: auto;
-    }
+  .photo {
+    width: 75%;
+  }
+
+  .photo > img {
+    width: 99%;
+    height: auto;
+  }
 }
 
-@media only screen and (max-width: 500px){
-    .photos {
-        margin: 0;
-    }
-    
-    .photo {
-        width: 100%;
-    }
+@media only screen and (max-width: 500px) {
+  .photos {
+    margin: 0;
+  }
 
-    .photo > img {
-        border-right: none;
-        border-left: none;
-        width: 100%;
-        height: auto;
-    }
+  .photo {
+    width: 100%;
+  }
+
+  .photo > img {
+    border-right: none;
+    border-left: none;
+    width: 100%;
+    height: auto;
+  }
 }

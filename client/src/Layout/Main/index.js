@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
-import About from '../../Components/About'
-import Gallery from '../../Components/Gallery'
-import Blog from '../../Components/Blog'
-import Uploader from '../../Controls/Uploader'
+import About from 'Components/About'
+import Gallery from 'Components/Gallery'
+import Blog from 'Components/Blog'
+import Uploader from 'Controls/Uploader'
+import CurveTool from 'Components/CurveTool'
 
 import './Main.css'
-import CurveTool from '../../Components/CurveTool'
 
 class Main extends Component {
   render() {

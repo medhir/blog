@@ -1,13 +1,13 @@
-import React from 'react';
-import PostListItem from './PostListItem';
+import React from 'react'
+import PostListItem from './PostListItem'
 
 const PostsList = props => {
-  if (props.posts === null) return null;
+  if (props.posts === null) return null
   const posts = props.posts.map(post => {
-    return <PostListItem post={post} key={post.id} />;
-  });
+    return <PostListItem post={post} key={post.id} />
+  })
 
-  return <ul className="posts">{posts}</ul>;
-};
+  return <ul className="posts">{posts}</ul>
+}
 
-export default PostsList;
+export default PostsList
