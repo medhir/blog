@@ -1,9 +1,10 @@
 .photo {
-    position: relative;
+  position: relative;
 }
 
-.photo > button, .photo > .confirmation {
-    position: absolute;
-    top: 0; 
-    right: 0;
+.photo > button,
+.photo > .confirmation {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
