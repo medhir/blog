@@ -4,11 +4,14 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
     "marked": "^0.4.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.8",
+    "react-test-renderer": "^16.9.0",
     "react-textarea-autosize": "^7.1.0",
     "uuid": "^3.3.2"
   },
