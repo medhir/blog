@@ -4,19 +4,22 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
     "marked": "^0.4.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.8",
+    "react-test-renderer": "^16.9.0",
     "react-textarea-autosize": "^7.1.0",
     "uuid": "^3.3.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "NODE_PATH=src react-scripts start",
     "godev": "rm -rf build && npm run build",
-    "build": "react-scripts build && mv build ../",
-    "test": "react-scripts test --env=jsdom",
+    "build": "NODE_PATH=src react-scripts build && mv build ../",
+    "test": "NODE_PATH=src react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
   "browserslist": [
