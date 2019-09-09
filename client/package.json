@@ -20,6 +20,7 @@
     "godev": "rm -rf build && npm run build",
     "build": "NODE_PATH=src react-scripts build && mv build ../",
     "test": "NODE_PATH=src react-scripts test --env=jsdom",
+    "test-ci": "NODE_PATH=src CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
   "browserslist": [
