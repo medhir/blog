@@ -1,0 +1,15 @@
+.grid-cell {
+  fill: white;
+  stroke: black;
+  stroke-width: 3;
+  transition: fill 150ms ease-in-out;
+}
+
+.grid-cell:hover {
+  cursor: pointer;
+  fill: red;
+}
+
+.grid-cell-filled {
+  fill: red;
+}
