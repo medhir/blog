@@ -61,7 +61,7 @@ class CurveTool extends React.Component {
           id="radius"
           onChange={this.updateRadius.bind(this)}
         />
-        <Grid backingArray={Generator(10)} />
+        <Grid gridSize={10} cellSize={25} />
         <svg className="fullHeight">
           <SampleCurve
             radius={radius}

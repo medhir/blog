@@ -5,11 +5,15 @@
   transition: fill 150ms ease-in-out;
 }
 
-.grid-cell:hover {
+.grid-cell-valid:hover {
   cursor: pointer;
-  fill: red;
+  fill: rgb(50, 205, 50);
 }
 
 .grid-cell-filled {
+  fill: rgb(50, 205, 50);
+}
+
+.grid-cell-invalid:hover {
   fill: red;
 }

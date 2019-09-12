@@ -1,5 +1,5 @@
 /**
- * Generator generates an empty backing array to construct a grid
+ * Generator generates an empty matrix to construct a grid
  * @param {Number} size size of the grid
  */
 export const Generator = size => {

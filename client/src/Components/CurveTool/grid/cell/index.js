@@ -9,18 +9,29 @@ import PropTypes from 'prop-types'
  * @param {Boolean} filled whether or not to display a filled color
  */
 export default class Cell extends PureComponent {
-  constructor(props) {
-    super(props)
-  }
   render() {
-    const { x, y, size, filled } = this.props
+    const {
+      x,
+      y,
+      size,
+      filled,
+      valid,
+      markAsFilled,
+      rowIndex,
+      colIndex,
+    } = this.props
     return (
       <rect
         x={x}
         y={y}
         width={size}
         height={size}
-        className={`grid-cell ${filled ? 'grid-cell-filled' : ''}`}
+        className={`grid-cell ${filled ? 'grid-cell-filled' : ''} ${
+          valid ? 'grid-cell-valid' : 'grid-cell-invalid'
+        }`}
+        onClick={() => {
+          if (valid) markAsFilled(rowIndex, colIndex)
+        }}
       />
     )
   }
@@ -31,4 +42,8 @@ Cell.propTypes = {
   y: PropTypes.number.isRequired,
   size: PropTypes.number.isRequired,
   filled: PropTypes.bool.isRequired,
+  markAsFilled: PropTypes.func.isRequired,
+  valid: PropTypes.bool.isRequired,
+  rowIndex: PropTypes.number.isRequired,
+  colIndex: PropTypes.number.isRequired,
 }
