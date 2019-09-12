@@ -15,7 +15,7 @@ export const Directions = {
 /**
  * Mover is a utility that creates functions to move the cursor by the
  * specified direction.
- * @param {number} radius Arc radius
+ * @param {Number} radius Arc radius
  */
 export const Mover = radius => ({
   Right: cursor => ({
@@ -55,7 +55,9 @@ export const Mover = radius => ({
 /**
  * StatefulMover holds the cursor position in memory. Calls to StatefulMover's methods return
  * the new position of the cursor. Calls to these methods are NOT idempotent as a result. Useful for tile generation.
- * @param {object} start The (x, y) coordinates to intialize StatefulMover
+ * @param {Object} start The (x, y) coordinates to intialize StatefulMover
+ * @param {Number} start.x
+ * @param {Number} start.y
  */
 export const StatefulMover = start => {
   let cursor = start

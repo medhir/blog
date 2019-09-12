@@ -7,6 +7,15 @@ const DistanceCartesian = radius => {
   return Math.sqrt(Math.pow(radius, 2) / 2)
 }
 
+/**
+ * Tile generates a directional, arced peano curve svg path.
+ * @param {Object} props
+ * @param {Number} props.radius
+ * @param {Object} props.start
+ * @param {Object} props.rule
+ * @param {String} props.direction
+ * @param {Number} props.strokeWidth
+ */
 const Tile = ({ radius, start, rule, direction, strokeWidth }) => {
   const RadiusInCartesian = DistanceCartesian(radius)
   const MoveDistance = DistanceCartesian(radius) * 2

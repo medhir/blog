@@ -2,7 +2,6 @@ import React from 'react'
 
 import { SampleCurve } from './tile'
 import Grid from './grid'
-import { Generator } from './grid/generator'
 
 import './index.css'
 
@@ -41,7 +40,7 @@ class CurveTool extends React.Component {
           Tile primitives that scale / connect seamlessly. Randomize orientation
           on a path to minimize strain on electrode wires.
         </p>
-        <label for="stroke-width">Stroke Width</label>
+        <label htmlFor="stroke-width">Stroke Width</label>
         <input
           type="range"
           name="stroke-width"
@@ -51,7 +50,7 @@ class CurveTool extends React.Component {
           id="stroke-width"
           onChange={this.updateStrokeWidth.bind(this)}
         />
-        <label for="radius">Radius</label>
+        <label htmlFor="radius">Radius</label>
         <input
           type="range"
           name="radius"
@@ -61,7 +60,7 @@ class CurveTool extends React.Component {
           id="radius"
           onChange={this.updateRadius.bind(this)}
         />
-        <Grid gridSize={10} cellSize={25} />
+        <Grid gridSize={10} cellSize={30} />
         <svg className="fullHeight">
           <SampleCurve
             radius={radius}

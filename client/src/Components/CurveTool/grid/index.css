@@ -1,7 +1,7 @@
 .grid-cell {
   fill: white;
   stroke: black;
-  stroke-width: 3;
+  stroke-width: 2;
   transition: fill 150ms ease-in-out;
 }
 

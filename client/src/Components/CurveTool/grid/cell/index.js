@@ -3,10 +3,15 @@ import PropTypes from 'prop-types'
 
 /**
  * Cell describes the logic associated with a cell in a grid
- * @param {Number} x start x of cell in svg
- * @param {Number} y start y of cell in svg
- * @param {Number} size size of the cell
- * @param {Boolean} filled whether or not to display a filled color
+ * @param {Object} props
+ * @param {Number} props.x start x of cell in svg
+ * @param {Number} props.y start y of cell in svg
+ * @param {Number} props.size size of the cell
+ * @param {Boolean} props.filled whether or not to display a filled color
+ * @param {Boolean} props.valid whether the cell is valid to be filled
+ * @param {Number} props.rowIndex row index passed from parent Grid
+ * @param {Number} props.colIndex column index passed from parent Grid
+ * @param {Function} props.markAsFilled function that sets cell as filled in parent Grid
  */
 export default class Cell extends PureComponent {
   render() {
@@ -30,7 +35,13 @@ export default class Cell extends PureComponent {
           valid ? 'grid-cell-valid' : 'grid-cell-invalid'
         }`}
         onClick={() => {
-          if (valid) markAsFilled(rowIndex, colIndex)
+          if (valid)
+            markAsFilled({
+              x,
+              y,
+              rowIndex,
+              colIndex,
+            })
         }}
       />
     )

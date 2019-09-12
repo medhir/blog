@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Cell from './cell'
-import { Generator } from './generator'
+import { EmptyMatrix } from './generator'
 import './index.css'
 
 export default class Grid extends Component {
@@ -9,7 +9,7 @@ export default class Grid extends Component {
     super(props)
     const { gridSize } = props
     this.state = {
-      fillMatrix: Generator(gridSize),
+      fillMatrix: EmptyMatrix(gridSize),
       validMatrix: null,
       line: null,
       position: null,
@@ -38,11 +38,11 @@ export default class Grid extends Component {
     }
   }
 
-  markAsFilled(rowIndex, colIndex) {
+  markAsFilled({ x, y, rowIndex, colIndex }) {
     const newFilled = this.state.fillMatrix.slice()
     newFilled[rowIndex][colIndex] = 1
     this.setState({ fillMatrix: newFilled })
-    this.addToLine(rowIndex, colIndex)
+    this.addToLine({ x, y, rowIndex, colIndex })
   }
 
   unfill(rowIndex, colIndex) {
@@ -51,19 +51,19 @@ export default class Grid extends Component {
     this.setState({ fillMatrix: newFilled })
   }
 
-  addToLine(rowIndex, colIndex) {
+  addToLine({ x, y, rowIndex, colIndex }) {
     const { line } = this.state
     if (!line) {
       this.setState(
         {
-          line: [[rowIndex, colIndex]],
+          line: [{ x, y, rowIndex, colIndex }],
           position: { x: rowIndex, y: colIndex },
         },
         this.calculateValidMatrix
       )
     } else {
       const newLine = line.slice()
-      newLine.push([rowIndex, colIndex])
+      newLine.push({ x, y, rowIndex, colIndex })
       this.setState(
         {
           line: newLine,
@@ -73,12 +73,14 @@ export default class Grid extends Component {
       )
     }
   }
-
+  /**
+   * calculateValidMatrix calculates whether or not a cell can be added to the line
+   */
   calculateValidMatrix() {
     const { gridSize } = this.props
     const { position, fillMatrix } = this.state
     const { x, y } = position
-    const newValidMatrix = Generator(gridSize)
+    const newValidMatrix = EmptyMatrix(gridSize)
     // check left
     if (x - 1 > -1 && !fillMatrix[x - 1][y]) {
       newValidMatrix[x - 1][y] = 1
@@ -110,12 +112,12 @@ export default class Grid extends Component {
                 <Cell
                   x={10 + colIndex * cellSize}
                   y={10 + rowIndex * cellSize}
+                  rowIndex={rowIndex}
+                  colIndex={colIndex}
                   size={cellSize}
                   filled={cell !== 0}
                   valid={validMatrix ? validMatrix[rowIndex][colIndex] : true}
                   markAsFilled={this.markAsFilled}
-                  rowIndex={rowIndex}
-                  colIndex={colIndex}
                 />
               ))}
             </g>
