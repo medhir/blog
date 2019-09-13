@@ -11,24 +11,15 @@ import PropTypes from 'prop-types'
  * @param {Boolean} props.valid whether the cell is valid to be filled
  * @param {Number} props.rowIndex row index passed from parent Grid
  * @param {Number} props.colIndex column index passed from parent Grid
- * @param {Function} props.markAsFilled function that sets cell as filled in parent Grid
+ * @param {Function} props.markFilled function that sets cell as filled in parent Grid
  */
 export default class Cell extends PureComponent {
   render() {
-    const {
-      x,
-      y,
-      size,
-      filled,
-      valid,
-      markAsFilled,
-      rowIndex,
-      colIndex,
-    } = this.props
+    const { x, y, svgX, svgY, size, filled, valid, markFilled } = this.props
     return (
       <rect
-        x={x}
-        y={y}
+        x={svgX}
+        y={svgY}
         width={size}
         height={size}
         className={`grid-cell ${filled ? 'grid-cell-filled' : ''} ${
@@ -36,11 +27,11 @@ export default class Cell extends PureComponent {
         }`}
         onClick={() => {
           if (valid)
-            markAsFilled({
+            markFilled({
               x,
               y,
-              rowIndex,
-              colIndex,
+              svgX,
+              svgY,
             })
         }}
       />
@@ -51,10 +42,10 @@ export default class Cell extends PureComponent {
 Cell.propTypes = {
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
+  svgX: PropTypes.number.isRequired,
+  svgY: PropTypes.number.isRequired,
   size: PropTypes.number.isRequired,
   filled: PropTypes.bool.isRequired,
-  markAsFilled: PropTypes.func.isRequired,
+  markFilled: PropTypes.func.isRequired,
   valid: PropTypes.bool.isRequired,
-  rowIndex: PropTypes.number.isRequired,
-  colIndex: PropTypes.number.isRequired,
 }

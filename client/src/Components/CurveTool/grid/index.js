@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Cell from './cell'
-import { EmptyMatrix } from './generator'
+import { EmptyMatrix, TileRules } from './generator'
 import './index.css'
 
 export default class Grid extends Component {
@@ -13,65 +13,75 @@ export default class Grid extends Component {
       validMatrix: null,
       line: null,
       position: null,
+      tileRules: null,
     }
 
-    this.markAsFilled = this.markAsFilled.bind(this)
+    this.markFilled = this.markFilled.bind(this)
     this.calculateValidMatrix = this.calculateValidMatrix.bind(this)
-    this.undo = this.undo.bind(this)
+    this.calculateValidTilesAndRules = this.calculateValidTilesAndRules.bind(
+      this
+    )
   }
 
   componentDidMount() {
-    window.addEventListener('keydown', this.undo)
+    window.addEventListener('keydown', () => {})
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.undo)
+    window.removeEventListener('keydown', () => {})
   }
 
-  undo(e) {
-    if (e.metaKey && e.keyCode === 90) {
-      debugger
-      const { line } = this.state
-      const newLine = line.slice()
-      newLine.pop()
-      this.setState({ line: newLine }, this.calculateValidMatrix)
-    }
-  }
-
-  markAsFilled({ x, y, rowIndex, colIndex }) {
+  /**
+   * markAsFilled
+   * @param {Object} props
+   * @param {Number} props.x the row position in the grid
+   * @param {Number} props.y the column position in the grid
+   * @param {Number} props.svgX the x coordinate for svg draw
+   * @param {Number} props.svgY the y coordinate for svg draw
+   */
+  markFilled({ x, y, svgX, svgY }) {
+    const { line } = this.state
     const newFilled = this.state.fillMatrix.slice()
-    newFilled[rowIndex][colIndex] = 1
+    newFilled[x][y] = 1
     this.setState({ fillMatrix: newFilled })
-    this.addToLine({ x, y, rowIndex, colIndex })
+    this.addToLine({ x, y, svgX, svgY })
   }
 
-  unfill(rowIndex, colIndex) {
+  unfill(x, y) {
     const newFilled = this.state.fillMatrix.slice()
-    newFilled[rowIndex][colIndex] = 0
+    newFilled[x][y] = 0
     this.setState({ fillMatrix: newFilled })
   }
 
-  addToLine({ x, y, rowIndex, colIndex }) {
+  addToLine({ x, y, svgX, svgY }) {
     const { line } = this.state
     if (!line) {
       this.setState(
         {
-          line: [{ x, y, rowIndex, colIndex }],
-          position: { x: rowIndex, y: colIndex },
+          line: [{ x, y, svgX, svgY }],
+          position: { x: x, y: y },
         },
-        this.calculateValidMatrix
+        this.calculateValidTilesAndRules
       )
     } else {
       const newLine = line.slice()
-      newLine.push({ x, y, rowIndex, colIndex })
+      newLine.push({ x, y, svgX, svgY })
       this.setState(
         {
           line: newLine,
-          position: { x: rowIndex, y: colIndex },
+          position: { x: x, y: y },
         },
-        this.calculateValidMatrix
+        this.calculateValidTilesAndRules
       )
     }
+  }
+
+  calculateValidTilesAndRules() {
+    const { line } = this.state
+    this.calculateValidMatrix()
+    this.setState({
+      tileRules: TileRules(line),
+    })
   }
   /**
    * calculateValidMatrix calculates whether or not a cell can be added to the line
@@ -106,18 +116,18 @@ export default class Grid extends Component {
     return (
       <svg className="fullHeight">
         <g>
-          {fillMatrix.map((row, rowIndex) => (
+          {fillMatrix.map((row, x) => (
             <g>
-              {row.map((cell, colIndex) => (
+              {row.map((cell, y) => (
                 <Cell
-                  x={10 + colIndex * cellSize}
-                  y={10 + rowIndex * cellSize}
-                  rowIndex={rowIndex}
-                  colIndex={colIndex}
+                  x={x}
+                  y={y}
+                  svgX={10 + x * cellSize}
+                  svgY={10 + y * cellSize}
                   size={cellSize}
                   filled={cell !== 0}
-                  valid={validMatrix ? validMatrix[rowIndex][colIndex] : true}
-                  markAsFilled={this.markAsFilled}
+                  valid={validMatrix ? validMatrix[x][y] : true}
+                  markFilled={this.markFilled}
                 />
               ))}
             </g>
