@@ -10,10 +10,10 @@ class CurveTool extends React.Component {
     super(props)
     this.state = {
       strokeWidth: 3,
-      radius: 10,
+      cellSize: 30,
     }
     this.updateStrokeWidth.bind(this)
-    this.updateRadius.bind(this)
+    this.updateCellSize.bind(this)
   }
 
   updateStrokeWidth(e) {
@@ -21,13 +21,13 @@ class CurveTool extends React.Component {
     this.setState({ strokeWidth: updatedWidth })
   }
 
-  updateRadius(e) {
-    const updatedRadius = e.target.value
-    this.setState({ radius: updatedRadius })
+  updateCellSize(e) {
+    const updatedCellSize = e.target.value
+    this.setState({ cellSize: updatedCellSize })
   }
 
   render() {
-    const { strokeWidth, radius } = this.state
+    const { strokeWidth, cellSize } = this.state
 
     return (
       <section className="curveTool">
@@ -50,24 +50,24 @@ class CurveTool extends React.Component {
           id="stroke-width"
           onChange={this.updateStrokeWidth.bind(this)}
         />
-        <label htmlFor="radius">Radius</label>
+        <label htmlFor="cellSize">Cell Size</label>
         <input
           type="range"
-          name="radius"
+          name="cellSize"
           min="0"
           max="100"
-          value={radius}
-          id="radius"
-          onChange={this.updateRadius.bind(this)}
+          value={cellSize}
+          id="cellSize"
+          onChange={this.updateCellSize.bind(this)}
         />
-        <Grid gridSize={10} cellSize={30} />
-        <svg className="fullHeight">
+        <Grid gridSize={10} cellSize={cellSize} />
+        {/* <svg className="fullHeight">
           <SampleCurve
             radius={radius}
             strokeWidth={strokeWidth}
             start={{ x: 50, y: 50 }}
           />
-        </svg>
+        </svg> */}
       </section>
     )
   }

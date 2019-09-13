@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Cell from './cell'
-import { EmptyMatrix, TileRules } from './generator'
+import { EmptyMatrix, TileRules, Tiles } from './generator'
 import './index.css'
 
 export default class Grid extends Component {
@@ -111,7 +111,7 @@ export default class Grid extends Component {
   }
 
   render() {
-    const { fillMatrix, validMatrix } = this.state
+    const { fillMatrix, validMatrix, line, tileRules } = this.state
     const { cellSize } = this.props
     return (
       <svg className="fullHeight">
@@ -133,6 +133,9 @@ export default class Grid extends Component {
             </g>
           ))}
         </g>
+        {tileRules && (
+          <Tiles cellSize={cellSize} rules={tileRules} line={line} />
+        )}
       </svg>
     )
   }

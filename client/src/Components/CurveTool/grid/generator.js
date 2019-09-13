@@ -1,4 +1,6 @@
+import React from 'react'
 import { Directions } from 'Components/CurveTool/tile/utils'
+import Tile from 'Components/CurveTool/tile'
 
 /**
  * EmptyMatrix generates an empty matrix to construct a grid
@@ -46,13 +48,14 @@ const NextDiagonalDirection = {
   },
 }
 
+const GetPotentialDiagonals = (point1, point2) => {}
+
 /**
  * GetDirection returns the directions given two points
  * @param {Object} point1
  * @param {Object} point2
  */
 const GetDirection = (point1, point2) => {
-  debugger
   const dx = point2.x - point1.x
   const dy = point2.y - point1.y
 
@@ -72,49 +75,93 @@ const GetDirection = (point1, point2) => {
  * @param {Array} line array of points representing a line
  */
 export const TileRules = line => {
-  const pointStack = line.slice().reverse()
-  const processedPointStack = []
-  const tileRules = []
-  if (line.length === 0 || line.length === 1) {
+  const points = line.slice().reverse()
+  const initialSize = Number(line.length)
+  if (initialSize === 0 || initialSize === 1) {
     return null
   }
-  while (tileRules.length !== line.length) {
-    if (tileRules.length < 1) {
-      const point1 = pointStack.pop()
-      const point2 = Object.assign({}, pointStack[pointStack.length - 1])
-      const direction = GetDirection(point1, point2)
-      const potentialDiagonals = PotentialDiagonalDirections[direction]
-      for (let i = 0; i < potentialDiagonals.length; i++) {
-        const potentialDiagonal = potentialDiagonals[i]
-        const nextDiagonal = NextDiagonalDirection[potentialDiagonal][direction]
-        if (nextDiagonal) {
-          tileRules.push({
-            diagonal: potentialDiagonal,
-            direction: direction,
-          })
-          processedPointStack.push(point1)
-          break
-        }
-      }
-    } else {
-      const point1 = pointStack.pop()
-      const point2 = Object.assign({}, pointStack[pointStack.length - 1])
-      const direction = GetDirection(point1, point2)
+
+  const generateRules = (tileRules, line) => {
+    // get first tile rule
+    const initialRule = tileRules[0]
+    if (!initialRule) {
+      return
+    }
+    while (tileRules.length !== line.length) {
       const previousRule = tileRules[tileRules.length - 1]
-      const nextDiagonal =
-        NextDiagonalDirection[previousRule.diagonal][direction]
+      const { diagonal } = previousRule
+      const point1 = Object.assign({}, line[line.length - tileRules.length])
+      const point2 = Object.assign({}, line[line.length - 1 - tileRules.length])
+      const direction = GetDirection(point1, point2)
+      const nextDiagonal = NextDiagonalDirection[diagonal][direction]
       if (nextDiagonal) {
+        previousRule.direction = direction
         tileRules.push({
           diagonal: nextDiagonal,
-          direciton: direction,
+          direction: direction,
         })
-        processedPointStack.push(point1)
-        continue
       } else {
-        // if next diagonal not found, move "back" a step
-        pointStack.push(processedPointStack.pop())
+        return null
       }
     }
+    return tileRules
   }
-  return tileRules
+
+  const point1 = Object.assign({}, points[points.length - 1])
+  const point2 = Object.assign({}, points[points.length - 2])
+  const direction = GetDirection(point1, point2)
+  const potentialDiagonals = PotentialDiagonalDirections[direction]
+  const potentialRules = [
+    generateRules(
+      [
+        {
+          diagonal: potentialDiagonals[0],
+          direction: direction,
+        },
+      ],
+      points
+    ),
+    generateRules(
+      [
+        {
+          diagonal: potentialDiagonals[1],
+          direction: direction,
+        },
+      ],
+      points
+    ),
+  ]
+  if (potentialRules[0]) return potentialRules[0]
+  else return potentialRules[1]
+}
+
+const DistanceCartesian = radius => {
+  return Math.sqrt(Math.pow(radius, 2) / 2)
+}
+
+/**
+ * Tiles returns SVG paths for a given set of rules for a line
+ * @param {Object} props
+ * @param {Array} props.rules
+ * @param {Array} props.line
+ * @param {Number} props.cellSize
+ */
+export const Tiles = ({ rules, line, cellSize }) => {
+  return (
+    <g>
+      {rules.map((rule, i) => (
+        <Tile
+          radius={DistanceCartesian(cellSize / 3)}
+          start={{
+            x: line[i].svgX + cellSize / 2,
+            y: line[i].svgY + cellSize / 2,
+          }}
+          diagonal={rule.diagonal}
+          direction={rule.direction}
+          strokeWidth={2}
+          key={`curve-${i}`}
+        />
+      ))}
+    </g>
+  )
 }
