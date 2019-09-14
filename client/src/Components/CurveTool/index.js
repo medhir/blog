@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { SampleCurve } from './tile'
+import Grid from './grid'
 
 import './index.css'
 
@@ -9,10 +10,12 @@ class CurveTool extends React.Component {
     super(props)
     this.state = {
       strokeWidth: 3,
-      radius: 10,
+      cellSize: 30,
+      gridChecked: true,
     }
-    this.updateStrokeWidth.bind(this)
-    this.updateRadius.bind(this)
+    this.updateStrokeWidth = this.updateStrokeWidth.bind(this)
+    this.updateCellSize = this.updateCellSize.bind(this)
+    this.toggleCheck = this.toggleCheck.bind(this)
   }
 
   updateStrokeWidth(e) {
@@ -20,26 +23,31 @@ class CurveTool extends React.Component {
     this.setState({ strokeWidth: updatedWidth })
   }
 
-  updateRadius(e) {
-    const updatedRadius = e.target.value
-    this.setState({ radius: updatedRadius })
+  updateCellSize(e) {
+    const updatedCellSize = e.target.value
+    this.setState({ cellSize: updatedCellSize })
+  }
+
+  toggleCheck(e) {
+    const { gridChecked } = this.state
+    this.setState({
+      gridChecked: !gridChecked,
+    })
   }
 
   render() {
-    const { strokeWidth, radius } = this.state
+    const { strokeWidth, cellSize, gridChecked } = this.state
 
     return (
       <section className="curveTool">
-        <h2>curve.tool</h2>
-        <p>
-          vector-based space filling curve generator for electrode patterning.
-        </p>
+        <h2>curvetool</h2>
+        <p>curvy space filling vector generator for electrode patterning.</p>
         <h3>Tile-based Interface</h3>
         <p>
-          Tile primitives that scale / connect seamlessly. Randomize orientation
-          on a path to minimize strain on electrode wires.
+          Tile primitives can scale + connect seamlessly. Orientation on a path
+          is randomized to minimize strain on electrode wires.
         </p>
-        <label for="stroke-width">Stroke Width</label>
+        <label htmlFor="stroke-width">Stroke Width</label>
         <input
           type="range"
           name="stroke-width"
@@ -49,23 +57,19 @@ class CurveTool extends React.Component {
           id="stroke-width"
           onChange={this.updateStrokeWidth.bind(this)}
         />
-        <label for="radius">Radius</label>
+        <label htmlFor="grid">Grid</label>
         <input
-          type="range"
-          name="radius"
-          min="0"
-          max="100"
-          value={radius}
-          id="radius"
-          onChange={this.updateRadius.bind(this)}
+          type="checkbox"
+          name="grid"
+          checked={gridChecked}
+          onChange={this.toggleCheck}
         />
-        <svg className="fullHeight">
-          <SampleCurve
-            radius={radius}
-            strokeWidth={strokeWidth}
-            start={{ x: 50, y: 50 }}
-          />
-        </svg>
+        <Grid
+          gridSize={10}
+          cellSize={50}
+          strokeWidth={strokeWidth}
+          visible={gridChecked}
+        />
       </section>
     )
   }

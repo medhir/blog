@@ -7,12 +7,29 @@ const DistanceCartesian = radius => {
   return Math.sqrt(Math.pow(radius, 2) / 2)
 }
 
-const Tile = ({ radius, start, rule, direction, strokeWidth }) => {
+/**
+ * Tile generates a directional, arced peano curve svg path.
+ * @param {Object} props
+ * @param {Number} props.radius
+ * @param {Object} props.start
+ * @param {String} props.diagonal
+ * @param {String} props.direction
+ * @param {Number} props.strokeWidth
+ */
+const Tile = ({ radius, start, diagonal, direction, strokeWidth }) => {
   const RadiusInCartesian = DistanceCartesian(radius)
   const MoveDistance = DistanceCartesian(radius) * 2
   let mover = StatefulMover(start)
   let d = ''
 
+  // randomize curve orientation
+  let coinFlip = Math.random()
+  let rule
+  if (coinFlip > 0.5) {
+    rule = Rules[diagonal].Horizontal
+  } else {
+    rule = Rules[diagonal].Vertical
+  }
   const ProcessRule = rule => {
     for (let i = 0; i < rule.length; i++) {
       // draw arc if angles provided
@@ -56,118 +73,6 @@ const Tile = ({ radius, start, rule, direction, strokeWidth }) => {
       d={d}
     />
   )
-}
-
-export const SampleCurve = ({ radius, start, strokeWidth }) => {
-  const MoveDistance = DistanceCartesian(radius) * 2
-  const paths = []
-  paths.push(
-    <Tile
-      start={start}
-      radius={radius}
-      rule={Rules.RightDown.Vertical}
-      direction={Directions.Right}
-      strokeWidth={strokeWidth}
-    />
-  )
-  paths.push(
-    <Tile
-      start={{
-        x: start.x + DistanceCartesian(radius) * 6,
-        y: start.y,
-      }}
-      radius={radius}
-      rule={Rules.RightUp.Horizontal}
-      direction={Directions.Right}
-      strokeWidth={strokeWidth}
-    />
-  )
-  paths.push(
-    <Tile
-      start={{
-        x: start.x + DistanceCartesian(radius) * 12,
-        y: start.y,
-      }}
-      radius={radius}
-      rule={Rules.RightDown.Vertical}
-      direction={Directions.Down}
-      strokeWidth={strokeWidth}
-    />
-  )
-  paths.push(
-    <Tile
-      start={{
-        x: start.x + DistanceCartesian(radius) * 12,
-        y: start.y + DistanceCartesian(radius) * 6,
-      }}
-      radius={radius}
-      rule={Rules.LeftDown.Horizontal}
-      direction={Directions.Left}
-      strokeWidth={strokeWidth}
-    />
-  )
-  paths.push(
-    <Tile
-      start={{
-        x: start.x + DistanceCartesian(radius) * 6,
-        y: start.y + DistanceCartesian(radius) * 6,
-      }}
-      radius={radius}
-      rule={Rules.LeftUp.Vertical}
-      direction={Directions.Left}
-      strokeWidth={strokeWidth}
-    />
-  )
-  paths.push(
-    <Tile
-      start={{
-        x: start.x,
-        y: start.y + DistanceCartesian(radius) * 6,
-      }}
-      radius={radius}
-      rule={Rules.LeftDown.Horizontal}
-      direction={Directions.Down}
-      strokeWidth={strokeWidth}
-    />
-  )
-  paths.push(
-    <Tile
-      start={{
-        x: start.x,
-        y: start.y + DistanceCartesian(radius) * 12,
-      }}
-      radius={radius}
-      rule={Rules.RightDown.Vertical}
-      direction={Directions.Right}
-      strokeWidth={strokeWidth}
-    />
-  )
-  paths.push(
-    <Tile
-      start={{
-        x: start.x + DistanceCartesian(radius) * 6,
-        y: start.y + DistanceCartesian(radius) * 12,
-      }}
-      radius={radius}
-      rule={Rules.RightUp.Horizontal}
-      direction={Directions.Right}
-      strokeWidth={strokeWidth}
-    />
-  )
-
-  paths.push(
-    <Tile
-      start={{
-        x: start.x + DistanceCartesian(radius) * 12,
-        y: start.y + DistanceCartesian(radius) * 12,
-      }}
-      radius={radius}
-      rule={Rules.RightDown.Vertical}
-      strokeWidth={strokeWidth}
-    />
-  )
-
-  return <g>{paths}</g>
 }
 
 export default Tile
