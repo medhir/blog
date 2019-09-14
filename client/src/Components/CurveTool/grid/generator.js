@@ -145,8 +145,9 @@ const DistanceCartesian = radius => {
  * @param {Array} props.rules
  * @param {Array} props.line
  * @param {Number} props.cellSize
+ * @param {Number} props.strokeWidth
  */
-export const Tiles = ({ rules, line, cellSize }) => {
+export const Tiles = ({ rules, line, cellSize, strokeWidth }) => {
   return (
     <g>
       {rules.map((rule, i) => (
@@ -158,7 +159,7 @@ export const Tiles = ({ rules, line, cellSize }) => {
           }}
           diagonal={rule.diagonal}
           direction={rule.direction}
-          strokeWidth={2}
+          strokeWidth={strokeWidth}
           key={`curve-${i}`}
         />
       ))}

@@ -1,7 +1,15 @@
-section.curveTool {
+/* section.curveTool {
   margin: 20px 50px;
 }
 
+section.curveTool > p {
+  margin: 20px 0px;
+} */
+
+section.curveTool {
+  margin-top: 20px;
+}
+section.curveTool > h3,
 section.curveTool > p {
   margin: 20px 0px;
 }

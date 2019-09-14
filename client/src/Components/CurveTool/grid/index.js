@@ -112,7 +112,7 @@ export default class Grid extends Component {
 
   render() {
     const { fillMatrix, validMatrix, line, tileRules } = this.state
-    const { cellSize } = this.props
+    const { cellSize, strokeWidth, visible } = this.props
     return (
       <svg className="fullHeight">
         <g>
@@ -127,6 +127,7 @@ export default class Grid extends Component {
                   size={cellSize}
                   filled={cell !== 0}
                   valid={validMatrix ? validMatrix[x][y] : true}
+                  visible={visible}
                   markFilled={this.markFilled}
                 />
               ))}
@@ -134,7 +135,12 @@ export default class Grid extends Component {
           ))}
         </g>
         {tileRules && (
-          <Tiles cellSize={cellSize} rules={tileRules} line={line} />
+          <Tiles
+            cellSize={cellSize}
+            rules={tileRules}
+            line={line}
+            strokeWidth={strokeWidth}
+          />
         )}
       </svg>
     )
@@ -144,4 +150,5 @@ export default class Grid extends Component {
 Grid.propTypes = {
   cellSize: PropTypes.number.isRequired,
   gridSize: PropTypes.number.isRequired,
+  strokeWidth: PropTypes.number.isRequired,
 }
