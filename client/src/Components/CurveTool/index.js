@@ -65,8 +65,9 @@ class CurveTool extends React.Component {
           onChange={this.toggleCheck}
         />
         <Grid
-          gridSize={10}
-          cellSize={50}
+          gridSize={25}
+          cellSize={25}
+          className="fullHeight"
           strokeWidth={strokeWidth}
           visible={gridChecked}
         />

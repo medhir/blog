@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
+import { saveAs } from 'file-saver'
 import Cell from './cell'
 import { EmptyMatrix, TileRules, Tiles } from './generator'
 import './index.css'
@@ -110,39 +112,73 @@ export default class Grid extends Component {
     this.setState({ validMatrix: newValidMatrix })
   }
 
+  /**
+   * save saves the grid's generated curve
+   */
+  save() {
+    const { line, tileRules } = this.state
+    const { cellSize, strokeWidth } = this.props
+
+    if (!tileRules || !line) {
+      return
+    }
+
+    const tiles = (
+      <Tiles
+        cellSize={cellSize}
+        rules={tileRules}
+        line={line}
+        strokeWidth={strokeWidth}
+      />
+    )
+    var svgDoc = document.implementation.createDocument(
+      'http://www.w3.org/2000/svg',
+      'svg',
+      null
+    )
+    ReactDOM.render(tiles, svgDoc.documentElement)
+    // get the data
+    var svgData = new XMLSerializer().serializeToString(svgDoc)
+    var blob = new Blob([svgData])
+    saveAs(blob, `curve.${Math.random()}.svg`)
+  }
+
   render() {
     const { fillMatrix, validMatrix, line, tileRules } = this.state
-    const { cellSize, strokeWidth, visible } = this.props
+    const { cellSize, className, strokeWidth, visible } = this.props
     return (
-      <svg className="fullHeight">
-        <g>
-          {fillMatrix.map((row, x) => (
-            <g>
-              {row.map((cell, y) => (
-                <Cell
-                  x={x}
-                  y={y}
-                  svgX={10 + x * cellSize}
-                  svgY={10 + y * cellSize}
-                  size={cellSize}
-                  filled={cell !== 0}
-                  valid={validMatrix ? validMatrix[x][y] : true}
-                  visible={visible}
-                  markFilled={this.markFilled}
-                />
-              ))}
-            </g>
-          ))}
-        </g>
-        {tileRules && (
-          <Tiles
-            cellSize={cellSize}
-            rules={tileRules}
-            line={line}
-            strokeWidth={strokeWidth}
-          />
-        )}
-      </svg>
+      <React.Fragment>
+        <svg className={className}>
+          <g>
+            {fillMatrix.map((row, x) => (
+              <g>
+                {row.map((cell, y) => (
+                  <Cell
+                    x={x}
+                    y={y}
+                    svgX={10 + x * cellSize}
+                    svgY={10 + y * cellSize}
+                    size={cellSize}
+                    filled={cell !== 0}
+                    valid={validMatrix ? validMatrix[x][y] : true}
+                    visible={visible}
+                    markFilled={this.markFilled}
+                  />
+                ))}
+              </g>
+            ))}
+          </g>
+          {tileRules && (
+            <Tiles
+              cellSize={cellSize}
+              rules={tileRules}
+              line={line}
+              strokeWidth={strokeWidth}
+            />
+          )}
+        </svg>
+        <button onClick={this.save.bind(this)}>Save</button>
+      </React.Fragment>
     )
   }
 }

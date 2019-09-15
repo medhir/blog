@@ -48,8 +48,6 @@ const NextDiagonalDirection = {
   },
 }
 
-const GetPotentialDiagonals = (point1, point2) => {}
-
 /**
  * GetDirection returns the directions given two points
  * @param {Object} point1
