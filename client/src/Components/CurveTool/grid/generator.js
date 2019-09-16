@@ -29,7 +29,7 @@ const PotentialDiagonalDirections = {
   Left: [Directions.LeftUp, Directions.LeftDown],
 }
 
-const NextDiagonalDirection = {
+export const NextDiagonalDirection = {
   RightUp: {
     Right: Directions.RightDown,
     Up: Directions.LeftUp,
@@ -53,7 +53,7 @@ const NextDiagonalDirection = {
  * @param {Object} point1
  * @param {Object} point2
  */
-const GetDirection = (point1, point2) => {
+export const GetDirection = (point1, point2) => {
   const dx = point2.x - point1.x
   const dy = point2.y - point1.y
 

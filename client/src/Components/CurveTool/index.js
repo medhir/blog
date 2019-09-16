@@ -51,9 +51,10 @@ class CurveTool extends React.Component {
         <input
           type="range"
           name="stroke-width"
-          min="0"
-          max="20"
+          min="0.1"
+          max="5"
           value={strokeWidth}
+          step="0.05"
           id="stroke-width"
           onChange={this.updateStrokeWidth.bind(this)}
         />

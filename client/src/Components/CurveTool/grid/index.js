@@ -3,8 +3,15 @@ import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import { saveAs } from 'file-saver'
 import Cell from './cell'
-import { EmptyMatrix, TileRules, Tiles } from './generator'
+import {
+  EmptyMatrix,
+  GetDirection,
+  NextDiagonalDirection,
+  TileRules,
+  Tiles,
+} from './generator'
 import './index.css'
+import { Directions } from 'Components/CurveTool/tile/utils'
 
 export default class Grid extends Component {
   constructor(props) {
@@ -80,34 +87,55 @@ export default class Grid extends Component {
 
   calculateValidTilesAndRules() {
     const { line } = this.state
-    this.calculateValidMatrix()
-    this.setState({
-      tileRules: TileRules(line),
-    })
+    this.setState(
+      {
+        tileRules: TileRules(line),
+      },
+      this.calculateValidMatrix
+    )
   }
   /**
    * calculateValidMatrix calculates whether or not a cell can be added to the line
    */
   calculateValidMatrix() {
     const { gridSize } = this.props
-    const { position, fillMatrix } = this.state
+    const { position, fillMatrix, tileRules } = this.state
     const { x, y } = position
+    const prevDiagonal = tileRules
+      ? tileRules[tileRules.length - 1].diagonal
+      : null
     const newValidMatrix = EmptyMatrix(gridSize)
     // check left
-    if (x - 1 > -1 && !fillMatrix[x - 1][y]) {
+    if (
+      x - 1 > -1 && // grid boundary
+      !fillMatrix[x - 1][y] // not filled
+    ) {
       newValidMatrix[x - 1][y] = 1
+      if (tileRules && !NextDiagonalDirection[prevDiagonal][Directions.Left]) {
+        // if not a valid path for tileRules, set to not valid
+        newValidMatrix[x - 1][y] = 0
+      }
     }
     // check right
     if (x + 1 < gridSize && !fillMatrix[x + 1][y]) {
       newValidMatrix[x + 1][y] = 1
+      if (tileRules && !NextDiagonalDirection[prevDiagonal][Directions.Right]) {
+        newValidMatrix[x + 1][y] = 0
+      }
     }
     // check top
     if (y - 1 > -1 && !fillMatrix[x][y - 1]) {
       newValidMatrix[x][y - 1] = 1
+      if (tileRules && !NextDiagonalDirection[prevDiagonal][Directions.Up]) {
+        newValidMatrix[x][y - 1] = 0
+      }
     }
     // check bottom
     if (y + 1 < gridSize && !fillMatrix[x][y + 1]) {
       newValidMatrix[x][y + 1] = 1
+      if (tileRules && !NextDiagonalDirection[prevDiagonal][Directions.Down]) {
+        newValidMatrix[x][y + 1] = 0
+      }
     }
     this.setState({ validMatrix: newValidMatrix })
   }
