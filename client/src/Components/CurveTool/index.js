@@ -42,11 +42,11 @@ class CurveTool extends React.Component {
       <section className="curveTool">
         <h2>curvetool</h2>
         <p>curvy space filling vector generator for electrode patterning.</p>
-        <h3>Tile-based Interface</h3>
         <p>
           Tile primitives can scale + connect seamlessly. Orientation on a path
           is randomized to minimize strain on electrode wires.
         </p>
+        <p>Click any two adjacent squares to start the curve.</p>
         <label htmlFor="stroke-width">Stroke Width</label>
         <input
           type="range"
