@@ -42,18 +42,19 @@ class CurveTool extends React.Component {
       <section className="curveTool">
         <h2>curvetool</h2>
         <p>curvy space filling vector generator for electrode patterning.</p>
-        <h3>Tile-based Interface</h3>
         <p>
           Tile primitives can scale + connect seamlessly. Orientation on a path
           is randomized to minimize strain on electrode wires.
         </p>
+        <p>Click any two adjacent squares to start the curve.</p>
         <label htmlFor="stroke-width">Stroke Width</label>
         <input
           type="range"
           name="stroke-width"
-          min="0"
-          max="20"
+          min="0.1"
+          max="5"
           value={strokeWidth}
+          step="0.05"
           id="stroke-width"
           onChange={this.updateStrokeWidth.bind(this)}
         />
@@ -65,8 +66,9 @@ class CurveTool extends React.Component {
           onChange={this.toggleCheck}
         />
         <Grid
-          gridSize={10}
-          cellSize={50}
+          gridSize={25}
+          cellSize={25}
+          className="fullHeight"
           strokeWidth={strokeWidth}
           visible={gridChecked}
         />
