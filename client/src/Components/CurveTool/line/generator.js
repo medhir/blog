@@ -1,6 +1,6 @@
 import React from 'react'
 import { Directions } from 'Components/CurveTool/tile/utils'
-import Tile from 'Components/CurveTool/tile'
+import Tile, { DescribePath } from 'Components/CurveTool/tile'
 
 /**
  * EmptyMatrix generates an empty matrix to construct a grid
@@ -162,5 +162,31 @@ export const Tiles = ({ rules, line, cellSize, strokeWidth }) => {
         />
       ))}
     </g>
+  )
+}
+
+export const LinePath = ({ rules, line, cellSize, strokeWidth }) => {
+  let d = ''
+  for (let i = 0; i < rules.length; i++) {
+    const { diagonal, direction } = rules[i]
+    d += DescribePath(
+      DistanceCartesian(cellSize / 3),
+      {
+        x: line[i].svgX + cellSize / 2,
+        y: line[i].svgY + cellSize / 2,
+      },
+      diagonal,
+      direction,
+      null
+    )
+  }
+
+  return (
+    <path
+      stroke="black"
+      strokeWidth={strokeWidth ? strokeWidth : '1'}
+      fill="transparent"
+      d={d}
+    />
   )
 }

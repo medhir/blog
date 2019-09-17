@@ -5,15 +5,15 @@ import { saveAs } from 'file-saver'
 import Cell from './cell'
 import {
   EmptyMatrix,
-  GetDirection,
   NextDiagonalDirection,
   TileRules,
   Tiles,
+  LinePath,
 } from './generator'
 import './index.css'
 import { Directions } from 'Components/CurveTool/tile/utils'
 
-export default class Grid extends Component {
+export default class Line extends Component {
   constructor(props) {
     super(props)
     const { gridSize } = props
@@ -65,9 +65,10 @@ export default class Grid extends Component {
   addToLine({ x, y, svgX, svgY }) {
     const { line } = this.state
     if (!line) {
+      const newLine = [{ x, y, svgX, svgY }]
       this.setState(
         {
-          line: [{ x, y, svgX, svgY }],
+          line: newLine,
           position: { x: x, y: y },
         },
         this.calculateValidTilesAndRules
@@ -211,7 +212,7 @@ export default class Grid extends Component {
   }
 }
 
-Grid.propTypes = {
+Line.propTypes = {
   cellSize: PropTypes.number.isRequired,
   gridSize: PropTypes.number.isRequired,
   strokeWidth: PropTypes.number.isRequired,

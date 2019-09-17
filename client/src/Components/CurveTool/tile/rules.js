@@ -1,7 +1,7 @@
 import { Directions } from './utils'
 
 /**
- * The Rules object stores rules that define the path for a particular Peano curve.
+ * Rules stores rules that define the path for a particular Peano curve.
  * Each key in the Rules object describes the direction of the generated curve.
  * Each direction contains both a horizontally and vertically oriented curve.
  * startPoint describes instructions for moving the cursor to where the path should start.
