@@ -77,7 +77,7 @@ export const GetDirection = (point1: point, point2: point): string | null => {
 
 /**
  * TileRules generates peano curve tiles for a continuous line
- * @param {Array} line array of points representing a line
+ * @param {Line} line array of points representing a line
  */
 export const GenerateTileRules = (line: Line): TileRule[] | undefined => {
   const points = line.slice().reverse()
@@ -144,15 +144,17 @@ const DistanceCartesian = radius => {
   return Math.sqrt(Math.pow(radius, 2) / 2)
 }
 
+interface TilesProps {
+  rules: TileRule[]
+  line: Line
+  cellSize: number
+  strokeWidth: number
+}
+
 /**
  * Tiles returns SVG paths for a given set of rules for a line
- * @param {Object} props
- * @param {Array} props.rules
- * @param {Array} props.line
- * @param {Number} props.cellSize
- * @param {Number} props.strokeWidth
  */
-export const Tiles = ({ rules, line, cellSize, strokeWidth }) => {
+export const Tiles = ({ rules, line, cellSize, strokeWidth }: TilesProps) => {
   return (
     <g>
       {rules.map((rule, i) => (
@@ -172,7 +174,15 @@ export const Tiles = ({ rules, line, cellSize, strokeWidth }) => {
   )
 }
 
-export const LinePath = ({ rules, line, cellSize, strokeWidth }) => {
+/**
+ * LinePath returns a single SVG path for a set of TilesProps
+ */
+export const LinePath = ({
+  rules,
+  line,
+  cellSize,
+  strokeWidth,
+}: TilesProps) => {
   let d = ''
   for (let i = 0; i < rules.length; i++) {
     const { diagonal, direction } = rules[i]

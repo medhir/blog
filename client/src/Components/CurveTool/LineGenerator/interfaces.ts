@@ -23,7 +23,7 @@ export interface LineGeneratorProps {
 export interface LineGeneratorState {
   fillMatrix: number[][]
   validMatrix?: number[][]
-  line?: Line
+  line: Line
   position: Point
   tileRules?: TileRule[]
 }

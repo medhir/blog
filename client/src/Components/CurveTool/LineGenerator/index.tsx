@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
-import PropTypes from 'prop-types'
 import { saveAs } from 'file-saver'
 import Cell from './cell'
 import {
@@ -8,12 +7,10 @@ import {
   NextDiagonalDirection,
   GenerateTileRules,
   Tiles,
-  LinePath,
 } from './generator'
 import {
   Point,
   Line,
-  TileRule,
   LineGeneratorProps,
   LineGeneratorState,
 } from './interfaces'
@@ -29,6 +26,7 @@ export default class LineGenerator extends Component<
     const { gridSize } = props
     this.state = {
       fillMatrix: EmptyMatrix(gridSize),
+      line: [],
       position: { x: 0, y: 0, svgX: 0, svgY: 0 },
     }
 
