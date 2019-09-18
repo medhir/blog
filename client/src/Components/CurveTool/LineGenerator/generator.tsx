@@ -1,15 +1,16 @@
 import React from 'react'
 import { Directions } from 'Components/CurveTool/tile/utils'
 import Tile, { DescribePath } from 'Components/CurveTool/tile'
+import { Point, Line, TileRule } from './interfaces'
 
 /**
  * EmptyMatrix generates an empty matrix to construct a grid
  * @param {Number} size size of the grid
  */
-export const EmptyMatrix = size => {
-  const grid = []
+export const EmptyMatrix = (size: number): number[][] => {
+  const grid: number[][] = []
   for (let i = 0; i < size; i++) {
-    const row = []
+    const row: number[] = []
     for (let j = 0; j < size; j++) {
       row.push(0)
     }
@@ -48,12 +49,16 @@ export const NextDiagonalDirection = {
   },
 }
 
+interface point {
+  x: number
+  y: number
+}
 /**
  * GetDirection returns the directions given two points
  * @param {Object} point1
  * @param {Object} point2
  */
-export const GetDirection = (point1, point2) => {
+export const GetDirection = (point1: point, point2: point): string | null => {
   const dx = point2.x - point1.x
   const dy = point2.y - point1.y
 
@@ -65,6 +70,8 @@ export const GetDirection = (point1, point2) => {
     return Directions.Right
   } else if (dx === -1 && dy === 0) {
     return Directions.Left
+  } else {
+    return null
   }
 }
 
@@ -72,11 +79,11 @@ export const GetDirection = (point1, point2) => {
  * TileRules generates peano curve tiles for a continuous line
  * @param {Array} line array of points representing a line
  */
-export const TileRules = line => {
+export const GenerateTileRules = (line: Line): TileRule[] | undefined => {
   const points = line.slice().reverse()
-  const initialSize = Number(line.length)
+  const initialSize = line.length
   if (initialSize === 0 || initialSize === 1) {
-    return null
+    return undefined
   }
 
   const generateRules = (tileRules, line) => {
@@ -99,7 +106,7 @@ export const TileRules = line => {
           direction: direction,
         })
       } else {
-        return null
+        return undefined
       }
     }
     return tileRules
@@ -108,8 +115,8 @@ export const TileRules = line => {
   const point1 = Object.assign({}, points[points.length - 1])
   const point2 = Object.assign({}, points[points.length - 2])
   const direction = GetDirection(point1, point2)
-  const potentialDiagonals = PotentialDiagonalDirections[direction]
-  const potentialRules = [
+  const potentialDiagonals = PotentialDiagonalDirections[String(direction)]
+  const potentialRules: TileRule[][] = [
     generateRules(
       [
         {

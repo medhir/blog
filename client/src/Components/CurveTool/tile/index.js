@@ -15,7 +15,7 @@ const DistanceCartesian = radius => {
  * @param {Number} start.y
  * @param {Object} diagonal diagonal description for the curve
  * @param {String} direction direction of the connector for the next curve
- * @param {String} orientation whether to draw horizontally or vertically
+ * @param {String|Null} orientation whether to draw horizontally or vertically
  */
 export const DescribePath = (
   radius,
