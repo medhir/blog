@@ -13,14 +13,14 @@
     "file-saver": "^2.0.2",
     "marked": "^0.7.0",
     "prop-types": "^15.7.2",
-    "react": "^16.4.1",
-    "react-dom": "^16.4.1",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
     "react-router-dom": "^4.3.1",
     "react-scripts": "^3.1.1",
     "react-test-renderer": "^16.9.0",
     "react-textarea-autosize": "^7.1.0",
     "typescript": "^3.6.3",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.3"
   },
   "scripts": {
     "start": "NODE_PATH=src react-scripts start",
