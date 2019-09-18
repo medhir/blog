@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 
 import Line from 'Components/CurveTool/LineGenerator'
 import Inputs from './controls'

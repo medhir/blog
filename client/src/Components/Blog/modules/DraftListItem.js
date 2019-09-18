@@ -1,6 +1,5 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import Auth from 'Auth'
 
 const DraftListItem = props => {
   const saved = new Date(props.draft.saved).toString()

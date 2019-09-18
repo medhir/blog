@@ -1,6 +1,6 @@
 import React from 'react'
 import { DescribePolarArc } from './arc'
-import { Directions, StatefulMover } from './utils'
+import { StatefulMover } from './utils'
 import { Rules } from './rules'
 
 const DistanceCartesian = radius => {

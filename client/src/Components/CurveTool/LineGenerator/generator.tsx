@@ -1,11 +1,11 @@
 import React from 'react'
 import { Directions } from 'Components/CurveTool/tile/utils'
 import Tile, { DescribePath } from 'Components/CurveTool/tile'
-import { Point, Line, TileRule } from './interfaces'
+import { Line, TileRule } from './interfaces'
 
 /**
  * EmptyMatrix generates an empty matrix to construct a grid
- * @param {Number} size size of the grid
+ * @param {number} size size of the grid
  */
 export const EmptyMatrix = (size: number): number[][] => {
   const grid: number[][] = []
