@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -39,9 +40,14 @@ var (
 	blogPostTemplates  = template.Must(template.ParseFiles(blogPostTemplateFiles...))
 	notFoundTemplates  = template.Must(template.ParseFiles(notFoundFiles...))
 )
+
 var cssPath string
 
-type cssManifest struct {
+type assetManifest struct {
+	Files files `json:"files"`
+}
+
+type files struct {
 	MainCSS string `json:"main.css"`
 }
 
@@ -52,12 +58,14 @@ func getCSSPath() {
 	}
 	defer manifestJSON.Close()
 	manifestBytes, _ := ioutil.ReadAll(manifestJSON)
-	var manifest cssManifest
+	var manifest assetManifest
 	err = json.Unmarshal(manifestBytes, &manifest)
 	if err != nil {
 		log.Println("Could not unmarshal json into struct")
 	}
-	cssPath = manifest.MainCSS
+	cssPath = manifest.Files.MainCSS
+	fmt.Println("manifest", manifest)
+	fmt.Println("css:", cssPath)
 }
 
 func GetPost() http.HandlerFunc {
