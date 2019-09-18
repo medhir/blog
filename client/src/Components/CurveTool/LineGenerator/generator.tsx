@@ -1,7 +1,7 @@
 import React from 'react'
 import { Directions } from 'Components/CurveTool/tile/utils'
 import Tile, { DescribePath } from 'Components/CurveTool/tile'
-import { Line, TileRule } from './interfaces'
+import { Line, TileRule } from 'Components/CurveTool/LineGenerator/interfaces'
 
 /**
  * EmptyMatrix generates an empty matrix to construct a grid
