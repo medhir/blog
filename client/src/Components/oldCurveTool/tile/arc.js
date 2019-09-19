@@ -1,4 +1,4 @@
-const PolarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
+export const PolarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
   const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0
 
   return {

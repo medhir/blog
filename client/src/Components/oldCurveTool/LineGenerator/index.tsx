@@ -15,13 +15,13 @@ import {
   LineGeneratorState,
 } from './interfaces'
 import './index.css'
-import { Directions } from 'Components/CurveTool/tile/utils'
+import { Directions } from 'Components/oldCurveTool/tile/utils'
 
 export default class LineGenerator extends Component<
   LineGeneratorProps,
   LineGeneratorState
 > {
-  constructor(props) {
+  constructor(props: LineGeneratorProps) {
     super(props)
     const { gridSize } = props
     this.state = {
@@ -53,20 +53,20 @@ export default class LineGenerator extends Component<
    * @param {Number} props.svgX the x coordinate for svg draw
    * @param {Number} props.svgY the y coordinate for svg draw
    */
-  markFilled({ x, y, svgX, svgY }) {
+  markFilled({ x, y, svgX, svgY }: Point) {
     const newFilled = this.state.fillMatrix.slice()
     newFilled[x][y] = 1
     this.setState({ fillMatrix: newFilled })
     this.addToLine({ x, y, svgX, svgY })
   }
 
-  unfill(x, y) {
+  unfill(x: number, y: number) {
     const newFilled = this.state.fillMatrix.slice()
     newFilled[x][y] = 0
     this.setState({ fillMatrix: newFilled })
   }
 
-  addToLine({ x, y, svgX, svgY }) {
+  addToLine({ x, y, svgX, svgY }: Point) {
     const { line } = this.state
     if (!line) {
       const point: Point = { x, y, svgX, svgY }

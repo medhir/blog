@@ -1,11 +1,17 @@
-import { Directions } from 'Components/CurveTool/tile/utils'
-import { CurveProps } from './index'
+import {
+  Directions,
+  NextDiagonalDirection,
+} from 'Components/CurveTool/Direction'
+import { CurveProps, CurveState } from 'Components/CurveTool/Curve'
 
 /**
  * Matrix generates a matrix for grid metadata
  * @param {number} size size of the grid
  */
-const Matrix = (size: number, initialValue: boolean = true): boolean[][] => {
+export const Matrix = (
+  size: number,
+  initialValue: boolean = true
+): boolean[][] => {
   const grid: boolean[][] = []
   for (let i = 0; i < size; i++) {
     const row: boolean[] = []
@@ -18,43 +24,13 @@ const Matrix = (size: number, initialValue: boolean = true): boolean[][] => {
 }
 
 /**
- * PotentialDiagonalDirections describes the potential diagonal directions a tile can take,
- * given a horizontal or vertical direction
- */
-export const PotentialDiagonalDirections = {
-  Up: [Directions.RightUp, Directions.LeftUp],
-  Down: [Directions.RightDown, Directions.LeftDown],
-  Right: [Directions.RightUp, Directions.RightDown],
-  Left: [Directions.LeftUp, Directions.LeftDown],
-}
-
-export const NextDiagonalDirection = {
-  RightUp: {
-    Right: Directions.RightDown,
-    Up: Directions.LeftUp,
-  },
-  RightDown: {
-    Right: Directions.RightUp,
-    Down: Directions.LeftDown,
-  },
-  LeftUp: {
-    Left: Directions.LeftDown,
-    Up: Directions.RightUp,
-  },
-  LeftDown: {
-    Left: Directions.LeftUp,
-    Down: Directions.RightDown,
-  },
-}
-
-/**
  * ValidMatrix returns points on the grid that are valid to extend the curve
  * @param curveProps
- * @param fillMatrix
+ * @param curveState
  */
 export const ValidMatrix = (
   { gridSize, rules, points }: CurveProps,
-  fillMatrix: boolean[][]
+  { fillMatrix }: CurveState
 ): boolean[][] => {
   if (rules.length < 1 || points.length < 1) return Matrix(gridSize, true)
   const { x, y } = points[points.length - 1]

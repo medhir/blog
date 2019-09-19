@@ -1,7 +1,10 @@
 import React from 'react'
-import { Directions } from 'Components/CurveTool/tile/utils'
-import Tile, { DescribePath } from 'Components/CurveTool/tile'
-import { Line, TileRule } from 'Components/CurveTool/LineGenerator/interfaces'
+import { Directions } from 'Components/oldCurveTool/tile/utils'
+import Tile, { DescribePath } from 'Components/oldCurveTool/tile'
+import {
+  Line,
+  TileRule,
+} from 'Components/oldCurveTool/LineGenerator/interfaces'
 
 /**
  * EmptyMatrix generates an empty matrix to construct a grid
@@ -86,7 +89,7 @@ export const GenerateTileRules = (line: Line): TileRule[] | undefined => {
     return undefined
   }
 
-  const generateRules = (tileRules, line) => {
+  const generateRules = (tileRules: TileRule[], line: Line) => {
     // get first tile rule
     const initialRule = tileRules[0]
     if (!initialRule) {
@@ -140,7 +143,7 @@ export const GenerateTileRules = (line: Line): TileRule[] | undefined => {
   else return potentialRules[1]
 }
 
-const DistanceCartesian = radius => {
+const DistanceCartesian = (radius: number) => {
   return Math.sqrt(Math.pow(radius, 2) / 2)
 }
 

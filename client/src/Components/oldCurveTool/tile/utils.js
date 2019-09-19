@@ -132,7 +132,7 @@ export const StatefulMover = start => {
  * @param {boolean} largeArc Large part of arc drawn between start and end.
  * @param {boolean} sweep Direction of arc.
  */
-export const GenerateArcPath = (start, end, radius, largeArc, sweep) => {
+export const GenerateArc = (start, end, radius, largeArc, sweep) => {
   return `M ${start.x} ${start.y} A ${radius} ${radius}, 0, ${
     largeArc ? '1' : '0'
   }, ${sweep ? '1' : '0'}, ${end.x} ${end.y} `

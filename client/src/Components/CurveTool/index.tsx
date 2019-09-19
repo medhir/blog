@@ -1,12 +1,12 @@
 import React from 'react'
-import Lines from './lines'
+import Curves from './Curves'
 
 import './index.css'
 
 class CurveTool extends React.PureComponent {
   render() {
     return (
-      <section className="curveTool">
+      <section className="CurveTool">
         <h2>curvetool</h2>
         <p>curvy space filling vector generator for electrode patterning.</p>
         <p>
@@ -14,7 +14,7 @@ class CurveTool extends React.PureComponent {
           is randomized to minimize strain on electrode wires.
         </p>
         <p>Click any two adjacent squares to start the curve.</p>
-        <Lines />
+        <Curves />
       </section>
     )
   }

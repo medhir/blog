@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { Point } from 'Components/CurveTool/LineGenerator/interfaces'
+import { Point } from 'Components/CurveTool/Curve/types'
 
 interface CellProps {
   x: number
@@ -39,13 +39,7 @@ export default class Cell extends PureComponent<CellProps> {
           valid ? 'grid-cell-valid' : 'grid-cell-invalid'
         } ${visible ? '' : 'grid-cell-invisible'}`}
         onClick={() => {
-          if (valid)
-            markFilled({
-              x,
-              y,
-              svgX,
-              svgY,
-            })
+          if (valid) markFilled({ x, y })
         }}
       />
     )

@@ -1,6 +1,9 @@
-import { Directions } from 'Components/CurveTool/tile/utils'
-import { NextDiagonalDirection, PotentialDiagonalDirections } from './util'
-import { Point, Rule } from './types'
+import {
+  Directions,
+  NextDiagonalDirection,
+  PotentialDiagonalDirections,
+} from 'Components/CurveTool/Direction'
+import { Point, Rule } from 'Components/CurveTool/Curve/types'
 
 /**
  * GetDirection returns the directions given two points
@@ -25,7 +28,7 @@ const GetDirection = (point1: Point, point2: Point): string | null => {
 }
 
 /**
- * GenerateRules generates peano curve tiles for a continuous line
+ * GenerateRules generates peano curve rules for a continuous line
  * @param points array of points representing a line
  */
 export const GenerateRules = (points: Point[]): Rule[] => {
@@ -35,7 +38,7 @@ export const GenerateRules = (points: Point[]): Rule[] => {
     return []
   }
 
-  const generateRules = (rules, points) => {
+  const generateRules = (rules: Rule[], points: Point[]): Rule[] => {
     // get first rule
     const initialRule = rules[0]
     if (!initialRule) {
