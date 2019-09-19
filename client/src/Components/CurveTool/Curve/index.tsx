@@ -5,7 +5,7 @@ import { Point, Rule } from './types'
 
 export interface CurveProps {
   cellSize: number
-  className: string
+  className?: string
   fillMatrix?: boolean[][]
   gridSize: number
   markFilled: (point: Point) => void
@@ -39,11 +39,12 @@ export default class Curve extends Component<CurveProps, CurveState> {
   }
 
   render() {
-    const { cellSize, fillMatrix, markFilled, visible } = this.props
-    const { validMatrix } = this.state
+    const { cellSize, markFilled, visible } = this.props
+    const { fillMatrix, validMatrix } = this.state
     return (
       <g>
         {fillMatrix &&
+          validMatrix.length > 0 &&
           fillMatrix.map((row, x) => (
             <g>
               {row.map((cell, y) => (
@@ -54,7 +55,7 @@ export default class Curve extends Component<CurveProps, CurveState> {
                   svgY={10 + y * cellSize}
                   size={cellSize}
                   filled={cell !== false}
-                  valid={validMatrix ? validMatrix[x][y] : true}
+                  valid={validMatrix[x][y]}
                   visible={visible}
                   markFilled={markFilled}
                 />

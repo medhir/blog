@@ -24,10 +24,12 @@ const Checkbox = ({ children, onChange, checked, id }) => (
 )
 
 const Controls = ({
-  strokeWidth,
+  cellSize,
   gridChecked,
-  updateStrokeWidth,
+  strokeWidth,
   toggleGrid,
+  updateCellSize,
+  updateStrokeWidth,
 }) => (
   <div className="Lines__input-group">
     <Range
@@ -39,6 +41,16 @@ const Controls = ({
       value={strokeWidth}
     >
       Stroke Width
+    </Range>
+    <Range
+      id="cell-size"
+      min="10"
+      max="40"
+      step="0.5"
+      onChange={updateCellSize}
+      value={cellSize}
+    >
+      Cell Size
     </Range>
     <Checkbox id="grid" checked={gridChecked} onChange={toggleGrid}>
       Grid

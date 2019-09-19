@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react'
 import { Point } from 'Components/CurveTool/Curve/types'
+import './cell.css'
 
 interface CellProps {
   x: number

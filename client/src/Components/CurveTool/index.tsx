@@ -14,7 +14,7 @@ class CurveTool extends React.PureComponent {
           is randomized to minimize strain on electrode wires.
         </p>
         <p>Click any two adjacent squares to start the curve.</p>
-        <Curves />
+        <Curves gridSize={25} />
       </section>
     )
   }
