@@ -27,39 +27,42 @@ const GetDirection = (point1: Point, point2: Point): string | null => {
   }
 }
 
+const generateRules = (rules: Rule[], points: Point[]): Rule[] => {
+  // get first rule
+  const initialRule = rules[0]
+  if (!initialRule) {
+    return
+  }
+  while (rules.length !== points.length) {
+    const previousRule = rules[rules.length - 1]
+    const { diagonal } = previousRule
+    const point1 = Object.assign({}, points[points.length - rules.length])
+    const point2 = Object.assign({}, points[points.length - 1 - rules.length])
+    const direction = GetDirection(point1, point2)
+    const nextDiagonal = NextDiagonalDirection[diagonal][direction]
+    if (nextDiagonal) {
+      previousRule.direction = direction
+      rules.push({
+        diagonal: nextDiagonal,
+        direction: direction,
+      })
+    } else {
+      return
+    }
+  }
+  return rules
+}
+
 /**
  * GenerateRules generates peano curve rules for a continuous line
  * @param points array of points representing a line
  */
 export const GenerateRules = (points: Point[]): Rule[] => {
+  debugger
   const pointStack = points.slice().reverse()
   const initialSize = points.length
   if (initialSize === 0 || initialSize === 1) {
     return []
-  }
-
-  const generateRules = (rules: Rule[], points: Point[]): Rule[] => {
-    // get first rule
-    const initialRule = rules[0]
-    if (!initialRule) {
-      return
-    }
-    while (rules.length !== points.length) {
-      const previousRule = rules[rules.length - 1]
-      const { diagonal } = previousRule
-      const point1 = Object.assign({}, points[points.length - rules.length])
-      const point2 = Object.assign({}, points[points.length - 1 - rules.length])
-      const direction = GetDirection(point1, point2)
-      const nextDiagonal = NextDiagonalDirection[diagonal][direction]
-      if (nextDiagonal) {
-        previousRule.direction = direction
-        rules.push({
-          diagonal: nextDiagonal,
-          direction: direction,
-        })
-      }
-    }
-    return rules
   }
 
   const point1 = Object.assign({}, pointStack[pointStack.length - 1])
@@ -86,6 +89,11 @@ export const GenerateRules = (points: Point[]): Rule[] => {
       pointStack
     ),
   ]
-  if (potentialRules[0]) return potentialRules[0]
-  else return potentialRules[1]
+  if (potentialRules[0] && potentialRules[0].length === points.length)
+    return potentialRules[0]
+  else if (potentialRules[1] && potentialRules[1].length === points.length) {
+    return potentialRules[1]
+  } else {
+    return []
+  }
 }

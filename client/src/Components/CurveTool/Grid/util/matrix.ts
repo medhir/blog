@@ -37,7 +37,7 @@ export const ValidMatrix = (
   if (points.length < 1) return Matrix(gridSize, true)
   const { x, y } = points[points.length - 1]
   let prevDiagonal
-  if (rules) {
+  if (rules.length > 1) {
     prevDiagonal = rules[rules.length - 1].diagonal
   }
   const validMatrix = Matrix(gridSize, false)

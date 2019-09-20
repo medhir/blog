@@ -86,18 +86,12 @@ class Curves extends Component<CurveProps, CurvesState> {
         curve.points.push(point)
         if (curve.points.length > 1) {
           curve.rules = GenerateRules(curve.points)
-          curve.validMatrix = ValidMatrix(
-            gridSize,
-            curve.rules,
-            curve.points,
-            curve.fillMatrix
-          )
         }
       }
       return curve
     })
 
-    this.setState({ curves: newCurves })
+    this.setState({ curves: newCurves }, this.updateCurrentValidMatrix)
   }
 
   /**
