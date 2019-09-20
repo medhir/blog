@@ -2,7 +2,7 @@ import {
   Directions,
   NextDiagonalDirection,
 } from 'Components/CurveTool/Direction'
-import { CurveProps, CurveState } from 'Components/CurveTool/Curve'
+import { Rule, Point } from 'Components/CurveTool/Grid/types'
 
 /**
  * Matrix generates a matrix for grid metadata
@@ -29,12 +29,17 @@ export const Matrix = (
  * @param curveState
  */
 export const ValidMatrix = (
-  { gridSize, rules, points }: CurveProps,
-  { fillMatrix }: CurveState
+  gridSize: number,
+  rules: Rule[],
+  points: Point[],
+  fillMatrix: boolean[][]
 ): boolean[][] => {
-  if (rules.length < 1 || points.length < 1) return Matrix(gridSize, true)
+  if (points.length < 1) return Matrix(gridSize, true)
   const { x, y } = points[points.length - 1]
-  const prevDiagonal = rules[rules.length - 1].diagonal
+  let prevDiagonal
+  if (rules) {
+    prevDiagonal = rules[rules.length - 1].diagonal
+  }
   const validMatrix = Matrix(gridSize, false)
   // check left
   if (
@@ -42,11 +47,7 @@ export const ValidMatrix = (
     !fillMatrix[x - 1][y] // not filled
   ) {
     validMatrix[x - 1][y] = true
-    if (
-      rules &&
-      prevDiagonal &&
-      !NextDiagonalDirection[prevDiagonal][Directions.Left]
-    ) {
+    if (prevDiagonal && !NextDiagonalDirection[prevDiagonal][Directions.Left]) {
       // if not a valid path for rules, set to not valid
       validMatrix[x - 1][y] = false
     }
@@ -55,7 +56,6 @@ export const ValidMatrix = (
   if (x + 1 < gridSize && !fillMatrix[x + 1][y]) {
     validMatrix[x + 1][y] = true
     if (
-      rules &&
       prevDiagonal &&
       !NextDiagonalDirection[prevDiagonal][Directions.Right]
     ) {
@@ -65,22 +65,14 @@ export const ValidMatrix = (
   // check top
   if (y - 1 > -1 && !fillMatrix[x][y - 1]) {
     validMatrix[x][y - 1] = true
-    if (
-      rules &&
-      prevDiagonal &&
-      !NextDiagonalDirection[prevDiagonal][Directions.Up]
-    ) {
+    if (prevDiagonal && !NextDiagonalDirection[prevDiagonal][Directions.Up]) {
       validMatrix[x][y - 1] = false
     }
   }
   // check bottom
   if (y + 1 < gridSize && !fillMatrix[x][y + 1]) {
     validMatrix[x][y + 1] = true
-    if (
-      rules &&
-      prevDiagonal &&
-      !NextDiagonalDirection[prevDiagonal][Directions.Down]
-    ) {
+    if (prevDiagonal && !NextDiagonalDirection[prevDiagonal][Directions.Down]) {
       validMatrix[x][y + 1] = false
     }
   }

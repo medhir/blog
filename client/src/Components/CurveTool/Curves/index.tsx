@@ -1,13 +1,18 @@
 import React, { Component } from 'react'
-import Curve from 'Components/CurveTool/Curve'
-import { Point, Rule } from 'Components/CurveTool/Curve/types'
+import Grid from 'Components/CurveTool/Grid'
+import { Point, Rule } from 'Components/CurveTool/Grid/types'
 import Inputs from './controls'
+import { Tiles } from 'Components/CurveTool/Path'
 import './index.css'
+import { Matrix, ValidMatrix } from 'Components/CurveTool/Grid/util'
+import { GenerateRules } from './rule_generator'
 
 interface CurveData {
   points: Point[]
   rules: Rule[]
   strokeWidth: number
+  fillMatrix: boolean[][]
+  validMatrix?: boolean[][]
 }
 
 interface CurveProps {
@@ -18,7 +23,7 @@ interface CurveProps {
 interface CurvesState {
   cellSize: number
   curves: CurveData[]
-  currentCurveIndex: number
+  index: number
   gridChecked: boolean
   strokeWidth: number
 }
@@ -29,7 +34,7 @@ const InitialCellSize = 25
 class Curves extends Component<CurveProps, CurvesState> {
   constructor(props: CurveProps) {
     super(props)
-    const { cellSize } = this.props
+    const { cellSize, gridSize } = this.props
     this.state = {
       strokeWidth: InitialStrokeWidth,
       gridChecked: true,
@@ -38,14 +43,61 @@ class Curves extends Component<CurveProps, CurvesState> {
         {
           points: [],
           rules: [],
+          fillMatrix: Matrix(gridSize, false),
           strokeWidth: InitialStrokeWidth,
         },
       ],
-      currentCurveIndex: 0,
+      index: 0,
     }
+    this.markFilled = this.markFilled.bind(this)
     this.updateStrokeWidth = this.updateStrokeWidth.bind(this)
     this.updateCellSize = this.updateCellSize.bind(this)
     this.toggleGrid = this.toggleGrid.bind(this)
+  }
+
+  componentDidMount() {
+    this.updateCurrentValidMatrix()
+  }
+
+  updateCurrentValidMatrix() {
+    const { gridSize } = this.props
+    const { curves, index } = this.state
+    const newCurves = curves.map((curve, i) => {
+      if (i === index) {
+        curve.validMatrix = ValidMatrix(
+          gridSize,
+          curve.rules,
+          curve.points,
+          curve.fillMatrix
+        )
+      }
+      return curve
+    })
+    this.setState({ curves: newCurves })
+  }
+
+  markFilled(point: Point) {
+    const { gridSize } = this.props
+    const { curves, index } = this.state
+    const newCurves = curves.map((curve, i) => {
+      if (i === index) {
+        const { x, y } = point
+        curve.fillMatrix[x][y] = true
+        curve.points.push(point)
+        if (curve.points.length > 1) {
+          curve.rules = GenerateRules(curve.points)
+          curve.validMatrix = ValidMatrix(
+            gridSize,
+            curve.rules,
+            curve.points,
+            curve.fillMatrix
+          )
+        }
+      }
+      return curve
+    })
+
+    this.setState({ curves: newCurves })
   }
 
   /**
@@ -62,11 +114,15 @@ class Curves extends Component<CurveProps, CurvesState> {
    * @param e
    */
   updateStrokeWidth(e: Event): void {
-    const { curves, currentCurveIndex } = this.state
+    const { curves, index } = this.state
     const updatedWidth = Number((e.target as HTMLInputElement).value)
     this.setState({ strokeWidth: updatedWidth })
-    const newCurves = curves.slice()
-    newCurves[currentCurveIndex].strokeWidth = updatedWidth
+    const newCurves = curves.map((curve, i) => {
+      if (i === index) {
+        curve.strokeWidth = updatedWidth
+      }
+      return curve
+    })
     this.setState({ curves: newCurves })
   }
 
@@ -83,13 +139,7 @@ class Curves extends Component<CurveProps, CurvesState> {
 
   render() {
     const { gridSize } = this.props
-    const {
-      cellSize,
-      curves,
-      currentCurveIndex,
-      gridChecked,
-      strokeWidth,
-    } = this.state
+    const { cellSize, curves, index, gridChecked, strokeWidth } = this.state
     return (
       <div className="Curves">
         <Inputs
@@ -101,14 +151,29 @@ class Curves extends Component<CurveProps, CurvesState> {
           updateStrokeWidth={this.updateStrokeWidth}
         />
         <svg className="FullHeight">
-          <Curve
+          <Grid
             cellSize={cellSize}
             gridSize={gridSize}
-            markFilled={() => {}}
-            points={curves[currentCurveIndex].points}
-            rules={curves[currentCurveIndex].rules}
+            fillMatrix={curves[index].fillMatrix}
+            validMatrix={curves[index].validMatrix}
+            markFilled={this.markFilled}
+            points={curves[index].points}
+            rules={curves[index].rules}
             visible={gridChecked}
           />
+          {curves &&
+            curves.map((curve, i) => (
+              <g key={`curve-${i}`}>
+                {curve.rules && curve.rules.length > 1 && (
+                  <Tiles
+                    rules={curve.rules}
+                    points={curve.points}
+                    cellSize={cellSize}
+                    strokeWidth={curve.strokeWidth}
+                  />
+                )}
+              </g>
+            ))}
         </svg>
       </div>
     )

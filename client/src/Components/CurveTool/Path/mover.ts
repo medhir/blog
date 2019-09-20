@@ -1,5 +1,5 @@
 import { Directions } from 'Components/CurveTool/Direction'
-import { Point } from 'Components/CurveTool/Curve/types'
+import { Point } from 'Components/CurveTool/Grid/types'
 
 /**
  * StatefulMover holds the cursor position in memory. Calls to StatefulMover's methods return

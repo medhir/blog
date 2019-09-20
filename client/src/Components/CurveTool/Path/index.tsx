@@ -6,7 +6,7 @@ import {
   DirectionAndAngleRule,
   HorizontalOrVerticalRule,
 } from 'Components/CurveTool/Direction/rules'
-import { Point } from 'Components/CurveTool/Curve/types'
+import { Point, Rule } from 'Components/CurveTool/Grid/types'
 
 const DistanceCartesian = (radius: number): number => {
   return Math.sqrt(Math.pow(radius, 2) / 2)
@@ -22,7 +22,7 @@ const DistanceCartesian = (radius: number): number => {
  * @param {String} direction direction of the connector for the next curve
  * @param {String|Null} orientation whether to draw horizontally or vertically
  */
-export const DescribePath = (
+const DescribePath = (
   radius: number,
   start: Point,
   diagonal: string,
@@ -119,4 +119,32 @@ const Tile = ({
   )
 }
 
-export default Tile
+interface TilesProps {
+  rules: Rule[]
+  points: Point[]
+  cellSize: number
+  strokeWidth: number
+}
+
+/**
+ * Tiles returns SVG paths for a given set of rules for a line
+ */
+export const Tiles = ({ rules, points, cellSize, strokeWidth }: TilesProps) => {
+  return (
+    <g>
+      {rules.map((rule, i) => (
+        <Tile
+          radius={DistanceCartesian(cellSize / 3)}
+          start={{
+            x: 10 + points[i].x * cellSize + cellSize / 2,
+            y: 10 + points[i].y * cellSize + cellSize / 2,
+          }}
+          diagonal={rule.diagonal}
+          direction={rule.direction}
+          strokeWidth={strokeWidth}
+          key={`curve-${i}`}
+        />
+      ))}
+    </g>
+  )
+}

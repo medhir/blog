@@ -3,7 +3,7 @@ import {
   NextDiagonalDirection,
   PotentialDiagonalDirections,
 } from 'Components/CurveTool/Direction'
-import { Point, Rule } from 'Components/CurveTool/Curve/types'
+import { Point, Rule } from 'Components/CurveTool/Grid/types'
 
 /**
  * GetDirection returns the directions given two points

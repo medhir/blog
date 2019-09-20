@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { Point } from 'Components/CurveTool/Curve/types'
+import { Point } from 'Components/CurveTool/Grid/types'
 import './cell.css'
 
 interface CellProps {

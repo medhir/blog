@@ -1,4 +1,4 @@
-import { Point } from 'Components/CurveTool/Curve/types'
+import { Point } from 'Components/CurveTool/Grid/types'
 
 export const PolarToCartesian = (
   center: Point,
