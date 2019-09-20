@@ -58,7 +58,6 @@ const generateRules = (rules: Rule[], points: Point[]): Rule[] => {
  * @param points array of points representing a line
  */
 export const GenerateRules = (points: Point[]): Rule[] => {
-  debugger
   const pointStack = points.slice().reverse()
   const initialSize = points.length
   if (initialSize === 0 || initialSize === 1) {

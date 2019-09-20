@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Grid from 'Components/CurveTool/Grid'
 import { Point, Rule } from 'Components/CurveTool/Grid/types'
-import Inputs from './controls'
+import Controls from './controls'
 import { Tiles } from 'Components/CurveTool/Path'
 import './index.css'
 import { Matrix, ValidMatrix } from 'Components/CurveTool/Grid/util'
@@ -49,6 +49,8 @@ class Curves extends Component<CurveProps, CurvesState> {
       ],
       index: 0,
     }
+    this.addCurve = this.addCurve.bind(this)
+    this.changeCurve = this.changeCurve.bind(this)
     this.markFilled = this.markFilled.bind(this)
     this.updateStrokeWidth = this.updateStrokeWidth.bind(this)
     this.updateCellSize = this.updateCellSize.bind(this)
@@ -76,8 +78,35 @@ class Curves extends Component<CurveProps, CurvesState> {
     this.setState({ curves: newCurves })
   }
 
-  markFilled(point: Point) {
+  addCurve() {
     const { gridSize } = this.props
+    const { curves, strokeWidth } = this.state
+    const newCurves = curves.slice()
+    newCurves.push({
+      points: [],
+      rules: [],
+      fillMatrix: Matrix(gridSize, false),
+      strokeWidth: strokeWidth,
+    })
+    this.setState(
+      {
+        curves: newCurves,
+        index: newCurves.length - 1,
+      },
+      this.updateCurrentValidMatrix
+    )
+  }
+
+  changeCurve(index: number) {
+    this.setState(
+      {
+        index: index,
+      },
+      this.updateCurrentValidMatrix
+    )
+  }
+
+  markFilled(point: Point) {
     const { curves, index } = this.state
     const newCurves = curves.map((curve, i) => {
       if (i === index) {
@@ -136,7 +165,10 @@ class Curves extends Component<CurveProps, CurvesState> {
     const { cellSize, curves, index, gridChecked, strokeWidth } = this.state
     return (
       <div className="Curves">
-        <Inputs
+        <Controls
+          addCurve={this.addCurve}
+          changeCurve={this.changeCurve}
+          curvesLength={curves.length}
           cellSize={cellSize}
           gridChecked={gridChecked}
           strokeWidth={strokeWidth}
