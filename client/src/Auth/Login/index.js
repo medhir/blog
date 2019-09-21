@@ -1,5 +1,5 @@
-import React, { Component, Fragment } from 'react';
-import './Login.css';
+import React, { Component } from 'react'
+import './Login.css'
 
 class Login extends Component {
   render() {
@@ -29,8 +29,8 @@ class Login extends Component {
           <button type="submit">Log In</button>
         </form>
       </section>
-    );
+    )
   }
 }
 
-export default Login;
+export default Login

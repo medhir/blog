@@ -1,28 +1,33 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
-import PropTypes from 'prop-types'
 import { saveAs } from 'file-saver'
 import Cell from './cell'
 import {
   EmptyMatrix,
-  GetDirection,
   NextDiagonalDirection,
-  TileRules,
+  GenerateTileRules,
   Tiles,
 } from './generator'
+import {
+  Point,
+  Line,
+  LineGeneratorProps,
+  LineGeneratorState,
+} from './interfaces'
 import './index.css'
-import { Directions } from 'Components/CurveTool/tile/utils'
+import { Directions } from 'Components/oldCurveTool/tile/utils'
 
-export default class Grid extends Component {
-  constructor(props) {
+export default class LineGenerator extends Component<
+  LineGeneratorProps,
+  LineGeneratorState
+> {
+  constructor(props: LineGeneratorProps) {
     super(props)
     const { gridSize } = props
     this.state = {
       fillMatrix: EmptyMatrix(gridSize),
-      validMatrix: null,
-      line: null,
-      position: null,
-      tileRules: null,
+      line: [],
+      position: { x: 0, y: 0, svgX: 0, svgY: 0 },
     }
 
     this.markFilled = this.markFilled.bind(this)
@@ -48,37 +53,39 @@ export default class Grid extends Component {
    * @param {Number} props.svgX the x coordinate for svg draw
    * @param {Number} props.svgY the y coordinate for svg draw
    */
-  markFilled({ x, y, svgX, svgY }) {
-    const { line } = this.state
+  markFilled({ x, y, svgX, svgY }: Point) {
     const newFilled = this.state.fillMatrix.slice()
     newFilled[x][y] = 1
     this.setState({ fillMatrix: newFilled })
     this.addToLine({ x, y, svgX, svgY })
   }
 
-  unfill(x, y) {
+  unfill(x: number, y: number) {
     const newFilled = this.state.fillMatrix.slice()
     newFilled[x][y] = 0
     this.setState({ fillMatrix: newFilled })
   }
 
-  addToLine({ x, y, svgX, svgY }) {
+  addToLine({ x, y, svgX, svgY }: Point) {
     const { line } = this.state
     if (!line) {
+      const point: Point = { x, y, svgX, svgY }
+      const newLine: Line = [{ x, y, svgX, svgY }]
       this.setState(
         {
-          line: [{ x, y, svgX, svgY }],
-          position: { x: x, y: y },
+          line: newLine,
+          position: point,
         },
         this.calculateValidTilesAndRules
       )
     } else {
+      const point: Point = { x, y, svgX, svgY }
       const newLine = line.slice()
-      newLine.push({ x, y, svgX, svgY })
+      newLine.push(point)
       this.setState(
         {
           line: newLine,
-          position: { x: x, y: y },
+          position: point,
         },
         this.calculateValidTilesAndRules
       )
@@ -87,12 +94,14 @@ export default class Grid extends Component {
 
   calculateValidTilesAndRules() {
     const { line } = this.state
-    this.setState(
-      {
-        tileRules: TileRules(line),
-      },
-      this.calculateValidMatrix
-    )
+    if (line && line.length && line.length > 1) {
+      this.setState(
+        {
+          tileRules: GenerateTileRules(line),
+        },
+        this.calculateValidMatrix
+      )
+    }
   }
   /**
    * calculateValidMatrix calculates whether or not a cell can be added to the line
@@ -111,7 +120,11 @@ export default class Grid extends Component {
       !fillMatrix[x - 1][y] // not filled
     ) {
       newValidMatrix[x - 1][y] = 1
-      if (tileRules && !NextDiagonalDirection[prevDiagonal][Directions.Left]) {
+      if (
+        tileRules &&
+        prevDiagonal &&
+        !NextDiagonalDirection[prevDiagonal][Directions.Left]
+      ) {
         // if not a valid path for tileRules, set to not valid
         newValidMatrix[x - 1][y] = 0
       }
@@ -119,21 +132,33 @@ export default class Grid extends Component {
     // check right
     if (x + 1 < gridSize && !fillMatrix[x + 1][y]) {
       newValidMatrix[x + 1][y] = 1
-      if (tileRules && !NextDiagonalDirection[prevDiagonal][Directions.Right]) {
+      if (
+        tileRules &&
+        prevDiagonal &&
+        !NextDiagonalDirection[prevDiagonal][Directions.Right]
+      ) {
         newValidMatrix[x + 1][y] = 0
       }
     }
     // check top
     if (y - 1 > -1 && !fillMatrix[x][y - 1]) {
       newValidMatrix[x][y - 1] = 1
-      if (tileRules && !NextDiagonalDirection[prevDiagonal][Directions.Up]) {
+      if (
+        tileRules &&
+        prevDiagonal &&
+        !NextDiagonalDirection[prevDiagonal][Directions.Up]
+      ) {
         newValidMatrix[x][y - 1] = 0
       }
     }
     // check bottom
     if (y + 1 < gridSize && !fillMatrix[x][y + 1]) {
       newValidMatrix[x][y + 1] = 1
-      if (tileRules && !NextDiagonalDirection[prevDiagonal][Directions.Down]) {
+      if (
+        tileRules &&
+        prevDiagonal &&
+        !NextDiagonalDirection[prevDiagonal][Directions.Down]
+      ) {
         newValidMatrix[x][y + 1] = 0
       }
     }
@@ -209,10 +234,4 @@ export default class Grid extends Component {
       </React.Fragment>
     )
   }
-}
-
-Grid.propTypes = {
-  cellSize: PropTypes.number.isRequired,
-  gridSize: PropTypes.number.isRequired,
-  strokeWidth: PropTypes.number.isRequired,
 }

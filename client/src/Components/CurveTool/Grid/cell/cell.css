@@ -1,0 +1,24 @@
+.grid-cell {
+  fill: white;
+  stroke: black;
+  stroke-width: 1;
+  stroke-dasharray: 1, 1;
+  transition: fill 150ms ease-in-out;
+}
+
+.grid-cell-invisible {
+  stroke: none;
+}
+
+.grid-cell-valid:hover {
+  cursor: pointer;
+  fill: rgb(50, 205, 50);
+}
+
+.grid-cell-filled {
+  fill: rgba(50, 205, 50, 0.3);
+}
+
+.grid-cell-invalid:hover {
+  fill: red;
+}

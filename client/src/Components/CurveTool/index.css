@@ -1,17 +1,12 @@
-section.curveTool {
+section.CurveTool {
   margin-top: 20px;
 }
-section.curveTool > h3,
-section.curveTool > p {
+section.CurveTool > h3,
+section.CurveTool > p {
   margin: 20px 0px;
 }
 
-svg.headerVector {
+svg.HeaderVector {
   width: 100%;
   height: 200px;
-}
-
-svg.fullHeight {
-  width: 100%;
-  height: 100vh;
 }

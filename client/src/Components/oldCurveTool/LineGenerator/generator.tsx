@@ -1,15 +1,19 @@
 import React from 'react'
-import { Directions } from 'Components/CurveTool/tile/utils'
-import Tile from 'Components/CurveTool/tile'
+import { Directions } from 'Components/oldCurveTool/tile/utils'
+import Tile, { DescribePath } from 'Components/oldCurveTool/tile'
+import {
+  Line,
+  TileRule,
+} from 'Components/oldCurveTool/LineGenerator/interfaces'
 
 /**
  * EmptyMatrix generates an empty matrix to construct a grid
- * @param {Number} size size of the grid
+ * @param {number} size size of the grid
  */
-export const EmptyMatrix = size => {
-  const grid = []
+export const EmptyMatrix = (size: number): number[][] => {
+  const grid: number[][] = []
   for (let i = 0; i < size; i++) {
-    const row = []
+    const row: number[] = []
     for (let j = 0; j < size; j++) {
       row.push(0)
     }
@@ -48,12 +52,16 @@ export const NextDiagonalDirection = {
   },
 }
 
+interface point {
+  x: number
+  y: number
+}
 /**
  * GetDirection returns the directions given two points
  * @param {Object} point1
  * @param {Object} point2
  */
-export const GetDirection = (point1, point2) => {
+export const GetDirection = (point1: point, point2: point): string | null => {
   const dx = point2.x - point1.x
   const dy = point2.y - point1.y
 
@@ -65,21 +73,23 @@ export const GetDirection = (point1, point2) => {
     return Directions.Right
   } else if (dx === -1 && dy === 0) {
     return Directions.Left
+  } else {
+    return null
   }
 }
 
 /**
  * TileRules generates peano curve tiles for a continuous line
- * @param {Array} line array of points representing a line
+ * @param {Line} line array of points representing a line
  */
-export const TileRules = line => {
+export const GenerateTileRules = (line: Line): TileRule[] | undefined => {
   const points = line.slice().reverse()
-  const initialSize = Number(line.length)
+  const initialSize = line.length
   if (initialSize === 0 || initialSize === 1) {
-    return null
+    return undefined
   }
 
-  const generateRules = (tileRules, line) => {
+  const generateRules = (tileRules: TileRule[], line: Line) => {
     // get first tile rule
     const initialRule = tileRules[0]
     if (!initialRule) {
@@ -99,7 +109,7 @@ export const TileRules = line => {
           direction: direction,
         })
       } else {
-        return null
+        return undefined
       }
     }
     return tileRules
@@ -108,8 +118,8 @@ export const TileRules = line => {
   const point1 = Object.assign({}, points[points.length - 1])
   const point2 = Object.assign({}, points[points.length - 2])
   const direction = GetDirection(point1, point2)
-  const potentialDiagonals = PotentialDiagonalDirections[direction]
-  const potentialRules = [
+  const potentialDiagonals = PotentialDiagonalDirections[String(direction)]
+  const potentialRules: TileRule[][] = [
     generateRules(
       [
         {
@@ -133,19 +143,21 @@ export const TileRules = line => {
   else return potentialRules[1]
 }
 
-const DistanceCartesian = radius => {
+const DistanceCartesian = (radius: number) => {
   return Math.sqrt(Math.pow(radius, 2) / 2)
+}
+
+interface TilesProps {
+  rules: TileRule[]
+  line: Line
+  cellSize: number
+  strokeWidth: number
 }
 
 /**
  * Tiles returns SVG paths for a given set of rules for a line
- * @param {Object} props
- * @param {Array} props.rules
- * @param {Array} props.line
- * @param {Number} props.cellSize
- * @param {Number} props.strokeWidth
  */
-export const Tiles = ({ rules, line, cellSize, strokeWidth }) => {
+export const Tiles = ({ rules, line, cellSize, strokeWidth }: TilesProps) => {
   return (
     <g>
       {rules.map((rule, i) => (
@@ -162,5 +174,39 @@ export const Tiles = ({ rules, line, cellSize, strokeWidth }) => {
         />
       ))}
     </g>
+  )
+}
+
+/**
+ * LinePath returns a single SVG path for a set of TilesProps
+ */
+export const LinePath = ({
+  rules,
+  line,
+  cellSize,
+  strokeWidth,
+}: TilesProps) => {
+  let d = ''
+  for (let i = 0; i < rules.length; i++) {
+    const { diagonal, direction } = rules[i]
+    d += DescribePath(
+      DistanceCartesian(cellSize / 3),
+      {
+        x: line[i].svgX + cellSize / 2,
+        y: line[i].svgY + cellSize / 2,
+      },
+      diagonal,
+      direction,
+      null
+    )
+  }
+
+  return (
+    <path
+      stroke="black"
+      strokeWidth={strokeWidth ? strokeWidth : '1'}
+      fill="transparent"
+      d={d}
+    />
   )
 }
