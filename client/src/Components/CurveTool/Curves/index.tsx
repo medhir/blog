@@ -168,6 +168,7 @@ class Curves extends Component<CurveProps, CurvesState> {
           addCurve={this.addCurve}
           changeCurve={this.changeCurve}
           curvesLength={curves.length}
+          currentCurveIndex={index}
           cellSize={cellSize}
           gridChecked={gridChecked}
           strokeWidth={strokeWidth}

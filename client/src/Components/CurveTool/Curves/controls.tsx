@@ -49,8 +49,13 @@ const Checkbox = ({ children, onChange, checked, id }: CheckboxProps) => (
 interface CurveSelectorProps {
   curvesLength: number
   changeCurve: (index: number) => void
+  currentCurveIndex: number
 }
-const CurveSelector = ({ curvesLength, changeCurve }: CurveSelectorProps) => {
+const CurveSelector = ({
+  curvesLength,
+  changeCurve,
+  currentCurveIndex,
+}: CurveSelectorProps) => {
   const curveDescriptors = []
   for (let i = 0; i < curvesLength; i++) {
     curveDescriptors.push({
@@ -61,6 +66,11 @@ const CurveSelector = ({ curvesLength, changeCurve }: CurveSelectorProps) => {
     <div className="Curves__selector">
       {curveDescriptors.map((descriptor, i) => (
         <button
+          className={
+            i === currentCurveIndex
+              ? 'Curves__controls__button Curves__selector__button-active'
+              : 'Curves__controls__button Curves__selector__button'
+          }
           onClick={() => {
             changeCurve(i)
           }}
@@ -77,6 +87,7 @@ interface ControlsProps {
   changeCurve: (index: number) => void
   cellSize: number
   curvesLength: number
+  currentCurveIndex: number
   gridChecked: boolean
   strokeWidth: number
   toggleGrid: () => void
@@ -89,14 +100,20 @@ const Controls = ({
   changeCurve,
   cellSize,
   curvesLength,
+  currentCurveIndex,
   gridChecked,
   strokeWidth,
   toggleGrid,
   updateCellSize,
   updateStrokeWidth,
 }: ControlsProps) => (
-  <div className="Lines__input-group">
-    <button onClick={addCurve}>Add Curve</button>
+  <div className="Curves__controls">
+    <button
+      className="Curves__controls__button Curves__controls__addCurveButton"
+      onClick={addCurve}
+    >
+      Add Curve
+    </button>
     <Range
       id="stroke-width"
       min={0.1}
@@ -120,7 +137,11 @@ const Controls = ({
     <Checkbox id="grid" checked={gridChecked} onChange={toggleGrid}>
       Grid
     </Checkbox>
-    <CurveSelector curvesLength={curvesLength} changeCurve={changeCurve} />
+    <CurveSelector
+      curvesLength={curvesLength}
+      changeCurve={changeCurve}
+      currentCurveIndex={currentCurveIndex}
+    />
   </div>
 )
 

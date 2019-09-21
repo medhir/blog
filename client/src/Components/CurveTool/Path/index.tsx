@@ -85,6 +85,7 @@ const DescribePath = (
 }
 
 interface TileProps {
+  active: boolean
   radius: number
   start: Point
   diagonal: string
@@ -134,6 +135,7 @@ export const Tiles = ({ rules, points, cellSize, strokeWidth }: TilesProps) => {
     <g>
       {rules.map((rule, i) => (
         <Tile
+          active={false}
           radius={DistanceCartesian(cellSize / 3)}
           start={{
             x: 10 + points[i].x * cellSize + cellSize / 2,

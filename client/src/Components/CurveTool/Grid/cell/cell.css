@@ -16,7 +16,7 @@
 }
 
 .grid-cell-filled {
-  fill: none;
+  fill: rgba(50, 205, 50, 0.3);
 }
 
 .grid-cell-invalid:hover {

@@ -10,8 +10,3 @@ svg.HeaderVector {
   width: 100%;
   height: 200px;
 }
-
-svg.FullHeight {
-  width: 100%;
-  height: 100vh;
-}
