@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, ChangeEvent } from 'react'
 import Grid from 'Components/CurveTool/Grid'
 import { Point, Rule } from 'Components/CurveTool/Grid/types'
 import Controls from './controls'
@@ -127,7 +127,7 @@ class Curves extends Component<CurveProps, CurvesState> {
    * updateCellSize updates the size of cells in the grid
    * @param e
    */
-  updateCellSize(e: Event): void {
+  updateCellSize(e: ChangeEvent<HTMLInputElement>): void {
     const updatedCellSize = Number((e.target as HTMLInputElement).value)
     this.setState({ cellSize: updatedCellSize })
   }
@@ -136,7 +136,7 @@ class Curves extends Component<CurveProps, CurvesState> {
    * updateStrokeWidth updates the application's stroke width, as well as the current curve's stroke width
    * @param e
    */
-  updateStrokeWidth(e: Event): void {
+  updateStrokeWidth(e: ChangeEvent<HTMLInputElement>): void {
     const { curves, index } = this.state
     const updatedWidth = Number((e.target as HTMLInputElement).value)
     this.setState({ strokeWidth: updatedWidth })
@@ -151,9 +151,8 @@ class Curves extends Component<CurveProps, CurvesState> {
 
   /**
    * toggleGrid toggles the visibility of the grid
-   * @param e
    */
-  toggleGrid(e: Event): void {
+  toggleGrid(): void {
     const { gridChecked } = this.state
     this.setState({
       gridChecked: !gridChecked,

@@ -1,6 +1,23 @@
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 
-const Range = ({ children, onChange, min, max, step, value, id }) => (
+interface RangeProps {
+  children: React.ReactNode
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void
+  min: number
+  max: number
+  step: number
+  value: number
+  id: string
+}
+const Range = ({
+  children,
+  onChange,
+  min,
+  max,
+  step,
+  value,
+  id,
+}: RangeProps) => (
   <div className="Curves__input">
     <label htmlFor={id}>{children}</label>
     <input
@@ -16,14 +33,24 @@ const Range = ({ children, onChange, min, max, step, value, id }) => (
   </div>
 )
 
-const Checkbox = ({ children, onChange, checked, id }) => (
+interface CheckboxProps {
+  children: React.ReactNode
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void
+  checked: boolean
+  id: string
+}
+const Checkbox = ({ children, onChange, checked, id }: CheckboxProps) => (
   <div className="Curves__input">
     <label htmlFor={id}>{children}</label>
     <input type="checkbox" name={id} checked={checked} onChange={onChange} />
   </div>
 )
 
-const CurveSelector = ({ curvesLength, changeCurve }) => {
+interface CurveSelectorProps {
+  curvesLength: number
+  changeCurve: (index: number) => void
+}
+const CurveSelector = ({ curvesLength, changeCurve }: CurveSelectorProps) => {
   const curveDescriptors = []
   for (let i = 0; i < curvesLength; i++) {
     curveDescriptors.push({
@@ -45,6 +72,18 @@ const CurveSelector = ({ curvesLength, changeCurve }) => {
   )
 }
 
+interface ControlsProps {
+  addCurve: () => void
+  changeCurve: (index: number) => void
+  cellSize: number
+  curvesLength: number
+  gridChecked: boolean
+  strokeWidth: number
+  toggleGrid: () => void
+  updateCellSize: (e: ChangeEvent<HTMLInputElement>) => void
+  updateStrokeWidth: (e: ChangeEvent<HTMLInputElement>) => void
+}
+
 const Controls = ({
   addCurve,
   changeCurve,
@@ -55,14 +94,14 @@ const Controls = ({
   toggleGrid,
   updateCellSize,
   updateStrokeWidth,
-}) => (
+}: ControlsProps) => (
   <div className="Lines__input-group">
     <button onClick={addCurve}>Add Curve</button>
     <Range
       id="stroke-width"
-      min="0.1"
-      max="5"
-      step="0.05"
+      min={0.1}
+      max={5}
+      step={0.05}
       onChange={updateStrokeWidth}
       value={strokeWidth}
     >
@@ -70,9 +109,9 @@ const Controls = ({
     </Range>
     <Range
       id="cell-size"
-      min="10"
-      max="40"
-      step="0.5"
+      min={10}
+      max={40}
+      step={0.5}
       onChange={updateCellSize}
       value={cellSize}
     >
