@@ -88,6 +88,7 @@ interface ControlsProps {
   cellSize: number
   curvesLength: number
   currentCurveIndex: number
+  exportSVG: () => void
   gridChecked: boolean
   strokeWidth: number
   toggleGrid: () => void
@@ -102,6 +103,7 @@ const Controls = ({
   curvesLength,
   currentCurveIndex,
   gridChecked,
+  exportSVG,
   strokeWidth,
   toggleGrid,
   updateCellSize,
@@ -113,6 +115,12 @@ const Controls = ({
       onClick={addCurve}
     >
       Add Curve
+    </button>
+    <button
+      className="Curves__controls__button Curves__controls__addCurveButton"
+      onClick={exportSVG}
+    >
+      Export SVG
     </button>
     <Range
       id="stroke-width"

@@ -1,4 +1,7 @@
 import React, { Component, ChangeEvent } from 'react'
+import ReactDOM from 'react-dom'
+import { saveAs } from 'file-saver'
+import Auth from 'Auth'
 import Grid from 'Components/CurveTool/Grid'
 import { Point, Rule } from 'Components/CurveTool/Grid/types'
 import Controls from './controls'
@@ -55,6 +58,7 @@ class Curves extends Component<CurveProps, CurvesState> {
     this.updateStrokeWidth = this.updateStrokeWidth.bind(this)
     this.updateCellSize = this.updateCellSize.bind(this)
     this.toggleGrid = this.toggleGrid.bind(this)
+    this.exportSVG = this.exportSVG.bind(this)
   }
 
   componentDidMount() {
@@ -124,6 +128,46 @@ class Curves extends Component<CurveProps, CurvesState> {
   }
 
   /**
+   * exportSVG exports the generated curve(s) into an SVG file
+   */
+  exportSVG() {
+    const { curves, cellSize } = this.state
+
+    const curvePaths = curves.map((curve, i) => (
+      <g key={`curve-${i}`}>
+        {curve.rules && curve.rules.length > 1 && (
+          <Tiles
+            rules={curve.rules}
+            points={curve.points}
+            cellSize={cellSize}
+            strokeWidth={curve.strokeWidth}
+          />
+        )}
+      </g>
+    ))
+    var svgDoc = document.implementation.createDocument(
+      'http://www.w3.org/2000/svg',
+      'svg',
+      null
+    )
+    ReactDOM.render(curvePaths, svgDoc.documentElement)
+    // get the data
+    var svgData = new XMLSerializer().serializeToString(svgDoc)
+    var blob = new Blob([svgData])
+    saveAs(blob, `curve-${Math.random().toPrecision(5)}.svg`)
+  }
+
+  /**
+   * toggleGrid toggles the visibility of the grid
+   */
+  toggleGrid(): void {
+    const { gridChecked } = this.state
+    this.setState({
+      gridChecked: !gridChecked,
+    })
+  }
+
+  /**
    * updateCellSize updates the size of cells in the grid
    * @param e
    */
@@ -149,59 +193,52 @@ class Curves extends Component<CurveProps, CurvesState> {
     this.setState({ curves: newCurves })
   }
 
-  /**
-   * toggleGrid toggles the visibility of the grid
-   */
-  toggleGrid(): void {
-    const { gridChecked } = this.state
-    this.setState({
-      gridChecked: !gridChecked,
-    })
-  }
-
   render() {
     const { gridSize } = this.props
     const { cellSize, curves, index, gridChecked, strokeWidth } = this.state
     return (
-      <div className="Curves">
-        <Controls
-          addCurve={this.addCurve}
-          changeCurve={this.changeCurve}
-          curvesLength={curves.length}
-          currentCurveIndex={index}
-          cellSize={cellSize}
-          gridChecked={gridChecked}
-          strokeWidth={strokeWidth}
-          toggleGrid={this.toggleGrid}
-          updateCellSize={this.updateCellSize}
-          updateStrokeWidth={this.updateStrokeWidth}
-        />
-        <svg className="FullHeight">
-          <Grid
+      <Auth withLoginPrompt>
+        <div className="Curves">
+          <Controls
+            addCurve={this.addCurve}
+            changeCurve={this.changeCurve}
+            curvesLength={curves.length}
+            currentCurveIndex={index}
             cellSize={cellSize}
-            gridSize={gridSize}
-            fillMatrix={curves[index].fillMatrix}
-            validMatrix={curves[index].validMatrix}
-            markFilled={this.markFilled}
-            points={curves[index].points}
-            rules={curves[index].rules}
-            visible={gridChecked}
+            exportSVG={this.exportSVG}
+            gridChecked={gridChecked}
+            strokeWidth={strokeWidth}
+            toggleGrid={this.toggleGrid}
+            updateCellSize={this.updateCellSize}
+            updateStrokeWidth={this.updateStrokeWidth}
           />
-          {curves &&
-            curves.map((curve, i) => (
-              <g key={`curve-${i}`}>
-                {curve.rules && curve.rules.length > 1 && (
-                  <Tiles
-                    rules={curve.rules}
-                    points={curve.points}
-                    cellSize={cellSize}
-                    strokeWidth={curve.strokeWidth}
-                  />
-                )}
-              </g>
-            ))}
-        </svg>
-      </div>
+          <svg className="FullHeight">
+            <Grid
+              cellSize={cellSize}
+              gridSize={gridSize}
+              fillMatrix={curves[index].fillMatrix}
+              validMatrix={curves[index].validMatrix}
+              markFilled={this.markFilled}
+              points={curves[index].points}
+              rules={curves[index].rules}
+              visible={gridChecked}
+            />
+            {curves &&
+              curves.map((curve, i) => (
+                <g key={`curve-${i}`}>
+                  {curve.rules && curve.rules.length > 1 && (
+                    <Tiles
+                      rules={curve.rules}
+                      points={curve.points}
+                      cellSize={cellSize}
+                      strokeWidth={curve.strokeWidth}
+                    />
+                  )}
+                </g>
+              ))}
+          </svg>
+        </div>
+      </Auth>
     )
   }
 }
