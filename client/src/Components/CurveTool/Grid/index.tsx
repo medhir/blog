@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react'
 import Cell from './cell'
-import { Matrix, ValidMatrix } from './util'
 import { Point, Rule } from './types'
 
 export interface GridProps {

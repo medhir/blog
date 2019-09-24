@@ -89,7 +89,7 @@ func main() {
 			Prompt: autocert.AcceptTOS,
 			Cache:  autocert.DirCache("cert-cache"),
 			// Put your domain here:
-			HostPolicy: autocert.HostWhitelist("dev.medhir.com", "medhir.com"),
+			HostPolicy: autocert.HostWhitelist("dev.medhir.com", "stage.medhir.com", "medhir.com"),
 		}
 		// const AcmeURL = "https://acme-staging-v02.api.letsencrypt.org/directory"
 		// TODO: Add staging environment
