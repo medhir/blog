@@ -5,6 +5,7 @@ import Gallery from 'Components/Gallery'
 import Blog from 'Components/Blog'
 import Uploader from 'Controls/Uploader'
 import CurveTool from 'Components/CurveTool'
+import Quit from 'Components/MedhirQuits'
 
 import './Main.css'
 
@@ -18,6 +19,7 @@ class Main extends Component {
           <Route path="/photos" component={Gallery} />
           <Route path="/upload" component={Uploader} />
           <Route path="/curvetool" component={CurveTool} />
+          <Route path="/quit" component={Quit} />
           <Redirect from="/" to="/photos" />
         </Switch>
       </main>
