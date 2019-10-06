@@ -1,12 +1,31 @@
-header {
+.SiteHeader {
   padding: 30px 50px 10px 50px;
   background-color: white;
+
+  h1 {
+    margin: 0;
+  }
+  nav {
+    ul {
+      li:first-child {
+        margin: 10px 10px 10px 0px;
+      }
+      li {
+        position: relative;
+        cursor: pointer;
+        color: rgb(0, 0, 255);
+        font-size: 2rem;
+        display: inline-block;
+        margin: 10px 10px 0px 10px;
+      }
+    }
+  }
 }
 nav > ul > li {
   position: relative;
   cursor: pointer;
   color: rgb(0, 0, 255);
-  font-size: 1.15rem;
+  font-size: 2rem;
   display: inline-block;
   margin: 10px 10px 0px 10px;
 }
@@ -41,7 +60,7 @@ nav > ul > li:hover:after {
   }
 
   nav > ul > li {
-    font-size: 1.3em;
+    font-size: em;
   }
 
   nav > ul > li:after {

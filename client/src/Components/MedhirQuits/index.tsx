@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
 const DailyCost = 8
-const QuitTime = 1570002669375
+const QuitTime = 1570073546352
 
 interface QuitProps {}
 
@@ -74,7 +74,7 @@ class MedhirQuits extends Component<QuitProps, QuitState> {
     } = this.state
     return (
       <section className="MedhirQuits">
-        <h1>medhir quits</h1>
+        <h1>quits</h1>
         <h2>
           medhir quit weed. he's memorializing a ticker to stay motivated.
           inspired by <a href="https://jakequits.com/">jakequits.com</a>

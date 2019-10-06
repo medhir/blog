@@ -1,8 +1,8 @@
-import React, { Fragment, Component } from 'react';
-import Header from './Layout/Header';
-import Main from './Layout/Main';
-import Footer from './Layout/Footer';
-import './App.css';
+import React, { Fragment, Component } from 'react'
+import Header from './Layout/Header'
+import Main from './Layout/Main'
+import Footer from './Layout/Footer'
+import './App.scss'
 
 class App extends Component {
   render() {
@@ -12,8 +12,8 @@ class App extends Component {
         <Main />
         <Footer />
       </Fragment>
-    );
+    )
   }
 }
 
-export default App;
+export default App

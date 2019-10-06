@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import Auth from 'Auth'
-import './Header.css'
+import './Header.scss'
 
 class Header extends Component {
   render() {
     return (
-      <header>
+      <header className="SiteHeader">
         <h1>medhir</h1>
         <nav>
           <ul>

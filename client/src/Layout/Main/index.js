@@ -6,13 +6,14 @@ import Blog from 'Components/Blog'
 import Uploader from 'Controls/Uploader'
 import CurveTool from 'Components/CurveTool'
 import Quit from 'Components/MedhirQuits'
+import StyleGuide from 'Components/StyleGuide'
 
-import './Main.css'
+import 'Layout/Main/Main.scss'
 
 class Main extends Component {
   render() {
     return (
-      <main>
+      <main className="SiteMain">
         <Switch>
           <Route path="/about" component={About} />
           <Route path="/blog/edit" component={Blog} />
@@ -20,6 +21,7 @@ class Main extends Component {
           <Route path="/upload" component={Uploader} />
           <Route path="/curvetool" component={CurveTool} />
           <Route path="/quit" component={Quit} />
+          <Route path="/style" component={StyleGuide} />
           <Redirect from="/" to="/photos" />
         </Switch>
       </main>

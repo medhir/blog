@@ -7,11 +7,6 @@
   border-bottom: 1px solid black;
 }
 
-.about > p {
-  margin: 10px 0px;
-  line-height: 1.2rem;
-}
-
 @media only screen and (max-width: 1200px) {
   .display > article {
     width: 60%;
