@@ -6,14 +6,12 @@ import (
 	"errors"
 )
 
-// BlogPosts is the folder prefix for blog posts
-const BlogPosts = "blog/posts/"
-
-// BlogDrafts is the folder prefix for blog drafts
-const BlogDrafts = "blog/drafts/"
-
-const postsIndexKey = "blog/posts.index.json"
-const draftsIndexKey = "blog/drafts.index.json"
+const (
+	blogPostsPrefix  = "blog/posts/"
+	blogDraftsPrefix = "blog/drafts/"
+	postsIndexKey    = "blog/posts.index.json"
+	draftsIndexKey   = "blog/drafts.index.json"
+)
 
 // BlogPostEntry describes the json encoding for a blog post
 type BlogPostEntry struct {
@@ -56,7 +54,7 @@ type blogDraftIndexEntry struct {
 }
 
 func updateDraftIndex() error {
-	draftKeys, err := getKeysByMostRecent(BlogDrafts)
+	draftKeys, err := getKeysByMostRecent(blogDraftsPrefix)
 	if err != nil {
 		return errors.New("Failed to get draft object keys - " + err.Error())
 	}
@@ -90,7 +88,7 @@ func updateDraftIndex() error {
 
 // updateBlogIndex writes an updated json file of all blog posts
 func updateBlogIndex() error {
-	postKeys, err := getKeysByMostRecent(BlogPosts)
+	postKeys, err := getKeysByMostRecent(blogPostsPrefix)
 	if err != nil {
 		return errors.New("Failed to get post object keys - " + err.Error())
 	}

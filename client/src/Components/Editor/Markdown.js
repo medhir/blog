@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { AuthUtil } from 'Auth/AuthUtility'
-import http from 'Utils/http'
+import http from 'utils/http'
 import TextareaAutosize from 'react-textarea-autosize'
 
 const IMAGE_MIME_REGEX = /^image\/(p?jpeg|gif|png)$/i

@@ -31,7 +31,7 @@ func main() {
 	// serve index
 	mux.HandleFunc("/", serveIndex)
 
-	// CORS config for development purposes
+	// CORS config for client development
 	c := cors.New(cors.Options{
 		Debug:            true,
 		AllowCredentials: true,

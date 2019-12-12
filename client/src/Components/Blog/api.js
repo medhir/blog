@@ -1,4 +1,4 @@
-import http from 'Utils/http'
+import http from 'utils/http'
 
 const api = {
   getPosts: () => http.get('/api/blog/posts'),
