@@ -35,7 +35,11 @@ func Login() http.HandlerFunc {
 		var credentials Credentials
 		defer r.Body.Close()
 		json.NewDecoder(r.Body).Decode(&credentials)
-		authResponse, err := auth.Login(credentials)
+
+		authResponse, _, err := auth.Login(client.LoginRequest{
+			LoginId:  credentials.LoginID,
+			Password: credentials.Password,
+		})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
