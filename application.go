@@ -67,7 +67,8 @@ func main() {
 	mux.HandleFunc("/api/login", api.Login())
 	mux.HandleFunc("/api/jwt/validate", api.CheckExpiry())
 
-	if port := os.Getenv("PORT"); port == "" {
+	port := os.Getenv("PORT")
+	if port == "" {
 		port = "9000"
 	}
 
@@ -79,7 +80,7 @@ func main() {
 			Addr:    ":" + port,
 			Handler: enableCORS}
 		log.Println("Listening on port " + port)
-		err := server.ListenAndServeTLS("cert.pem", "key.pem")
+		err := server.ListenAndServeTLS(".tls/local.crt", ".tls/local.key")
 		if err != nil {
 			log.Fatal(err)
 		}
