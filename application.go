@@ -67,8 +67,7 @@ func main() {
 	mux.HandleFunc("/api/login", api.Login())
 	mux.HandleFunc("/api/jwt/validate", api.CheckExpiry())
 
-	port := os.Getenv("PORT")
-	if port == "" {
+	if port := os.Getenv("PORT"); port == "" {
 		port = "9000"
 	}
 

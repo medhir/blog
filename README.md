@@ -1,4 +1,4 @@
-A personal blog engine written in Go and React. 
+A personal blog engine / portfolio website written in Go and React. 
 
 ## Architecture 
 The back-end is written in Go. The main driver is `application.go`. The files are broken out into different functionalities under package `api`. Examples of functions include
