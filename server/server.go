@@ -12,13 +12,16 @@ import (
 	"github.com/FusionAuth/go-client/pkg/fusionauth"
 )
 
+// TODO - Move to config
+const serverPort = "80"
 const authHost = "https://auth.medhir.com"
 
 type instance struct {
+	ctx     context.Context
 	router  *http.ServeMux
 	server  *http.Server
 	auth    *fusionauth.FusionAuthClient
-	storage string // TODO - Add a storage client interface
+	storage interface{} // TODO - Add a gcs storage client
 }
 
 // NewInstance returns a new instance of the server
@@ -29,23 +32,26 @@ func NewInstance() (*instance, error) {
 	}
 	return &instance{
 		router: http.NewServeMux(),
-		server: &http.Server{}, // populate these values
 		auth:   fusionauth.NewClient(nil, authBaseURL, ""),
 	}, nil
 }
 
 func (s *instance) Start() {
-	s.addRoutes()
-	err := s.server.ListenAndServe()
+	s.addRoutes() // initialize routes for the ServeMux
+	s.ctx = context.Background()
+	s.server = &http.Server{
+		Addr: "80",
+	}
+	err := s.server.ListenAndServe() // Start doesn't return until the server connection breaks
 	if err != nil {
 		fmt.Println("Server stopped unexpectedly.", err)
-		s.Shutdown()
+		s.Shutdown() // gracefully shut down on exit
 	}
 }
 
 func (s *instance) Shutdown() {
 	if s.server != nil {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(s.ctx, 10*time.Second)
 		defer cancel()
 		err := s.server.Shutdown(ctx)
 		if err != nil {
