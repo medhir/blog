@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: blog
+  labels:
+    app: blog
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: blog
+  template:
+    metadata:
+      labels:
+        app: blog
+        tier: backend
+    spec:
+      containers:
+        - name: blog
+          image: gcr.io/blog-121419/blog:kube-test
+          ports:
+            - containerPort: 9000
+      imagePullSecrets:
+        - name: regcred
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog-service
+spec:
+  selector:
+    app: blog
+  ports:
+    - port: 9000
