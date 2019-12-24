@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -9,14 +8,14 @@ import (
 
 	"github.com/medhir/blog/api"
 	"github.com/rs/cors"
-	"golang.org/x/crypto/acme"
-	"golang.org/x/crypto/acme/autocert"
 
 	// Provide runtime profiling data
 	// https://golang.org/pkg/net/http/pprof/
 
 	_ "net/http/pprof"
 )
+
+const port = "9000"
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
 	index, err := ioutil.ReadFile("build/index.html")
@@ -67,43 +66,24 @@ func main() {
 	mux.HandleFunc("/api/login", api.Login())
 	mux.HandleFunc("/api/jwt/validate", api.CheckExpiry())
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "9000"
-	}
-
 	enableCORS := c.Handler(mux)
+	log.Println("Listening on port " + port)
 	// Allow CORS Headers for development
 	_, dev := os.LookupEnv("REACT_APP_DEBUG_HOST")
 	if dev {
 		server := &http.Server{
 			Addr:    ":" + port,
 			Handler: enableCORS}
-		log.Println("Listening on port " + port)
-		err := server.ListenAndServeTLS(".tls/local.crt", ".tls/local.key")
+		err := server.ListenAndServe()
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
-		certManager := autocert.Manager{
-			Prompt: autocert.AcceptTOS,
-			Cache:  autocert.DirCache("cert-cache"),
-			// Put your domain here:
-			HostPolicy: autocert.HostWhitelist("dev.medhir.com", "stage.medhir.com", "medhir.com"),
-		}
-		// const AcmeURL = "https://acme-staging-v02.api.letsencrypt.org/directory"
-		// TODO: Add staging environment
-		certManager.Client = &acme.Client{}
 		server := &http.Server{
-			Addr:    ":443",
+			Addr:    ":" + port,
 			Handler: mux,
-			TLSConfig: &tls.Config{
-				GetCertificate: certManager.GetCertificate,
-			},
 		}
-		log.Println("Listening on ports 80 and 443")
-		go http.ListenAndServe(":80", certManager.HTTPHandler(nil))
-		err := server.ListenAndServeTLS("", "")
+		err := server.ListenAndServe()
 		if err != nil {
 			log.Fatal(err)
 		}

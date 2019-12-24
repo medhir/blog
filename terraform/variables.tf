@@ -36,7 +36,7 @@ variable "cluster_service_account_name" {
 variable "cluster_service_account_email" {
   description = "The email address of the custom service account used for the GKE cluster."
   type        = string
-  default     = "terraform-sa@blog-121419.iam.gserviceaccount.com"
+  default     = " terraform-sa@blog-121419.iam.gserviceaccount.com"
 }
 
 variable "cluster_service_account_description" {
