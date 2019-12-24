@@ -13,3 +13,15 @@ code:
 .PHONY: image
 image:
 	docker build -t medhir/blog:latest .
+
+.PHONY: tfinit
+tfinit: 
+	cd terraform && terraform init
+
+.PHONY: tfplan
+tfplan:
+	cd terraform && terraform plan
+
+.PHONY: tfapply
+tfapply:
+	cd terraform && terraform apply

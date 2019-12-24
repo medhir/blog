@@ -2,7 +2,7 @@ A personal blog engine / portfolio website written in Go and React.
 
 ## Architecture
 
-The back-end is written in Go. The main driver is `application.go`. The files are broken out into different functionalities under package `api`. Examples of functions include
+The entrypoint for the main application is through a Go web service. The files are broken out into different functionalities under package `api`. (Refactor in progress) Examples of functions include
 
 - Image Processing / Uploading
 - Authentication
@@ -38,3 +38,5 @@ This command builds client assets and starts the Go server. To hot-reload the Re
 ```sh
 make webapp
 ```
+
+
