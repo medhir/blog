@@ -39,4 +39,22 @@ This command builds client assets and starts the Go server. To hot-reload the Re
 make webapp
 ```
 
+## Deploying with `kubectl`
 
+- insert info here on how to authenticate into the cluster with kubectl 
+
+The blog will be run with GKE, Google's managed kubernetes controller. Deployments can be created, scaled up, torn down, and more with the `kubectl` command. 
+
+### To run a deployment
+- Only run this against the latest version of master!
+- Build & push the docker image using the command `make image version=<version_number>`
+- Update `kubernetes/blog.yml`'s `image` field to the latest image
+- Run `kubectl apply -f kubernetes/blog.yml` to configure the deployment to use the latest image
+- Submit a PR with the new image name to check in the changes to the source code
+
+### Useful commands: 
+
+Provide a shell into a pod
+```sh
+kubectl exec -it <pod-name> -- sh
+```

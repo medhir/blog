@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"time"
 
 	client "github.com/FusionAuth/fusionauth-go-client/pkg/fusionauth"
 )
@@ -13,9 +12,6 @@ import (
 const host = "https://auth.medhir.com"
 
 var apiKey, _ = os.LookupEnv("FUSIONAUTH_APIKEY")
-var httpClient = &http.Client{
-	Timeout: time.Second * 10}
-
 var baseURL, _ = url.Parse(host)
 var auth = &client.FusionAuthClient{
 	BaseURL:    baseURL,
