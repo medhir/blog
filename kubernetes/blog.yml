@@ -7,24 +7,35 @@ metadata:
     app: blog
     tier: backend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: blog
   template:
     metadata:
+      name: blog
       labels:
         app: blog
-        tier: backend
     spec:
+      restartPolicy: Always
       containers:
         - name: blog
-          image: gcr.io/blog-121419/blog:kube-test
+          image: gcr.io/blog-121419/blog:kube-test-3
           ports:
             - containerPort: 9000
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-storage
+                  key: access-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-storage
+                  key: access-secret
       imagePullSecrets:
         - name: regcred
-
 ---
 apiVersion: v1
 kind: Service

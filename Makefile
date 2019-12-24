@@ -12,7 +12,7 @@ code:
 
 .PHONY: image
 image:
-	docker build -t medhir/blog:latest .
+	docker build -t gcr.io/blog-121419/blog:v$(version) . && docker push gcr.io/blog-121419/blog:v$(version)
 
 .PHONY: tfinit
 tfinit: 

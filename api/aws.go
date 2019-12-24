@@ -32,7 +32,10 @@ const BucketName = "medhir-blog-dev"
 // AlbumPrefix is the string value associated with the S3 albums "Folder"
 const AlbumPrefix = "albums/"
 
-var sess = session.Must(session.NewSession(&aws.Config{Region: aws.String("us-west-2")}))
+var sess = session.Must(session.NewSession(&aws.Config{
+	Region:     aws.String("us-west-2"),
+	HTTPClient: httpClient,
+}))
 var svc = s3.New(sess)
 var uploader = s3manager.NewUploaderWithClient(svc)
 var downloader = s3manager.NewDownloaderWithClient(svc)
