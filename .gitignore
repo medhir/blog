@@ -3,9 +3,13 @@
 # client
 /client/node_modules
 /client/coverage
-
-# production
 /build
+
+# infrastructure (terraform)
+terraform/account.json
+terraform/.terraform
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
 
 # misc
 .DS_Store
