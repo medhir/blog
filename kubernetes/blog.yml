@@ -24,3 +24,14 @@ spec:
             - containerPort: 9000
       imagePullSecrets:
         - name: regcred
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog-service
+spec:
+  selector:
+    app: blog
+  ports:
+    - port: 9000
