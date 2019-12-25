@@ -11,7 +11,7 @@ import (
 
 const host = "https://auth.medhir.com"
 
-var apiKey, _ = os.LookupEnv("FUSIONAUTH_APIKEY")
+var apiKey, _ = os.LookupEnv("FUSIONAUTH_API_KEY")
 var baseURL, _ = url.Parse(host)
 var auth = &client.FusionAuthClient{
 	BaseURL:    baseURL,
