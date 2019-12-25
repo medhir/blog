@@ -9,7 +9,7 @@ spec:
   tls:
     - hosts:
         - medhir.com
-        - authdev.medhir.com
+        - auth.medhir.com
         - staging.medhir.com
       secretName: medhir-blog-prod-cert
   rules:
@@ -20,7 +20,7 @@ spec:
             backend:
               serviceName: blog-service
               servicePort: 9000
-    - host: authdev.medhir.com
+    - host: auth.medhir.com
       http:
         paths:
           - path: /
