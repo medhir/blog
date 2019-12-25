@@ -40,10 +40,25 @@ spec:
       containers:
         - env:
             - name: DATABASE_USER
-              value: fusionauth
+              valueFrom:
+                secretKeyRef:
+                  name: fusionauth-db
+                  key: user
             - name: DATABASE_PASSWORD
-              value: hkaLBM3RVnyYeYeqE3WI1w2e4Avpy0Wd5O3s3
+              valueFrom:
+                secretKeyRef:
+                  name: fusionauth-db
+                  key: password
+            - name: DATABASE_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: fusionauth-db
+                  key: root-user
             - name: DATABASE_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fusionauth-db
+                  key: root-password
             - name: DATABASE_ROOT_USER
               value: postgres
             - name: DATABASE_URL
