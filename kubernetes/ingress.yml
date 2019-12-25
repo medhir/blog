@@ -1,18 +1,19 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: test-ingress
+  name: ingress
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/issuer: "letsencrypt-staging"
+    cert-manager.io/issuer: "letsencrypt-prod"
 spec:
   tls:
     - hosts:
-        - staging.medhir.com
+        - medhir.com
         - authdev.medhir.com
-      secretName: medhir-blog-staging-cert
+        - staging.medhir.com
+      secretName: medhir-blog-prod-cert
   rules:
-    - host: staging.medhir.com
+    - host: medhir.com
       http:
         paths:
           - path: /
