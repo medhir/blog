@@ -18,22 +18,13 @@ The front-end is written with Javascript and makes use of the Create React App f
 
 ## Running Locally
 
-Make sure you are in the local `blog` working directory. Before starting the service, a SSL certificate must be generated. On MacOS, with the `openssl` command installed, run the following commands:
-
-```sh
-mkdir .tls
-openssl genrsa -out .tls/local.key 2048
-openssl ecparam -genkey -name secp384r1 -out .tls/local.key
-openssl req -new -x509 -sha256 -key .tls/local.key -out .tls/local.crt -days 3650
-```
-
-Once you have a self-signed SSL cert locally, run the following command in your terminal:
+At the repository root, run the following command in your terminal:
 
 ```sh
 make blog
 ```
 
-This command builds client assets and starts the Go server. To hot-reload the React client, run
+This command builds client assets and starts the Go server. To hot-reload the React client as a separate process, run
 
 ```sh
 make webapp
@@ -45,16 +36,28 @@ make webapp
 
 The blog will be run with GKE, Google's managed kubernetes controller. Deployments can be created, scaled up, torn down, and more with the `kubectl` command. 
 
-### To run a deployment
+### To run a blog deployment
 - Only run this against the latest version of master!
 - Build & push the docker image using the command `make image version=<version_number>`
 - Update `kubernetes/blog.yml`'s `image` field to the latest image
 - Run `kubectl apply -f kubernetes/blog.yml` to configure the deployment to use the latest image
 - Submit a PR with the new image name to check in the changes to the source code
 
+
 ### Useful commands: 
 
 Provide a shell into a pod
 ```sh
 kubectl exec -it <pod-name> -- sh
+```
+
+## FusionAuth
+
+FusionAuth provides authentication for the site and its APIs. The default is to have one "instance" running at a time (as a set of coordinated deployments for the auth service, elasticsearch, and the db). It is given relatively low resource constraints since it's literally just me using it lol. 
+
+To deploy FusionAuth, modify the `kubernetes/fusionauth/` resource definitions and then run: 
+```sh
+kubectl apply --recursive -f kubernetes/fusionauth/volume-claims
+kubectl apply --recursive -f kubernetes/fusionauth/deployments
+kubectl apply --recursive -f kubernetes/fusionauth/services
 ```

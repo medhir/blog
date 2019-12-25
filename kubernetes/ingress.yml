@@ -4,17 +4,25 @@ metadata:
   name: test-ingress
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/issuer: "letsencrypt-prod"
+    cert-manager.io/issuer: "letsencrypt-staging"
 spec:
   tls:
     - hosts:
-        - dev.medhir.com
-      secretName: medhir-cert
+        - staging.medhir.com
+        - authdev.medhir.com
+      secretName: medhir-blog-staging-cert
   rules:
-    - host: dev.medhir.com
+    - host: staging.medhir.com
       http:
         paths:
           - path: /
             backend:
               serviceName: blog-service
               servicePort: 9000
+    - host: authdev.medhir.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: fusionauth
+              servicePort: 9011
