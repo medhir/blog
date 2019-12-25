@@ -2,7 +2,9 @@ A personal blog engine / portfolio website written in Go and React.
 
 ## Architecture
 
-The entrypoint for the main application is through a Go web service. The files are broken out into different functionalities under package `api`. (Refactor in progress) Examples of functions include
+The application is hosted as a set of loosely coupled microservices running on containers managed by Google's Kubernetes engine.
+
+The entrypoint for the blog application is through a Go web service. The files are broken out into different functionalities under package `api`. (Refactor in progress) Examples of functions include
 
 - Image Processing / Uploading
 - Authentication
