@@ -67,7 +67,7 @@ func GetPhotos() http.HandlerFunc {
 		// Use AWS util method to get photo keys
 		photoKeys, err := getPhotoKeysForAlbum(album)
 		if err != nil {
-			http.Error(w, "Photo keys could not be retreived", http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Photo keys could not be retreived: %v", err.Error()), http.StatusInternalServerError)
 			return
 		}
 		// Write response as JSON

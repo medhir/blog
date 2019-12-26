@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"os"
@@ -11,17 +12,28 @@ import (
 
 const host = "https://auth.medhir.com"
 
-var apiKey, _ = os.LookupEnv("FUSIONAUTH_API_KEY")
-var baseURL, _ = url.Parse(host)
-var auth = &client.FusionAuthClient{
-	BaseURL:    baseURL,
-	APIKey:     apiKey,
-	HTTPClient: httpClient}
+var (
+	apiKey, _        = os.LookupEnv("FUSIONAUTH_API_KEY")
+	applicationID, _ = os.LookupEnv("BLOG_AUTH_APPLICATION_ID")
+	baseURL, _       = url.Parse(host)
+	auth             = &client.FusionAuthClient{
+		BaseURL:    baseURL,
+		APIKey:     apiKey,
+		HTTPClient: httpClient,
+	}
+)
 
 // Credentials describes the JSON request for a user login
 type Credentials struct {
 	LoginID  string `json:"loginId"`
 	Password string `json:"password"`
+}
+
+func isValid(response *client.ValidateResponse) bool {
+	if response.StatusCode != http.StatusOK {
+		return false
+	}
+	return true
 }
 
 // Login logs in the user
@@ -31,13 +43,15 @@ func Login() http.HandlerFunc {
 		var credentials Credentials
 		defer r.Body.Close()
 		json.NewDecoder(r.Body).Decode(&credentials)
-
 		authResponse, _, err := auth.Login(client.LoginRequest{
+			BaseLoginRequest: client.BaseLoginRequest{
+				ApplicationId: applicationID,
+			},
 			LoginId:  credentials.LoginID,
 			Password: credentials.Password,
 		})
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, fmt.Sprintf("Auth Login Failed: %v", err.Error()), http.StatusBadRequest)
 			return
 		}
 		responseJSON, err := json.Marshal(authResponse)
@@ -55,7 +69,11 @@ func Login() http.HandlerFunc {
 func Authorize(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		jwt := r.Header.Get("Authorization")
-		_, err := auth.ValidateJWT(jwt)
+		validateResponse, err := auth.ValidateJWT(jwt)
+		if !isValid(validateResponse) {
+			http.Error(w, "Invalid access token", http.StatusBadRequest)
+			return
+		}
 		if err != nil {
 			http.Error(w, "Could not validate JWT - "+err.Error(), http.StatusBadRequest)
 			return
@@ -68,12 +86,16 @@ func Authorize(h http.HandlerFunc) http.HandlerFunc {
 func CheckExpiry() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		jwt := r.Header.Get("Authorization")
-		resp, err := auth.ValidateJWT(jwt)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		validateResponse, err := auth.ValidateJWT(jwt)
+		if !isValid(validateResponse) {
+			http.Error(w, "Invalid access token", http.StatusBadRequest)
 			return
 		}
-		responseJSON, err := json.Marshal(resp)
+		if err != nil {
+			http.Error(w, "Could not validate JWT - "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		responseJSON, err := json.Marshal(validateResponse)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
