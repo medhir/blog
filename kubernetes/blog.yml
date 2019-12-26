@@ -39,6 +39,11 @@ spec:
                 secretKeyRef:
                   name: fusionauth-api
                   key: id
+            - name: BLOG_AUTH_APPLICATION_ID
+              valueFrom:
+                secretKeyRef:
+                  name: fusionauth-app-id
+                  key: id
       imagePullSecrets:
         - name: regcred
 ---
