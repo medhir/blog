@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: aws-storage
-type: Opaque
-data:
-  access-id: "base64 encoded id here"
-  access-secret: "base64 encoded secret here"
