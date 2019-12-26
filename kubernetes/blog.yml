@@ -20,7 +20,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: blog
-          image: gcr.io/blog-121419/blog:v0.5.1
+          image: gcr.io/blog-121419/blog:v0.5.2
           ports:
             - containerPort: 9000
           env:
