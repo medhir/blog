@@ -50,10 +50,6 @@ func Login() http.HandlerFunc {
 			LoginId:  credentials.LoginID,
 			Password: credentials.Password,
 		})
-		// if authErrors != nil {
-		// 	http.Error(w, fmt.Sprintf("FusionAuth API Error: %+v", authErrors), http.StatusBadRequest)
-		// 	return
-		// }
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Auth Login Failed: %v", err.Error()), http.StatusBadRequest)
 			return
