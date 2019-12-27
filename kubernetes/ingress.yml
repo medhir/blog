@@ -13,6 +13,7 @@ spec:
         - medhir.com
         - auth.medhir.com
         - staging.medhir.com
+        - teamcity.medhir.com
       secretName: medhir-blog-prod-cert
   rules:
     - host: medhir.com
@@ -29,3 +30,11 @@ spec:
             backend:
               serviceName: fusionauth
               servicePort: 9011
+    - host: teamcity.medhir.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: teamcity-server-service
+              servicePort: 8111
+        
