@@ -11,10 +11,10 @@ spec:
   selector:
     matchLabels:
       app: teamcity-server
-  template: 
-    metadata: 
+  template:
+    metadata:
       name: teamcity-server
-      labels: 
+      labels:
         app: teamcity-server
     spec:
       restartPolicy: Always
@@ -35,3 +35,41 @@ spec:
         - name: teamcity-server-logs
           persistentVolumeClaim:
             claimName: teamcity-server-logs
+---
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: teamcity-agent
+  labels:
+    app: teamcity-agent
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: teamcity-agent
+  template:
+    metadata:
+      name: teamcity-agent
+      labels:
+        app: teamcity-agent
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: teamcity-agent
+          image: jetbrains/teamcity-agent
+          securityContext:
+            privileged: true
+          env:
+            - name: SERVER_URL
+              value: "http://10.4.13.150:8111"
+            - name: DOCKER_IN_DOCKER
+              value: "start"
+          volumeMounts:
+            - mountPath: /data/teamcity_agent/conf
+              name: teamcity-agent-config
+      volumes:
+        - name: teamcity-agent-config
+          persistentVolumeClaim:
+            claimName: teamcity-agent-config

@@ -4,20 +4,32 @@ metadata:
   name: teamcity-server-datadir
 spec:
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 250Mi
+      storage: 5Gi
 status: {}
---- 
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: teamcity-server-logs
 spec:
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 250Mi
+      storage: 5Gi
+status: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: teamcity-agent-config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
 status: {}
