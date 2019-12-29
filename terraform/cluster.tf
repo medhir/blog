@@ -111,6 +111,12 @@ resource "google_container_node_pool" "gitlab_node_pool" {
   cluster  = module.gke_cluster.name
 
   initial_node_count = "1"
+  
+  autoscaling {
+    min_node_count = "1"
+    max_node_count = "2"
+  }
+
   management {
     auto_repair  = "true"
     auto_upgrade = "true"

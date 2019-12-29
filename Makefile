@@ -25,3 +25,7 @@ tfplan:
 .PHONY: tfapply
 tfapply:
 	cd terraform && terraform apply
+
+.PHONY: podshell
+podshell :
+	kubectl exec -it $(name) -- sh
