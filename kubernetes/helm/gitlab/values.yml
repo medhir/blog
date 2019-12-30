@@ -1,6 +1,6 @@
 # Values for gitlab/gitlab chart on GKE
 global:
-  edition: ee
+  edition: ce
   hosts:
     domain: medhir.com
     https: true
@@ -107,13 +107,20 @@ nginx-ingress:
 postgresql:
   install: false
 gitlab-runner:
-  install: false
-  # rbac:
-  #   create: true
-  # runners:
-  #   locked: false
-  #   cache:
-  #     cacheType: gcs
-  #     gcsBucketname: blog-121419-runner-cache
-  #     secretName: google-application-credentials
-  #     cacheShared: true
+  install: true
+  rbac:
+    create: true
+  runners:
+    privileged: true
+    locked: false
+    cache:
+      cacheType: gcs
+      gcsBucketname: blog-121419-runner-cache
+      secretName: google-application-credentials
+      cacheShared: true
+# https://docs.gitlab.com/charts/advanced/external-object-storage/index.html#docker-registry-images
+registry: 
+  storage:
+    secret: gitlab-registry-storage
+    key: config
+    extraKey: gcs.json
