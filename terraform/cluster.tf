@@ -31,8 +31,8 @@ module "gke_cluster" {
     {
       cidr_blocks = [
         {
-          cidr_block   = "0.0.0.0/0"
-          display_name = "all-for-testing"
+          cidr_block   = "97.113.205.0/24"
+          display_name = "restricted"
         },
       ]
     },
