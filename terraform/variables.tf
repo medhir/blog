@@ -66,3 +66,9 @@ variable "vpc_secondary_cidr_block" {
   type        = string
   default     = "10.4.0.0/16"
 }
+
+variable "default_db_tier" {
+  description = "The default GCP instance tier for Cloud SQL based Postgres deployments"
+  type        = string
+  default     = "db-f1-micro"
+}

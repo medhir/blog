@@ -13,6 +13,8 @@ spec:
         - medhir.com
         - auth.medhir.com
         - staging.medhir.com
+        - gitlab.medhir.com
+        - registry.medhir.com
       secretName: medhir-blog-prod-cert
   rules:
     - host: medhir.com

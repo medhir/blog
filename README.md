@@ -4,7 +4,7 @@ A personal blog engine / portfolio website written in Go and React.
 
 The application is hosted as a set of loosely coupled microservices running on containers managed by Google's Kubernetes engine.
 
-![Blog GKE Architecture](https://user-images.githubusercontent.com/5160860/71450587-67f50d00-2719-11ea-9720-f06b52be52c2.png)
+![Blog GKE Architecture](https://user-images.githubusercontent.com/5160860/71571934-be53aa00-2a91-11ea-9024-fa6a6071bbd1.png)
 The entrypoint for the blog application is through a Go web service. The files are broken out into different functionalities under package `api`. (Refactor in progress) Examples of functions include
 
 - Image Processing / Uploading
