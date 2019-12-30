@@ -36,6 +36,7 @@ spec:
                 secretKeyRef:
                   name: database-credentials
                   key: fusionauth-password
+            # Takes the form of jdbc:postgresql://<private_ip>:5432/fusionauth
             - name: DATABASE_URL
               valueFrom: 
                 secretKeyRef:
