@@ -22,9 +22,7 @@ global:
     password:
       secret: database-credentials
       key: gitlab-password
-    host:
-      secret: database-credentials
-      key: host-ip
+    host: 10.99.0.3
     port: 5432
     username: gitlab
     database: gitlab
