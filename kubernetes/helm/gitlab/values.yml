@@ -1,6 +1,6 @@
 # Values for gitlab/gitlab chart on GKE
 global:
-  edition: ce
+  edition: ee
   hosts:
     domain: medhir.com
     https: true
@@ -19,7 +19,7 @@ global:
 
   ## doc/charts/globals.md#configure-postgresql-settings
   psql:
-    password: 
+    password:
       secret: gitlab-pg
       key: password
     host: 10.221.1.3
@@ -71,7 +71,6 @@ global:
         secret: gitlab-rails-storage
         key: connection
 
-
 certmanager:
   install: false
 
@@ -86,7 +85,6 @@ redis:
   persistence:
     storageClass: "pd-ssd"
     size: 10Gi
-
 
 gitlab:
   gitaly:
@@ -118,8 +116,9 @@ gitlab-runner:
       gcsBucketname: blog-121419-runner-cache
       secretName: google-application-credentials
       cacheShared: true
+
 # https://docs.gitlab.com/charts/advanced/external-object-storage/index.html#docker-registry-images
-registry: 
+registry:
   storage:
     secret: gitlab-registry-storage
     key: config
