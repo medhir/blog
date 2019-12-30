@@ -137,7 +137,7 @@ resource "google_container_node_pool" "gitlab_node_pool" {
       "medhir-blog-private-gitlab-pool",
     ]
 
-    disk_size_gb = "80"
+    disk_size_gb = "10"
     disk_type    = "pd-standard"
     preemptible  = true
 
