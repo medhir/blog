@@ -1,0 +1,15 @@
+stages: 
+  - test
+  - build
+
+.setup-client-job: &setup-client-job
+- cd client
+- npm install
+
+client-test 0:
+  image: "node:8-alpine"
+  stage: test
+  before_script: 
+    - *setup-client-job
+  script: 
+    - npm run test-ci
