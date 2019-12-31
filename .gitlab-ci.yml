@@ -82,7 +82,7 @@ stop_staging:
     - kubectl delete -f kubernetes/blog/services/blog-staging.yml
   when: manual
   environment:
-    name: review/$CI_COMMIT_SHA
+    name: staging/$CI_COMMIT_SHA
     action: stop
 
 deploy production:
