@@ -77,6 +77,8 @@ stop_staging:
   stage: deploy
   variables:
     GIT_STRATEGY: none
+  before_script:
+    - *setup-deploy-job
   script:
     - kubectl delete -f kubernetes/blog/deployments/blog-staging.yml
     - kubectl delete -f kubernetes/blog/services/blog-staging.yml
