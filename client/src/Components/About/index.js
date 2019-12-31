@@ -16,8 +16,7 @@ class About extends Component {
         </p>
         <p>
           I currently work at <a href="https://lightstep.com">LightStep</a>,
-          where I spend time building UIs in React and microservices in Go to
-          help developers understand large-scale system behavior with
+          taking a deep dive on distributed systems and implementing tools to help understand large-scale system behavior with
           distributed tracing.
         </p>
         <p>
@@ -26,13 +25,6 @@ class About extends Component {
           <a href="https://linkedin.com/in/medhir">LinkedIn</a>, or send me an{' '}
           e-mail via mail AT medhir.com.
         </p>
-        {/* <p>
-          Currently available for hire for Seattle-based or remote work. Please{' '}
-          <a href="https://s3-us-west-2.amazonaws.com/medhir-blog-dev/R%C3%A9sum%C3%A9+2019.pdf">
-            refer to my résumé
-          </a>{' '}
-          for further information on my previous work.
-        </p> */}
       </section>
     )
   }
