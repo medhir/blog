@@ -59,7 +59,7 @@ build-docker-image:
 #   except:
 #     - master
 
-deploy_staging:
+deploy staging:
   stage: deploy
   before_script: 
     - *setup-deploy-job
@@ -69,11 +69,11 @@ deploy_staging:
   environment:
     name: staging
     url: https://stage.medhir.com
-    on_stop: stop_staging
+  when: manual
   only:
-  - master
+  - branches
 
-deploy_prod:
+deploy production:
   stage: deploy
   script:
     - echo "Deploy to production server"
@@ -83,28 +83,3 @@ deploy_prod:
   when: manual
   only:
   - master
-
-# stop_review:
-#   stage: deploy
-#   variables:
-#     GIT_STRATEGY: none
-#   script:
-#     - echo "Remove review app"
-#   when: manual
-#   environment:
-#     name: review/$CI_COMMIT_REF_NAME
-#     action: stop
-
-stop_staging:
-  stage: deploy
-  variables:
-    GIT_STRATEGY: none
-  before_script: 
-    - *setup-deploy-job
-  script:
-    - kubectl delete -f kubernetes/blog/services/blog-staging.yml
-    - kubectl delete -f kubernetes/blog/deployments/blog-staging.yml
-  when: manual
-  environment:
-    name: staging
-    action: stop
