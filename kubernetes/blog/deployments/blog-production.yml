@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: blog-production
+  labels:
+    app: blog-production
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: blog-production
+  template:
+    metadata:
+      name: blog-production
+      labels:
+        app: blog-production
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: blog-production
+          image: registry.medhir.com/medhir/blog/master:latest
+          ports:
+            - containerPort: 9000
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-storage
+                  key: access-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-storage
+                  key: access-secret
+            - name: FUSIONAUTH_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: fusionauth-api
+                  key: id
+            - name: BLOG_AUTH_APPLICATION_ID
+              valueFrom:
+                secretKeyRef:
+                  name: fusionauth-app-id
+                  key: id
+      # Generate imagePullSecret like so - https://gist.github.com/rkuzsma/b9a0e342c56479f5e58d654b1341f01e
+      imagePullSecrets:
+        - name: medhir-registry-image-pull
