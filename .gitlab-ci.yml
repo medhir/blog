@@ -14,6 +14,8 @@ client-test 0:
   script: 
     - npm run test-ci
 
+# See https://docs.gitlab.com/ee/ci/yaml/README.html#includetemplate for details
+# Copied from https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
 build 1:
   stage: build
   image: "registry.gitlab.com/gitlab-org/cluster-integration/auto-build-image/master:stable"
