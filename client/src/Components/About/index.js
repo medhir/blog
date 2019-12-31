@@ -16,12 +16,12 @@ class About extends Component {
         </p>
         <p>
           I currently work at <a href="https://lightstep.com">LightStep</a>,
-          taking a deep dive on distributed systems and implementing tools to help understand large-scale system behavior with
-          distributed tracing.
+          taking a deep dive on distributed systems and implementing tools to
+          help understand large-scale system behavior with distributed tracing.
         </p>
         <p>
           You can view some of my work through this site and{' '}
-          <a href="https://github.com/medhir">Github</a>, connect with me on{' '}
+          <a href="https://github.com/medhir">GitHub</a>, connect with me on{' '}
           <a href="https://linkedin.com/in/medhir">LinkedIn</a>, or send me an{' '}
           e-mail via mail AT medhir.com.
         </p>
