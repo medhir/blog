@@ -1,12 +1,13 @@
 stages: 
   - test
   - build
+  - deploy
 
 .setup-client-job: &setup-client-job
 - cd client
 - npm install
 
-client-test 0:
+client-test:
   image: "node:8-alpine"
   stage: test
   before_script: 
@@ -16,7 +17,7 @@ client-test 0:
 
 # See https://docs.gitlab.com/ee/ci/yaml/README.html#includetemplate for details
 # Copied from https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
-build 1:
+build-docker-image:
   stage: build
   image: "registry.gitlab.com/gitlab-org/cluster-integration/auto-build-image/master:stable"
   variables:
@@ -37,3 +38,35 @@ build 1:
     - branches
     - tags
     
+deploy_review:
+  stage: deploy
+  script:
+    - echo "Deploy a review app"
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    url: https://$CI_ENVIRONMENT_SLUG.medhir.com
+  only:
+    - branches
+  except:
+    - master
+
+deploy_staging:
+  stage: deploy
+  script:
+    - echo "Deploy to staging server"
+  environment:
+    name: staging
+    url: https://staging.medhir.com
+  only:
+  - master
+
+deploy_prod:
+  stage: deploy
+  script:
+    - echo "Deploy to production server"
+  environment:
+    name: production
+    url: https://medhir.com
+  when: manual
+  only:
+  - master
