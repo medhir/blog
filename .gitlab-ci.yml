@@ -7,6 +7,12 @@ stages:
 - cd client
 - npm install
 
+.setup-deploy-job: &setup-deploy-job
+- apk add --no-cache curl
+- curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+- chmod +x ./kubectl
+- mv ./kubectl /usr/local/bin/kubectl
+
 client-test:
   image: "node:8-alpine"
   stage: test
@@ -55,6 +61,8 @@ build-docker-image:
 
 deploy_staging:
   stage: deploy
+  before_script: 
+    - *setup-deploy-job
   script:
     - kubectl apply -f kubernetes/blog/deployments/blog-staging.yml
     - kubectl apply -f kubernetes/blog/services/blog-staging.yml
@@ -76,21 +84,23 @@ deploy_prod:
   only:
   - master
 
-stop_review:
-  stage: deploy
-  variables:
-    GIT_STRATEGY: none
-  script:
-    - echo "Remove review app"
-  when: manual
-  environment:
-    name: review/$CI_COMMIT_REF_NAME
-    action: stop
+# stop_review:
+#   stage: deploy
+#   variables:
+#     GIT_STRATEGY: none
+#   script:
+#     - echo "Remove review app"
+#   when: manual
+#   environment:
+#     name: review/$CI_COMMIT_REF_NAME
+#     action: stop
 
 stop_staging:
   stage: deploy
   variables:
     GIT_STRATEGY: none
+  before_script: 
+    - *setup-deploy-job
   script:
     - kubectl delete -f kubernetes/blog/services/blog-staging.yml
     - kubectl delete -f kubernetes/blog/deployments/blog-staging.yml
