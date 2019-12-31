@@ -67,16 +67,28 @@ deploy staging:
     - kubectl apply -f kubernetes/blog/deployments/blog-staging.yml
     - kubectl apply -f kubernetes/blog/services/blog-staging.yml
   environment:
-    name: staging
+    name: staging/$CI_COMMIT_SHA
     url: https://stage.medhir.com
-  when: manual
+    on_stop: stop_staging
   only:
-  - branches
+  - master
+
+stop_staging:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - kubectl delete -f kubernetes/blog/deployments/blog-staging.yml
+    - kubectl delete -f kubernetes/blog/services/blog-staging.yml
+  when: manual
+  environment:
+    name: review/$CI_COMMIT_SHA
+    action: stop
 
 deploy production:
   stage: deploy
   script:
-    - echo "Deploy to production server"
+    - kubectl set image deployment/blog-production blog-production=registry.medhir.com/medhir/blog/master:$CI_COMMIT_SHA
   environment:
     name: production
     url: https://medhir.com
