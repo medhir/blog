@@ -1,24 +1,24 @@
-stages: 
+stages:
   - test
   - build
   - deploy
 
 .setup-client-job: &setup-client-job
-- cd client
-- npm install
+  - cd client
+  - npm install
 
 .setup-deploy-job: &setup-deploy-job
-- apk add --no-cache curl
-- curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-- chmod +x ./kubectl
-- mv ./kubectl /usr/local/bin/kubectl
+  - apk add --no-cache curl
+  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+  - chmod +x ./kubectl
+  - mv ./kubectl /usr/local/bin/kubectl
 
 client-test:
   image: "node:8-alpine"
   stage: test
-  before_script: 
+  before_script:
     - *setup-client-job
-  script: 
+  script:
     - npm run test-ci
 
 # See https://docs.gitlab.com/ee/ci/yaml/README.html#includetemplate for details
@@ -41,9 +41,9 @@ build-docker-image:
       fi
     - /build/build.sh
   only:
-    - branches
+    - master
     - tags
-    
+
 # deploy_review:
 #   stage: deploy
 #   script:
@@ -61,7 +61,7 @@ build-docker-image:
 
 deploy staging:
   stage: deploy
-  before_script: 
+  before_script:
     - *setup-deploy-job
   script:
     - kubectl apply -f kubernetes/blog/deployments/blog-staging.yml
@@ -71,12 +71,14 @@ deploy staging:
     url: https://stage.medhir.com
     on_stop: stop_staging
   only:
-  - master
+    - master
 
 stop_staging:
   stage: deploy
   variables:
     GIT_STRATEGY: none
+  before_script:
+    - *setup-deploy-job
   script:
     - kubectl delete -f kubernetes/blog/deployments/blog-staging.yml
     - kubectl delete -f kubernetes/blog/services/blog-staging.yml
@@ -87,6 +89,8 @@ stop_staging:
 
 deploy production:
   stage: deploy
+  before_script:
+    - *setup-deploy-job
   script:
     - kubectl set image deployment/blog-production blog-production=registry.medhir.com/medhir/blog/master:$CI_COMMIT_SHA
   environment:
@@ -94,4 +98,4 @@ deploy production:
     url: https://medhir.com
   when: manual
   only:
-  - master
+    - master
