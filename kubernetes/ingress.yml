@@ -12,7 +12,7 @@ spec:
     - hosts:
         - medhir.com
         - auth.medhir.com
-        - staging.medhir.com
+        - stage.medhir.com
         - gitlab.medhir.com
         - registry.medhir.com
       secretName: medhir-blog-prod-cert
@@ -22,7 +22,14 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: blog-service
+              serviceName: blog-production-service
+              servicePort: 9000
+    - host: stage.medhir.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: blog-staging-service
               servicePort: 9000
     - host: auth.medhir.com
       http:

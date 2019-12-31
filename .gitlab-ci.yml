@@ -38,25 +38,30 @@ build-docker-image:
     - branches
     - tags
     
-deploy_review:
-  stage: deploy
-  script:
-    - echo "Deploy a review app"
-  environment:
-    name: review/$CI_COMMIT_REF_NAME
-    url: https://$CI_ENVIRONMENT_SLUG.medhir.com
-  only:
-    - branches
-  except:
-    - master
+# deploy_review:
+#   stage: deploy
+#   script:
+#     - kubectl apply -f kubernetes/blog/deployments/blog-review.yml
+#     - kubectl apply -f kubernetes/blog/services/blog-review.yml
+#   environment:
+#     name: review/$CI_COMMIT_REF_NAME
+#     # url: https://$CI_ENVIRONMENT_SLUG.review.medhir.com
+#     url: https://$CI_COMMIT_REF_NAME.review.medhir.com
+#     on_stop: stop_review
+#   only:
+#     - branches
+#   except:
+#     - master
 
 deploy_staging:
   stage: deploy
   script:
-    - echo "Deploy to staging server"
+    - kubectl apply -f kubernetes/blog/deployments/blog-staging.yml
+    - kubectl apply -f kubernetes/blog/services/blog-staging.yml
   environment:
     name: staging
-    url: https://staging.medhir.com
+    url: https://stage.medhir.com
+    on_stop: stop_staging
   only:
   - master
 
@@ -70,3 +75,26 @@ deploy_prod:
   when: manual
   only:
   - master
+
+stop_review:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - echo "Remove review app"
+  when: manual
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    action: stop
+
+stop_staging:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - kubectl delete -f kubernetes/blog/services/blog-staging.yml
+    - kubectl delete -f kubernetes/blog/deployments/blog-staging.yml
+  when: manual
+  environment:
+    name: staging
+    action: stop
