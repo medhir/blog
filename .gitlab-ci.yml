@@ -1,4 +1,5 @@
 stages:
+  - lint
   - test
   - build
   - deploy
@@ -13,13 +14,13 @@ stages:
   - chmod +x ./kubectl
   - mv ./kubectl /usr/local/bin/kubectl
 
-client-test:
+client test:
   image: "node:8-alpine"
   stage: test
   before_script:
     - *setup-client-job
   script:
-    - npm run test-ci
+    - npm run test
 
 # See https://docs.gitlab.com/ee/ci/yaml/README.html#includetemplate for details
 # Copied from https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
