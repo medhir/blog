@@ -36,12 +36,10 @@ spec:
                 secretKeyRef:
                   name: database-credentials
                   key: fusionauth-password
-            # Takes the form of jdbc:postgresql://<private_ip>:5432/fusionauth
+            # To fix pgbouncer "prepared statements" issues, refer to 
+            # https://stackoverflow.com/questions/7611926/postgres-error-prepared-statement-s-1-already-exists
             - name: DATABASE_URL
-              valueFrom: 
-                secretKeyRef:
-                  name: database-credentials
-                  key: host-url
+              value: jdbc:postgresql://pgbouncer:5432/fusionauth?useAffectedRows=true&prepareThreshold=0
             - name: FUSIONAUTH_MEMORY
               value: 256M
             - name: FUSIONAUTH_SEARCH_SERVERS

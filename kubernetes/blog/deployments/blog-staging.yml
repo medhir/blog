@@ -38,11 +38,11 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: fusionauth-api
-                  key: id
+                  key: api-key
             - name: BLOG_AUTH_APPLICATION_ID
               valueFrom:
                 secretKeyRef:
-                  name: fusionauth-app-id
-                  key: id
+                  name: fusionauth-api
+                  key: app-id
       imagePullSecrets:
         - name: medhir-registry-image-pull

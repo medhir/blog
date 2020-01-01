@@ -38,12 +38,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: fusionauth-api
-                  key: id
+                  key: api-key
             - name: BLOG_AUTH_APPLICATION_ID
               valueFrom:
                 secretKeyRef:
-                  name: fusionauth-app-id
-                  key: id
+                  name: fusionauth-api
+                  key: app-id
       # Generate imagePullSecret like so - https://gist.github.com/rkuzsma/b9a0e342c56479f5e58d654b1341f01e
       imagePullSecrets:
         - name: medhir-registry-image-pull
