@@ -18,6 +18,7 @@
   "rules": {
     "no-console": "error",
     "no-eval": "error",
-    "import/first": "error"
+    "import/first": "error",
+    "react/prop-types": "warn"
   }
 }

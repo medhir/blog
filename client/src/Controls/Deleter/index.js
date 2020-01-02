@@ -92,7 +92,7 @@ class Deleter extends Component {
     } else if (this.state.success) {
       return <RedButton>Resource Deleted</RedButton>
     } else if (this.state.error) {
-      return <RedButton>Can't Delete :-(</RedButton>
+      return <RedButton>Can&apos;t Delete :-(</RedButton>
     }
   }
 }

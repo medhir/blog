@@ -83,9 +83,10 @@ class Markdown extends Component {
             )
           })
         })
-        .catch(err => {
-          console.error(err)
-        })
+      // Silently fails for now
+      // .catch(err => {
+      //   console.error(err)
+      // })
     }
   }
 
