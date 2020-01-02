@@ -1,4 +1,5 @@
 stages:
+  - lint
   - test
   - build
   - deploy
@@ -13,7 +14,23 @@ stages:
   - chmod +x ./kubectl
   - mv ./kubectl /usr/local/bin/kubectl
 
-client-test:
+client lint:
+  image: "node:8-alpine"
+  stage: lint
+  before_script:
+    - *setup-client-job
+  script:
+    - npm run lint
+
+client format:
+  image: "node:8-alpine"
+  stage: lint
+  before_script:
+    - *setup-client-job
+  script:
+    - npm run format-check
+
+client test:
   image: "node:8-alpine"
   stage: test
   before_script:
@@ -86,6 +103,8 @@ stop_staging:
   environment:
     name: staging/$CI_COMMIT_SHA
     action: stop
+  only:
+    - master
 
 deploy production:
   stage: deploy

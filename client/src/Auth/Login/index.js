@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import './Login.css'
 
 class Login extends Component {
@@ -31,6 +32,10 @@ class Login extends Component {
       </section>
     )
   }
+}
+
+Login.propTypes = {
+  login: PropTypes.func,
 }
 
 export default Login

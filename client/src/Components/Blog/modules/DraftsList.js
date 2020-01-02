@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import DraftListItem from './DraftListItem'
 
 const DraftsList = props => {
@@ -7,6 +8,10 @@ const DraftsList = props => {
     return <DraftListItem draft={draft} key={draft.id} />
   })
   return <ul className="drafts">{drafts}</ul>
+}
+
+DraftsList.propTypes = {
+  drafts: PropTypes.array,
 }
 
 export default DraftsList

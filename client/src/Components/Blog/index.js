@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react'
+import PropTypes from 'prop-types'
 import { Route } from 'react-router-dom'
 import BlogList from './modules/BlogList'
 import Editor from 'Components/Editor'
@@ -80,6 +81,11 @@ class Blog extends Component {
       return <Loading />
     }
   }
+}
+
+Blog.propTypes = {
+  match: PropTypes.object,
+  location: PropTypes.object,
 }
 
 export default Blog

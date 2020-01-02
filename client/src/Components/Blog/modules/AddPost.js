@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 const AddPost = props => {
@@ -7,6 +8,10 @@ const AddPost = props => {
       <button className="addPost">New Post</button>
     </Link>
   )
+}
+
+AddPost.propTypes = {
+  match: PropTypes.object,
 }
 
 export default AddPost

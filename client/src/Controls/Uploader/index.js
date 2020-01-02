@@ -11,8 +11,8 @@ const Files = props => {
       <div className="files">
         <p>Photos to save:</p>
         <ul>
-          {files.map(file => (
-            <li>{file.name}</li>
+          {files.map((file, i) => (
+            <li key={`file-${i}`}>{file.name}</li>
           ))}
         </ul>
       </div>
@@ -28,8 +28,8 @@ const Locations = props => {
       <div className="locations">
         <p>Photos saved at:</p>
         <ul>
-          {props.locations.map(location => (
-            <li>
+          {props.locations.map((location, i) => (
+            <li key={`location-${i}`}>
               <a href={location}>{location}</a>
             </li>
           ))}
@@ -53,7 +53,6 @@ class Uploader extends Component {
   }
 
   handleFileStateChange = e => {
-    console.dir(e.target.files)
     this.setState({
       files: e.target.files,
     })

@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { RedButton, GreenButton } from '../Buttons';
-import { AuthUtil } from '../../Auth/AuthUtility';
-import http from '../../Utils/http';
-import './Deleter.css';
+import React, { Component } from 'react'
+import { RedButton, GreenButton } from '../Buttons'
+import { AuthUtil } from '../../Auth/AuthUtility'
+import http from '../../Utils/http'
+import './Deleter.css'
 
 /*
     Deleter is a component for targeted resource deletion. 
@@ -11,28 +11,28 @@ import './Deleter.css';
  */
 class Deleter extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       initial: true,
       confirmDelete: false,
       deletionOccuring: false,
       success: false,
       error: false,
-    };
+    }
   }
 
   setToConfirm() {
     this.setState({
       initial: false,
       confirmDelete: true,
-    });
+    })
   }
 
   revert() {
     this.setState({
       initial: true,
       confirmDelete: false,
-    });
+    })
   }
 
   deleteResource() {
@@ -48,7 +48,7 @@ class Deleter extends Component {
               this.setState({
                 deletionOccuring: false,
                 error: true,
-              });
+              })
             } else {
               this.setState(
                 {
@@ -57,28 +57,28 @@ class Deleter extends Component {
                 },
                 () => {
                   if (this.props.callback) {
-                    this.props.callback();
+                    this.props.callback()
                   }
                 }
-              );
+              )
             }
           },
           error => {
             this.setState({
               deletionOccuring: false,
               error: error,
-            });
+            })
           }
-        );
+        )
       }
-    );
+    )
   }
 
   render() {
     if (this.state.initial) {
       return (
         <RedButton onClick={this.setToConfirm.bind(this)}>Delete</RedButton>
-      );
+      )
     } else if (this.state.confirmDelete) {
       return (
         <div className="confirmation">
@@ -86,15 +86,15 @@ class Deleter extends Component {
           <RedButton onClick={this.deleteResource.bind(this)}>Yes</RedButton>
           <GreenButton onClick={this.revert.bind(this)}>No</GreenButton>
         </div>
-      );
+      )
     } else if (this.state.deletionOccuring) {
-      return <RedButton>Deleting...</RedButton>;
+      return <RedButton>Deleting...</RedButton>
     } else if (this.state.success) {
-      return <RedButton>Resource Deleted</RedButton>;
+      return <RedButton>Resource Deleted</RedButton>
     } else if (this.state.error) {
-      return <RedButton>Can't Delete :-(</RedButton>;
+      return <RedButton>Can&apos;t Delete :-(</RedButton>
     }
   }
 }
 
-export default Deleter;
+export default Deleter

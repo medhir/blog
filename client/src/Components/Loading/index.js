@@ -40,7 +40,7 @@ class Loading extends Component {
   render() {
     return (
       <section>
-        <h2 class="loading">Loading{this.getEllipsis()}</h2>
+        <h2 className="loading">Loading{this.getEllipsis()}</h2>
       </section>
     )
   }

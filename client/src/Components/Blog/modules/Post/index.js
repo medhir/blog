@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import Marked from 'marked'
 import api from 'Components/Blog/api'
 import Loading from 'Components/Loading'
@@ -17,6 +18,10 @@ const Display = props => {
   )
 }
 
+Display.propTypes = {
+  parsedContent: PropTypes.string,
+}
+
 class Post extends Component {
   constructor(props) {
     super(props)
@@ -31,15 +36,6 @@ class Post extends Component {
     })
   }
 
-  Display = props => {
-    const generateHTML = () => {
-      return {
-        __html: props.parsedContent,
-      }
-    }
-    return <article dangerouslySetInnerHTML={generateHTML()} />
-  }
-
   render() {
     if (this.state.post) {
       const parsed = Marked(this.state.post.markdown)
@@ -48,6 +44,10 @@ class Post extends Component {
       return <Loading />
     }
   }
+}
+
+Post.propTypes = {
+  match: PropTypes.object,
 }
 
 export default Post
