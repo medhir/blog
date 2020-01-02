@@ -95,6 +95,8 @@ stop_staging:
   environment:
     name: staging/$CI_COMMIT_SHA
     action: stop
+  only:
+    - master
 
 deploy production:
   stage: deploy
