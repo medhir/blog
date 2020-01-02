@@ -1,36 +1,36 @@
-import api from './api';
+import api from './api'
 
-const StorageKey = 'medhirblogeditaccesstoken';
+const StorageKey = 'medhirblogeditaccesstoken'
 
 class AuthUtility {
   constructor() {
-    const localAuth = localStorage.getItem(StorageKey);
+    const localAuth = localStorage.getItem(StorageKey)
     if (localAuth) {
-      this.auth = JSON.parse(localAuth);
+      this.auth = JSON.parse(localAuth)
     } else {
-      this.auth = null;
+      this.auth = null
     }
   }
 
   setAuth(auth) {
-    const { token } = auth;
+    const { token } = auth
     this.auth = {
       token: token,
-    };
-    localStorage.setItem(StorageKey, JSON.stringify(this.auth));
+    }
+    localStorage.setItem(StorageKey, JSON.stringify(this.auth))
   }
 
   checkExpiry() {
     return new Promise(resolve => {
       if (!this.auth) {
-        resolve();
+        resolve()
       }
       api.validate(this.authorizationHeader).catch(() => {
-        localStorage.removeItem(StorageKey);
-        this.auth = null;
-        resolve();
-      });
-    });
+        localStorage.removeItem(StorageKey)
+        this.auth = null
+        resolve()
+      })
+    })
   }
 
   get authorizationHeader() {
@@ -38,20 +38,20 @@ class AuthUtility {
       headers: {
         Authorization: `${this.auth.token || ''}`,
       },
-    };
+    }
   }
 
   get authed() {
-    if (this.auth) return true;
-    return false;
+    if (this.auth) return true
+    return false
   }
 
   get token() {
     if (!this.auth) {
-      return null;
+      return null
     }
-    return this.auth.token;
+    return this.auth.token
   }
 }
 
-export const AuthUtil = new AuthUtility();
+export const AuthUtil = new AuthUtility()
