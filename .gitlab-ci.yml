@@ -22,6 +22,14 @@ client lint:
   script:
     - npm run lint
 
+client format:
+  image: "node:8-alpine"
+  stage: lint
+  before_script:
+    - *setup-client-job
+  script:
+    - npm run format-check
+
 client test:
   image: "node:8-alpine"
   stage: test
