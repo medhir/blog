@@ -28,6 +28,8 @@
     "build": "NODE_PATH=src react-scripts build && mv build ../",
     "test": "NODE_PATH=src react-scripts test --env=jsdom",
     "test-ci": "NODE_PATH=src CI=true react-scripts test --env=jsdom",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "eject": "react-scripts eject"
   },
   "browserslist": [
@@ -39,6 +41,7 @@
   "devDependencies": {
     "@types/file-saver": "^2.0.1",
     "eslint": "^6.8.0",
+    "eslint-plugin-react": "^7.17.0",
     "prettier": "1.17.1"
   }
 }
