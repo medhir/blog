@@ -26,6 +26,7 @@
     "start": "NODE_PATH=src react-scripts start",
     "godev": "rm -rf build && npm run build",
     "build": "NODE_PATH=src react-scripts build && mv build ../",
+    "format-check": "prettier --check \"**/*.+(js|jsx|json|css|md)\"",
     "format": "prettier --write \"**/*.+(js|jsx|json|css|md)\"",
     "test": "NODE_PATH=src react-scripts test --env=jsdom",
     "test-ci": "NODE_PATH=src CI=true react-scripts test --env=jsdom",
