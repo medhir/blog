@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react'
+import PropTypes from 'prop-types'
 import Login from './Login'
 import api from './api'
 import { AuthUtil } from './AuthUtility'
@@ -23,7 +24,7 @@ class Auth extends Component {
       .login(credentials)
       // Set the authentication
       .then(response => {
-        if ((response.status = 200)) {
+        if (response.status === 200) {
           AuthUtil.setAuth(response.data)
           this.setState({
             auth: response.data,
@@ -72,6 +73,12 @@ class Auth extends Component {
       else return null
     }
   }
+}
+
+Auth.propTypes = {
+  children: PropTypes.node,
+  fallback: PropTypes.node,
+  withLoginPrompt: PropTypes.bool,
 }
 
 export default Auth

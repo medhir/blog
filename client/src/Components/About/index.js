@@ -6,7 +6,7 @@ class About extends Component {
     return (
       <section className="about">
         <p>
-          Hello, and welcome to my (small) internet outpost. I'm Medhir, a
+          Hello, and welcome to my (small) internet outpost. I&apos;m Medhir, a
           Seattle-based software engineer and (sometimes) visual artist.
         </p>
         <p>

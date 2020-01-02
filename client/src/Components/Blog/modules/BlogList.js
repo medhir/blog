@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import PostsList from './PostsList'
 import DraftsList from './DraftsList'
 import AddPost from './AddPost'
@@ -14,6 +15,12 @@ const BlogList = props => {
       </section>
     </Auth>
   )
+}
+
+BlogList.propTypes = {
+  drafts: PropTypes.array,
+  posts: PropTypes.array,
+  match: PropTypes.object,
 }
 
 export default BlogList
