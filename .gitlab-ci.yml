@@ -58,7 +58,7 @@ build-docker-image:
       fi
     - /build/build.sh
   only:
-    - master
+    - branches
     - tags
 
 # deploy_review:
