@@ -40,7 +40,7 @@ client test:
 
 # See https://docs.gitlab.com/ee/ci/yaml/README.html#includetemplate for details
 # Copied from https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
-build-docker-image:
+build docker image:
   stage: build
   image: "registry.gitlab.com/gitlab-org/cluster-integration/auto-build-image/master:stable"
   variables:
@@ -61,20 +61,37 @@ build-docker-image:
     - branches
     - tags
 
-# deploy_review:
-#   stage: deploy
-#   script:
-#     - kubectl apply -f kubernetes/blog/deployments/blog-review.yml
-#     - kubectl apply -f kubernetes/blog/services/blog-review.yml
-#   environment:
-#     name: review/$CI_COMMIT_REF_NAME
-#     # url: https://$CI_ENVIRONMENT_SLUG.review.medhir.com
-#     url: https://$CI_COMMIT_REF_NAME.review.medhir.com
-#     on_stop: stop_review
-#   only:
-#     - branches
-#   except:
-#     - master
+deploy review:
+  stage: deploy
+  before_script:
+    - *setup-deploy-job
+  script:
+    - kubectl apply -f kubernetes/blog/deployments/blog-review.yml
+    - kubectl apply -f kubernetes/blog/services/blog-review.yml
+    - kubectl set image deployment/blog-review blog-review=registry.medhir.com/medhir/blog/$CI_COMMIT_BRANCH:$CI_COMMIT_SHA
+  environment:
+    name: review/$CI_COMMIT_SHA
+    # url: https://$CI_ENVIRONMENT_SLUG.review.medhir.com
+    url: https://review.medhir.com
+    on_stop: stop review
+  only:
+    - branches
+  except:
+    - master
+
+stop review:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  before_script:
+    - *setup-deploy-job
+  script:
+    - kubectl delete -f kubernetes/blog/deployments/blog-review.yml
+    - kubectl delete -f kubernetes/blog/services/blog-review.yml
+  when: manual
+  environment:
+    name: review/$CI_COMMIT_SHA
+    action: stop
 
 deploy staging:
   stage: deploy
@@ -86,11 +103,11 @@ deploy staging:
   environment:
     name: staging/$CI_COMMIT_SHA
     url: https://stage.medhir.com
-    on_stop: stop_staging
+    on_stop: stop staging
   only:
     - master
 
-stop_staging:
+stop staging:
   stage: deploy
   variables:
     GIT_STRATEGY: none

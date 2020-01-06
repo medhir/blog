@@ -4,6 +4,6 @@ metadata:
   name: blog-review-service
 spec:
   selector:
-    app: blog
+    app: blog-review
   ports:
     - port: 9000
