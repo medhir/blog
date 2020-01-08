@@ -2,8 +2,8 @@
 blog: 
 	rm -rf build/ && cd client && REACT_APP_MOBILE_TEST=true npm run build && cd ../ && go run application.go
 
-.PHONY: webapp
-webapp:
+.PHONY: client
+client:
 	cd client && npm run start
 
 .PHONY: code 
