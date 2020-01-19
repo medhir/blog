@@ -30,7 +30,7 @@ nav > ul > li:hover:after {
   left: 0;
   bottom: -4px;
   height: 2px;
-  background: linear-gradient(270deg, #1100ff, #6200ff, #1100ff);
+  background: linear-gradient(270deg, #1100ff, #f700ff, #1100ff);
   background-size: 200% 200%;
   animation: underanimate 5s infinite;
 }
@@ -51,7 +51,7 @@ nav > ul > li:hover:after {
     left: 0;
     bottom: -2px;
     height: 1px;
-    background: linear-gradient(270deg, #1100ff, #6200ff, #1100ff);
+    background: linear-gradient(270deg, #1100ff, #f700ff, #1100ff);
     background-size: 200% 200%;
     animation: underanimate 10s infinite;
   }
