@@ -26,12 +26,12 @@ module "gke_cluster" {
   disable_public_endpoint = "false"
 
   # With a private cluster, it is highly recommended to restrict access to the cluster master
-  # However, for testing purposes we will allow all inbound traffic.
+  # NOTE: This IP address is not static. Consider the range 97.113.0.0/16 for ip addresses from 97.113.0.0 - 97.113.255.255
   master_authorized_networks_config = [
     {
       cidr_blocks = [
         {
-          cidr_block   = "97.113.205.0/24"
+          cidr_block   = "97.113.208.0/24"
           display_name = "restricted"
         },
       ]
