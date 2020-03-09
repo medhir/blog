@@ -1,7 +1,8 @@
 # Server build step
 FROM registry.medhir.com/medhir/blog-go-vips/master:latest AS go-build-env
 # Set working directory, copy contents
-WORKDIR /go/src/github.com/medhir/blog/
+# WORKDIR /go/src/github.com/medhir/blog/
+WORKDIR /blog
 COPY . .
 # Get external dependencies
 RUN go get -d -v
@@ -18,7 +19,7 @@ RUN cd client/ && npm install && npm run build
 # Final build stage
 FROM registry.medhir.com/medhir/blog-alpine-vips/master:latest
 # Copy Go binary
-COPY --from=go-build-env /go/src/github.com/medhir/blog/app ./
+COPY --from=go-build-env /blog/app ./
 # Copy Client build artifacts
 COPY --from=node-build-env ./build/ ./build/
 COPY ./templates/ ./templates/

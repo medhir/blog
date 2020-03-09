@@ -29,3 +29,7 @@ tfapply:
 .PHONY: podshell
 podshell :
 	kubectl exec -it $(name) -- sh
+
+.PHONY: remove-evicted
+remove-evicted:
+	kubectl delete pods --field-selector=status.phase!=Running
