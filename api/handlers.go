@@ -138,7 +138,7 @@ func UploadPhoto(prefix string) http.HandlerFunc {
 			// processedImage := reduceFileSizeAndConvertToJPG(fileBuffer.Bytes())
 			processedImage, err := imageprocessor.ProcessImage(fileBuffer.Bytes())
 			if err != nil {
-				http.Error(w, "Unsupported image type", http.StatusBadRequest)
+				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
 			result, err := putObject(bytes.NewReader(processedImage), prefix+id+".jpg")
