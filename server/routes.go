@@ -2,7 +2,8 @@ package server
 
 import "net/http"
 
-func (i *instance) addRoutes() {
+// AddRoutes registers all the application handlers to their corresponding url prefixes
+func (i *Instance) AddRoutes() {
 	// static resources
 	i.router.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("build/static"))))
 	i.router.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))

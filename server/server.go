@@ -16,7 +16,8 @@ import (
 const serverPort = "80"
 const authHost = "https://auth.medhir.com"
 
-type instance struct {
+// Instance represents an instance of the server
+type Instance struct {
 	ctx     context.Context
 	router  *http.ServeMux
 	server  *http.Server
@@ -25,22 +26,23 @@ type instance struct {
 }
 
 // NewInstance returns a new instance of the server
-func NewInstance() (*instance, error) {
+func NewInstance() (*Instance, error) {
 	authBaseURL, err := url.Parse(authHost)
 	if err != nil {
 		return nil, err
 	}
-	return &instance{
+	return &Instance{
 		router: http.NewServeMux(),
 		auth:   fusionauth.NewClient(nil, authBaseURL, ""),
 	}, nil
 }
 
-func (s *instance) Start() {
-	s.addRoutes() // initialize routes for the ServeMux
+// Start initializes a server instance
+func (s *Instance) Start() {
+	s.AddRoutes() // initialize routes for the ServeMux
 	s.ctx = context.Background()
 	s.server = &http.Server{
-		Addr: "80",
+		Addr: serverPort,
 	}
 	err := s.server.ListenAndServe() // Start doesn't return until the server connection breaks
 	if err != nil {
@@ -49,7 +51,8 @@ func (s *instance) Start() {
 	}
 }
 
-func (s *instance) Shutdown() {
+// Shutdown gracefully shuts down a server instance
+func (s *Instance) Shutdown() {
 	if s.server != nil {
 		ctx, cancel := context.WithTimeout(s.ctx, 10*time.Second)
 		defer cancel()
