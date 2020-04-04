@@ -14,10 +14,6 @@ code:
 image:
 	docker build -t gcr.io/blog-121419/blog:v$(version) . && docker push gcr.io/blog-121419/blog:v$(version)
 
-.PHONY: tfinit
-tfinit: 
-	cd terraform && terraform init
-
 .PHONY: tfplan
 tfplan:
 	cd terraform && terraform plan
@@ -33,3 +29,7 @@ podshell :
 .PHONY: remove-evicted
 remove-evicted:
 	kubectl delete pods --field-selector=status.phase!=Running
+
+.PHONY: mocks
+mocks:
+	mockery -all -inpkg

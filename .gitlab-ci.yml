@@ -8,6 +8,12 @@ stages:
   - cd client
   - npm install
 
+.setup-go-job: &setup-go-job
+  # - apk add --no-cache bash git openssh build-base
+  # - git config --global --add url."git@github.com:".insteadOf "https://github.com/"
+  - go get -d -v
+  - go get -u golang.org/x/lint/golint
+
 .setup-deploy-job: &setup-deploy-job
   - apk add --no-cache curl
   - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
@@ -37,6 +43,23 @@ client test:
     - *setup-client-job
   script:
     - npm run test-ci
+
+go lint:
+  image: "registry.medhir.com/medhir/blog-go-vips/master:latest"
+  stage: lint
+  before_script:
+    - *setup-go-job
+  script:
+    - golint -set_exit_status ./...
+
+go test:
+  image: "registry.medhir.com/medhir/blog-go-vips/master:latest"
+  stage: test
+  before_script:
+    - *setup-go-job
+    - cd server
+  script:
+    - go test ./...
 
 # See https://docs.gitlab.com/ee/ci/yaml/README.html#includetemplate for details
 # Copied from https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml

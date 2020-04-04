@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -14,6 +13,7 @@ import (
 	"gopkg.in/russross/blackfriday.v2"
 )
 
+// BlogPost contains the data for a blog post
 type BlogPost struct {
 	CSSPath string
 	Title   string
@@ -26,6 +26,7 @@ type blogIndexEntry struct {
 	PublishedDate string `json:"publishedDate"`
 }
 
+// BlogIndex contains metadata for all blog posts
 type BlogIndex struct {
 	CSSPath string
 	Title   string
@@ -64,10 +65,9 @@ func getCSSPath() {
 		log.Println("Could not unmarshal json into struct")
 	}
 	cssPath = manifest.Files.MainCSS
-	fmt.Println("manifest", manifest)
-	fmt.Println("css:", cssPath)
 }
 
+// GetPost responds with the HTML for a blog post
 func GetPost() http.HandlerFunc {
 	if cssPath == "" {
 		getCSSPath()
@@ -106,6 +106,7 @@ func msToTime(ms float64) (time.Time, error) {
 	return time.Unix(0, int64(ms)*int64(time.Millisecond)), nil
 }
 
+// GetIndex responds with the HTML associated with a blog "index" page
 func GetIndex() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
