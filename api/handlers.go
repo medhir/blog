@@ -11,6 +11,7 @@ import (
 	"path"
 
 	"github.com/google/uuid"
+	"github.com/medhir/blog/server/imageprocessor"
 )
 
 // Album semantially represents the name of an album storing photos in S3
@@ -113,6 +114,7 @@ type s3UploadResult struct {
 // image data as a jpg image in the S3 bucket specified by BucketName
 // 		prefix string specifies the string prefix for the S3 Object key.
 func UploadPhoto(prefix string) http.HandlerFunc {
+	imageprocessor := imageprocessor.NewImageProcessor()
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var uploadResults []s3UploadResult
 		r.ParseMultipartForm(32 << 20)
@@ -133,7 +135,12 @@ func UploadPhoto(prefix string) http.HandlerFunc {
 				http.Error(w, "Could not create buffer for file", http.StatusInternalServerError)
 				return
 			}
-			processedImage := reduceFileSizeAndConvertToJPG(fileBuffer.Bytes())
+			// processedImage := reduceFileSizeAndConvertToJPG(fileBuffer.Bytes())
+			processedImage, err := imageprocessor.ProcessImage(fileBuffer.Bytes())
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
 			result, err := putObject(bytes.NewReader(processedImage), prefix+id+".jpg")
 			if err != nil {
 				fmt.Println(err.Error())
