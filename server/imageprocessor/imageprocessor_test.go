@@ -73,7 +73,7 @@ func Test_getJpgOptions(t *testing.T) {
 		},
 		{
 			name:  "15 megabytes",
-			input: make([]byte, 1024*1024*6),
+			input: make([]byte, 1024*1024*15),
 			expected: &jpeg.Options{
 				Quality: 40,
 			},
