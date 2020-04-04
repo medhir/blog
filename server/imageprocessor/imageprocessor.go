@@ -7,8 +7,9 @@ import (
 	"image/color"
 	"image/draw"
 	"image/jpeg"
-	"image/png"
 	"net/http"
+
+	"github.com/disintegration/imaging"
 )
 
 const (
@@ -69,7 +70,8 @@ func (p *imageProcessor) ProcessImage(buf []byte) ([]byte, error) {
 
 func (p *imageProcessor) processPngToJpg(buf []byte, opts *jpeg.Options) ([]byte, error) {
 	r := bytes.NewReader(buf)
-	img, err := png.Decode(r)
+	// img, err := png.Decode(r)
+	img, err := imaging.Decode(r, imaging.AutoOrientation(true))
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +86,8 @@ func (p *imageProcessor) processPngToJpg(buf []byte, opts *jpeg.Options) ([]byte
 
 func (p *imageProcessor) processJpg(buf []byte, opts *jpeg.Options) ([]byte, error) {
 	r := bytes.NewReader(buf)
-	img, err := jpeg.Decode(r)
+	// img, err := jpeg.Decode(r)
+	img, err := imaging.Decode(r, imaging.AutoOrientation(true))
 	if err != nil {
 		return nil, err
 	}
