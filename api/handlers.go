@@ -114,7 +114,7 @@ type s3UploadResult struct {
 // image data as a jpg image in the S3 bucket specified by BucketName
 // 		prefix string specifies the string prefix for the S3 Object key.
 func UploadPhoto(prefix string) http.HandlerFunc {
-	imageprocessor := imageprocessor.NewImageProcessor(int64(25))
+	imageprocessor := imageprocessor.NewImageProcessor()
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var uploadResults []s3UploadResult
 		r.ParseMultipartForm(32 << 20)
