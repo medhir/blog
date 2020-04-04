@@ -112,8 +112,9 @@ func (p *imageProcessor) addBlackBackgroundToTransparent(img image.Image) image.
 	return newImg
 }
 
-func (p *imageProcessor) megabytes(buf []byte) int64 {
-	return int64(len(buf) / 1024)
+func (p *imageProcessor) megabytes(buf []byte) float64 {
+	kb := int64(len(buf) / 1024)
+	return (float64)(kb / 1024)
 }
 
 func (p *imageProcessor) getJpgOptions(buf []byte) (*jpeg.Options, error) {
