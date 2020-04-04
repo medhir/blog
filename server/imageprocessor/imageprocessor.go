@@ -35,10 +35,8 @@ type imageProcessor struct {
 }
 
 // NewImageProcessor instantiates a new image processor
-func NewImageProcessor(maxSizeMB int64) ImageProcessor {
-	return &imageProcessor{
-		MaxSizeMB: maxSizeMB,
-	}
+func NewImageProcessor() ImageProcessor {
+	return &imageProcessor{}
 }
 
 // ProcessImage determines the image file type, reduces quality if needed, converts to jpg
@@ -70,13 +68,11 @@ func (p *imageProcessor) ProcessImage(buf []byte) ([]byte, error) {
 
 func (p *imageProcessor) processPngToJpg(buf []byte, opts *jpeg.Options) ([]byte, error) {
 	r := bytes.NewReader(buf)
-	// img, err := png.Decode(r)
 	img, err := imaging.Decode(r, imaging.AutoOrientation(true))
 	if err != nil {
 		return nil, err
 	}
-	// TODO - Check if image is transparent before running this line
-	imgWithBackground := p.addBlackBackgroundToTransparent(img)
+	imgWithBackground := p.addBlackBackgroundToTransparentPixels(img)
 	jpgBuf, err := p.encodeJpg(imgWithBackground, opts)
 	if err != nil {
 		return nil, err
@@ -86,7 +82,6 @@ func (p *imageProcessor) processPngToJpg(buf []byte, opts *jpeg.Options) ([]byte
 
 func (p *imageProcessor) processJpg(buf []byte, opts *jpeg.Options) ([]byte, error) {
 	r := bytes.NewReader(buf)
-	// img, err := jpeg.Decode(r)
 	img, err := imaging.Decode(r, imaging.AutoOrientation(true))
 	if err != nil {
 		return nil, err
@@ -98,7 +93,7 @@ func (p *imageProcessor) processJpg(buf []byte, opts *jpeg.Options) ([]byte, err
 	return jpgBuf, nil
 }
 
-func (p *imageProcessor) addBlackBackgroundToTransparent(img image.Image) image.Image {
+func (p *imageProcessor) addBlackBackgroundToTransparentPixels(img image.Image) image.Image {
 	// from https://www.socketloop.com/tutorials/golang-convert-png-transparent-background-image-to-jpg-or-jpeg-image
 
 	// create a new Image with the same dimension of PNG image
