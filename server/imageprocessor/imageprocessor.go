@@ -56,6 +56,12 @@ func (p *imageProcessor) ProcessImage(buf []byte) ([]byte, error) {
 			return nil, err
 		}
 		return processed, nil
+	case MimeTypeJPG:
+		processed, err := p.processJpg(buf, opts)
+		if err != nil {
+			return nil, err
+		}
+		return processed, nil
 	default:
 		return nil, fmt.Errorf("Could not process MIME type %s", contentType)
 	}
