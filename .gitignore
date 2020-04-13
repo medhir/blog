@@ -4,6 +4,7 @@
 /client/node_modules
 /client/coverage
 /build
+/www/node_modules
 
 # infrastructure (terraform)
 terraform/account.json

@@ -1,0 +1,30 @@
+.photo {
+  display: block;
+  border: 1px solid black;
+}
+
+@media (min-width: 0px) {
+  .photo {
+    width: 100%;
+    margin: 8px auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .photo {
+    width: 75%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .photo {
+    width: 50%;
+    margin: 16px auto;
+  }
+}
+
+@media (min-width: 1280px) {
+  .photo {
+    width: 40%;
+  }
+}
