@@ -1,0 +1,45 @@
+# Building a Dev-Centric Blogging System
+
+Since first endeavoring on a mission to build a blogging platform from scratch, I've desired a way to share my technical learnings.
+
+```jsx live=true
+class Hello extends React.Component {
+  constructor(props) {
+    super(props)
+    this.names = ['World', 'Blog', 'Harsh', 'React']
+    this.state = { currentName: this.names[0] }
+  }
+
+  componentDidMount() {
+    this.interval = setInterval(() => {
+      const randIndex = Math.floor(Math.random()*this.names.length)
+      const newName = this.names[randIndex]
+      this.setState({ currentName: newName })
+    }, 1000)
+  }
+
+  render() {
+    return (
+      <center>
+        <h3>
+          Hello, { this.state.currentName }!
+        </h3>
+      </center>
+    )
+  }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
