@@ -116,7 +116,7 @@ blockquote:before,
 blockquote:after,
 q:before,
 q:after {
-  content: "";
+  content: '';
   content: none;
 }
 table {
@@ -128,7 +128,7 @@ table {
   high level style definitions
 */
 body {
-  font-family: "Helvetica Neue", "Helvetica", sans-serif;
+  font-family: 'Helvetica Neue', 'Helvetica', sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -175,7 +175,7 @@ a:visited {
 }
 
 code {
-  font-family: "Menlo", monospace;
+  font-family: 'Menlo', monospace;
 }
 
 /* Layout styles */
@@ -213,7 +213,7 @@ nav > ul > li > a:visited {
 }
 
 nav > ul > li:hover:after {
-  content: "";
+  content: '';
   width: 100%;
   position: absolute;
   left: 0;
@@ -234,7 +234,7 @@ nav > ul > li:hover:after {
   }
 
   nav > ul > li:after {
-    content: "";
+    content: '';
     width: 100%;
     position: absolute;
     left: 0;
@@ -249,13 +249,13 @@ nav > ul > li:hover:after {
 main {
   flex-grow: 1;
   padding: 0.1px; /* to prevent margin collapsing */
-  background: linear-gradient(
+  /* background: linear-gradient(
     45deg,
     rgba(0, 255, 179, 0.1),
     rgba(253, 0, 0, 0.1)
   );
   background-size: 400% 200%;
-  animation: underanimate 30s infinite;
+  animation: underanimate 30s infinite; */
   border-top: 1px solid black;
   border-bottom: 1px solid black;
 }
