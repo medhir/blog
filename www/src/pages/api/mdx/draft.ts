@@ -8,7 +8,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
     // Create a new mdx file
     const mdx: string = req.body.mdx
     const id = uuid()
-    const path = `src/pages/mdx/drafts/${id}.mdx`
+    const path = `pages/mdx/drafts/${id}.mdx`
     const url = `/mdx/drafts/${id}`
     fs.writeFile(path, mdx, (err: NodeJS.ErrnoException) => {
       if (err) {

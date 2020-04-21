@@ -1,5 +1,5 @@
 import { Component, ChangeEvent } from 'react'
-import Preview from './Preview'
+import Preview from './preview'
 interface NotebookProps {
   mdx?: string
 }
@@ -9,7 +9,7 @@ interface NotebookState {
 }
 
 class Notebook extends Component<NotebookProps, NotebookState> {
-  constructor(props) {
+  constructor(props: NotebookProps) {
     super(props)
     this.state = {
       mdx: props.mdx,
@@ -24,7 +24,7 @@ class Notebook extends Component<NotebookProps, NotebookState> {
   render() {
     return (
       <div>
-        <textarea onChange={this.handleTextareaChange}></textarea>
+        <textarea onChange={this.handleTextareaChange} value={this.state.mdx}></textarea>
         <Preview mdx={this.state.mdx} />
       </div>
     )

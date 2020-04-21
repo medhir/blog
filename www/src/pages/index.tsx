@@ -1,4 +1,4 @@
-import Head from '../components/Head'
+import Head from '../components/head'
 import { Fragment } from 'react'
 
 const Home = () => (
