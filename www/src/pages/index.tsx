@@ -1,5 +1,6 @@
 import Head from '../components/head'
 import { Fragment } from 'react'
+import { NextApiResponse } from 'next'
 
 const Home = () => (
   <Fragment>
@@ -7,7 +8,11 @@ const Home = () => (
   </Fragment>
 )
 
-Home.getInitialProps = async ({ res }) => {
+interface getInitialPropsContext {
+  res: NextApiResponse
+}
+
+Home.getInitialProps = async ({ res }: getInitialPropsContext) => {
   if (res) {
     res.writeHead(301, {
       Location: '/photos',

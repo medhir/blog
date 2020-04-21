@@ -4,7 +4,6 @@ import { MDXProvider } from '@mdx-js/react'
 import { Provider, mdComponents } from 'unified-ui'
 
 // import CodeBlock from '../components/CodeBlock/index'
-import Layout from '../components/layout'
 import '../styles.scss'
 
 // Override the App class to put layout component around the page contents
@@ -24,9 +23,7 @@ export default class MyApp extends App {
     return (
       <MDXProvider components={components}>
         <Provider>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <Component {...pageProps} />
         </Provider>
       </MDXProvider>
     )

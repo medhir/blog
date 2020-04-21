@@ -1,8 +1,11 @@
-import Notebook from '../../components/Notebook'
+import Notebook from '../../components/notebook'
+import Layout from '../../components/layout'
 
 const Code = () => (
   <section>
-    <Notebook mdx="# Hello, world" />
+    <Layout>
+      <Notebook mdx="# Hello, world" />
+    </Layout>
   </section>
 )
 
