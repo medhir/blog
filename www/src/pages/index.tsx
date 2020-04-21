@@ -4,10 +4,18 @@ import { Fragment } from 'react'
 const Home = () => (
   <Fragment>
     <Head title="medhir.com" />
-    <main>
-      <h1>Hello.</h1>
-    </main>
   </Fragment>
 )
+
+Home.getInitialProps = async ({ res }) => {
+  if (res) {
+    res.writeHead(301, {
+      Location: '/photos',
+    })
+    res.end()
+  }
+
+  return {}
+}
 
 export default Home

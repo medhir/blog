@@ -1,0 +1,124 @@
+/* Layout styles */
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: 100%;
+
+  header {
+    padding: 30px 50px 10px 50px;
+    background-color: white;
+  }
+  nav > ul > li {
+    position: relative;
+    cursor: pointer;
+    color: rgb(0, 0, 255);
+    font-size: 1.15rem;
+    display: inline-block;
+    margin: 10px 10px 0px 10px;
+  }
+
+  nav > ul > li:first-child {
+    margin: 10px 10px 10px 0px;
+  }
+
+  nav > ul > li > a {
+    text-decoration: none;
+  }
+
+  nav > ul > li > a:visited {
+    color: rgb(0, 0, 255);
+  }
+
+  nav > ul > li:hover:after {
+    content: '';
+    width: 100%;
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 2px;
+    background: linear-gradient(270deg, #1100ff, #f700ff, #1100ff);
+    background-size: 200% 200%;
+    animation: underanimate 5s infinite;
+  }
+
+  @media only screen and (max-width: 600px) {
+    header {
+      padding: 10px 20px;
+    }
+
+    nav > ul > li {
+      font-size: 1.3em;
+    }
+
+    nav > ul > li:after {
+      content: '';
+      width: 100%;
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      height: 1px;
+      background: linear-gradient(270deg, #1100ff, #f700ff, #1100ff);
+      background-size: 200% 200%;
+      animation: underanimate 10s infinite;
+    }
+  }
+
+  main {
+    flex-grow: 1;
+    padding: 0.1px; /* to prevent margin collapsing */
+    /* background: linear-gradient(
+      45deg,
+      rgba(0, 255, 179, 0.1),
+      rgba(253, 0, 0, 0.1)
+    );
+    background-size: 400% 200%;
+    animation: underanimate 30s infinite; */
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+  }
+
+  main > * {
+    margin: 0 45px;
+  }
+
+  @media only screen and (max-width: 600px) {
+    main > * {
+      margin: 0 10px;
+    }
+  }
+
+  @keyframes underanimate {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  footer {
+    height: auto;
+    padding: 15px 45px;
+    background: linear-gradient(45deg, rgb(0, 0, 255), rgb(255, 50, 231));
+    background-size: 400% 200%;
+    animation: underanimate 30s infinite;
+  }
+
+  footer p {
+    display: inline-block;
+    padding: 2px 4px;
+    background-color: white;
+    border: 1px solid black;
+  }
+
+  @media only screen and (max-width: 600px) {
+    footer {
+      padding: 15px 20px;
+    }
+  }
+}
