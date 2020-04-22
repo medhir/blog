@@ -1,5 +1,6 @@
 import { Component, ChangeEvent } from 'react'
 import Preview from './preview'
+import styles from './notebook.module.scss'
 interface NotebookProps {
   mdx?: string
 }
@@ -18,13 +19,16 @@ class Notebook extends Component<NotebookProps, NotebookState> {
   }
 
   handleTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
-    this.setState({ mdx: e.target.innerText })
+    this.setState({ mdx: e.target.value })
   }
 
   render() {
     return (
-      <div>
-        <textarea onChange={this.handleTextareaChange} value={this.state.mdx}></textarea>
+      <div className={styles.notebook}>
+        <textarea
+          onChange={this.handleTextareaChange}
+          value={this.state.mdx}
+        ></textarea>
         <Preview mdx={this.state.mdx} />
       </div>
     )

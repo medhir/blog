@@ -9,11 +9,11 @@ import '../styles.scss'
 // Override the App class to put layout component around the page contents
 // https://github.com/zeit/next.js#custom-app
 
-/* MDX Components */
+// /* MDX Components */
 const components = {
-  h1: (props) => <h1 {...props} />,
-  pre: (props) => <div {...props} />,
-  ...mdComponents,
+  // h1: (props) => <h1 {...props} />,
+  // pre: (props) => <div {...props} />,
+  // ...mdComponents,
   // code: CodeBlock,
 }
 

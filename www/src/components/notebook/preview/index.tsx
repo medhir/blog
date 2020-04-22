@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { read } from 'fs'
-
+import styles from '../notebook.module.scss'
 interface PreviewProps {
   mdx: string
 }
@@ -23,7 +22,7 @@ const Preview = ({ mdx }: PreviewProps) => {
       .catch((err) => setError(err))
   }, [])
   return (
-    <div>
+    <div class={styles.preview}>
       {mdxPreviewURL && <iframe src={mdxPreviewURL} />}
       {error && <h2>{JSON.stringify(error)}</h2>}
     </div>
