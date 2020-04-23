@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import styles from '../notebook.module.scss'
 interface PreviewProps {
   mdx: string
+  id: string
 }
 
-const Preview = ({ mdx }: PreviewProps) => {
+const Preview = ({ mdx, id }: PreviewProps) => {
   const [mdxPreviewURL, setMdxPreviewURL] = useState()
   const [error, setError] = useState()
   useEffect(() => {
@@ -15,14 +16,15 @@ const Preview = ({ mdx }: PreviewProps) => {
       },
       body: JSON.stringify({
         mdx,
+        id,
       }),
     })
       .then((response) => response.json())
       .then((data) => setMdxPreviewURL(data.url))
       .catch((err) => setError(err))
-  }, [])
+  }, [mdx])
   return (
-    <div class={styles.preview}>
+    <div className={styles.preview}>
       {mdxPreviewURL && <iframe src={mdxPreviewURL} />}
       {error && <h2>{JSON.stringify(error)}</h2>}
     </div>

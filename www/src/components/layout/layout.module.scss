@@ -9,6 +9,7 @@
   header {
     padding: 30px 50px 10px 50px;
     background-color: white;
+    border-bottom: 1px solid black;
   }
   nav > ul > li {
     position: relative;
@@ -66,6 +67,7 @@
   }
 
   main {
+    margin: 0 45px;
     flex-grow: 1;
     padding: 0.1px; /* to prevent margin collapsing */
     /* background: linear-gradient(
@@ -75,16 +77,10 @@
     );
     background-size: 400% 200%;
     animation: underanimate 30s infinite; */
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
-  }
-
-  main > * {
-    margin: 0 45px;
   }
 
   @media only screen and (max-width: 600px) {
-    main > * {
+    main {
       margin: 0 10px;
     }
   }
@@ -107,6 +103,7 @@
     background: linear-gradient(45deg, rgb(0, 0, 255), rgb(255, 50, 231));
     background-size: 400% 200%;
     animation: underanimate 30s infinite;
+    border-top: 1px solid black;
   }
 
   footer p {

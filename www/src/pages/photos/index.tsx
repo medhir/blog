@@ -39,7 +39,7 @@ const Photos = ({ photos }: PhotosProps) => {
       <Head title="medhir.photos" />
       <section className={styles.photos}>
         {displayPhotos.map((photo) => (
-          <div className={styles.photo}>
+          <div className={styles.photo} key={photo}>
             <img
               src={`https://s3-us-west-2.amazonaws.com/medhir-blog-dev/${photo}`}
             />
