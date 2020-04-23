@@ -29,6 +29,19 @@ class Notebook extends Component<NotebookProps, NotebookState> {
     this.setState({ mdx: e.target.value })
   }
 
+  componentWillUnmount() {
+    const { id } = this.state
+    fetch('/api/mdx/draft', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id,
+      }),
+    }).catch((err) => console.error(err))
+  }
+
   render() {
     const { mdx, validatedMDX, id } = this.state
     return (

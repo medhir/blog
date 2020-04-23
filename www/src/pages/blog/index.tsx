@@ -1,10 +1,10 @@
 import Notebook from '../../components/notebook'
 import Layout from '../../components/layout'
 
-const Code = () => (
+const Blog = () => (
   <Layout>
     <Notebook />
   </Layout>
 )
 
-export default Code
+export default Blog

@@ -1,7 +1,7 @@
 import App from 'next/app'
 import React from 'react'
 import { MDXProvider } from '@mdx-js/react'
-import { Provider, mdComponents } from 'unified-ui'
+import Notebook from '../components/notebook'
 
 // import CodeBlock from '../components/CodeBlock/index'
 import '../styles.scss'
@@ -22,9 +22,7 @@ export default class MyApp extends App {
     const { Component, pageProps } = this.props
     return (
       <MDXProvider components={components}>
-        <Provider>
-          <Component {...pageProps} />
-        </Provider>
+        <Component {...pageProps} />
       </MDXProvider>
     )
   }
