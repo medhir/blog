@@ -1,0 +1,101 @@
+article {
+  line-height: 1.35rem;
+  width: 50%;
+  margin: 0 auto !important;
+  box-sizing: border-box;
+}
+
+article > * {
+  margin: 15px 0px;
+}
+
+article > h1 {
+  font-size: 3rem;
+  line-height: 3.1rem;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+article > h1:after {
+  content: '';
+  width: 100%;
+  position: absolute;
+  left: 0;
+  bottom: -7px;
+  height: 3px;
+  background: linear-gradient(270deg, #1100ff, #f700ff, #1100ff);
+  background-size: 400% 400%;
+  animation: underanimate 45s infinite;
+}
+
+article > h2 {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
+article > h3 {
+  font-size: 1.75rem;
+  line-height: 2rem;
+}
+
+article > h4 {
+  font-size: 1.5rem;
+  line-height: 1.75rem;
+}
+
+article > h5,
+article > h6 {
+  font-size: 1.25rem;
+}
+
+article > p {
+  font-size: 1rem;
+  margin: 25px 0px;
+}
+
+article > p > em {
+  font-style: italic;
+}
+
+article > p > strong {
+  font-weight: bolder;
+}
+
+article > p > img {
+  display: block;
+  width: 100%;
+  border: 1px solid black;
+  margin: auto;
+}
+
+article > p > img + em {
+  display: block;
+  margin-top: 10px;
+  text-align: center;
+}
+
+@media only screen and (max-width: 1200px) {
+  article {
+    width: 60%;
+    padding: 10px;
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  article {
+    width: 75%;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  article {
+    width: 85%;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  article {
+    width: 96%;
+  }
+}
