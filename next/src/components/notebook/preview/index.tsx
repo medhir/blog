@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import styles from '../notebook.module.scss'
+
 interface PreviewProps {
   mdx: string
   id: string
@@ -8,6 +9,7 @@ interface PreviewProps {
 const Preview = ({ mdx, id }: PreviewProps) => {
   const [mdxPreviewURL, setMdxPreviewURL] = useState()
   const [error, setError] = useState()
+
   useEffect(() => {
     fetch('/api/mdx/draft', {
       method: 'POST',
@@ -23,10 +25,11 @@ const Preview = ({ mdx, id }: PreviewProps) => {
       .then((data) => setMdxPreviewURL(data.url))
       .catch((err) => setError(err))
   }, [mdx])
+
   return (
     <div className={styles.preview}>
       {mdxPreviewURL && <iframe src={mdxPreviewURL} />}
-      {error && <h2>{JSON.stringify(error)}</h2>}
+      {error && <p>{JSON.stringify(error)}</p>}
     </div>
   )
 }
