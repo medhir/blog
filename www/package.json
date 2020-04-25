@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "jest --watch",
+    "test:ci": "jest --ci"
   },
   "dependencies": {
     "@mdx-js/loader": "^1.5.8",
@@ -31,6 +33,10 @@
     "@types/node": "^13.11.1",
     "@types/react": "^16.9.34",
     "@types/uuid": "^7.0.2",
+    "babel-jest": "^25.4.0",
+    "enzyme-adapter-react-16": "^1.15.2",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^25.4.0",
     "typescript": "^3.8.3"
   }
 }
