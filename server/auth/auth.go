@@ -3,7 +3,7 @@ package auth
 import (
 	"errors"
 
-	"github.com/FusionAuth/fusionauth-go-client/pkg/fusionauth"
+	"github.com/FusionAuth/go-client/pkg/fusionauth"
 	"github.com/medhir/blog/server/util"
 )
 
@@ -24,7 +24,7 @@ type LoginResponse struct {
 // that can be taken within the application context
 type Auth interface {
 	Login(request *LoginRequest) (*LoginResponse, error)
-	Validate(jwt string) (ok bool, retErr error)
+	Validate(jwt string) error
 }
 
 // FusionAuthClient describes the methods used from the fusionauth client
@@ -36,7 +36,6 @@ type FusionAuthClient interface {
 type auth struct {
 	appID  string
 	client FusionAuthClient
-	// client *fusionauth.FusionAuthClient - uncomment for better intellisense during dev
 }
 
 // NewAuth instantiates a new authentication controller for the application
@@ -67,13 +66,13 @@ func (a *auth) Login(request *LoginRequest) (*LoginResponse, error) {
 }
 
 // Validate checks if a jwt is still a valid authentication token
-func (a *auth) Validate(jwt string) (ok bool, retErr error) {
+func (a *auth) Validate(jwt string) error {
 	response, err := a.client.ValidateJWT(jwt)
 	if err != nil {
-		return false, err
+		return err
 	}
 	if !util.StatusCodeIsSuccessful(response.StatusCode) {
-		return false, errors.New("Validation of JWT unsuccessful")
+		return errors.New("Validation of JWT unsuccessful")
 	}
-	return true, nil
+	return nil
 }

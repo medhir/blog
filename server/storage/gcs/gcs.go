@@ -26,8 +26,7 @@ type gcs struct {
 }
 
 // NewGCS instantiates a new GCS client wrapper
-func NewGCS() (GCS, error) {
-	ctx := context.Background()
+func NewGCS(ctx context.Context) (GCS, error) {
 	client, err := storage.NewClient(ctx)
 	if err != nil {
 		return nil, err
@@ -103,7 +102,8 @@ func (gcs *gcs) ListObjects(bucket, prefix string) (Objects, error) {
 		Prefix:    prefix,
 		Delimiter: "/",
 	})
-	var objects []*Object
+
+	objects := []*Object{}
 	for {
 		attrs, err := it.Next()
 		if err == iterator.Done {
@@ -112,6 +112,7 @@ func (gcs *gcs) ListObjects(bucket, prefix string) (Objects, error) {
 		if err != nil {
 			return nil, fmt.Errorf("Unable to get objects under %s in bucket %s: %s", prefix, bucket, err.Error())
 		}
+
 		objects = append(objects, &Object{
 			Name:    attrs.Name,
 			URL:     attrs.MediaLink,
@@ -128,10 +129,10 @@ func (gcs *gcs) ListObjects(bucket, prefix string) (Objects, error) {
 type BySorter string
 
 const (
-	// ByDateAscending sorts objects by date in ascending order (Most to least recent)
-	ByDateAscending BySorter = "DateAscending"
-	// ByDateDescending sorts objects by date in descending order (Least to most recent)
+	// ByDateDescending sorts objects by date in descending order (Most to least recent)
 	ByDateDescending BySorter = "DateDescending"
+	// ByDateAscending sorts objects by date in ascending order (Least to most recent)
+	ByDateAscending BySorter = "DateAscending"
 	// ByName sorts objects by the object names alphabetically
 	ByName BySorter = "ByName"
 )
@@ -140,11 +141,11 @@ const (
 // If the passed in BySorter is undefined, the original slice will be returned.
 func (o Objects) Sort(bySorter BySorter) {
 	switch bySorter {
-	case ByDateAscending:
+	case ByDateDescending:
 		sort.Slice(o, func(i, j int) bool {
 			return o[i].Created.After(o[j].Created)
 		})
-	case ByDateDescending:
+	case ByDateAscending:
 		sort.Slice(o, func(i, j int) bool {
 			return o[i].Created.Before(o[j].Created)
 		})

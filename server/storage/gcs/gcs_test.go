@@ -28,7 +28,7 @@ var testObjects Objects = Objects{
 }
 
 func TestSort(t *testing.T) {
-	t.Run("Sorts objects by date ascending", func(t *testing.T) {
+	t.Run("Sorts objects by date descending", func(t *testing.T) {
 		objs := make(Objects, len(testObjects))
 		copy(objs, testObjects)
 		expectedObjects := []*Object{
@@ -50,14 +50,14 @@ func TestSort(t *testing.T) {
 			},
 		}
 
-		objs.Sort(ByDateAscending)
+		objs.Sort(ByDateDescending)
 		for i, o := range objs {
 			assert.Equal(t, expectedObjects[i].Name, o.Name)
 			assert.Equal(t, expectedObjects[i].Created, o.Created)
 		}
 	})
 
-	t.Run("Sorts objects by date descending", func(t *testing.T) {
+	t.Run("Sorts objects by date ascending", func(t *testing.T) {
 		objs := make(Objects, len(testObjects))
 		copy(objs, testObjects)
 		expectedObjects := []*Object{
@@ -79,7 +79,7 @@ func TestSort(t *testing.T) {
 			},
 		}
 
-		objs.Sort(ByDateDescending)
+		objs.Sort(ByDateAscending)
 		for i, o := range objs {
 			assert.Equal(t, expectedObjects[i].Name, o.Name)
 			assert.Equal(t, expectedObjects[i].Created, o.Created)

@@ -47,15 +47,15 @@ func (_m *MockGCS) GetObject(name string, bucket string) ([]byte, error) {
 }
 
 // ListObjects provides a mock function with given fields: bucket, prefix
-func (_m *MockGCS) ListObjects(bucket string, prefix string) ([]*Object, error) {
+func (_m *MockGCS) ListObjects(bucket string, prefix string) (Objects, error) {
 	ret := _m.Called(bucket, prefix)
 
-	var r0 []*Object
-	if rf, ok := ret.Get(0).(func(string, string) []*Object); ok {
+	var r0 Objects
+	if rf, ok := ret.Get(0).(func(string, string) Objects); ok {
 		r0 = rf(bucket, prefix)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*Object)
+			r0 = ret.Get(0).(Objects)
 		}
 	}
 

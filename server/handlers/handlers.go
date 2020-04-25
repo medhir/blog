@@ -1,8 +1,45 @@
 package handlers
 
-import "github.com/medhir/blog/server/auth"
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
 
-// Handlers describes application components relied on to serve http requests
-type Handlers struct {
-	Auth auth.Auth
+	"github.com/medhir/blog/server/auth"
+	"github.com/medhir/blog/server/storage/gcs"
+)
+
+// Handlers describes all the http handlers available within the package
+type Handlers interface {
+	// Authentication
+	Login() http.HandlerFunc
+	ValidateJWT() http.HandlerFunc
+	// Photos
+	GetPhotos() http.HandlerFunc
+}
+
+// handlers describes dependencies needed to serve http requests
+type handlers struct {
+	auth auth.Auth
+	gcs  gcs.GCS
+}
+
+// NewHandlers instantiates a new set of handlers
+func NewHandlers(auth auth.Auth, gcs gcs.GCS) Handlers {
+	return &handlers{
+		auth: auth,
+		gcs:  gcs,
+	}
+}
+
+// writeJSON writes the passed in interface to an http response as JSON
+func writeJSON(w http.ResponseWriter, v interface{}) error {
+	data, err := json.Marshal(v)
+	if err != nil {
+		return fmt.Errorf("Could not encode json for %v", v)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+	return nil
 }
