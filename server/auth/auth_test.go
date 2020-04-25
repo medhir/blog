@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/FusionAuth/fusionauth-go-client/pkg/fusionauth"
+	"github.com/FusionAuth/go-client/pkg/fusionauth"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -96,8 +96,7 @@ func TestValidate(t *testing.T) {
 
 		auth := NewAuth(mockFusionAuthClient, "1")
 
-		ok, err := auth.Validate("abcd1234")
-		assert.True(t, ok)
+		err := auth.Validate("abcd1234")
 		assert.Nil(t, err)
 	})
 
@@ -111,8 +110,7 @@ func TestValidate(t *testing.T) {
 
 		auth := NewAuth(mockFusionAuthClient, "1")
 
-		ok, err := auth.Validate("abcd1234")
-		assert.False(t, ok)
+		err := auth.Validate("abcd1234")
 		assert.Error(t, err)
 	})
 }

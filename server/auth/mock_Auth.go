@@ -33,22 +33,15 @@ func (_m *MockAuth) Login(request *LoginRequest) (*LoginResponse, error) {
 }
 
 // Validate provides a mock function with given fields: jwt
-func (_m *MockAuth) Validate(jwt string) (bool, error) {
+func (_m *MockAuth) Validate(jwt string) error {
 	ret := _m.Called(jwt)
 
-	var r0 bool
-	if rf, ok := ret.Get(0).(func(string) bool); ok {
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
 		r0 = rf(jwt)
 	} else {
-		r0 = ret.Get(0).(bool)
+		r0 = ret.Error(0)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(jwt)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
