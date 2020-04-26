@@ -26,6 +26,7 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
 
     fetch('http://localhost:9000/login', {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },

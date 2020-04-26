@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/medhir/blog/server/auth"
 )
@@ -40,6 +41,7 @@ func (h *handlers) Login() http.HandlerFunc {
 			Value:    authResponse.Token,
 			Path:     "/",
 			HttpOnly: true,
+			Expires:  time.Now().AddDate(0, 0, 1),
 		}
 		http.SetCookie(w, authCookie)
 		w.WriteHeader(http.StatusOK)
