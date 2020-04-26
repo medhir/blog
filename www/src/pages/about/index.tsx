@@ -2,9 +2,11 @@ import React from 'react'
 
 import Layout from '../../components/layout'
 import styles from './about.module.scss'
+import Head from '../../components/head'
 
 const About = () => (
   <Layout>
+    <Head title="about.medhir" />
     <section className={styles.about}>
       <p>
         Hello, and welcome to my tiny internet outpost. I&apos;m Medhir, a
