@@ -5,6 +5,7 @@ import Layout from '../../components/layout'
 import Post from '../../components/blog/modules/Post'
 import { PostMetadata } from '../../components/blog/types'
 import http from '../../utility/http'
+import Head from '../../components/head'
 
 interface BlogProps {
   post: PostMetadata
@@ -12,6 +13,7 @@ interface BlogProps {
 
 const Blog = ({ post }: BlogProps) => (
   <Layout>
+    <Head title={post.title} />
     <Post markdown={post.markdown} />
   </Layout>
 )
@@ -20,8 +22,7 @@ export default Blog
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const response = await http.Get('https://medhir.com/api/blog/posts')
-  const data = await response.json()
-  const posts: Array<PostMetadata> = data.posts
+  const posts: Array<PostMetadata> = response.data.posts
   const paths = posts.map((post) => ({
     params: { slug: post.titlePath },
   }))
@@ -33,10 +34,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const response = await http.Get(
-    `http://medhir.com/api/blog/post/${params.slug}`
+    `https://medhir.com/api/blog/post/${params.slug}`
   )
-  const post: PostMetadata = await response.json()
-
+  console.log(response)
+  const post: PostMetadata = response.data
   return {
     props: {
       post,
