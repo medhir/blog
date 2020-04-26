@@ -15,12 +15,12 @@ interface AuthProps {
 
 const Auth = ({ children, prompt }: AuthProps): ReactElement => {
   const [validated, setValidated] = useState(false)
-  const [error, setError] = useState(undefined)
+  const [error, setError] = useState(null)
 
   const login = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
     const credentials = {
-      loginId: e.target[0].value,
+      loginID: e.target[0].value,
       password: e.target[1].value,
     }
 
@@ -34,6 +34,8 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
       .then((response) => {
         if (response.status === 200) {
           setValidated(true)
+        } else {
+          setError({ error: 'Response Unsuccessful' })
         }
       })
       .catch((error) => {
