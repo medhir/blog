@@ -14,6 +14,7 @@ import (
 	"github.com/medhir/blog/server/auth"
 	"github.com/medhir/blog/server/storage/gcs"
 	"github.com/pkg/errors"
+	"github.com/rs/cors"
 )
 
 // TODO - Move to config
@@ -55,17 +56,33 @@ func NewInstance() (*Instance, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Instance{
+
+	instance := &Instance{
 		router: http.DefaultServeMux,
 		server: server,
 		auth:   auth.NewAuth(fusionauthClient, blogAuthAppID),
 		gcs:    gcs,
-	}, nil
+	}
+	instance.AddRoutes() // initialize routes for serve mux
+
+	// dev mode
+	_, dev := os.LookupEnv("REACT_APP_DEBUG_HOST")
+	if dev {
+		// enable CORS
+		c := cors.New(cors.Options{
+			AllowedOrigins:   []string{"http://localhost:3000", "http://127.0.0.1:3000"},
+			Debug:            true,
+			AllowCredentials: true,
+			AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
+			AllowedHeaders:   []string{"Authorization", "Content-Type", "Set-Cookie"}})
+		instance.server.Handler = c.Handler(instance.router)
+	}
+
+	return instance, nil
 }
 
 // Start initializes a server instance
 func (i *Instance) Start() {
-	i.AddRoutes()                    // initialize routes for the ServeMux
 	err := i.server.ListenAndServe() // Start doesn't return until the server connection breaks
 	if err != nil {
 		fmt.Println("Server stopped unexpectedly.", err)

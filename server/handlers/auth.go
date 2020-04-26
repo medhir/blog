@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/medhir/blog/server/auth"
 )
 
 // Credentials describes the JSON request for a user login
 type Credentials struct {
-	LoginID  string `json:"loginId"`
+	LoginID  string `json:"loginID"`
 	Password string `json:"password"`
 }
 
@@ -38,7 +39,9 @@ func (h *handlers) Login() http.HandlerFunc {
 		authCookie := &http.Cookie{
 			Name:     "tr4x2ki0ptz",
 			Value:    authResponse.Token,
+			Path:     "/",
 			HttpOnly: true,
+			Expires:  time.Now().AddDate(0, 0, 1),
 		}
 		http.SetCookie(w, authCookie)
 		w.WriteHeader(http.StatusOK)

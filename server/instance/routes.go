@@ -12,7 +12,7 @@ func (i *Instance) AddRoutes() {
 	// api endpoints
 	//	auth
 	i.router.HandleFunc("/login", handlers.Login())
-	i.router.HandleFunc("/jwt/validate", func(w http.ResponseWriter, r *http.Request) {})
+	i.router.HandleFunc("/jwt/validate", handlers.ValidateJWT())
 	// 	blog
 	i.router.HandleFunc("/blog/posts", func(w http.ResponseWriter, r *http.Request) {})
 	i.router.HandleFunc("/blog/drafts", func(w http.ResponseWriter, r *http.Request) {})
