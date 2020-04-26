@@ -41,7 +41,11 @@ const Photos = ({ photos }: PhotosProps) => {
         {displayPhotos.map((photo) => (
           <div className={styles.photo} key={photo}>
             <img
-              src={`https://s3-us-west-2.amazonaws.com/medhir-blog-dev/${photo}`}
+              src={
+                process.env.environment === 'production'
+                  ? `https://s3-us-west-2.amazonaws.com/medhir-blog-dev/${photo}`
+                  : photo
+              }
             />
           </div>
         ))}
@@ -53,7 +57,12 @@ const Photos = ({ photos }: PhotosProps) => {
 export default Photos
 
 export async function getServerSideProps() {
-  const response = await http.Get('https://medhir.com/api/photos?album=main')
+  let response
+  if (process.env.environment === 'production') {
+    response = await http.Get('https://medhir.com/api/photos?album=main')
+  } else {
+    response = await http.Get('http://localhost:9000/photos')
+  }
   const photos = await response.json()
 
   return {
