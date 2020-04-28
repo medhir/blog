@@ -1,6 +1,5 @@
 import MDXViewer from '../../mdx-viewer'
 import styles from '../notebook.module.scss'
-import previewStyles from './preview.module.scss'
 import articleStyles from '../../blog/modules/Post/article.module.scss'
 
 interface PreviewProps {
