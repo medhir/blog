@@ -9,10 +9,14 @@ interface NotebookProps {
 
 interface NotebookState {
   mdx: string
-  mdxSource?: string
+  preview?: JSX.Element
   id: string
   error?: any
 }
+
+const Error = ({ error }) => (
+  <pre className={styles.error}>{JSON.stringify(error, undefined, 3)}</pre>
+)
 
 const FetchSource = (mdx: string) =>
   fetch('/api/mdx/draft', {
@@ -29,7 +33,12 @@ class Notebook extends Component<NotebookProps, NotebookState> {
   constructor(props: NotebookProps) {
     super(props)
     this.state = {
-      mdx: props.mdx || `<Button>Hello, world!</Button>`,
+      mdx:
+        props.mdx ||
+        `# Blog 2.0
+
+<Button>With MDX</Button>
+      `,
       id: uuid(),
     }
     this.handleTextareaChange = this.handleTextareaChange.bind(this)
@@ -45,13 +54,22 @@ class Notebook extends Component<NotebookProps, NotebookState> {
     FetchSource(mdx)
       .then((response) => {
         if (!response.ok) {
-          response.json().then((data) => this.setState({ error: data }))
-        } else {
           response
             .json()
-            .then((data) =>
-              this.setState({ mdxSource: data.source, error: false })
+            .then((data) => this.setState({ error: <Error error={data} /> }))
+        } else {
+          response.json().then((data) => {
+            this.setState(
+              {
+                preview: null,
+              },
+              () => {
+                this.setState({
+                  preview: <Preview source={data.source} />,
+                })
+              }
             )
+          })
         }
       })
       .catch((err) => {
@@ -60,30 +78,22 @@ class Notebook extends Component<NotebookProps, NotebookState> {
   }
 
   handleTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
-    this.setState({ mdx: e.target.value }, () => {
-      this.renderMDXToSource()
-    })
-  }
-
-  componentWillUnmount() {
-    const { id } = this.state
-    fetch('/api/mdx/draft', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
+    this.setState(
+      {
+        mdx: e.target.value,
       },
-      body: JSON.stringify({
-        id,
-      }),
-    }).catch((err) => console.error(err))
+      () => {
+        this.renderMDXToSource()
+      }
+    )
   }
 
   render() {
-    const { mdx, mdxSource, error } = this.state
+    const { mdx, preview } = this.state
     return (
       <div className={styles.notebook}>
         <textarea onChange={this.handleTextareaChange} value={mdx}></textarea>
-        <Preview key={mdxSource} source={mdxSource} error={error} />
+        {preview}
       </div>
     )
   }

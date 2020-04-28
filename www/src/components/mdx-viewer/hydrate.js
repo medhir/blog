@@ -2,7 +2,7 @@ import React from 'react'
 import { mdx } from '@mdx-js/react'
 
 export default function hydrate({ source, renderedOutput }, components) {
-  // const [hydrated, setHydrated] = React.useState(false)
+  const [hydrated, setHydrated] = React.useState(false)
 
   // our default result is the server-rendered output
   // we get this in front of users as quickly as possible
@@ -18,7 +18,7 @@ export default function hydrate({ source, renderedOutput }, components) {
   // once the hydration is complete, we update the state/memo value and
   // react re-renders for us
   typeof window !== 'undefined' &&
-    // !hydrated &&
+    !hydrated &&
     window.requestIdleCallback(() => {
       // first we set up the scope which has to include the mdx custom
       // create element function as well as any components we're using
@@ -40,7 +40,7 @@ export default function hydrate({ source, renderedOutput }, components) {
 
       // finally, we flip the hydrated status so this doesn't run again, and set
       // the output as the new result so that
-      // setHydrated(true)
+      setHydrated(true)
       setResult(hydratedFn)
     })
 
