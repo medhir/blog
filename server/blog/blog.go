@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/medhir/blog/server/storage/gcs"
 )
 
@@ -13,9 +14,9 @@ const bucket = "medhir-com"
 // Blog describes the methods available for the blog controller
 type Blog interface {
 	AddDraft(markdown, title string) error
-	SaveDraft(draft Draft) error
-	PublishPost(draft Draft) error
-	UpdatePost(post Post) error
+	// SaveDraft(draft Draft) error
+	// PublishPost(draft Draft) error
+	// UpdatePost(post Post) error
 }
 
 type blog struct {
@@ -47,8 +48,8 @@ type Draft struct {
 }
 
 // AddDraft adds a draft
-func (b *blog) AddDraft(title string) error {
-	name := fmt.Sprintf("blog/drafts/%s.json", uuid)
+func (b *blog) AddDraft(markdown, title string) error {
+	uuid := uuid.New().String()
 	draft := Draft{
 		ID:       uuid,
 		Markdown: markdown,
@@ -59,7 +60,8 @@ func (b *blog) AddDraft(title string) error {
 	if err != nil {
 		return fmt.Errorf("Unable to encode data to json - %v", err)
 	}
-	err = b.gcs.UploadObject(name, bucket)
+	name := fmt.Sprintf("blog/drafts/%s.json", uuid)
+	err = b.gcs.UploadObject(name, bucket, data)
 	if err != nil {
 		return fmt.Errorf("Unable to upload draft - %v", err)
 	}
