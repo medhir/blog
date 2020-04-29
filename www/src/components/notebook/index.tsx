@@ -2,6 +2,7 @@ import { Component, ChangeEvent } from 'react'
 import { v4 as uuid } from 'uuid'
 import Preview from './preview'
 import styles from './notebook.module.scss'
+import http from '../../utility/http'
 
 interface NotebookProps {
   mdx?: string
@@ -19,15 +20,7 @@ const Error = ({ error }) => (
 )
 
 const FetchSource = (mdx: string) =>
-  fetch('/api/mdx/draft', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      mdx,
-    }),
-  })
+  http.Post('/api/mdx/draft', { mdx }, { baseURL: 'http://localhost:3000' })
 
 class Notebook extends Component<NotebookProps, NotebookState> {
   constructor(props: NotebookProps) {
@@ -38,7 +31,7 @@ class Notebook extends Component<NotebookProps, NotebookState> {
         `# Blog 2.0
 
 <Button>With MDX</Button>
-      `,
+`,
       id: uuid(),
     }
     this.handleTextareaChange = this.handleTextareaChange.bind(this)
@@ -53,24 +46,16 @@ class Notebook extends Component<NotebookProps, NotebookState> {
     const { mdx } = this.state
     FetchSource(mdx)
       .then((response) => {
-        if (!response.ok) {
-          response
-            .json()
-            .then((data) => this.setState({ error: <Error error={data} /> }))
-        } else {
-          response.json().then((data) => {
-            this.setState(
-              {
-                preview: null,
-              },
-              () => {
-                this.setState({
-                  preview: <Preview source={data.source} />,
-                })
-              }
-            )
-          })
-        }
+        this.setState(
+          {
+            preview: null,
+          },
+          () => {
+            this.setState({
+              preview: <Preview source={response.data.source} />,
+            })
+          }
+        )
       })
       .catch((err) => {
         this.setState({ error: err })

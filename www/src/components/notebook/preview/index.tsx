@@ -9,7 +9,7 @@ interface PreviewProps {
 const Preview = ({ source }: PreviewProps) => {
   return (
     <div className={styles.preview}>
-      <article className={articleStyles.article}>
+      <article className={`${styles.article} ${articleStyles.article}`}>
         {source && <MDXViewer source={source} />}
       </article>
     </div>
