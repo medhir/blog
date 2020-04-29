@@ -2,7 +2,9 @@ package blog
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,6 +15,7 @@ const (
 	bucket         = "medhir-com"
 	draftFormatter = "blog/drafts/%s.json"
 	draftsKey      = "blog/drafts.index.json"
+	index          = "blog/index.json"
 	postFormatter  = "blog/posts/%s.json"
 	postsKey       = "blog/posts.index.json"
 )
@@ -20,13 +23,17 @@ const (
 // Blog describes the methods available for the blog controller
 type Blog interface {
 	GetDraft(id string) ([]byte, error)
-	PostDraft(markdown, title string) error
+	AddDraft(title, markdown string) error
+	UpdateDraft(id, title, markdown string) error
 	GetDrafts() ([]byte, error)
-	// SaveDraft(draft Draft) error
-	// PublishPost(draft Draft) error
-	// UpdatePost(post Post) error
+
 	GetPost(id string) ([]byte, error)
+	// PublishPost(id string) error
+	// RevisePost(post Post) error
 	GetPosts() ([]byte, error)
+
+	// AddAsset(id string, data []byte) error
+	// RemoveAsset(id, assetID string) error
 }
 
 type blog struct {
@@ -42,19 +49,15 @@ func NewBlog(gcs gcs.GCS) Blog {
 
 // Post describes the data associated with a blog post
 type Post struct {
-	Title     string `json:"title"`
-	TitlePath string `json:"titlePath"`
-	Markdown  string `json:"markdown"`
-	Published int64  `json:"published"`
-	ID        string `json:"id"`
-}
+	ID       string `json:"id"`       // uuid identifier
+	Title    string `json:"title"`    // title of the post
+	Slug     string `json:"slug"`     // a slug for describing the url path for a post
+	Markdown string `json:"markdown"` // the post content
+	IsDraft  bool   `json:"is_draft"` // bool flag to indicate whether the post is in draft status
 
-// Draft describes the data associated with a blog post draft
-type Draft struct {
-	ID       string `json:"id"`
-	Markdown string `json:"markdown"`
-	Saved    int64  `json:"saved"`
-	Title    string `json:"title"`
+	Published int64 `json:"published,omitempty"` // timestamp for when the post was published
+	Revised   int64 `json:"revised,omitempty"`   // timestamp for when a published post is revised
+	Saved     int64 `json:"saved,omitempty"`     // timestamp for when a draft is saved
 }
 
 // GetDraft retrieves a draft
@@ -67,20 +70,62 @@ func (b *blog) GetDraft(id string) ([]byte, error) {
 	return bytes, nil
 }
 
-// PostDraft adds a new draft
-func (b *blog) PostDraft(markdown, title string) error {
+// AddDraft adds a new draft
+func (b *blog) AddDraft(title, markdown string) error {
 	uuid := uuid.New().String()
-	draft := Draft{
+	timestamp := makeTimestamp()
+	slug := makeSlug(title)
+	draft := Post{
 		ID:       uuid,
-		Markdown: markdown,
-		Saved:    makeTimestamp(),
 		Title:    title,
+		Slug:     slug,
+		Markdown: markdown,
+		IsDraft:  true,
+		Saved:    timestamp,
 	}
 	data, err := json.Marshal(draft)
 	if err != nil {
 		return fmt.Errorf("Unable to encode data to json - %v", err)
 	}
 	name := fmt.Sprintf(draftFormatter, uuid)
+	err = b.gcs.UploadObject(name, bucket, data)
+	if err != nil {
+		return fmt.Errorf("Unable to upload draft - %v", err)
+	}
+	return nil
+}
+
+// UpdateDraft updates an existing draft
+func (b *blog) UpdateDraft(id, title, markdown string) error {
+	// Make sure this is a valid draft
+	if id == "" {
+		return errors.New("draft must have an id")
+	}
+	if title == "" {
+		return errors.New("draft must have a title")
+	}
+	name := fmt.Sprintf(draftFormatter, id)
+	_, err := b.gcs.GetObject(name, bucket)
+	if err != nil {
+		return errors.New("id does not match any drafts")
+	}
+
+	// update the draft
+	saved := makeTimestamp()
+	slug := makeSlug(title)
+
+	draft := Post{
+		ID:       id,
+		Title:    title,
+		Slug:     slug,
+		Markdown: markdown,
+		IsDraft:  true,
+		Saved:    saved,
+	}
+	data, err := json.Marshal(draft)
+	if err != nil {
+		return fmt.Errorf("Unable to encode data to json - %v", err)
+	}
 	err = b.gcs.UploadObject(name, bucket, data)
 	if err != nil {
 		return fmt.Errorf("Unable to upload draft - %v", err)
@@ -118,4 +163,11 @@ func (b *blog) GetPosts() ([]byte, error) {
 
 func makeTimestamp() int64 {
 	return time.Now().UnixNano() / int64(time.Millisecond)
+}
+
+func makeSlug(title string) string {
+	lowercase := strings.ToLower(title)
+	words := strings.Split(lowercase, " ")
+	joined := strings.Join(words, "-")
+	return joined
 }

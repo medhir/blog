@@ -20,6 +20,9 @@ type Handlers interface {
 	// Blog
 	GetDraft() http.HandlerFunc
 	GetDrafts() http.HandlerFunc
+	PostDraft() http.HandlerFunc
+	PatchDraft() http.HandlerFunc
+	HandleDraft() http.HandlerFunc
 	GetPost() http.HandlerFunc
 	GetPosts() http.HandlerFunc
 

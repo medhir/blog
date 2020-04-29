@@ -15,8 +15,8 @@ func (i *Instance) AddRoutes() {
 	i.router.HandleFunc("/jwt/validate", h.ValidateJWT())
 	// 	blog
 	i.router.HandleFunc("/blog/asset", func(w http.ResponseWriter, r *http.Request) {})
-	i.router.HandleFunc("/blog/draft/", h.Authorize(h.GetDraft()))
 	i.router.HandleFunc("/blog/drafts", h.Authorize(h.GetDrafts()))
+	i.router.HandleFunc("/blog/draft/", h.Authorize(h.HandleDraft()))
 	i.router.HandleFunc("/blog/post/", h.GetPost())
 	i.router.HandleFunc("/blog/posts", h.GetPosts())
 	// 	photos
