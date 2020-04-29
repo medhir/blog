@@ -26,6 +26,7 @@
     "react-dom": "16.13.1",
     "remark-emoji": "^2.1.0",
     "remark-images": "^2.0.0",
+    "requestidlecallback-polyfill": "^1.0.2",
     "sass": "^1.26.3",
     "unified-ui": "^0.0.3",
     "uuid": "^7.0.3"

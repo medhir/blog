@@ -15,7 +15,7 @@ const Blog = ({ posts }) => (
 
 export default Blog
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetServerSideProps = async () => {
   const response = await http.Get('https://medhir.com/api/blog/posts')
   return {
     props: {

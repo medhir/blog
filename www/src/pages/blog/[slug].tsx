@@ -36,7 +36,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const response = await http.Get(
     `https://medhir.com/api/blog/post/${params.slug}`
   )
-  console.log(response)
   const post: PostMetadata = response.data
   return {
     props: {

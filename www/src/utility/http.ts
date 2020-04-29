@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios'
+import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
 
 let BaseURL: string
 if (process.env.environment === 'production') {
@@ -12,14 +12,22 @@ const a = axios.create({
 })
 
 const http = {
-  Get: (url: string): Promise<AxiosResponse> => {
-    return a.get(url)
+  Get: (url: string, config?: AxiosRequestConfig): Promise<AxiosResponse> => {
+    return a.get(url, config)
   },
-  Post: (url: string, data: any): Promise<AxiosResponse> => {
-    return a.post(url, data)
+  Post: (
+    url: string,
+    data: any,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse> => {
+    return a.post(url, data, config)
   },
-  Patch: (url: string, data: any): Promise<AxiosResponse> => {
-    return a.patch(url, data)
+  Patch: (
+    url: string,
+    data: any,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse> => {
+    return a.patch(url, data, config)
   },
 }
 
