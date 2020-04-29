@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/medhir/blog/server/auth"
+	"github.com/medhir/blog/server/blog"
 	"github.com/medhir/blog/server/storage/gcs"
 )
 
@@ -14,6 +15,14 @@ type Handlers interface {
 	// Authentication
 	Login() http.HandlerFunc
 	ValidateJWT() http.HandlerFunc
+	Authorize(handler http.HandlerFunc) http.HandlerFunc
+
+	// Blog
+	GetDraft() http.HandlerFunc
+	GetDrafts() http.HandlerFunc
+	GetPost() http.HandlerFunc
+	GetPosts() http.HandlerFunc
+
 	// Photos
 	GetPhotos() http.HandlerFunc
 }
@@ -22,6 +31,7 @@ type Handlers interface {
 type handlers struct {
 	auth auth.Auth
 	gcs  gcs.GCS
+	blog blog.Blog
 }
 
 // NewHandlers instantiates a new set of handlers
@@ -29,7 +39,14 @@ func NewHandlers(auth auth.Auth, gcs gcs.GCS) Handlers {
 	return &handlers{
 		auth: auth,
 		gcs:  gcs,
+		blog: blog.NewBlog(gcs),
 	}
+}
+
+func setJSON(w http.ResponseWriter, data []byte) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }
 
 // writeJSON writes the passed in interface to an http response as JSON

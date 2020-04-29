@@ -9,14 +9,24 @@ import (
 	"github.com/medhir/blog/server/storage/gcs"
 )
 
-const bucket = "medhir-com"
+const (
+	bucket         = "medhir-com"
+	draftFormatter = "blog/drafts/%s.json"
+	draftsKey      = "blog/drafts.index.json"
+	postFormatter  = "blog/posts/%s.json"
+	postsKey       = "blog/posts.index.json"
+)
 
 // Blog describes the methods available for the blog controller
 type Blog interface {
-	AddDraft(markdown, title string) error
+	GetDraft(id string) ([]byte, error)
+	PostDraft(markdown, title string) error
+	GetDrafts() ([]byte, error)
 	// SaveDraft(draft Draft) error
 	// PublishPost(draft Draft) error
 	// UpdatePost(post Post) error
+	GetPost(id string) ([]byte, error)
+	GetPosts() ([]byte, error)
 }
 
 type blog struct {
@@ -47,8 +57,18 @@ type Draft struct {
 	Title    string `json:"title"`
 }
 
-// AddDraft adds a draft
-func (b *blog) AddDraft(markdown, title string) error {
+// GetDraft retrieves a draft
+func (b *blog) GetDraft(id string) ([]byte, error) {
+	name := fmt.Sprintf(draftFormatter, id)
+	bytes, err := b.gcs.GetObject(name, bucket)
+	if err != nil {
+		return nil, fmt.Errorf("Could not retrieve draft from bucket - %v", err)
+	}
+	return bytes, nil
+}
+
+// PostDraft adds a new draft
+func (b *blog) PostDraft(markdown, title string) error {
 	uuid := uuid.New().String()
 	draft := Draft{
 		ID:       uuid,
@@ -60,12 +80,40 @@ func (b *blog) AddDraft(markdown, title string) error {
 	if err != nil {
 		return fmt.Errorf("Unable to encode data to json - %v", err)
 	}
-	name := fmt.Sprintf("blog/drafts/%s.json", uuid)
+	name := fmt.Sprintf(draftFormatter, uuid)
 	err = b.gcs.UploadObject(name, bucket, data)
 	if err != nil {
 		return fmt.Errorf("Unable to upload draft - %v", err)
 	}
 	return nil
+}
+
+// GetDrafts retrieves all the drafts
+func (b *blog) GetDrafts() ([]byte, error) {
+	bytes, err := b.gcs.GetObject(draftsKey, bucket)
+	if err != nil {
+		return nil, err
+	}
+	return bytes, err
+}
+
+// GetPost retrieves a post
+func (b *blog) GetPost(id string) ([]byte, error) {
+	name := fmt.Sprintf(postFormatter, id)
+	bytes, err := b.gcs.GetObject(name, bucket)
+	if err != nil {
+		return nil, fmt.Errorf("Could not retrieve post - %v", err)
+	}
+	return bytes, nil
+}
+
+// GetPosts retrieves all the posts
+func (b *blog) GetPosts() ([]byte, error) {
+	bytes, err := b.gcs.GetObject(postsKey, bucket)
+	if err != nil {
+		return nil, err
+	}
+	return bytes, err
 }
 
 func makeTimestamp() int64 {
