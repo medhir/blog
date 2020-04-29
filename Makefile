@@ -8,7 +8,7 @@ server:
 
 .PHONY: client
 client:
-	cd client && npm run start
+	cd www && yarn dev
 
 .PHONY: code 
 code:
