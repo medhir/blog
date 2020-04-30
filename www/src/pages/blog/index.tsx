@@ -1,5 +1,5 @@
 import React from 'react'
-import { GetServerSideProps } from 'next'
+import { GetStaticProps } from 'next'
 
 import BlogComponent from '../../components/blog'
 import Layout from '../../components/layout'
@@ -15,7 +15,7 @@ const Blog = ({ posts }) => (
 
 export default Blog
 
-export const getStaticProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   const response = await http.Get('https://medhir.com/api/blog/posts')
   return {
     props: {

@@ -1,34 +1,18 @@
 import React from 'react'
-import Marked from 'marked'
 
 import styles from './article.module.scss'
-
-interface DisplayProps {
-  parsedContent: string
-}
-
-const Display = ({ parsedContent }: DisplayProps) => {
-  const generateHTML = () => {
-    return {
-      __html: parsedContent,
-    }
-  }
-  return (
-    <section>
-      <article
-        className={styles.article}
-        dangerouslySetInnerHTML={generateHTML()}
-      />
-    </section>
-  )
-}
+import MDXViewer from '../../../mdx-viewer'
 
 interface PostProps {
-  markdown: string
+  source: any
 }
 
-const Post = ({ markdown }: PostProps) => (
-  <Display parsedContent={Marked(markdown)} />
+const Post = ({ source }: PostProps) => (
+  <section>
+    <article className={styles.article}>
+      <MDXViewer source={source} />
+    </article>
+  </section>
 )
 
 export default Post
