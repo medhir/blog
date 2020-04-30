@@ -48,3 +48,8 @@ a:visited {
 code {
   font-family: 'Menlo', monospace;
 }
+
+ul {
+  list-style-type: disc;
+  list-style-position: inside;
+}

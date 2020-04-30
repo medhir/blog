@@ -13,6 +13,11 @@
   padding: 5px 10px;
 }
 
+.posts,
+.drafts {
+  list-style-type: none;
+}
+
 .posts > li > a {
   display: block;
   color: inherit;
