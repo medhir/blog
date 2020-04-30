@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid'
 import Preview from './preview'
 import styles from './notebook.module.scss'
 import http from '../../utility/http'
+import { debounce } from 'lodash'
 
 interface NotebookProps {
   mdx?: string
@@ -23,6 +24,8 @@ const FetchSource = (mdx: string) =>
   http.Post('/api/mdx/draft', { mdx }, { baseURL: 'http://localhost:3000' })
 
 class Notebook extends Component<NotebookProps, NotebookState> {
+  debouncedRenderMDX: () => void
+
   constructor(props: NotebookProps) {
     super(props)
     this.state = {
@@ -43,23 +46,28 @@ class Notebook extends Component<NotebookProps, NotebookState> {
   }
 
   renderMDXToSource() {
-    const { mdx } = this.state
-    FetchSource(mdx)
-      .then((response) => {
-        this.setState(
-          {
-            preview: null,
-          },
-          () => {
-            this.setState({
-              preview: <Preview source={response.data.source} />,
-            })
-          }
-        )
-      })
-      .catch((err) => {
-        this.setState({ error: err })
-      })
+    if (!this.debouncedRenderMDX) {
+      this.debouncedRenderMDX = debounce(() => {
+        const { mdx } = this.state
+        FetchSource(mdx)
+          .then((response) => {
+            this.setState(
+              {
+                preview: null,
+              },
+              () => {
+                this.setState({
+                  preview: <Preview source={response.data.source} />,
+                })
+              }
+            )
+          })
+          .catch((err) => {
+            this.setState({ error: err })
+          })
+      }, 250)
+    }
+    this.debouncedRenderMDX()
   }
 
   handleTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
