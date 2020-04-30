@@ -177,6 +177,11 @@ code {
   font-family: 'Menlo', monospace;
 }
 
+ul {
+  list-style-type: disc;
+  list-style-position: inside;
+}
+
 $spacing0: 8px;
 $spacing1: 16px;
 $spacing2: 24px;
