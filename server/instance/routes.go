@@ -8,17 +8,17 @@ import (
 
 // AddRoutes registers all the application handlers to their corresponding url prefixes
 func (i *Instance) AddRoutes() {
-	handlers := handlers.NewHandlers(i.auth, i.gcs)
+	h := handlers.NewHandlers(i.auth, i.gcs)
 	// api endpoints
 	//	auth
-	i.router.HandleFunc("/login", handlers.Login())
-	i.router.HandleFunc("/jwt/validate", handlers.ValidateJWT())
+	i.router.HandleFunc("/login", h.Login())
+	i.router.HandleFunc("/jwt/validate", h.ValidateJWT())
 	// 	blog
-	i.router.HandleFunc("/blog/posts", func(w http.ResponseWriter, r *http.Request) {})
-	i.router.HandleFunc("/blog/drafts", func(w http.ResponseWriter, r *http.Request) {})
-	i.router.HandleFunc("/blog/post", func(w http.ResponseWriter, r *http.Request) {})
-	i.router.HandleFunc("/blog/draft", func(w http.ResponseWriter, r *http.Request) {})
 	i.router.HandleFunc("/blog/asset", func(w http.ResponseWriter, r *http.Request) {})
+	i.router.HandleFunc("/blog/drafts", h.Authorize(h.GetDrafts()))
+	i.router.HandleFunc("/blog/draft/", h.Authorize(h.HandleDraft()))
+	i.router.HandleFunc("/blog/post/", h.GetPost())
+	i.router.HandleFunc("/blog/posts", h.GetPosts())
 	// 	photos
-	i.router.HandleFunc("/photos", handlers.GetPhotos())
+	i.router.HandleFunc("/photos", h.GetPhotos())
 }

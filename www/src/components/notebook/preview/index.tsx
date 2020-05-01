@@ -1,35 +1,17 @@
-import { useEffect, useState } from 'react'
+import MDXViewer from '../../mdx-viewer'
 import styles from '../notebook.module.scss'
+import articleStyles from '../../blog/modules/Post/article.module.scss'
 
 interface PreviewProps {
-  mdx: string
-  id: string
+  source: string
 }
 
-const Preview = ({ mdx, id }: PreviewProps) => {
-  const [mdxPreviewURL, setMdxPreviewURL] = useState()
-  const [error, setError] = useState()
-
-  useEffect(() => {
-    fetch('/api/mdx/draft', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        mdx,
-        id,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => setMdxPreviewURL(data.url))
-      .catch((err) => setError(err))
-  }, [mdx])
-
+const Preview = ({ source }: PreviewProps) => {
   return (
     <div className={styles.preview}>
-      {mdxPreviewURL && <iframe src={mdxPreviewURL} />}
-      {error && <p>{JSON.stringify(error)}</p>}
+      <article className={`${styles.article} ${articleStyles.article}`}>
+        {source && <MDXViewer source={source} />}
+      </article>
     </div>
   )
 }

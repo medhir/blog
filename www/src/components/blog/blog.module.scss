@@ -1,6 +1,11 @@
 .blog {
   background: transparent;
 
+  .posts,
+  .drafts {
+    list-style-type: none;
+  }
+
   .posts > li,
   .drafts > li {
     background: white;
