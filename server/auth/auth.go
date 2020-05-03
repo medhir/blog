@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/FusionAuth/go-client/pkg/fusionauth"
-	"github.com/medhir/blog/server/util"
+	"gitlab.medhir.com/medhir/blog/server/util"
 )
 
 // Requests & Responses

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/medhir/blog/server/storage/gcs"
+	"gitlab.medhir.com/medhir/blog/server/storage/gcs"
 )
 
 const (

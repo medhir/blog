@@ -11,6 +11,8 @@ spec:
   tls:
     - hosts:
         - medhir.com
+        - api-review.medhir.com
+        - api.medhir.com
         - auth.medhir.com
         - code.medhir.com
         - stage.medhir.com
@@ -26,19 +28,19 @@ spec:
             backend:
               serviceName: blog-production-service
               servicePort: 9000
-    - host: review.medhir.com
+    - host: api-review.medhir.com
       http:
         paths:
           - path: /
             backend:
-              serviceName: blog-review-service
+              serviceName: server-review-service
               servicePort: 9000
-    - host: stage.medhir.com
+    - host: api.medhir.com
       http:
         paths:
           - path: /
             backend:
-              serviceName: blog-staging-service
+              serviceName: server-production-service
               servicePort: 9000
     - host: auth.medhir.com
       http:

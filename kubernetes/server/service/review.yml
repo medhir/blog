@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: server-review-service
+spec:
+  selector:
+    app: server-review
+  ports:
+    - port: 9000

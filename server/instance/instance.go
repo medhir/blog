@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/FusionAuth/go-client/pkg/fusionauth"
-	"github.com/medhir/blog/server/auth"
-	"github.com/medhir/blog/server/storage/gcs"
+	"gitlab.medhir.com/medhir/blog/server/auth"
+	"gitlab.medhir.com/medhir/blog/server/storage/gcs"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
 )

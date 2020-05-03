@@ -3,7 +3,7 @@ package instance
 import (
 	"net/http"
 
-	"github.com/medhir/blog/server/handlers"
+	"gitlab.medhir.com/medhir/blog/server/handlers"
 )
 
 // AddRoutes registers all the application handlers to their corresponding url prefixes

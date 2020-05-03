@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: server-production
+  labels:
+    app: server-production
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: server-production
+  template:
+    metadata:
+      name: server-production
+      labels:
+        app: server-production
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: server-production
+          image: registry.medhir.com/medhir/blog/master/server:latest
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - name: creds
+              mountPath: "etc/creds"
+              readOnly: true
+          env:
+            - name: FUSIONAUTH_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: fusionauth-api
+                  key: api-key
+            - name: BLOG_AUTH_APPLICATION_ID
+              valueFrom:
+                secretKeyRef:
+                  name: fusionauth-api
+                  key: app-id
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/etc/creds/storage-credentials.json"
+      volumes:
+        - name: creds
+          secret:
+            secretName: api-server-storage-credentials
+            items:
+              - key: storage-credentials.json
+                path: storage-credentials.json
+
+      imagePullSecrets:
+        - name: medhir-registry-image-pull
