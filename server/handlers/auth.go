@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/medhir/blog/server/auth"
+	"gitlab.medhir.com/medhir/blog/server/auth"
 )
 
 // Credentials describes the JSON request for a user login

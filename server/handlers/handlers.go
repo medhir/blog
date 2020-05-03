@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/medhir/blog/server/auth"
-	"github.com/medhir/blog/server/blog"
-	"github.com/medhir/blog/server/storage/gcs"
+	"gitlab.medhir.com/medhir/blog/server/auth"
+	"gitlab.medhir.com/medhir/blog/server/blog"
+	"gitlab.medhir.com/medhir/blog/server/storage/gcs"
 )
 
 // Handlers describes all the http handlers available within the package

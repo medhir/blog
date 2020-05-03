@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/medhir/blog/server/storage/gcs"
+	"gitlab.medhir.com/medhir/blog/server/storage/gcs"
 )
 
 const (

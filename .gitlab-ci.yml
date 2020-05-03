@@ -20,6 +20,21 @@ stages:
   - chmod +x ./kubectl
   - mv ./kubectl /usr/local/bin/kubectl
 
+# See https://docs.gitlab.com/ee/ci/yaml/README.html#includetemplate for details
+# Copied from https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
+.setup-docker-job: &setup-docker-job
+  - |
+    if ! docker info &>/dev/null; then
+      if [ -z "$DOCKER_HOST" ] && [ "$KUBERNETES_PORT" ]; then
+        export DOCKER_HOST='tcp://localhost:2375'
+      fi
+    fi
+
+    if [[ -n "$CI_REGISTRY" && -n "$CI_REGISTRY_USER" ]]; then
+      echo "Logging to GitLab Container Registry with CI credentials..."
+      echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    fi
+
 client lint:
   image: "node:8-alpine"
   stage: lint
@@ -61,15 +76,17 @@ go test:
   script:
     - go test ./...
 
-# See https://docs.gitlab.com/ee/ci/yaml/README.html#includetemplate for details
-# Copied from https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Jobs/Build.gitlab-ci.yml
-build docker image:
+build server:
   stage: build
-  image: "registry.gitlab.com/gitlab-org/cluster-integration/auto-build-image/master:stable"
+  image: docker:stable
   variables:
+    # Use TLS https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#tls-enabled
     DOCKER_TLS_CERTDIR: ""
   services:
     - docker:stable-dind
+  before_script:
+    - *setup-docker-job
+    - cd server
   script:
     - |
       if [[ -z "$CI_COMMIT_TAG" ]]; then
@@ -79,82 +96,86 @@ build docker image:
         export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE}
         export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_TAG}
       fi
-    - /build/build.sh
-  only:
-    - branches
-    - tags
 
-deploy review:
+      export IMAGE_TAGGED="$CI_APPLICATION_REPOSITORY/server:$CI_APPLICATION_TAG"
+      export IMAGE_LATEST="$CI_APPLICATION_REPOSITORY/server:latest"
+
+      docker pull $IMAGE_LATEST || true
+      docker build --cache-from $IMAGE_LATEST --tag $IMAGE_TAGGED --tag $IMAGE_LATEST .
+      docker push $IMAGE_TAGGED
+      docker push $IMAGE_LATEST
+
+deploy server review:
   stage: deploy
   before_script:
     - *setup-deploy-job
   script:
-    - kubectl apply -f kubernetes/blog/deployments/blog-review.yml
-    - kubectl apply -f kubernetes/blog/services/blog-review.yml
-    - kubectl set image deployment/blog-review blog-review=registry.medhir.com/medhir/blog/$CI_COMMIT_BRANCH:$CI_COMMIT_SHA
+    - kubectl apply -f kubernetes/server/deployment/review.yml
+    - kubectl apply -f kubernetes/server/service/review.yml
+    - kubectl set image deployment/server-review server-review=registry.medhir.com/medhir/blog/$CI_COMMIT_BRANCH/server:$CI_COMMIT_SHA
   environment:
     name: review/$CI_COMMIT_SHA
     # url: https://$CI_ENVIRONMENT_SLUG.review.medhir.com
-    url: https://review.medhir.com
-    on_stop: stop review
+    url: https://api-review.medhir.com
+    on_stop: stop server review
   only:
     - branches
   except:
     - master
 
-stop review:
+stop server review:
   stage: deploy
   variables:
     GIT_STRATEGY: none
   before_script:
     - *setup-deploy-job
   script:
-    - kubectl delete -f kubernetes/blog/deployments/blog-review.yml
-    - kubectl delete -f kubernetes/blog/services/blog-review.yml
+    - kubectl delete -f kubernetes/server/deployment/review.yml
+    - kubectl delete -f kubernetes/server/service/review.yml
   when: manual
   environment:
     name: review/$CI_COMMIT_SHA
     action: stop
 
-deploy staging:
-  stage: deploy
-  before_script:
-    - *setup-deploy-job
-  script:
-    - kubectl apply -f kubernetes/blog/deployments/blog-staging.yml
-    - kubectl apply -f kubernetes/blog/services/blog-staging.yml
-  environment:
-    name: staging/$CI_COMMIT_SHA
-    url: https://stage.medhir.com
-    on_stop: stop staging
-  only:
-    - master
+#deploy staging:
+#  stage: deploy
+#  before_script:
+#    - *setup-deploy-job
+#  script:
+#    - kubectl apply -f kubernetes/blog/deployments/blog-staging.yml
+#    - kubectl apply -f kubernetes/blog/services/blog-staging.yml
+#  environment:
+#    name: staging/$CI_COMMIT_SHA
+#    url: https://stage.medhir.com
+#    on_stop: stop staging
+#  only:
+#    - master
+#
+#stop staging:
+#  stage: deploy
+#  variables:
+#    GIT_STRATEGY: none
+#  before_script:
+#    - *setup-deploy-job
+#  script:
+#    - kubectl delete -f kubernetes/blog/deployments/blog-staging.yml
+#    - kubectl delete -f kubernetes/blog/services/blog-staging.yml
+#  when: manual
+#  environment:
+#    name: staging/$CI_COMMIT_SHA
+#    action: stop
+#  only:
+#    - master
 
-stop staging:
-  stage: deploy
-  variables:
-    GIT_STRATEGY: none
-  before_script:
-    - *setup-deploy-job
-  script:
-    - kubectl delete -f kubernetes/blog/deployments/blog-staging.yml
-    - kubectl delete -f kubernetes/blog/services/blog-staging.yml
-  when: manual
-  environment:
-    name: staging/$CI_COMMIT_SHA
-    action: stop
-  only:
-    - master
-
-deploy production:
-  stage: deploy
-  before_script:
-    - *setup-deploy-job
-  script:
-    - kubectl set image deployment/blog-production blog-production=registry.medhir.com/medhir/blog/master:$CI_COMMIT_SHA
-  environment:
-    name: production
-    url: https://medhir.com
-  when: manual
-  only:
-    - master
+#deploy production:
+#  stage: deploy
+#  before_script:
+#    - *setup-deploy-job
+#  script:
+#    - kubectl set image deployment/blog-production blog-production=registry.medhir.com/medhir/blog/master:$CI_COMMIT_SHA
+#  environment:
+#    name: production
+#    url: https://medhir.com
+#  when: manual
+#  only:
+#    - master

@@ -1,4 +1,4 @@
-A personal blog engine / portfolio website written in Go and React.
+Personal blogging engine (among other things) written in Go and Typescript.
 
 ## Architecture
 

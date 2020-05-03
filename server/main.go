@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/medhir/blog/server/instance"
+	"gitlab.medhir.com/medhir/blog/server/instance"
 )
 
 func main() {
