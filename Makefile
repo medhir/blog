@@ -4,10 +4,10 @@ blog:
 
 .PHONY: server
 server:
-	go run server/main.go
+	cd server && go run main.go
 
-.PHONY: client
-client:
+.PHONY: www
+www:
 	cd www && yarn dev
 
 .PHONY: code 

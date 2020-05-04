@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: www-review
+  labels:
+    app: www-review
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www-review
+  template:
+    metadata:
+      name: www-review
+      labels:
+        app: www-review
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: www-review
+          image: registry.medhir.com/medhir/blog/master/www:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: ENVIRONMENT
+              value: "review"
+      imagePullSecrets:
+        - name: medhir-registry-image-pull

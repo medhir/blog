@@ -1,14 +1,18 @@
 stages:
   - lint
   - test
-  - build
-  - deploy
+  - build-server
+  - deploy-server
+  - build-www
+  - deploy-www
 
-.setup-client-job: &setup-client-job
-  - cd client
-  - npm install
+.setup-www-job: &setup-www-job
+  - apk add --no-cache bash git openssh
+  - cd www
+  - npm install yarn
+  - yarn install
 
-.setup-go-job: &setup-go-job
+.setup-server-job: &setup-server-job
   # - apk add --no-cache bash git openssh build-base
   # - git config --global --add url."git@github.com:".insteadOf "https://github.com/"
   - go get -d -v
@@ -35,49 +39,41 @@ stages:
       echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
     fi
 
-client lint:
-  image: "node:8-alpine"
+www lint:
+  image: "node:12-alpine"
   stage: lint
   before_script:
-    - *setup-client-job
+    - *setup-www-job
   script:
-    - npm run lint
+    - yarn lint
 
-client format:
-  image: "node:8-alpine"
-  stage: lint
-  before_script:
-    - *setup-client-job
-  script:
-    - npm run format-check
-
-client test:
-  image: "node:8-alpine"
+www test:
+  image: "node:12-alpine"
   stage: test
   before_script:
-    - *setup-client-job
+    - *setup-www-job
   script:
-    - npm run test-ci
+    - yarn test:ci
 
-go lint:
+server lint:
   image: "registry.medhir.com/medhir/blog-go-vips/master:latest"
   stage: lint
   before_script:
-    - *setup-go-job
+    - *setup-server-job
   script:
     - golint -set_exit_status ./...
 
-go test:
+server test:
   image: "registry.medhir.com/medhir/blog-go-vips/master:latest"
   stage: test
   before_script:
-    - *setup-go-job
+    - *setup-server-job
     - cd server
   script:
     - go test ./...
 
-build server:
-  stage: build
+server build:
+  stage: build-server
   image: docker:stable
   variables:
     # Use TLS https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#tls-enabled
@@ -105,38 +101,99 @@ build server:
       docker push $IMAGE_TAGGED
       docker push $IMAGE_LATEST
 
-deploy server review:
-  stage: deploy
+www build:
+  stage: build-www
+  image: docker:stable
+  variables:
+    # Use TLS https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#tls-enabled
+    DOCKER_TLS_CERTDIR: ""
+  services:
+    - docker:stable-dind
+  before_script:
+    - *setup-docker-job
+    - cd www
+  script:
+    - |
+      if [[ -z "$CI_COMMIT_TAG" ]]; then
+        export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG}
+        export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_SHA}
+      else
+        export CI_APPLICATION_REPOSITORY=${CI_APPLICATION_REPOSITORY:-$CI_REGISTRY_IMAGE}
+        export CI_APPLICATION_TAG=${CI_APPLICATION_TAG:-$CI_COMMIT_TAG}
+      fi
+
+      export IMAGE_TAGGED="$CI_APPLICATION_REPOSITORY/www:$CI_APPLICATION_TAG"
+      export IMAGE_LATEST="$CI_APPLICATION_REPOSITORY/www:latest"
+
+      docker pull $IMAGE_LATEST || true
+      docker build --cache-from $IMAGE_LATEST --tag $IMAGE_TAGGED --tag $IMAGE_LATEST .
+      docker push $IMAGE_TAGGED
+      docker push $IMAGE_LATEST
+
+server review deploy:
+  stage: deploy-server
   before_script:
     - *setup-deploy-job
   script:
     - kubectl apply -f kubernetes/server/deployment/review.yml
     - kubectl apply -f kubernetes/server/service/review.yml
     - kubectl set image deployment/server-review server-review=registry.medhir.com/medhir/blog/$CI_COMMIT_BRANCH/server:$CI_COMMIT_SHA
+    - kubectl apply -f kubernetes/www/deployment/review.yml
+    - kubectl apply -f kubernetes/www/service/review.yml
+    - kubectl set image deployment/www-review www-review=registry.medhir.com/medhir/blog/$CI_COMMIT_BRANCH/www:$CI_COMMIT_SHA
   environment:
-    name: review/$CI_COMMIT_SHA
-    # url: https://$CI_ENVIRONMENT_SLUG.review.medhir.com
-    url: https://api-review.medhir.com
-    on_stop: stop server review
+    name: review/server/$CI_COMMIT_SHA
+    url: https://review.medhir.com
+    on_stop: server review stop
   only:
     - branches
   except:
     - master
 
-stop server review:
-  stage: deploy
-  variables:
-    GIT_STRATEGY: none
+server review stop:
+  stage: deploy-server
   before_script:
     - *setup-deploy-job
   script:
     - kubectl delete -f kubernetes/server/deployment/review.yml
     - kubectl delete -f kubernetes/server/service/review.yml
+    - kubectl delete -f kubernetes/www/deployment/review.yml
+    - kubectl delete -f kubernetes/www/service/review.yml
   when: manual
   environment:
-    name: review/$CI_COMMIT_SHA
+    name: review/server/$CI_COMMIT_SHA
     action: stop
 
+www review deploy:
+  stage: deploy-www
+  before_script:
+    - *setup-deploy-job
+  script:
+    - kubectl apply -f kubernetes/www/deployment/review.yml
+    - kubectl apply -f kubernetes/www/service/review.yml
+    - kubectl set image deployment/www-review www-review=registry.medhir.com/medhir/blog/$CI_COMMIT_BRANCH/www:$CI_COMMIT_SHA
+  environment:
+    name: review/www/$CI_COMMIT_SHA
+    url: https://api-review.medhir.com
+    on_stop: www review stop
+  only:
+    - branches
+  except:
+    - master
+
+www review stop:
+  stage: deploy-www
+  before_script:
+    - *setup-deploy-job
+  script:
+    - kubectl delete -f kubernetes/www/deployment/review.yml
+    - kubectl delete -f kubernetes/www/service/review.yml
+  when: manual
+  environment:
+    name: review/www/$CI_COMMIT_SHA
+    url: https://review.medhir.com
+    action: stop
+    
 #deploy staging:
 #  stage: deploy
 #  before_script:

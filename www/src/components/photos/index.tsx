@@ -39,13 +39,7 @@ const Photos = ({ photos }: PhotosProps) => {
       <section className={styles.photos}>
         {displayPhotos.map((photo) => (
           <div className={styles.photo} key={photo}>
-            <img
-              src={
-                process.env.environment === 'production'
-                  ? `https://s3-us-west-2.amazonaws.com/medhir-blog-dev/${photo}`
-                  : photo
-              }
-            />
+            <img src={photo} />
           </div>
         ))}
       </section>
