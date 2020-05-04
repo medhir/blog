@@ -28,19 +28,26 @@ spec:
             backend:
               serviceName: blog-production-service
               servicePort: 9000
-    - host: api-review.medhir.com
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: server-review-service
-              servicePort: 9000
     - host: api.medhir.com
       http:
         paths:
           - path: /
             backend:
               serviceName: server-production-service
+              servicePort: 9000
+    - host: review.medhir.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: www-review-service
+              servicePort: 3000
+    - host: api-review.medhir.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: server-review-service
               servicePort: 9000
     - host: auth.medhir.com
       http:
