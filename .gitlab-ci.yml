@@ -101,7 +101,7 @@ server build:
       docker push $IMAGE_TAGGED
       docker push $IMAGE_LATEST
 
-www build:
+www review build:
   stage: build-www
   image: docker:stable
   variables:
@@ -126,9 +126,13 @@ www build:
       export IMAGE_LATEST="$CI_APPLICATION_REPOSITORY/www:latest"
 
       docker pull $IMAGE_LATEST || true
-      docker build --cache-from $IMAGE_LATEST --tag $IMAGE_TAGGED --tag $IMAGE_LATEST .
+      docker build --build-arg ENV=review --cache-from $IMAGE_LATEST --tag $IMAGE_TAGGED --tag $IMAGE_LATEST .
       docker push $IMAGE_TAGGED
       docker push $IMAGE_LATEST
+  only:
+    - branches
+  except:
+    - master
 
 server review deploy:
   stage: deploy-server
@@ -143,7 +147,7 @@ server review deploy:
     - kubectl set image deployment/www-review www-review=registry.medhir.com/medhir/blog/$CI_COMMIT_BRANCH/www:$CI_COMMIT_SHA
   environment:
     name: review/server/$CI_COMMIT_SHA
-    url: https://review.medhir.com
+    url: https://api-review.medhir.com
     on_stop: server review stop
   only:
     - branches
@@ -174,7 +178,7 @@ www review deploy:
     - kubectl set image deployment/www-review www-review=registry.medhir.com/medhir/blog/$CI_COMMIT_BRANCH/www:$CI_COMMIT_SHA
   environment:
     name: review/www/$CI_COMMIT_SHA
-    url: https://api-review.medhir.com
+    url: https://review.medhir.com
     on_stop: www review stop
   only:
     - branches

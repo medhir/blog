@@ -7,6 +7,7 @@ import React, {
 } from 'react'
 
 import Login from './login'
+import http from '../../utility/http'
 
 interface AuthProps {
   prompt?: Boolean // if true, will show a login form when user is unauthenticated
@@ -24,34 +25,23 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
       password: e.target[1].value,
     }
 
-    fetch('http://localhost:9000/login', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials),
-    })
-      .then((response) => {
-        if (response.status === 200) {
-          setValidated(true)
-        } else {
-          setError({ error: 'Response Unsuccessful' })
-        }
+    http
+      .Post('/login', { ...credentials })
+      .then(() => {
+        setValidated(true)
       })
       .catch((error) => {
-        setError(error)
+        setError({ error: error })
       })
   }
 
   useEffect(() => {
-    fetch('http://localhost:9000/jwt/validate', {
-      credentials: 'include',
-    })
-      .then((response) => {
-        if (response.status === 200) {
-          setValidated(true)
-        }
+    http
+      .Get('/jwt/validate', {
+        withCredentials: true,
+      })
+      .then(() => {
+        setValidated(true)
       })
       .catch((error) => {
         setError(error)

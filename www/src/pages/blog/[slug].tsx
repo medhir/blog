@@ -24,8 +24,8 @@ const Blog = ({ post, source }: BlogProps) => (
 export default Blog
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const response = await http.Get('https://medhir.com/api/blog/posts')
-  const posts: Array<PostMetadata> = response.data.posts
+  const response = await http.Get('/blog/posts')
+  const posts: Array<PostMetadata> = response.data
   const paths = posts.map((post) => ({
     params: { slug: post.titlePath },
   }))
@@ -37,7 +37,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const response = await http.Get(
-    `https://medhir.com/api/blog/post/${params.slug}`
+    `/blog/post/${params.slug}`
   )
 
   const post: PostMetadata = response.data
