@@ -16,10 +16,11 @@ const Blog = ({ posts }) => (
 export default Blog
 
 export const getStaticProps: GetStaticProps = async () => {
-  const response = await http.Get('https://medhir.com/api/blog/posts')
+  const response = await http.Get('/blog/posts')
+
   return {
     props: {
-      posts: response.data.posts,
+      posts: response.data,
     },
   }
 }

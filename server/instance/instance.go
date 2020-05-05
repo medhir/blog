@@ -65,12 +65,20 @@ func NewInstance() (*Instance, error) {
 	}
 	instance.AddRoutes() // initialize routes for serve mux
 
-	// dev mode
+	// enable CORS
 	_, dev := os.LookupEnv("REACT_APP_DEBUG_HOST")
 	if dev {
-		// enable CORS
+		// dev mode
 		c := cors.New(cors.Options{
 			AllowedOrigins:   []string{"http://localhost:3000", "http://127.0.0.1:3000"},
+			Debug:            true,
+			AllowCredentials: true,
+			AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
+			AllowedHeaders:   []string{"Authorization", "Content-Type", "Set-Cookie"}})
+		instance.server.Handler = c.Handler(instance.router)
+	} else {
+		c := cors.New(cors.Options{
+			AllowedOrigins:   []string{"https://review.medhir.com", "https://medhir.com"},
 			Debug:            true,
 			AllowCredentials: true,
 			AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},

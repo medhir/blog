@@ -81,7 +81,7 @@ prometheus:
 ## doc/architecture/decisions.md#redis
 ## doc/charts/redis
 redis:
-  enabled: true
+  install: true
   persistence:
     storageClass: "pd-ssd"
     size: 10Gi
