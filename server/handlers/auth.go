@@ -9,6 +9,12 @@ import (
 	"gitlab.medhir.com/medhir/blog/server/auth"
 )
 
+const (
+	local      = "local"
+	medhircom  = "medhir.com"
+	cookieName = "tr4x2ki0ptz"
+)
+
 // Credentials describes the JSON request for a user login
 type Credentials struct {
 	LoginID  string `json:"loginID"`
@@ -37,12 +43,18 @@ func (h *handlers) Login() http.HandlerFunc {
 		}
 		// set authentication token as an http-only cookie
 		authCookie := &http.Cookie{
-			Name:     "tr4x2ki0ptz",
+			Name:     cookieName,
 			Value:    authResponse.Token,
 			Path:     "/",
 			HttpOnly: true,
 			Expires:  time.Now().AddDate(0, 0, 1),
 		}
+		if h.env != local {
+			// ensure https if not on localhost
+			authCookie.Domain = medhircom
+			authCookie.Secure = true
+		}
+
 		http.SetCookie(w, authCookie)
 		w.WriteHeader(http.StatusOK)
 	}
@@ -51,7 +63,7 @@ func (h *handlers) Login() http.HandlerFunc {
 // Authorize is a middleware that checks the validity of a jwt before proceeding with a request
 func (h *handlers) Authorize(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("tr4x2ki0ptz")
+		cookie, err := r.Cookie(cookieName)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Could not find authorization cookie - %v", err), http.StatusInternalServerError)
 			return

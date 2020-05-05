@@ -32,17 +32,20 @@ type Handlers interface {
 
 // handlers describes dependencies needed to serve http requests
 type handlers struct {
+	dev  bool
 	auth auth.Auth
 	gcs  gcs.GCS
 	blog blog.Blog
+	env  string
 }
 
 // NewHandlers instantiates a new set of handlers
-func NewHandlers(auth auth.Auth, gcs gcs.GCS) Handlers {
+func NewHandlers(auth auth.Auth, gcs gcs.GCS, env string) Handlers {
 	return &handlers{
 		auth: auth,
 		gcs:  gcs,
 		blog: blog.NewBlog(gcs),
+		env:  env,
 	}
 }
 
