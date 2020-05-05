@@ -57,7 +57,7 @@ resource "google_container_node_pool" "node_pool" {
 
   autoscaling {
     min_node_count = "1"
-    max_node_count = "3"
+    max_node_count = "4"
   }
 
   management {
@@ -114,7 +114,7 @@ resource "google_container_node_pool" "gitlab_node_pool" {
   
   autoscaling {
     min_node_count = "1"
-    max_node_count = "2"
+    max_node_count = "3"
   }
 
   management {

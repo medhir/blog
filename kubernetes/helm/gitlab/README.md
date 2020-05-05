@@ -30,5 +30,5 @@ gsutil mb gs://blog-121419-gitlab-pseudo
 4. Install the chart as a named `gitlab` release with the following command:
 
 ```sh
-helm install -f kubernetes/helm/gitlab/values.yml gitlab gitlab/gitlab
+helm install -f kubernetes/helm/gitlab/values.yml gitlab gitlab/gitlab --set nodeSelector."cloud\.google\.com/gke-nodepool"=private-gitlab-pool
 ```
