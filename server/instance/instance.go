@@ -11,15 +11,18 @@ import (
 	"time"
 
 	"github.com/FusionAuth/go-client/pkg/fusionauth"
-	"gitlab.medhir.com/medhir/blog/server/auth"
-	"gitlab.medhir.com/medhir/blog/server/storage/gcs"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
+	"gitlab.medhir.com/medhir/blog/server/auth"
+	"gitlab.medhir.com/medhir/blog/server/storage/gcs"
 )
 
-// TODO - Move to config
-const serverPort = ":9000"
-const authHost = "https://auth.medhir.com"
+const (
+	// TODO - Move to config
+	serverPort = ":9000"
+	authHost   = "https://auth.medhir.com"
+	local      = "local"
+)
 
 // Instance represents an instance of the server
 type Instance struct {
@@ -28,6 +31,7 @@ type Instance struct {
 	server *http.Server
 	auth   auth.Auth
 	gcs    gcs.GCS
+	env    string
 }
 
 // NewInstance returns a new instance of the server
@@ -57,17 +61,24 @@ func NewInstance() (*Instance, error) {
 		return nil, err
 	}
 
+	// get environment
+	var environment string
+	environment, ok = os.LookupEnv("ENVIRONMENT")
+	if !ok {
+		environment = local
+	}
+
 	instance := &Instance{
 		router: http.DefaultServeMux,
 		server: server,
 		auth:   auth.NewAuth(fusionauthClient, blogAuthAppID),
 		gcs:    gcs,
+		env:    environment,
 	}
 	instance.AddRoutes() // initialize routes for serve mux
 
 	// enable CORS
-	_, dev := os.LookupEnv("REACT_APP_DEBUG_HOST")
-	if dev {
+	if environment == local {
 		// dev mode
 		c := cors.New(cors.Options{
 			AllowedOrigins:   []string{"http://localhost:3000", "http://127.0.0.1:3000"},

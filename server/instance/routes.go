@@ -8,7 +8,7 @@ import (
 
 // AddRoutes registers all the application handlers to their corresponding url prefixes
 func (i *Instance) AddRoutes() {
-	h := handlers.NewHandlers(i.auth, i.gcs)
+	h := handlers.NewHandlers(i.auth, i.gcs, i.env)
 	// api endpoints
 	//	auth
 	i.router.HandleFunc("/login", h.Login())

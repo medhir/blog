@@ -24,7 +24,7 @@ spec:
           ports:
             - containerPort: 3000
           env:
-            - name: ENV
+            - name: NODE_ENV
               value: "review"
       imagePullSecrets:
         - name: medhir-registry-image-pull

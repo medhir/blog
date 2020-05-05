@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
-    "build:production": "ENV=production next build",
-    "build:review": "ENV=review next build",
+    "build:production": "NODE_ENV=production next build",
+    "build:review": "NODE_ENV=review next build",
     "start": "next start",
     "lint": "eslint .",
     "test": "jest --watch",

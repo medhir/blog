@@ -26,7 +26,7 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
     }
 
     http
-      .Post('/login', { ...credentials })
+      .Post('/login', { ...credentials }, { withCredentials: true })
       .then(() => {
         setValidated(true)
       })
