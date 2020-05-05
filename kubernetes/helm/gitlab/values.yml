@@ -119,7 +119,17 @@ gitlab-runner:
 
 # https://docs.gitlab.com/charts/advanced/external-object-storage/index.html#docker-registry-images
 registry:
+  hpa:
+    minReplicas: 1
+    maxReplicas: 1
   storage:
     secret: gitlab-registry-storage
     key: config
     extraKey: gcs.json
+
+shell:
+  replicaCount: 0
+
+webservice:
+  hpa:
+    targetAverageValue: 1
