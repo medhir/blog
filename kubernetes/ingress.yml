@@ -26,8 +26,8 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: blog-production-service
-              servicePort: 9000
+              serviceName: www-production-service
+              servicePort: 3000
     - host: api.medhir.com
       http:
         paths:

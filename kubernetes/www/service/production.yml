@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: www-production-service
+spec:
+  selector:
+    app: www-production
+  ports:
+    - port: 3000

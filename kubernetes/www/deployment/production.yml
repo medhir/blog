@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: www-production
+  labels:
+    app: www-production
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www-production
+  template:
+    metadata:
+      name: www-production
+      labels:
+        app: www-production
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: www-review
+          image: registry.medhir.com/medhir/blog/master/www:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+      imagePullSecrets:
+        - name: medhir-registry-image-pull
