@@ -15,7 +15,7 @@ import (
 // GCS describes the interface for interacting with the GCS client
 type GCS interface {
 	GetObject(name, bucket string) ([]byte, error)
-	UploadObject(name, bucket string, obj []byte) error
+	UploadObject(name, bucket string, obj []byte, public bool) error
 	DeleteObject(name, bucket string) error
 	ListObjects(bucket, prefix string) (Objects, error)
 }
@@ -54,7 +54,7 @@ func (gcs *gcs) GetObject(name, bucket string) ([]byte, error) {
 }
 
 // UploadObject uploads a data buffer into a gcs object
-func (gcs *gcs) UploadObject(name, bucket string, obj []byte) error {
+func (gcs *gcs) UploadObject(name, bucket string, obj []byte, public bool) error {
 	ctx, cancel := context.WithTimeout(gcs.ctx, time.Second*60)
 	defer cancel()
 	wc := gcs.client.Bucket(bucket).Object(name).NewWriter(ctx)
@@ -63,6 +63,12 @@ func (gcs *gcs) UploadObject(name, bucket string, obj []byte) error {
 	}
 	if err := wc.Close(); err != nil {
 		return fmt.Errorf("Unable to close writer (object %s, bucket %s): %s", name, bucket, err.Error())
+	}
+	if public {
+		acl := gcs.client.Bucket(bucket).Object(name).ACL()
+		if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
+			return err
+		}
 	}
 	return nil
 }
