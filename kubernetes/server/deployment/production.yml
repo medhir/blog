@@ -40,6 +40,8 @@ spec:
                   key: app-id
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: "/etc/creds/storage-credentials.json"
+            - name: ENVIRONMENT
+              value: "production"
       volumes:
         - name: creds
           secret:
