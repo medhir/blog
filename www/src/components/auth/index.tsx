@@ -43,9 +43,6 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
       .then(() => {
         setValidated(true)
       })
-      .catch((error) => {
-        setError(error)
-      })
   }, [])
 
   if (validated) {
@@ -59,7 +56,7 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
         {error && (
           <>
             <p>Login Failed</p>
-            <pre>{JSON.stringify(error)}</pre>
+            <pre>{JSON.stringify(error, undefined, 2)}</pre>
           </>
         )}
       </>

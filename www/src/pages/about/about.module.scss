@@ -1,6 +1,5 @@
 .about {
-  padding: 10px 20px;
-  width: 60%;
+  padding: 10px 10px;
   margin: auto;
   border-right: 1px solid black;
   border-left: 1px solid black;
@@ -11,24 +10,21 @@
     line-height: 1.2rem;
   }
   @media only screen and (max-width: 500px) {
-    padding: 5px 0px;
-    width: 100%;
     border: none;
     p {
-      padding: 0px 20px;
       text-align: justify;
       text-justify: inter-word;
     }
   }
 
   @media only screen and (max-width: 800px) {
-    width: 85%;
     margin: 0px auto;
   }
 
-  @media only screen and (max-width: 1000px) {
+  @media only screen and (min-width: 1000px) {
+    padding: 10px 20px;
+    width: 75%;
     .display > article {
-      width: 75%;
       margin: 0px auto;
     }
 
@@ -37,9 +33,9 @@
     }
   }
 
-  @media only screen and (max-width: 1200px) {
+  @media only screen and (min-width: 1200px) {
+    width: 50%; 
     .display > article {
-      width: 60%;
       margin: 0px auto;
     }
   }
