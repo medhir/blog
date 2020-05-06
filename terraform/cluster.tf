@@ -53,11 +53,11 @@ resource "google_container_node_pool" "node_pool" {
   location = var.zone
   cluster  = module.gke_cluster.name
 
-  initial_node_count = "1"
+  initial_node_count = "4"
 
   autoscaling {
-    min_node_count = "1"
-    max_node_count = "8"
+    min_node_count = "4"
+    max_node_count = "16"
   }
 
   management {
@@ -67,7 +67,7 @@ resource "google_container_node_pool" "node_pool" {
 
   node_config {
     image_type   = "COS"
-    machine_type = "n1-standard-2"
+    machine_type = "n1-standard-1"
 
     labels = {
       private-pools-example = "true"
