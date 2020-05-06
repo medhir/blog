@@ -16,9 +16,10 @@ func (i *Instance) AddRoutes() {
 	// 	blog
 	i.router.HandleFunc("/blog/asset", func(w http.ResponseWriter, r *http.Request) {})
 	i.router.HandleFunc("/blog/drafts", h.Authorize(h.GetDrafts()))
-	i.router.HandleFunc("/blog/draft/", h.Authorize(h.HandleDraft()))
+	i.router.HandleFunc("/blog/draft", h.Authorize(h.HandleDraft()))
 	i.router.HandleFunc("/blog/post/", h.GetPost())
 	i.router.HandleFunc("/blog/posts", h.GetPosts())
 	// 	photos
 	i.router.HandleFunc("/photos", h.GetPhotos())
+	i.router.HandleFunc("/photo", h.HandlePhoto())
 }
