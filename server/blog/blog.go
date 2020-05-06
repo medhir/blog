@@ -88,7 +88,7 @@ func (b *blog) AddDraft(title, markdown string) error {
 		return fmt.Errorf("Unable to encode data to json - %v", err)
 	}
 	name := fmt.Sprintf(draftFormatter, uuid)
-	err = b.gcs.UploadObject(name, bucket, data)
+	err = b.gcs.UploadObject(name, bucket, data, false)
 	if err != nil {
 		return fmt.Errorf("Unable to upload draft - %v", err)
 	}
@@ -126,7 +126,7 @@ func (b *blog) UpdateDraft(id, title, markdown string) error {
 	if err != nil {
 		return fmt.Errorf("Unable to encode data to json - %v", err)
 	}
-	err = b.gcs.UploadObject(name, bucket, data)
+	err = b.gcs.UploadObject(name, bucket, data, false)
 	if err != nil {
 		return fmt.Errorf("Unable to upload draft - %v", err)
 	}

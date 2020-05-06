@@ -60,7 +60,7 @@ func (h *handlers) PostPhoto() http.HandlerFunc {
 			}
 			id := uuid.New().String()
 			objectName := fmt.Sprintf("%s%s.jpg", prefix, id)
-			err = h.gcs.UploadObject(objectName, bucket, processedImage)
+			err = h.gcs.UploadObject(objectName, bucket, processedImage, true)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Unable to upload image: %s", err.Error()), http.StatusInternalServerError)
 				return
