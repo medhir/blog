@@ -163,7 +163,7 @@ www production deploy:
     - kubectl apply -f kubernetes/www/service/production.yml
     - kubectl set image deployment/www-production www-production=registry.medhir.com/medhir/blog/master/www:$CI_COMMIT_SHA
   environment:
-    name: production
+    name: production/www
     url: https://medhir.com
   only:
     - master
@@ -256,7 +256,7 @@ server production deploy:
     - kubectl apply -f kubernetes/server/service/production.yml
     - kubectl set image deployment/server-production server-production=registry.medhir.com/medhir/blog/master/server:$CI_COMMIT_SHA
   environment:
-    name: review/server/$CI_COMMIT_SHA
+    name: production/server
     url: https://api.medhir.com
   only:
     - master
