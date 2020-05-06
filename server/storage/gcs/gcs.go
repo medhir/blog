@@ -57,18 +57,18 @@ func (gcs *gcs) GetObject(name, bucket string) ([]byte, error) {
 func (gcs *gcs) UploadObject(name, bucket string, obj []byte, public bool) error {
 	ctx, cancel := context.WithTimeout(gcs.ctx, time.Second*60)
 	defer cancel()
-	if public {
-		acl := gcs.client.Bucket(bucket).Object(name).ACL()
-		if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
-			return err
-		}
-	}
 	wc := gcs.client.Bucket(bucket).Object(name).NewWriter(ctx)
 	if _, err := wc.Write(obj); err != nil {
 		return fmt.Errorf("Unable to write object %s to bucket %s: %s", name, bucket, err.Error())
 	}
 	if err := wc.Close(); err != nil {
 		return fmt.Errorf("Unable to close writer (object %s, bucket %s): %s", name, bucket, err.Error())
+	}
+	if public {
+		acl := gcs.client.Bucket(bucket).Object(name).ACL()
+		if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
+			return err
+		}
 	}
 	return nil
 }
