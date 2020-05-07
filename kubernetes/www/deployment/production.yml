@@ -20,7 +20,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: www-production
-          image: registry.medhir.com/medhir/blog/master/www:latest
+          image: registry.gitlab.com/medhir/blog/master/www:latest
           ports:
             - containerPort: 3000
           env:
