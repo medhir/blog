@@ -20,7 +20,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: server-production
-          image: registry.medhir.com/medhir/blog/master/server:latest
+          image: registry.gitlab.com/medhir/blog/master/server:latest
           ports:
             - containerPort: 9000
           volumeMounts:
