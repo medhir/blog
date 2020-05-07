@@ -51,4 +51,4 @@ spec:
                 path: storage-credentials.json
 
       imagePullSecrets:
-        - name: medhir-registry-image-pull
+        - name: regcred

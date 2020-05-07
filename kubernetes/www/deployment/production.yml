@@ -27,4 +27,4 @@ spec:
             - name: NODE_ENV
               value: "production"
       imagePullSecrets:
-        - name: medhir-registry-image-pull
+        - name: regcred
