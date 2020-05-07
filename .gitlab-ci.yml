@@ -94,12 +94,13 @@ www review build:
 
 www review deploy:
   stage: deploy-www
+  image: alpine:latest
   before_script:
     - *setup-deploy-job
   script:
     - kubectl apply -f kubernetes/www/deployment/review.yml
     - kubectl apply -f kubernetes/www/service/review.yml
-    - kubectl set image deployment/www-review www-review=registry.medhir.com/medhir/blog/$CI_COMMIT_BRANCH/www:$CI_COMMIT_SHA
+    - kubectl set image deployment/www-review www-review=registry.gitlab.com/medhir/blog/$CI_COMMIT_BRANCH/www:$CI_COMMIT_SHA
   environment:
     name: review/www/$CI_COMMIT_SHA
     url: https://review.medhir.com
@@ -111,6 +112,7 @@ www review deploy:
 
 www review stop:
   stage: deploy-www
+  image: alpine:latest
   before_script:
     - *setup-deploy-job
   script:
@@ -156,12 +158,13 @@ www production build:
 
 www production deploy:
   stage: deploy-www
+  image: alpine:latest
   before_script:
     - *setup-deploy-job
   script:
     - kubectl apply -f kubernetes/www/deployment/production.yml
     - kubectl apply -f kubernetes/www/service/production.yml
-    - kubectl set image deployment/www-production www-production=registry.medhir.com/medhir/blog/master/www:$CI_COMMIT_SHA
+    - kubectl set image deployment/www-production www-production=registry.gitlab.com/medhir/blog/master/www:$CI_COMMIT_SHA
   environment:
     name: production/www
     url: https://medhir.com
@@ -173,7 +176,7 @@ www production deploy:
 ########################################################################################################
 
 server lint:
-  image: "registry.medhir.com/medhir/blog-go-vips/master:latest"
+  image: "golang:1.14.2"
   stage: lint
   before_script:
     - *setup-server-job
@@ -181,7 +184,7 @@ server lint:
     - golint -set_exit_status ./...
 
 server test:
-  image: "registry.medhir.com/medhir/blog-go-vips/master:latest"
+  image: "golang:1.14.2"
   stage: test
   before_script:
     - *setup-server-job
@@ -220,12 +223,13 @@ server build:
 
 server review deploy:
   stage: deploy-server
+  image: alpine:latest
   before_script:
     - *setup-deploy-job
   script:
     - kubectl apply -f kubernetes/server/deployment/review.yml
     - kubectl apply -f kubernetes/server/service/review.yml
-    - kubectl set image deployment/server-review server-review=registry.medhir.com/medhir/blog/$CI_COMMIT_BRANCH/server:$CI_COMMIT_SHA
+    - kubectl set image deployment/server-review server-review=registry.gitlab.com/medhir/blog/$CI_COMMIT_BRANCH/server:$CI_COMMIT_SHA
   environment:
     name: review/server/$CI_COMMIT_SHA
     url: https://api-review.medhir.com
@@ -237,6 +241,7 @@ server review deploy:
 
 server review stop:
   stage: deploy-server
+  image: alpine:latest
   before_script:
     - *setup-deploy-job
   script:
@@ -249,12 +254,13 @@ server review stop:
 
 server production deploy:
   stage: deploy-server
+  image: alpine:latest
   before_script:
     - *setup-deploy-job
   script:
     - kubectl apply -f kubernetes/server/deployment/production.yml
     - kubectl apply -f kubernetes/server/service/production.yml
-    - kubectl set image deployment/server-production server-production=registry.medhir.com/medhir/blog/master/server:$CI_COMMIT_SHA
+    - kubectl set image deployment/server-production server-production=registry.gitlab.com/medhir/blog/master/server:$CI_COMMIT_SHA
   environment:
     name: production/server
     url: https://api.medhir.com
