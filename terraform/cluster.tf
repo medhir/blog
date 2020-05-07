@@ -31,9 +31,15 @@ module "gke_cluster" {
     {
       cidr_blocks = [
         {
+          # This block is for internet access from 8221 4th Ave NE Seattle, WA
           cidr_block   = "97.113.0.0/16"
-          display_name = "restricted"
+          display_name = "personal"
         },
+        {
+          # This block is for allowing gitlab servers to reach the cluster api endpoint.
+          cidr_block = "34.74.90.64/28"
+          display_name = "gitlab"
+        }
       ]
     },
   ]
