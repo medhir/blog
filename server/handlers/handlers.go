@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"gitlab.medhir.com/medhir/blog/server/coder"
 	"gitlab.medhir.com/medhir/blog/server/imageprocessor"
 	"net/http"
 
@@ -32,6 +33,9 @@ type Handlers interface {
 	PostPhoto() http.HandlerFunc
 	DeletePhoto() http.HandlerFunc
 	HandlePhoto() http.HandlerFunc
+
+	// Coder
+	CreateCoderInstance() http.HandlerFunc
 }
 
 // handlers describes dependencies needed to serve http requests
@@ -41,6 +45,7 @@ type handlers struct {
 	gcs          gcs.GCS
 	blog         blog.Blog
 	imgProcessor imageprocessor.ImageProcessor
+	coder        coder.Manager
 	env          string
 }
 

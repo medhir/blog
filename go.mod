@@ -37,5 +37,8 @@ require (
 	gopkg.in/h2non/bimg.v1 v1.0.19
 	gopkg.in/russross/blackfriday.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.2.8 // indirect
+	k8s.io/api v0.18.2 // indirect
+	k8s.io/client-go v11.0.0+incompatible // indirect
+	k8s.io/utils v0.0.0-20200414100711-2df71ebbae66 // indirect
 	rsc.io/sampler v1.99.99 // indirect
 )

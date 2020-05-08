@@ -3,6 +3,7 @@ package k8s
 import (
 	"context"
 	v1 "k8s.io/api/apps/v1"
+	v1core "k8s.io/api/core/v1"
 	"k8s.io/api/extensions/v1beta1"
 	v1meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -17,6 +18,8 @@ type Manager interface {
 	UpdateIngress(rules []v1beta1.IngressRule) error
 	AddDefaultIngressRule(host, path, serviceName, servicePort string) error
 	AddDeployment(deployment *v1.Deployment) error
+	AddPersistentVolumeClaim(pvc *v1core.PersistentVolumeClaim) error
+	AddService(svc *v1core.Service) error
 }
 
 type manager struct {
@@ -87,6 +90,22 @@ func (m *manager) AddDefaultIngressRule(host, path, serviceName, servicePort str
 
 func (m *manager) AddDeployment(deployment *v1.Deployment) error {
 	_, err := m.clientset.AppsV1().Deployments(defaultNamespace).Create(deployment)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *manager) AddPersistentVolumeClaim(pvc *v1core.PersistentVolumeClaim) error {
+	_, err := m.clientset.CoreV1().PersistentVolumeClaims(defaultNamespace).Create(pvc)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *manager) AddService(svc *v1core.Service) error {
+	_, err := m.clientset.CoreV1().Services(defaultNamespace).Create(svc)
 	if err != nil {
 		return err
 	}
