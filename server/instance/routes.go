@@ -27,4 +27,6 @@ func (i *Instance) AddRoutes() error {
 	i.router.HandleFunc("/photo", h.HandlePhoto())
 	//	coder
 	i.router.HandleFunc("/coder", h.CreateCoderInstance())
+
+	return nil
 }
