@@ -11,7 +11,8 @@ require (
 	github.com/rs/cors v1.7.0
 	github.com/stretchr/testify v1.5.1
 	google.golang.org/api v0.22.0
-	k8s.io/api v0.18.2 // indirect
+	k8s.io/api v0.18.2
+	k8s.io/apimachinery v0.18.2
 	k8s.io/client-go v11.0.0+incompatible
 	k8s.io/utils v0.0.0-20200414100711-2df71ebbae66 // indirect
 )

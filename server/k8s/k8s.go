@@ -1,8 +1,8 @@
-package k8s_manager
+package k8s
 
 import (
 	"context"
-	v1 "k8s.io/api/core/v1"
+	v1 "k8s.io/api/apps/v1"
 	"k8s.io/api/extensions/v1beta1"
 	v1meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -10,17 +10,22 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-type K8sManager interface {
+const defaultNamespace = "default"
+
+// Manager describes the actions that can be taken against the kubernetes cluster
+type Manager interface {
 	UpdateIngress(rules []v1beta1.IngressRule) error
-	AddDefaultIngressRule(host, serviceName, servicePort string) error
+	AddDefaultIngressRule(host, path, serviceName, servicePort string) error
+	AddDeployment(deployment *v1.Deployment) error
 }
 
-type k8sManager struct {
+type manager struct {
 	ctx       context.Context
 	clientset *kubernetes.Clientset
 }
 
-func NewK8sManager(ctx context.Context) (K8sManager, error) {
+// NewManager initializes a new kubernetes cluster manager
+func NewManager(ctx context.Context) (Manager, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		return nil, err
@@ -29,24 +34,24 @@ func NewK8sManager(ctx context.Context) (K8sManager, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &k8sManager{
+	return &manager{
 		ctx:       ctx,
 		clientset: clientset,
 	}, nil
 }
 
-func (k *k8sManager) UpdateIngress(rules []v1beta1.IngressRule) error {
-	ingress, err := k.clientset.
+func (m *manager) UpdateIngress(rules []v1beta1.IngressRule) error {
+	ingress, err := m.clientset.
 		ExtensionsV1beta1().
-		Ingresses(v1.NamespaceDefault).
+		Ingresses(defaultNamespace).
 		Get("ingress", v1meta.GetOptions{})
 	if err != nil {
 		return err
 	}
 	ingress.Spec.Rules = append(ingress.Spec.Rules, rules...)
-	_, err = k.clientset.
+	_, err = m.clientset.
 		ExtensionsV1beta1().
-		Ingresses(v1.NamespaceDefault).
+		Ingresses(defaultNamespace).
 		Update(ingress)
 	if err != nil {
 		return err
@@ -54,14 +59,14 @@ func (k *k8sManager) UpdateIngress(rules []v1beta1.IngressRule) error {
 	return nil
 }
 
-func (k *k8sManager) AddDefaultIngressRule(host, serviceName, servicePort string) error {
+func (m *manager) AddDefaultIngressRule(host, path, serviceName, servicePort string) error {
 	rule := v1beta1.IngressRule{
 		Host: host,
 		IngressRuleValue: v1beta1.IngressRuleValue{
 			HTTP: &v1beta1.HTTPIngressRuleValue{
 				Paths: []v1beta1.HTTPIngressPath{
 					{
-						Path: "/",
+						Path: path,
 						Backend: v1beta1.IngressBackend{
 							ServiceName: serviceName,
 							ServicePort: intstr.IntOrString{
@@ -73,7 +78,15 @@ func (k *k8sManager) AddDefaultIngressRule(host, serviceName, servicePort string
 			},
 		},
 	}
-	err := k.UpdateIngress([]v1beta1.IngressRule{rule})
+	err := m.UpdateIngress([]v1beta1.IngressRule{rule})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *manager) AddDeployment(deployment *v1.Deployment) error {
+	_, err := m.clientset.AppsV1().Deployments(defaultNamespace).Create(deployment)
 	if err != nil {
 		return err
 	}
