@@ -11,6 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// Manager describes the methods for managing coder instances
 type Manager interface {
 	AddInstance() (string, error)
 }
@@ -19,6 +20,7 @@ type manager struct {
 	k8s k8s.Manager
 }
 
+// NewManager instantiates a new coder manager
 func NewManager(ctx context.Context) (Manager, error) {
 	k8sManager, err := k8s.NewManager(ctx)
 	if err != nil {
