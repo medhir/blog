@@ -16,7 +16,7 @@ const defaultNamespace = "default"
 // Manager describes the actions that can be taken against the kubernetes cluster
 type Manager interface {
 	UpdateIngress(rules []v1beta1.IngressRule) error
-	AddDefaultIngressRule(host, path, serviceName, servicePort string) error
+	AddDefaultIngressRule(host, path, serviceName string, servicePort int) error
 	AddDeployment(deployment *v1.Deployment) error
 	AddPersistentVolumeClaim(pvc *v1core.PersistentVolumeClaim) error
 	AddService(svc *v1core.Service) error
@@ -62,7 +62,7 @@ func (m *manager) UpdateIngress(rules []v1beta1.IngressRule) error {
 	return nil
 }
 
-func (m *manager) AddDefaultIngressRule(host, path, serviceName, servicePort string) error {
+func (m *manager) AddDefaultIngressRule(host, path, serviceName string, servicePort int) error {
 	rule := v1beta1.IngressRule{
 		Host: host,
 		IngressRuleValue: v1beta1.IngressRuleValue{
@@ -73,7 +73,7 @@ func (m *manager) AddDefaultIngressRule(host, path, serviceName, servicePort str
 						Backend: v1beta1.IngressBackend{
 							ServiceName: serviceName,
 							ServicePort: intstr.IntOrString{
-								StrVal: servicePort,
+								IntVal: int32(servicePort),
 							},
 						},
 					},

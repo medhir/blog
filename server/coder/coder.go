@@ -59,7 +59,7 @@ func (m *manager) AddInstance() (string, error) {
 	// add ingress rule
 	pathName := "/" + id
 	svcName := fmt.Sprintf("coder-%s-service", id)
-	err = m.k8s.AddDefaultIngressRule("code.medhir.com", pathName, svcName, "8080")
+	err = m.k8s.AddDefaultIngressRule("code.medhir.com", pathName, svcName, 8080)
 	if err != nil {
 		return "", err
 	}

@@ -56,10 +56,3 @@ spec:
             backend:
               serviceName: fusionauth
               servicePort: 9011
-    - host: code.medhir.com
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: coder-service
-              servicePort: 8080
