@@ -88,12 +88,13 @@ func makeSharedPVC(id string) (*apiv1.PersistentVolumeClaim, error) {
 			},
 			Resources: apiv1.ResourceRequirements{
 				Requests: apiv1.ResourceList{
-					apiv1.ResourceRequestsStorage: quantity,
+					apiv1.ResourceStorage: quantity,
 				},
 			},
 		},
 		Status: apiv1.PersistentVolumeClaimStatus{},
 	}
+
 	return sharedPVC, nil
 }
 
@@ -113,7 +114,7 @@ func makeProjectPVC(id string) (*apiv1.PersistentVolumeClaim, error) {
 			},
 			Resources: apiv1.ResourceRequirements{
 				Requests: apiv1.ResourceList{
-					apiv1.ResourceRequestsStorage: quantity,
+					apiv1.ResourceStorage: quantity,
 				},
 			},
 		},
