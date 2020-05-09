@@ -183,7 +183,7 @@ func makeCoderDeployment(id string) *appsv1.Deployment {
 					Containers: []apiv1.Container{
 						{
 							Name:  deploymentName,
-							Image: "codercom/code-server:v2",
+							Image: "codercom/code-server:3.2.0",
 							Ports: []apiv1.ContainerPort{
 								{
 									Name:          "http",
