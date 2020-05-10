@@ -63,19 +63,20 @@ func (m *manager) AddCNAMERecord(name string) error {
 }
 
 func (m *manager) DeleteCNAMERecord(name string) error {
-	records, err := m.api.DNSRecords(m.zoneID, cloudflare.DNSRecord{})
+	record := cloudflare.DNSRecord{
+		Name: fmt.Sprintf("%s.medhir.com", name),
+	}
+	recordMetadata, err := m.api.DNSRecords(m.zoneID, record)
 	if err != nil {
 		return err
 	}
-	for _, record := range records {
-		fmt.Printf("Record: %v\n", record)
-		if record.Name == name {
-			err = m.api.DeleteDNSRecord(m.zoneID, record.ID)
-			if err != nil {
-				return err
-			}
-		}
+	if len(recordMetadata) != 1 {
+		return errors.New("more than one DNS record was returned for this record name, or no dns record was found. cannot delete CNAME record")
 	}
-	fmt.Printf("No record found for name %s\n", name)
+	recordID := recordMetadata[0].ID
+	err = m.api.DeleteDNSRecord(m.zoneID, recordID)
+	if err != nil {
+		return err
+	}
 	return nil
 }
