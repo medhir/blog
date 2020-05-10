@@ -12,6 +12,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	"time"
 )
 
 const (
@@ -49,6 +50,12 @@ func NewManager(ctx context.Context) (Manager, error) {
 
 func (m *manager) AddInstance() (string, error) {
 	id := uuid.New().String()
+	// add DNS record
+	err := m.dns.AddCNAMERecord(fmt.Sprintf(cnameFormatter, id))
+	if err != nil {
+		return "", err
+	}
+	time.Sleep(2 * time.Second)
 	resources, err := makeCoderK8sResources(id)
 	if err != nil {
 		return "", err
@@ -77,11 +84,6 @@ func (m *manager) AddInstance() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// add DNS record
-	err = m.dns.AddCNAMERecord(fmt.Sprintf(cnameFormatter, id))
-	if err != nil {
-		return "", err
-	}
 	return fmt.Sprintf(urlFormatter, id), nil
 }
 
@@ -99,11 +101,6 @@ func (m *manager) RemoveInstance(id string) error {
 	if err != nil {
 		return err
 	}
-	// remove service
-	err = m.k8s.RemoveService(resources.service)
-	if err != nil {
-		return err
-	}
 	// remove ingress rule
 	err = m.k8s.RemoveDefaultIngressRule(resources.ingressRule)
 	if err != nil {
@@ -116,6 +113,11 @@ func (m *manager) RemoveInstance(id string) error {
 	}
 	// remove CNAME record
 	err = m.dns.DeleteCNAMERecord(fmt.Sprintf(cnameFormatter, id))
+	if err != nil {
+		return err
+	}
+	// remove service
+	err = m.k8s.RemoveService(resources.service)
 	if err != nil {
 		return err
 	}
