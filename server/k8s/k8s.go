@@ -60,6 +60,7 @@ func (m *manager) AddDefaultIngressRule(rule v1beta1.IngressRule) error {
 		return err
 	}
 	ingress.Spec.Rules = append(ingress.Spec.Rules, rule)
+	ingress.Spec.TLS[0].Hosts = append(ingress.Spec.TLS[0].Hosts, rule.Host)
 	_, err = m.clientset.
 		ExtensionsV1beta1().
 		Ingresses(defaultNamespace).
@@ -78,12 +79,19 @@ func (m *manager) RemoveDefaultIngressRule(rule v1beta1.IngressRule) error {
 	if err != nil {
 		return err
 	}
+	updatedHosts := []string{}
+	for _, host := range ingress.Spec.TLS[0].Hosts {
+		if host != rule.Host {
+			updatedHosts = append(updatedHosts, host)
+		}
+	}
 	updatedRules := []v1beta1.IngressRule{}
 	for _, oldRule := range ingress.Spec.Rules {
 		if oldRule.Host != rule.Host {
-			updatedRules = append(updatedRules, rule)
+			updatedRules = append(updatedRules, oldRule)
 		}
 	}
+	ingress.Spec.TLS[0].Hosts = updatedHosts
 	ingress.Spec.Rules = updatedRules
 	_, err = m.clientset.ExtensionsV1beta1().Ingresses(defaultNamespace).Update(ingress)
 	if err != nil {
