@@ -42,6 +42,16 @@ spec:
               value: "/etc/creds/storage-credentials.json"
             - name: ENVIRONMENT
               value: "review"
+            - name: CLOUDFLARE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflare-secret
+                  key: apikey
+            - name: CLOUDFLARE_API_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflare-secret
+                  key: email
       volumes:
         - name: creds
           secret:
