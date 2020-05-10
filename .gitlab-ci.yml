@@ -15,7 +15,8 @@ stages:
 .setup-server-job: &setup-server-job
   # - apk add --no-cache bash git openssh build-base
   # - git config --global --add url."git@github.com:".insteadOf "https://github.com/"
-  - go get -d -v
+  - cd server
+  - go mod download
   - go get -u golang.org/x/lint/golint
 
 .setup-deploy-job: &setup-deploy-job
