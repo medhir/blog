@@ -50,12 +50,13 @@ func (m *manager) AddCNAMERecord(name string) error {
 		Name:    name,
 		Content: zone,
 		TTL:     1, // a value of 1 sets the TTL automatically - https://api.cloudflare.com/#dns-records-for-a-zone-create-dns-record
+		Proxied: true,
 	}
 	resp, err := m.api.CreateDNSRecord(m.zoneID, record)
 	if err != nil {
 		return err
 	}
-	if resp.Errors != nil {
+	if len(resp.Errors) > 0 {
 		return fmt.Errorf("the following errors occured in setting the CNAME record - %v", resp.Errors)
 	}
 	return nil
