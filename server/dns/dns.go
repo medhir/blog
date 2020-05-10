@@ -23,6 +23,7 @@ type manager struct {
 	zoneID string
 }
 
+// NewManager instantiates a new DNS manager
 func NewManager() (Manager, error) {
 	key, ok := os.LookupEnv("CLOUDFLARE_API_KEY")
 	if !ok {
@@ -55,7 +56,7 @@ func (m *manager) AddCNAMERecord(name string) error {
 		return err
 	}
 	if resp.Errors != nil {
-		return errors.New(fmt.Sprintf("the following errors occured in setting the CNAME record - %v", resp.Errors))
+		return fmt.Errorf("the following errors occured in setting the CNAME record - %v", resp.Errors)
 	}
 	return nil
 }
