@@ -8,12 +8,12 @@ import (
 
 func (h *handlers) createCoderInstance() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := h.coder.AddInstance()
+		instance, err := h.coder.AddInstance()
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Could not create coder instance - %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
-		w.Write([]byte(id))
+		writeJSON(w, instance)
 		w.WriteHeader(http.StatusOK)
 	}
 }

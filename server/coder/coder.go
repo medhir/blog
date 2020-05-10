@@ -12,6 +12,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	"math/rand"
 	"time"
 )
 
@@ -23,7 +24,7 @@ const (
 
 // Manager describes the methods for managing coder instances
 type Manager interface {
-	AddInstance() (string, error)
+	AddInstance() (*Instance, error)
 	RemoveInstance(id string) error
 }
 
@@ -48,47 +49,59 @@ func NewManager(ctx context.Context) (Manager, error) {
 	}, nil
 }
 
-func (m *manager) AddInstance() (string, error) {
+type Instance struct {
+	ID       string
+	URL      string
+	Password string
+}
+
+func (m *manager) AddInstance() (*Instance, error) {
 	id := uuid.New().String()
+	password := makeRandomPassword()
 	// add DNS record
 	err := m.dns.AddCNAMERecord(fmt.Sprintf(cnameFormatter, id))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	time.Sleep(2 * time.Second)
-	resources, err := makeCoderK8sResources(id)
+	resources, err := makeCoderK8sResources(id, password)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	// add persistent volume claims
 	err = m.k8s.AddPersistentVolumeClaim(resources.sharedPVC)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	err = m.k8s.AddPersistentVolumeClaim(resources.projectPVC)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	// add service
 	err = m.k8s.AddService(resources.service)
 	if err != nil {
-		return "", nil
+		return nil, err
 	}
 	// add ingress rule
 	err = m.k8s.AddDefaultIngressRule(resources.ingressRule)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	// add deployment
 	err = m.k8s.AddDeployment(resources.deployment)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return fmt.Sprintf(urlFormatter, id), nil
+	instance := &Instance{
+		ID:       id,
+		URL:      fmt.Sprintf(urlFormatter, id),
+		Password: password,
+	}
+	return instance, nil
 }
 
 func (m *manager) RemoveInstance(id string) error {
-	resources, err := makeCoderK8sResources(id)
+	resources, err := makeCoderK8sResources(id, "")
 	if err != nil {
 		return err
 	}
@@ -134,7 +147,7 @@ type coderK8sResources struct {
 	ingressRule v1beta1.IngressRule
 }
 
-func makeCoderK8sResources(id string) (*coderK8sResources, error) {
+func makeCoderK8sResources(id, password string) (*coderK8sResources, error) {
 	sharedPVC, err := makeSharedPVC(id)
 	if err != nil {
 		return nil, err
@@ -145,7 +158,7 @@ func makeCoderK8sResources(id string) (*coderK8sResources, error) {
 	}
 	svc := makeCoderService(id)
 	ingressRule := makeCoderIngressRule(id)
-	deployment := makeCoderDeployment(id)
+	deployment := makeCoderDeployment(id, password)
 	return &coderK8sResources{
 		sharedPVC:   sharedPVC,
 		projectPVC:  projectPVC,
@@ -251,7 +264,21 @@ func makeCoderIngressRule(id string) v1beta1.IngressRule {
 	return rule
 }
 
-func makeCoderDeployment(id string) *appsv1.Deployment {
+func makeRandomPassword() string {
+	rand.Seed(time.Now().UnixNano())
+	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ" +
+		"abcdefghijklmnopqrstuvwxyzåäö" +
+		"0123456789")
+	length := 14
+	buf := make([]rune, length)
+	for i := range buf {
+		buf[i] = chars[rand.Intn(len(chars))]
+	}
+	str := string(buf)
+	return str
+}
+
+func makeCoderDeployment(id, password string) *appsv1.Deployment {
 	deploymentName := fmt.Sprintf("coder-%s", id)
 	sharedPVCName := fmt.Sprintf("coder-%s-shared-data", id)
 	projectPVCName := fmt.Sprintf("coder-%s-project-data", id)
@@ -296,6 +323,12 @@ func makeCoderDeployment(id string) *appsv1.Deployment {
 									Name:          "http",
 									Protocol:      apiv1.ProtocolTCP,
 									ContainerPort: 8080,
+								},
+							},
+							Env: []apiv1.EnvVar{
+								{
+									Name:  "PASSWORD",
+									Value: password,
 								},
 							},
 							VolumeMounts: []apiv1.VolumeMount{
