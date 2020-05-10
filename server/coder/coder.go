@@ -106,18 +106,20 @@ func (m *manager) RemoveInstance(id string) error {
 	if err != nil {
 		return err
 	}
+	// remove service
+	err = m.k8s.RemoveService(resources.service)
+	if err != nil {
+		// TODO - Make this part of a honeycomb event
+		fmt.Println(fmt.Sprintf("error occured while removing service - %s", err.Error()))
+	}
 	// remove deployment
 	err = m.k8s.RemoveDeployment(resources.deployment)
 	if err != nil {
-		return err
+		// TODO - Make this part of a honeycomb event
+		fmt.Println(fmt.Sprintf("error occured while removing deployment - %s", err.Error()))
 	}
 	// remove CNAME record
 	err = m.dns.DeleteCNAMERecord(fmt.Sprintf(cnameFormatter, id))
-	if err != nil {
-		return err
-	}
-	// remove service
-	err = m.k8s.RemoveService(resources.service)
 	if err != nil {
 		return err
 	}
