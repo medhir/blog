@@ -64,17 +64,16 @@ func (m *manager) AddCNAMERecord(name string) error {
 
 func (m *manager) DeleteCNAMERecord(name string) error {
 	record := cloudflare.DNSRecord{
-		Type: cnameRecordType,
 		Name: name,
 	}
-	recordMetatdata, err := m.api.DNSRecords(m.zoneID, record)
+	recordMetadata, err := m.api.DNSRecords(m.zoneID, record)
 	if err != nil {
 		return err
 	}
-	if len(recordMetatdata) > 0 {
-		return errors.New("more than one DNS record was returned for this record name. cannot delete CNAME record")
+	if len(recordMetadata) != 1 {
+		return errors.New("more than one DNS record was returned for this record name, or no dns record was found. cannot delete CNAME record")
 	}
-	recordID := recordMetatdata[0].ID
+	recordID := recordMetadata[0].ID
 	err = m.api.DeleteDNSRecord(m.zoneID, recordID)
 	if err != nil {
 		return err
