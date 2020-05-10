@@ -6,20 +6,28 @@ import (
 	v1core "k8s.io/api/core/v1"
 	"k8s.io/api/extensions/v1beta1"
 	v1meta "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )
 
-const defaultNamespace = "default"
+const (
+	defaultNamespace = "default"
+	ingressName      = "ingress"
+)
 
 // Manager describes the actions that can be taken against the kubernetes cluster
 type Manager interface {
-	UpdateIngress(rules []v1beta1.IngressRule) error
-	AddDefaultIngressRule(host, path, serviceName string, servicePort int) error
+	AddDefaultIngressRule(rule v1beta1.IngressRule) error
+	RemoveDefaultIngressRule(rule v1beta1.IngressRule) error
+
 	AddDeployment(deployment *v1.Deployment) error
+	RemoveDeployment(deployment *v1.Deployment) error
+
 	AddPersistentVolumeClaim(pvc *v1core.PersistentVolumeClaim) error
+	RemovePersistentVolumeClaim(pvc *v1core.PersistentVolumeClaim) error
+
 	AddService(svc *v1core.Service) error
+	RemoveService(svc *v1core.Service) error
 }
 
 type manager struct {
@@ -43,15 +51,15 @@ func NewManager(ctx context.Context) (Manager, error) {
 	}, nil
 }
 
-func (m *manager) UpdateIngress(rules []v1beta1.IngressRule) error {
+func (m *manager) AddDefaultIngressRule(rule v1beta1.IngressRule) error {
 	ingress, err := m.clientset.
 		ExtensionsV1beta1().
 		Ingresses(defaultNamespace).
-		Get("ingress", v1meta.GetOptions{})
+		Get(ingressName, v1meta.GetOptions{})
 	if err != nil {
 		return err
 	}
-	ingress.Spec.Rules = append(ingress.Spec.Rules, rules...)
+	ingress.Spec.Rules = append(ingress.Spec.Rules, rule)
 	_, err = m.clientset.
 		ExtensionsV1beta1().
 		Ingresses(defaultNamespace).
@@ -62,26 +70,22 @@ func (m *manager) UpdateIngress(rules []v1beta1.IngressRule) error {
 	return nil
 }
 
-func (m *manager) AddDefaultIngressRule(host, path, serviceName string, servicePort int) error {
-	rule := v1beta1.IngressRule{
-		Host: host,
-		IngressRuleValue: v1beta1.IngressRuleValue{
-			HTTP: &v1beta1.HTTPIngressRuleValue{
-				Paths: []v1beta1.HTTPIngressPath{
-					{
-						Path: path,
-						Backend: v1beta1.IngressBackend{
-							ServiceName: serviceName,
-							ServicePort: intstr.IntOrString{
-								IntVal: int32(servicePort),
-							},
-						},
-					},
-				},
-			},
-		},
+func (m *manager) RemoveDefaultIngressRule(rule v1beta1.IngressRule) error {
+	ingress, err := m.clientset.
+		ExtensionsV1beta1().
+		Ingresses(defaultNamespace).
+		Get(ingressName, v1meta.GetOptions{})
+	if err != nil {
+		return err
 	}
-	err := m.UpdateIngress([]v1beta1.IngressRule{rule})
+	updatedRules := []v1beta1.IngressRule{}
+	for _, oldRule := range ingress.Spec.Rules {
+		if oldRule.Host != rule.Host {
+			updatedRules = append(updatedRules, rule)
+		}
+	}
+	ingress.Spec.Rules = updatedRules
+	_, err = m.clientset.ExtensionsV1beta1().Ingresses(defaultNamespace).Update(ingress)
 	if err != nil {
 		return err
 	}
@@ -96,6 +100,14 @@ func (m *manager) AddDeployment(deployment *v1.Deployment) error {
 	return nil
 }
 
+func (m *manager) RemoveDeployment(deployment *v1.Deployment) error {
+	err := m.clientset.AppsV1().Deployments(defaultNamespace).Delete(deployment.Name, &v1meta.DeleteOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (m *manager) AddPersistentVolumeClaim(pvc *v1core.PersistentVolumeClaim) error {
 	_, err := m.clientset.CoreV1().PersistentVolumeClaims(defaultNamespace).Create(pvc)
 	if err != nil {
@@ -104,8 +116,24 @@ func (m *manager) AddPersistentVolumeClaim(pvc *v1core.PersistentVolumeClaim) er
 	return nil
 }
 
+func (m *manager) RemovePersistentVolumeClaim(pvc *v1core.PersistentVolumeClaim) error {
+	err := m.clientset.CoreV1().PersistentVolumeClaims(defaultNamespace).Delete(pvc.Name, &v1meta.DeleteOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (m *manager) AddService(svc *v1core.Service) error {
 	_, err := m.clientset.CoreV1().Services(defaultNamespace).Create(svc)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *manager) RemoveService(svc *v1core.Service) error {
+	err := m.clientset.CoreV1().Services(defaultNamespace).Delete(svc.Name, &v1meta.DeleteOptions{})
 	if err != nil {
 		return err
 	}
