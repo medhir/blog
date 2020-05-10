@@ -4,19 +4,30 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"gitlab.medhir.com/medhir/blog/server/dns"
 	"gitlab.medhir.com/medhir/blog/server/k8s"
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
+	"k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
+)
+
+const (
+	servicePort    = 8080
+	cnameFormatter = "code-%s"
+	urlFormatter   = "https://code-%s.medhir.com"
 )
 
 // Manager describes the methods for managing coder instances
 type Manager interface {
 	AddInstance() (string, error)
+	RemoveInstance(id string) error
 }
 
 type manager struct {
+	dns dns.Manager
 	k8s k8s.Manager
 }
 
@@ -26,50 +37,118 @@ func NewManager(ctx context.Context) (Manager, error) {
 	if err != nil {
 		return nil, err
 	}
+	dnsManager, err := dns.NewManager()
+	if err != nil {
+		return nil, err
+	}
 	return &manager{
+		dns: dnsManager,
 		k8s: k8sManager,
 	}, nil
 }
 
 func (m *manager) AddInstance() (string, error) {
 	id := uuid.New().String()
+	resources, err := makeCoderK8sResources(id)
+	if err != nil {
+		return "", err
+	}
 	// add persistent volume claims
-	sharedPVC, err := makeSharedPVC(id)
+	err = m.k8s.AddPersistentVolumeClaim(resources.sharedPVC)
 	if err != nil {
 		return "", err
 	}
-	err = m.k8s.AddPersistentVolumeClaim(sharedPVC)
-	if err != nil {
-		return "", err
-	}
-	projectPVC, err := makeProjectPVC(id)
-	if err != nil {
-		return "", err
-	}
-	err = m.k8s.AddPersistentVolumeClaim(projectPVC)
+	err = m.k8s.AddPersistentVolumeClaim(resources.projectPVC)
 	if err != nil {
 		return "", err
 	}
 	// add service
-	svc := makeCoderService(id)
-	err = m.k8s.AddService(svc)
+	err = m.k8s.AddService(resources.service)
 	if err != nil {
 		return "", nil
 	}
 	// add ingress rule
-	pathName := "/" + id
-	svcName := fmt.Sprintf("coder-%s-service", id)
-	err = m.k8s.AddDefaultIngressRule("code.medhir.com", pathName, svcName, 8080)
+	err = m.k8s.AddDefaultIngressRule(resources.ingressRule)
 	if err != nil {
 		return "", err
 	}
 	// add deployment
-	deployment := makeCoderDeployment(id)
-	err = m.k8s.AddDeployment(deployment)
+	err = m.k8s.AddDeployment(resources.deployment)
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("https://code.medhir.com/%s", id), nil
+	// add DNS record
+	err = m.dns.AddCNAMERecord(fmt.Sprintf(cnameFormatter, id))
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf(urlFormatter, id), nil
+}
+
+func (m *manager) RemoveInstance(id string) error {
+	resources, err := makeCoderK8sResources(id)
+	if err != nil {
+		return err
+	}
+	// remove persistent volume claims
+	err = m.k8s.RemovePersistentVolumeClaim(resources.sharedPVC)
+	if err != nil {
+		return err
+	}
+	err = m.k8s.RemovePersistentVolumeClaim(resources.projectPVC)
+	if err != nil {
+		return err
+	}
+	// remove service
+	err = m.k8s.RemoveService(resources.service)
+	if err != nil {
+		return err
+	}
+	// remove ingress rule
+	err = m.k8s.RemoveDefaultIngressRule(resources.ingressRule)
+	if err != nil {
+		return err
+	}
+	// remove deployment
+	err = m.k8s.RemoveDeployment(resources.deployment)
+	if err != nil {
+		return err
+	}
+	// remove CNAME record
+	err = m.dns.DeleteCNAMERecord(fmt.Sprintf(cnameFormatter, id))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type coderK8sResources struct {
+	sharedPVC   *apiv1.PersistentVolumeClaim
+	projectPVC  *apiv1.PersistentVolumeClaim
+	deployment  *appsv1.Deployment
+	service     *apiv1.Service
+	ingressRule v1beta1.IngressRule
+}
+
+func makeCoderK8sResources(id string) (*coderK8sResources, error) {
+	sharedPVC, err := makeSharedPVC(id)
+	if err != nil {
+		return nil, err
+	}
+	projectPVC, err := makeProjectPVC(id)
+	if err != nil {
+		return nil, err
+	}
+	svc := makeCoderService(id)
+	ingressRule := makeCoderIngressRule(id)
+	deployment := makeCoderDeployment(id)
+	return &coderK8sResources{
+		sharedPVC:   sharedPVC,
+		projectPVC:  projectPVC,
+		deployment:  deployment,
+		service:     svc,
+		ingressRule: ingressRule,
+	}, nil
 }
 
 func makeSharedPVC(id string) (*apiv1.PersistentVolumeClaim, error) {
@@ -142,6 +221,30 @@ func makeCoderService(id string) *apiv1.Service {
 		},
 	}
 	return svc
+}
+
+func makeCoderIngressRule(id string) v1beta1.IngressRule {
+	host := fmt.Sprintf("code-%s.medhir.com", id)
+	serviceName := fmt.Sprintf("coder-%s-service", id)
+	rule := v1beta1.IngressRule{
+		Host: host,
+		IngressRuleValue: v1beta1.IngressRuleValue{
+			HTTP: &v1beta1.HTTPIngressRuleValue{
+				Paths: []v1beta1.HTTPIngressPath{
+					{
+						Path: "/",
+						Backend: v1beta1.IngressBackend{
+							ServiceName: serviceName,
+							ServicePort: intstr.IntOrString{
+								IntVal: int32(servicePort),
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	return rule
 }
 
 func makeCoderDeployment(id string) *appsv1.Deployment {
