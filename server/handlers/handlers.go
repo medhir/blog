@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"gitlab.medhir.com/medhir/blog/server/coder"
 	"gitlab.medhir.com/medhir/blog/server/imageprocessor"
 	"net/http"
 
@@ -32,27 +34,38 @@ type Handlers interface {
 	PostPhoto() http.HandlerFunc
 	DeletePhoto() http.HandlerFunc
 	HandlePhoto() http.HandlerFunc
+
+	// Coder
+	HandleCoder() http.HandlerFunc
 }
 
 // handlers describes dependencies needed to serve http requests
 type handlers struct {
+	ctx          context.Context
 	dev          bool
 	auth         auth.Auth
 	gcs          gcs.GCS
 	blog         blog.Blog
 	imgProcessor imageprocessor.ImageProcessor
+	coder        coder.Manager
 	env          string
 }
 
 // NewHandlers instantiates a new set of handlers
-func NewHandlers(auth auth.Auth, gcs gcs.GCS, env string) Handlers {
+func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, env string) (Handlers, error) {
+	coderManager, err := coder.NewManager(ctx)
+	if err != nil {
+		return nil, err
+	}
 	return &handlers{
+		ctx:          ctx,
 		auth:         auth,
 		gcs:          gcs,
 		blog:         blog.NewBlog(gcs),
 		imgProcessor: imageprocessor.NewImageProcessor(),
+		coder:        coderManager,
 		env:          env,
-	}
+	}, nil
 }
 
 // sendJSON writes an encoded json byte slice to an http response

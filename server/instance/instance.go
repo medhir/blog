@@ -75,7 +75,11 @@ func NewInstance() (*Instance, error) {
 		gcs:    gcs,
 		env:    environment,
 	}
-	instance.AddRoutes() // initialize routes for serve mux
+
+	err = instance.AddRoutes() // initialize routes for serve mux
+	if err != nil {
+		return nil, err
+	}
 
 	// enable CORS
 	if environment == local {
