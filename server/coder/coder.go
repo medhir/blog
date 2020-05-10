@@ -49,6 +49,7 @@ func NewManager(ctx context.Context) (Manager, error) {
 	}, nil
 }
 
+// Instance describes properties of a coder instance
 type Instance struct {
 	ID       string
 	URL      string
