@@ -36,7 +36,7 @@ type Handlers interface {
 	HandlePhoto() http.HandlerFunc
 
 	// Coder
-	CreateCoderInstance() http.HandlerFunc
+	HandleCoder() http.HandlerFunc
 }
 
 // handlers describes dependencies needed to serve http requests

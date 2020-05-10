@@ -41,6 +41,7 @@ func (h *handlers) HandleDraft() http.HandlerFunc {
 			h.PatchDraft()(w, r)
 		default:
 			http.Error(w, fmt.Sprintf("unimplemented http handler for method %s", r.Method), http.StatusMethodNotAllowed)
+			return
 		}
 	}
 }
