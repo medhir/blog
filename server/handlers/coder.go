@@ -10,7 +10,7 @@ func (h *handlers) createCoderInstance() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		instance, err := h.coder.AddInstance()
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Could not create coder instance - %s", err.Error()), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("error creating coder instance - %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
 		writeJSON(w, instance)
@@ -23,7 +23,7 @@ func (h *handlers) removeCoderInstance() http.HandlerFunc {
 		id := path.Base(r.URL.Path)
 		err := h.coder.RemoveInstance(id)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Could not delete coder instance - %s", err.Error()), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("error deleting coder instance - %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
 		w.WriteHeader(http.StatusOK)
