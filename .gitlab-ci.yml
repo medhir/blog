@@ -189,7 +189,6 @@ server test:
   stage: test
   before_script:
     - *setup-server-job
-    - cd server
   script:
     - go test ./...
 
@@ -203,7 +202,6 @@ server build:
     - docker:stable-dind
   before_script:
     - *setup-docker-job
-    - cd server
   script:
     - |
       if [[ -z "$CI_COMMIT_TAG" ]]; then
