@@ -51,9 +51,9 @@ func NewManager(ctx context.Context, dev bool) (Manager, error) {
 
 // Instance describes properties of a coder instance
 type Instance struct {
-	ID       string
-	URL      string
-	Password string
+	ID       string `json:"id"`
+	URL      string `json:"url"`
+	Password string `json:"password"`
 }
 
 func (m *manager) AddInstance() (*Instance, error) {
