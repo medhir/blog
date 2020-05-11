@@ -1,0 +1,17 @@
+.coder {
+  height: 100%;
+  &_controls {
+    display: flex;
+  }
+
+  &_environment {
+    height: 100%;
+    iframe {
+      border: 1px solid black;
+      width: 100%;
+      margin: 20px auto;
+      display: block;
+      height: 70%;
+    }
+  }
+}

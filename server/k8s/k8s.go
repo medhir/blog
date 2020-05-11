@@ -2,12 +2,19 @@ package k8s
 
 import (
 	"context"
+	"flag"
 	v1 "k8s.io/api/apps/v1"
 	v1core "k8s.io/api/core/v1"
 	"k8s.io/api/extensions/v1beta1"
 	v1meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
+	"os"
+	"path/filepath"
+
+	// This loads the required GCP auth provider to connect to k8s outside the cluster.
+	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
 const (
@@ -36,11 +43,25 @@ type manager struct {
 }
 
 // NewManager initializes a new kubernetes cluster manager
-func NewManager(ctx context.Context) (Manager, error) {
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		return nil, err
+func NewManager(ctx context.Context, dev bool) (Manager, error) {
+	var config *rest.Config
+	var err error
+
+	// development happens outside of the cluster, so we must pass a kubeconfig file.
+	// gcloud stores this by default under $HOME/.kube/config
+	if dev {
+		kubeconfig := flag.String("kubeconfig", filepath.Join(os.Getenv("HOME"), ".kube", "config"), "absolute path to the kubeconfig file")
+		config, err = clientcmd.BuildConfigFromFlags("", *kubeconfig)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		config, err = rest.InClusterConfig()
+		if err != nil {
+			return nil, err
+		}
 	}
+
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		return nil, err

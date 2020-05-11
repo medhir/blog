@@ -34,8 +34,8 @@ type manager struct {
 }
 
 // NewManager instantiates a new coder manager
-func NewManager(ctx context.Context) (Manager, error) {
-	k8sManager, err := k8s.NewManager(ctx)
+func NewManager(ctx context.Context, dev bool) (Manager, error) {
+	k8sManager, err := k8s.NewManager(ctx, dev)
 	if err != nil {
 		return nil, err
 	}
@@ -51,9 +51,9 @@ func NewManager(ctx context.Context) (Manager, error) {
 
 // Instance describes properties of a coder instance
 type Instance struct {
-	ID       string
-	URL      string
-	Password string
+	ID       string `json:"id"`
+	URL      string `json:"url"`
+	Password string `json:"password"`
 }
 
 func (m *manager) AddInstance() (*Instance, error) {

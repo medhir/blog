@@ -31,6 +31,12 @@ const http = {
   ): Promise<AxiosResponse> => {
     return a.patch(url, data, config)
   },
+  Delete: (
+    url: string,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse> => {
+    return a.delete(url, config)
+  },
 }
 
 export default http
