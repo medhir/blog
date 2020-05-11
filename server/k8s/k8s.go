@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 
+	// This loads the required GCP auth provider to connect to k8s outside the cluster.
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
