@@ -34,8 +34,8 @@ type manager struct {
 }
 
 // NewManager instantiates a new coder manager
-func NewManager(ctx context.Context) (Manager, error) {
-	k8sManager, err := k8s.NewManager(ctx)
+func NewManager(ctx context.Context, dev bool) (Manager, error) {
+	k8sManager, err := k8s.NewManager(ctx, dev)
 	if err != nil {
 		return nil, err
 	}

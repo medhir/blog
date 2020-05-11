@@ -13,6 +13,11 @@ import (
 	"gitlab.medhir.com/medhir/blog/server/storage/gcs"
 )
 
+const (
+	reviewEnv     = "review"
+	productionEnv = "production"
+)
+
 // Handlers describes all the http handlers available within the package
 type Handlers interface {
 	// Authentication
@@ -53,7 +58,13 @@ type handlers struct {
 
 // NewHandlers instantiates a new set of handlers
 func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, env string) (Handlers, error) {
-	coderManager, err := coder.NewManager(ctx)
+	var dev bool
+	if env == reviewEnv || env == productionEnv {
+		dev = false
+	} else {
+		dev = true
+	}
+	coderManager, err := coder.NewManager(ctx, dev)
 	if err != nil {
 		return nil, err
 	}
