@@ -21,7 +21,7 @@ const Error = ({ error }) => (
 )
 
 const FetchSource = (mdx: string) =>
-  http.Post('/api/mdx/draft', { mdx }, { baseURL: 'http://localhost:3000' })
+  http.Post('/api/mdx/draft', { mdx }, { baseURL: '' })
 
 class Notebook extends Component<NotebookProps, NotebookState> {
   debouncedRenderMDX: () => void
