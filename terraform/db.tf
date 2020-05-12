@@ -47,3 +47,7 @@ resource "google_sql_database" "gitlab_database" {
   instance = google_sql_database_instance.blog-121419-sql.name
 }
 
+resource "google_sql_database" "keycloak_database" {
+  name = "keycloak"
+  instance = google_sql_database_instance.blog-121419-sql.name
+}
