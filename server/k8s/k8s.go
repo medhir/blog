@@ -19,13 +19,12 @@ import (
 
 const (
 	defaultNamespace = "default"
-	ingressName      = "ingress"
 )
 
 // Manager describes the actions that can be taken against the kubernetes cluster
 type Manager interface {
-	AddDefaultIngressRule(rule v1beta1.IngressRule) error
-	RemoveDefaultIngressRule(rule v1beta1.IngressRule) error
+	AddIngressRule(ingressName string, rule v1beta1.IngressRule) error
+	RemoveIngressRule(ingressName string, rule v1beta1.IngressRule) error
 
 	AddDeployment(deployment *v1.Deployment) error
 	RemoveDeployment(deployment *v1.Deployment) error
@@ -72,7 +71,7 @@ func NewManager(ctx context.Context, dev bool) (Manager, error) {
 	}, nil
 }
 
-func (m *manager) AddDefaultIngressRule(rule v1beta1.IngressRule) error {
+func (m *manager) AddIngressRule(ingressName string, rule v1beta1.IngressRule) error {
 	ingress, err := m.clientset.
 		ExtensionsV1beta1().
 		Ingresses(defaultNamespace).
@@ -92,7 +91,7 @@ func (m *manager) AddDefaultIngressRule(rule v1beta1.IngressRule) error {
 	return nil
 }
 
-func (m *manager) RemoveDefaultIngressRule(rule v1beta1.IngressRule) error {
+func (m *manager) RemoveIngressRule(ingressName string, rule v1beta1.IngressRule) error {
 	ingress, err := m.clientset.
 		ExtensionsV1beta1().
 		Ingresses(defaultNamespace).

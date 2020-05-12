@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ingress
+  name: main
   annotations:
     kubernetes.io/ingress.class: nginx
     # Set this annotation to prevent 413 "Request entity too large" error on image uploads
@@ -14,12 +14,8 @@ spec:
         - api-review.medhir.com
         - api.medhir.com
         - auth.medhir.com
-        - code.medhir.com
-        - stage.medhir.com
-        - gitlab.medhir.com
-        - registry.medhir.com
         - review.medhir.com
-      secretName: medhir-blog-prod-cert
+      secretName: medhir-main-prod-cert
   rules:
     - host: medhir.com
       http:
