@@ -7,7 +7,9 @@ require (
 	github.com/FusionAuth/go-client v0.0.0-20200421201107-9d46d451d749
 	github.com/Nerzal/gocloak/v5 v5.2.0
 	github.com/cloudflare/cloudflare-go v0.11.7
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/disintegration/imaging v1.6.2
+	github.com/go-resty/resty/v2 v2.0.0
 	github.com/google/uuid v1.1.1
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.7.0

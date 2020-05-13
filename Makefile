@@ -36,4 +36,4 @@ remove-evicted:
 
 .PHONY: mocks
 mocks:
-	mockery -all -inpkg
+	cd server && mockery -all -inpkg
