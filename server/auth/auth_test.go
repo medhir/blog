@@ -1,110 +1,134 @@
 package auth
 
 import (
+	"errors"
+	"github.com/Nerzal/gocloak/v5"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
 func TestLogin(t *testing.T) {
 	t.Run("Should login the user if provided proper credentials", func(t *testing.T) {
-		//mockFusionAuthClient := &MockFusionAuthClient{}
-		//defer mockFusionAuthClient.AssertExpectations(t)
-		//
-		//mockFusionAuthClient.
-		//	On("Login", mock.Anything).
-		//	Return(&fusionauth.LoginResponse{
-		//		BaseHTTPResponse: fusionauth.BaseHTTPResponse{
-		//			StatusCode: http.StatusOK,
-		//		},
-		//		Token: "abcd1234",
-		//	}, nil, nil)
-		//
-		//loginRequest := &LoginRequest{
-		//	UserID:   "user",
-		//	Password: "password",
-		//}
-		//
-		//auth := NewAuth(mockFusionAuthClient, "1")
-		//
-		//response, err := auth.Login(loginRequest)
-		//assert.Nil(t, err)
-		//assert.Equal(t, "abcd1234", response.Token)
+		mockGoCloak := &MockGoCloak{}
+		defer mockGoCloak.AssertExpectations(t)
+
+		mockGoCloak.
+			On(
+				"Login",
+				mock.Anything, // clientID
+				mock.Anything, // clientSecret
+				realm,         // realm
+				mock.Anything, // userID
+				mock.Anything, // password
+			).
+			Return(&gocloak.JWT{
+				AccessToken: "abcd1234",
+			}, nil)
+
+		loginRequest := &LoginRequest{
+			UserID:   "user",
+			Password: "password",
+		}
+
+		auth := &auth{
+			client:       mockGoCloak,
+			clientID:     "1",
+			clientSecret: "*whisper*",
+		}
+
+		response, err := auth.Login(loginRequest)
+		assert.Nil(t, err)
+		assert.Equal(t, "abcd1234", response.Token)
 	})
 
 	t.Run("Should return an error if the provided credentials are invalid", func(t *testing.T) {
-		//mockFusionAuthClient := &MockFusionAuthClient{}
-		//defer mockFusionAuthClient.AssertExpectations(t)
-		//
-		//mockFusionAuthClient.
-		//	On("Login", mock.Anything).
-		//	Return(nil, nil, errors.New("Wrong credentials"))
-		//
-		//loginRequest := &LoginRequest{
-		//	UserID:   "user",
-		//	Password: "wrong_password",
-		//}
-		//
-		//auth := NewAuth(mockFusionAuthClient, "1")
-		//
-		//response, err := auth.Login(loginRequest)
-		//assert.Error(t, err)
-		//assert.Nil(t, response)
-	})
+		mockGoCloak := &MockGoCloak{}
+		defer mockGoCloak.AssertExpectations(t)
 
-	t.Run("Should return an error if the server errors", func(t *testing.T) {
-		//mockFusionAuthClient := &MockFusionAuthClient{}
-		//defer mockFusionAuthClient.AssertExpectations(t)
-		//
-		//mockFusionAuthClient.
-		//	On("Login", mock.Anything).
-		//	Return(&fusionauth.LoginResponse{
-		//		BaseHTTPResponse: fusionauth.BaseHTTPResponse{
-		//			StatusCode: http.StatusInternalServerError,
-		//		},
-		//	}, nil, nil)
-		//
-		//loginRequest := &LoginRequest{
-		//	UserID:   "user",
-		//	Password: "password",
-		//}
-		//
-		//auth := NewAuth(mockFusionAuthClient, "1")
-		//
-		//response, err := auth.Login(loginRequest)
-		//assert.Error(t, err)
-		//assert.Nil(t, response)
+		mockGoCloak.
+			On(
+				"Login",
+				mock.Anything, // clientID
+				mock.Anything, // clientSecret
+				realm,         // realm
+				mock.Anything, // userID
+				mock.Anything, // password
+			).
+			Return(nil, errors.New("wrong credentials"))
+
+		loginRequest := &LoginRequest{
+			UserID:   "user",
+			Password: "password",
+		}
+
+		auth := &auth{
+			client:       mockGoCloak,
+			clientID:     "1",
+			clientSecret: "*whisper*",
+		}
+
+		response, err := auth.Login(loginRequest)
+		assert.Error(t, err)
+		assert.Nil(t, response)
 	})
 }
 
 func TestValidate(t *testing.T) {
 	t.Run("Should return true if provided a valid jwt.", func(t *testing.T) {
-		//mockFusionAuthClient := &MockFusionAuthClient{}
-		//defer mockFusionAuthClient.AssertExpectations(t)
-		//
-		//mockFusionAuthClient.
-		//	On("ValidateJWT", mock.Anything).
-		//	Return(&fusionauth.ValidateResponse{
-		//		BaseHTTPResponse: fusionauth.BaseHTTPResponse{
-		//			StatusCode: http.StatusOK,
-		//		},
-		//	}, nil)
-		//
-		//auth := NewAuth(mockFusionAuthClient, "1")
-		//
-		//err := auth.Validate("abcd1234")
-		//assert.Nil(t, err)
+		mockGoCloak := &MockGoCloak{}
+		defer mockGoCloak.AssertExpectations(t)
+
+		mockGoCloak.
+			On(
+				"RetrospectToken",
+				mock.Anything, // jwt
+				mock.Anything, // clientID
+				mock.Anything, // clientSecret
+				realm,         // realm
+			).
+			Return(&gocloak.RetrospecTokenResult{
+				Active: boolPtr(true),
+			}, nil)
+
+		auth := &auth{
+			client:       mockGoCloak,
+			clientID:     "1",
+			clientSecret: "*whisper*",
+		}
+
+		err := auth.Validate("aValidToken")
+		assert.NoError(t, err)
 	})
 
-	t.Run("Should return false if provided an invalid jwt", func(t *testing.T) {
-		//mockFusionAuthClient := &MockFusionAuthClient{}
-		//defer mockFusionAuthClient.AssertExpectations(t)
-		//
-		//mockFusionAuthClient.
-		//	On("ValidateJWT", mock.Anything).
-		//	Return(nil, errors.New("Invalid JWT"))
-		//
-		//auth := NewAuth(mockFusionAuthClient, "1")
-		//
-		//err := auth.Validate("abcd1234")
-		//assert.Error(t, err)
+	t.Run("Should return an error if provided an invalid jwt", func(t *testing.T) {
+		mockGoCloak := &MockGoCloak{}
+		defer mockGoCloak.AssertExpectations(t)
+
+		mockGoCloak.
+			On(
+				"RetrospectToken",
+				mock.Anything, // jwt
+				mock.Anything, // clientID
+				mock.Anything, // clientSecret
+				realm,         // realm
+			).
+			Return(&gocloak.RetrospecTokenResult{
+				Active: boolPtr(false),
+			}, nil)
+
+		auth := &auth{
+			client:       mockGoCloak,
+			clientID:     "1",
+			clientSecret: "*whisper*",
+		}
+
+		err := auth.Validate("anInvalidToken")
+		assert.Error(t, err)
 	})
+}
+
+func boolPtr(val bool) *bool {
+	b := val
+	return &b
 }
