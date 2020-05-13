@@ -6,12 +6,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/url"
 	"os"
 	"time"
 
-	"github.com/FusionAuth/go-client/pkg/fusionauth"
-	"github.com/pkg/errors"
 	"github.com/rs/cors"
 	"gitlab.medhir.com/medhir/blog/server/auth"
 	"gitlab.medhir.com/medhir/blog/server/storage/gcs"
@@ -20,7 +17,6 @@ import (
 const (
 	// TODO - Move to config
 	serverPort = ":9000"
-	authHost   = "https://auth.medhir.com"
 	local      = "local"
 )
 
@@ -37,33 +33,23 @@ type Instance struct {
 // NewInstance returns a new instance of the server
 func NewInstance() (*Instance, error) {
 	ctx := context.Background()
-	authBaseURL, err := url.Parse(authHost)
-	if err != nil {
-		return nil, err
-	}
 	server := &http.Server{
 		Addr: serverPort,
 	}
-	httpClient := &http.Client{
-		Timeout: 30 * time.Second,
-	}
-	fusionauthAPIKey, ok := os.LookupEnv("FUSIONAUTH_API_KEY")
-	if !ok {
-		return nil, errors.New("unable to look up fusionauth api key")
-	}
-	blogAuthAppID, ok := os.LookupEnv("BLOG_AUTH_APPLICATION_ID")
-	if !ok {
-		return nil, errors.New("unable to look up fusionauth application ID")
-	}
-	fusionauthClient := fusionauth.NewClient(httpClient, authBaseURL, fusionauthAPIKey)
+
 	gcs, err := gcs.NewGCS(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	auth, err := auth.NewAuth()
 	if err != nil {
 		return nil, err
 	}
 
 	// get environment
 	var environment string
-	environment, ok = os.LookupEnv("ENVIRONMENT")
+	environment, ok := os.LookupEnv("ENVIRONMENT")
 	if !ok {
 		environment = local
 	}
@@ -71,7 +57,7 @@ func NewInstance() (*Instance, error) {
 	instance := &Instance{
 		router: http.DefaultServeMux,
 		server: server,
-		auth:   auth.NewAuth(fusionauthClient, blogAuthAppID),
+		auth:   auth,
 		gcs:    gcs,
 		env:    environment,
 	}

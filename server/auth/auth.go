@@ -2,12 +2,18 @@ package auth
 
 import (
 	"errors"
-
-	"github.com/FusionAuth/go-client/pkg/fusionauth"
-	"gitlab.medhir.com/medhir/blog/server/util"
+	"github.com/Nerzal/gocloak/v5"
+	"os"
 )
 
+const (
+	baseURL = "https://auth.medhir.com"
+	realm   = "medhir.com"
+)
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 // Requests & Responses
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // LoginRequest describes the credentials needed to perform a login
 type LoginRequest struct {
@@ -24,55 +30,57 @@ type LoginResponse struct {
 // that can be taken within the application context
 type Auth interface {
 	Login(request *LoginRequest) (*LoginResponse, error)
-	Validate(jwt string) error
-}
-
-// FusionAuthClient describes the methods used from the fusionauth client
-type FusionAuthClient interface {
-	Login(request fusionauth.LoginRequest) (*fusionauth.LoginResponse, *fusionauth.Errors, error)
-	ValidateJWT(encodedJWT string) (*fusionauth.ValidateResponse, error)
+	Validate(accessToken string) error
 }
 
 type auth struct {
-	appID  string
-	client FusionAuthClient
+	client       gocloak.GoCloak
+	clientID     string
+	clientSecret string
 }
 
 // NewAuth instantiates a new authentication controller for the application
-// NewAuth takes in a fusionauth client and an application ID (which is also defined in fusionauth)
-func NewAuth(fusionAuthClient FusionAuthClient, appID string) Auth {
-	return &auth{
-		appID:  appID,
-		client: fusionAuthClient,
+func NewAuth() (Auth, error) {
+	clientID, ok := os.LookupEnv("KEYCLOAK_CLIENT_ID")
+	if !ok {
+		return nil, errors.New("KEYCLOAK_CLIENT_ID environment variable must be provided")
 	}
+	clientSecret, ok := os.LookupEnv("KEYCLOAK_CLIENT_SECRET")
+	if !ok {
+		return nil, errors.New("KEYCLOAK_CLIENT_SECRET environment variable must be provided")
+	}
+	auth := &auth{
+		client:       gocloak.NewClient(baseURL),
+		clientID:     clientID,
+		clientSecret: clientSecret,
+	}
+	return auth, nil
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// Interface implementation
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Login attempts to login a user
 func (a *auth) Login(request *LoginRequest) (*LoginResponse, error) {
-	response, _, err := a.client.Login(fusionauth.LoginRequest{
-		LoginId:  request.UserID,
-		Password: request.Password,
-	})
+	token, err := a.client.Login(a.clientID, a.clientSecret, realm, request.UserID, request.Password)
 	if err != nil {
 		return nil, err
 	}
-	if !util.StatusCodeIsSuccessful(response.StatusCode) {
-		return nil, errors.New("Login was unsuccessful")
-	}
 
 	return &LoginResponse{
-		Token: response.Token,
+		Token: token.AccessToken,
 	}, nil
 }
 
 // Validate checks if a jwt is still a valid authentication token
 func (a *auth) Validate(jwt string) error {
-	response, err := a.client.ValidateJWT(jwt)
+	rptResult, err := a.client.RetrospectToken(jwt, a.clientID, a.clientSecret, realm)
 	if err != nil {
 		return err
 	}
-	if !util.StatusCodeIsSuccessful(response.StatusCode) {
-		return errors.New("Validation of JWT unsuccessful")
+	if !*rptResult.Active {
+		return errors.New("access token is invalid")
 	}
 	return nil
 }

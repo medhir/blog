@@ -14,6 +14,7 @@ spec:
         - api-review.medhir.com
         - api.medhir.com
         - auth.medhir.com
+        - new-auth.medhir.com
         - review.medhir.com
       secretName: medhir-main-prod-cert
   rules:
@@ -50,5 +51,5 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: fusionauth
-              servicePort: 9011
+              serviceName: keycloak
+              servicePort: 8080
