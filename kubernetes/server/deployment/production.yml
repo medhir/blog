@@ -28,16 +28,6 @@ spec:
               mountPath: "etc/creds"
               readOnly: true
           env:
-            - name: FUSIONAUTH_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: fusionauth-api
-                  key: api-key
-            - name: BLOG_AUTH_APPLICATION_ID
-              valueFrom:
-                secretKeyRef:
-                  name: fusionauth-api
-                  key: app-id
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: "/etc/creds/storage-credentials.json"
             - name: ENVIRONMENT
@@ -52,6 +42,16 @@ spec:
                 secretKeyRef:
                   name: cloudflare-secret
                   key: email
+            - name: KEYCLOAK_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-server-client
+                  key: client-id
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-server-client
+                  key: client-secret
       volumes:
         - name: creds
           secret:
