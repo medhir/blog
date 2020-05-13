@@ -6,6 +6,7 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
+// MockGoCloak provides a mock interface for testing authorization business logic
 type MockGoCloak interface {
 	// RestyClient returns a resty client that gocloak uses
 	RestyClient() *resty.Client
