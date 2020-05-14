@@ -39,8 +39,17 @@ spec:
                 secretKeyRef:
                   name: keycloak
                   key: password
+            - name: DB_VENDOR
+              value: postgres
             - name: DB_ADDR
-              value: jdbc:postgresql://pgbouncer:5432/keycloak
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak
+                  key: database-address
+            - name: DB_DATABASE
+              value: keycloak
+            - name: DB_PORT
+              value: "5432"
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
