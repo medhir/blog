@@ -55,6 +55,7 @@ func NewInstance() (*Instance, error) {
 	}
 
 	instance := &Instance{
+		ctx:    ctx,
 		router: http.DefaultServeMux,
 		server: server,
 		auth:   auth,

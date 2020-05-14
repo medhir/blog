@@ -16,10 +16,13 @@ import (
 )
 
 const (
-	ingressName    = "coder"
-	servicePort    = 8080
-	cnameFormatter = "code-%s"
-	urlFormatter   = "https://code-%s.medhir.com"
+	ingressName        = "istio"
+	servicePort        = 3000
+	certName           = "ingress-cert"
+	containerImageName = "theiaide/theia-go:latest"
+	dnsNameFormatter   = "code-%s.medhir.com"
+	cnameFormatter     = "code-%s"
+	urlFormatter       = "https://code-%s.medhir.com"
 )
 
 // Manager describes the methods for managing coder instances
@@ -67,11 +70,7 @@ func (m *manager) AddInstance() (*Instance, error) {
 	if err != nil {
 		return nil, err
 	}
-	// add persistent volume claims
-	err = m.k8s.AddPersistentVolumeClaim(resources.sharedPVC)
-	if err != nil {
-		return nil, err
-	}
+	// add persistent volume claim
 	err = m.k8s.AddPersistentVolumeClaim(resources.projectPVC)
 	if err != nil {
 		return nil, err
@@ -81,6 +80,8 @@ func (m *manager) AddInstance() (*Instance, error) {
 	if err != nil {
 		return nil, err
 	}
+	// add certificate
+	err = m.k8s.AddDNSNamesToCert(certName, []string{fmt.Sprintf(dnsNameFormatter, id)})
 	// add ingress rule
 	err = m.k8s.AddIngressRule(ingressName, resources.ingressRule)
 	if err != nil {
@@ -103,11 +104,7 @@ func (m *manager) RemoveInstance(id string) error {
 	if err != nil {
 		return err
 	}
-	// remove persistent volume claims
-	err = m.k8s.RemovePersistentVolumeClaim(resources.sharedPVC)
-	if err != nil {
-		return err
-	}
+	// remove persistent volume claim
 	err = m.k8s.RemovePersistentVolumeClaim(resources.projectPVC)
 	if err != nil {
 		return err
@@ -138,7 +135,6 @@ func (m *manager) RemoveInstance(id string) error {
 }
 
 type coderK8sResources struct {
-	sharedPVC   *apiv1.PersistentVolumeClaim
 	projectPVC  *apiv1.PersistentVolumeClaim
 	deployment  *appsv1.Deployment
 	service     *apiv1.Service
@@ -146,10 +142,6 @@ type coderK8sResources struct {
 }
 
 func makeCoderK8sResources(id string) (*coderK8sResources, error) {
-	sharedPVC, err := makeSharedPVC(id)
-	if err != nil {
-		return nil, err
-	}
 	projectPVC, err := makeProjectPVC(id)
 	if err != nil {
 		return nil, err
@@ -158,38 +150,11 @@ func makeCoderK8sResources(id string) (*coderK8sResources, error) {
 	ingressRule := makeCoderIngressRule(id)
 	deployment := makeCoderDeployment(id)
 	return &coderK8sResources{
-		sharedPVC:   sharedPVC,
 		projectPVC:  projectPVC,
 		deployment:  deployment,
 		service:     svc,
 		ingressRule: ingressRule,
 	}, nil
-}
-
-func makeSharedPVC(id string) (*apiv1.PersistentVolumeClaim, error) {
-	pvcName := fmt.Sprintf("coder-%s-shared-data", id)
-	quantity, err := resource.ParseQuantity("5Gi")
-	if err != nil {
-		return nil, err
-	}
-	sharedPVC := &apiv1.PersistentVolumeClaim{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: pvcName,
-		},
-		Spec: apiv1.PersistentVolumeClaimSpec{
-			AccessModes: []apiv1.PersistentVolumeAccessMode{
-				apiv1.ReadWriteOnce,
-			},
-			Resources: apiv1.ResourceRequirements{
-				Requests: apiv1.ResourceList{
-					apiv1.ResourceStorage: quantity,
-				},
-			},
-		},
-		Status: apiv1.PersistentVolumeClaimStatus{},
-	}
-
-	return sharedPVC, nil
 }
 
 func makeProjectPVC(id string) (*apiv1.PersistentVolumeClaim, error) {
@@ -198,7 +163,7 @@ func makeProjectPVC(id string) (*apiv1.PersistentVolumeClaim, error) {
 	if err != nil {
 		return nil, err
 	}
-	sharedPVC := &apiv1.PersistentVolumeClaim{
+	projectPVC := &apiv1.PersistentVolumeClaim{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: pvcName,
 		},
@@ -214,7 +179,7 @@ func makeProjectPVC(id string) (*apiv1.PersistentVolumeClaim, error) {
 		},
 		Status: apiv1.PersistentVolumeClaimStatus{},
 	}
-	return sharedPVC, nil
+	return projectPVC, nil
 }
 
 func makeCoderService(id string) *apiv1.Service {
@@ -230,7 +195,7 @@ func makeCoderService(id string) *apiv1.Service {
 			},
 			Ports: []apiv1.ServicePort{
 				{
-					Port: 8080,
+					Port: servicePort,
 				},
 			},
 		},
@@ -239,7 +204,7 @@ func makeCoderService(id string) *apiv1.Service {
 }
 
 func makeCoderIngressRule(id string) v1beta1.IngressRule {
-	host := fmt.Sprintf("code-%s.medhir.com", id)
+	host := fmt.Sprintf(dnsNameFormatter, id)
 	serviceName := fmt.Sprintf("coder-%s-service", id)
 	rule := v1beta1.IngressRule{
 		Host: host,
@@ -247,7 +212,7 @@ func makeCoderIngressRule(id string) v1beta1.IngressRule {
 			HTTP: &v1beta1.HTTPIngressRuleValue{
 				Paths: []v1beta1.HTTPIngressPath{
 					{
-						Path: "/",
+						Path: "/.*",
 						Backend: v1beta1.IngressBackend{
 							ServiceName: serviceName,
 							ServicePort: intstr.IntOrString{
@@ -264,7 +229,6 @@ func makeCoderIngressRule(id string) v1beta1.IngressRule {
 
 func makeCoderDeployment(id string) *appsv1.Deployment {
 	deploymentName := fmt.Sprintf("coder-%s", id)
-	sharedPVCName := fmt.Sprintf("coder-%s-shared-data", id)
 	projectPVCName := fmt.Sprintf("coder-%s-project-data", id)
 	return &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -301,36 +265,24 @@ func makeCoderDeployment(id string) *appsv1.Deployment {
 					Containers: []apiv1.Container{
 						{
 							Name:  deploymentName,
-							Image: "codercom/code-server:3.2.0",
-							Args:  []string{"--auth", "none"},
+							Image: containerImageName,
+							Args:  []string{"-u", "$(id -u ${USER}):$(id -g ${USER})"},
 							Ports: []apiv1.ContainerPort{
 								{
 									Name:          "http",
 									Protocol:      apiv1.ProtocolTCP,
-									ContainerPort: 8080,
+									ContainerPort: servicePort,
 								},
 							},
 							VolumeMounts: []apiv1.VolumeMount{
 								{
-									Name:      sharedPVCName,
-									MountPath: "/home/coder/.local/share/code-server",
-								},
-								{
 									Name:      projectPVCName,
-									MountPath: "/home/coder/project",
+									MountPath: "/home/code/project",
 								},
 							},
 						},
 					},
 					Volumes: []apiv1.Volume{
-						{
-							Name: sharedPVCName,
-							VolumeSource: apiv1.VolumeSource{
-								PersistentVolumeClaim: &apiv1.PersistentVolumeClaimVolumeSource{
-									ClaimName: sharedPVCName,
-								},
-							},
-						},
 						{
 							Name: projectPVCName,
 							VolumeSource: apiv1.VolumeSource{
