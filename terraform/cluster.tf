@@ -144,7 +144,7 @@ resource "google_container_node_pool" "coder_node_pool" {
        "medhir-blog-private-coder-pool",
      ]
 
-     disk_size_gb = "10"
+     disk_size_gb = "25"
      disk_type    = "pd-standard"
      preemptible  = true
 
