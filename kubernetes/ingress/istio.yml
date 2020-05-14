@@ -1,55 +1,43 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: main
+  name: istio
   annotations:
-    kubernetes.io/ingress.class: nginx
-    # Set this annotation to prevent 413 "Request entity too large" error on image uploads
-    nginx.ingress.kubernetes.io/proxy-body-size: 30m
-    cert-manager.io/issuer: "letsencrypt-prod"
+    kubernetes.io/ingress.class: istio
 spec:
-  tls:
-    - hosts:
-        - medhir.com
-        - api-review.medhir.com
-        - api.medhir.com
-        - auth.medhir.com
-        - new-auth.medhir.com
-        - review.medhir.com
-      secretName: medhir-main-prod-cert
   rules:
     - host: medhir.com
       http:
         paths:
-          - path: /
+          - path: /.*
             backend:
               serviceName: www-production-service
               servicePort: 3000
     - host: api.medhir.com
       http:
         paths:
-          - path: /
+          - path: /.*
             backend:
               serviceName: server-production-service
               servicePort: 9000
     - host: review.medhir.com
       http:
         paths:
-          - path: /
+          - path: /.*
             backend:
               serviceName: www-review-service
               servicePort: 3000
     - host: api-review.medhir.com
       http:
         paths:
-          - path: /
+          - path: /.*
             backend:
               serviceName: server-review-service
               servicePort: 9000
     - host: auth.medhir.com
       http:
         paths:
-          - path: /
+          - path: /.*
             backend:
               serviceName: keycloak
               servicePort: 8080
