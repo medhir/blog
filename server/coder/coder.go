@@ -254,10 +254,10 @@ func makeCoderDeployment(id string) *appsv1.Deployment {
 				},
 				Spec: apiv1.PodSpec{
 					RestartPolicy: apiv1.RestartPolicyAlways,
+					// default definitions for user permissions and mounting volumes inspired by
+					// https://github.com/spring-projects/sts4/blob/master/theia-extensions/k8s-app-old/deploy.yml
 					SecurityContext: &apiv1.PodSecurityContext{
-						RunAsUser:  int64Ptr(1000),
-						RunAsGroup: int64Ptr(3000),
-						FSGroup:    int64Ptr(2000),
+						RunAsUser: int64Ptr(0),
 					},
 					NodeSelector: map[string]string{
 						"coder": "true",
@@ -266,7 +266,6 @@ func makeCoderDeployment(id string) *appsv1.Deployment {
 						{
 							Name:  deploymentName,
 							Image: containerImageName,
-							Args:  []string{"-u", "$(id -u ${USER}):$(id -g ${USER})"},
 							Ports: []apiv1.ContainerPort{
 								{
 									Name:          "http",
@@ -277,7 +276,7 @@ func makeCoderDeployment(id string) *appsv1.Deployment {
 							VolumeMounts: []apiv1.VolumeMount{
 								{
 									Name:      projectPVCName,
-									MountPath: "/home/code/project",
+									MountPath: "/home/project",
 								},
 							},
 						},
