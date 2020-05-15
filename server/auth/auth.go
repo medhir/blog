@@ -19,6 +19,7 @@ type Auth interface {
 	CreateUser(req *CreateUserRequest) (*CreateUserResponse, error)
 	Login(request *LoginRequest) (*LoginResponse, error)
 	Validate(accessToken string) error
+	RefreshJWT(refreshToken string) (string, error)
 }
 
 type auth struct {
@@ -101,7 +102,8 @@ type LoginRequest struct {
 
 // LoginResponse describes the response from a login request
 type LoginResponse struct {
-	Token string `json:"token"`
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 // Login attempts to login a user
@@ -112,7 +114,8 @@ func (a *auth) Login(request *LoginRequest) (*LoginResponse, error) {
 	}
 
 	return &LoginResponse{
-		Token: token.AccessToken,
+		Token:        token.AccessToken,
+		RefreshToken: token.RefreshToken,
 	}, nil
 }
 
@@ -126,6 +129,15 @@ func (a *auth) Validate(jwt string) error {
 		return errors.New("access token is invalid")
 	}
 	return nil
+}
+
+// RefreshJWT uses a refresh token to retrieve a new valid jwt
+func (a *auth) RefreshJWT(refreshToken string) (string, error) {
+	jwt, err := a.client.RefreshToken(refreshToken, a.clientID, a.clientSecret, realm)
+	if err != nil {
+		return "", err
+	}
+	return jwt.AccessToken, nil
 }
 
 func stringPtr(str string) *string {
