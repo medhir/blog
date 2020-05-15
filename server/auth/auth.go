@@ -9,11 +9,14 @@ import (
 const (
 	baseURL = "https://auth.medhir.com"
 	realm   = "medhir.com"
+
+	roleUnverifiedUser = "unverified-user"
 )
 
 // Auth is the interface describing authentication actions
 // that can be taken within the application context
 type Auth interface {
+	CreateUser(req *CreateUserRequest) (*CreateUserResponse, error)
 	Login(request *LoginRequest) (*LoginResponse, error)
 	Validate(accessToken string) error
 }
@@ -42,6 +45,7 @@ func NewAuth() (Auth, error) {
 	return auth, nil
 }
 
+// CreateUserRequest describes the request for creating a new user
 type CreateUserRequest struct {
 	FirstName string
 	LastName  string
@@ -50,6 +54,7 @@ type CreateUserRequest struct {
 	Password  string
 }
 
+// CreateUserResponse is the response for a call to CreateUser
 type CreateUserResponse struct {
 	Token string
 }
@@ -64,10 +69,11 @@ func (a *auth) CreateUser(req *CreateUserRequest) (*CreateUserResponse, error) {
 		token.AccessToken,
 		realm,
 		gocloak.User{
-			FirstName: stringPtr(req.FirstName),
-			LastName:  stringPtr(req.LastName),
-			Username:  stringPtr(req.Username),
-			Email:     stringPtr(req.Email),
+			FirstName:  stringPtr(req.FirstName),
+			LastName:   stringPtr(req.LastName),
+			Username:   stringPtr(req.Username),
+			Email:      stringPtr(req.Email),
+			RealmRoles: []string{roleUnverifiedUser},
 		})
 	if err != nil {
 		return nil, err
