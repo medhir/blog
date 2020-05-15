@@ -11,21 +11,6 @@ const (
 	realm   = "medhir.com"
 )
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-// Requests & Responses
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// LoginRequest describes the credentials needed to perform a login
-type LoginRequest struct {
-	UserID   string `json:"user_id"`
-	Password string `json:"password"`
-}
-
-// LoginResponse describes the response from a login request
-type LoginResponse struct {
-	Token string `json:"token"`
-}
-
 // Auth is the interface describing authentication actions
 // that can be taken within the application context
 type Auth interface {
@@ -57,9 +42,61 @@ func NewAuth() (Auth, error) {
 	return auth, nil
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-// Interface implementation
-/////////////////////////////////////////////////////////////////////////////////////////////////////
+type CreateUserRequest struct {
+	FirstName string
+	LastName  string
+	Username  string
+	Email     string
+	Password  string
+}
+
+type CreateUserResponse struct {
+	Token string
+}
+
+func (a *auth) CreateUser(req *CreateUserRequest) (*CreateUserResponse, error) {
+	token, err := a.client.LoginClient(a.clientID, a.clientSecret, realm)
+	if err != nil {
+		return nil, err
+	}
+	// Create new user in the realm
+	userID, err := a.client.CreateUser(
+		token.AccessToken,
+		realm,
+		gocloak.User{
+			FirstName: stringPtr(req.FirstName),
+			LastName:  stringPtr(req.LastName),
+			Username:  stringPtr(req.Username),
+			Email:     stringPtr(req.Email),
+		})
+	if err != nil {
+		return nil, err
+	}
+	// set the user's password
+	err = a.client.SetPassword(token.AccessToken, userID, realm, req.Password, false)
+	if err != nil {
+		return nil, err
+	}
+	// login the user and return the jwt
+	jwt, err := a.client.Login(a.clientID, a.clientSecret, realm, req.Username, req.Password)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateUserResponse{
+		Token: jwt.AccessToken,
+	}, nil
+}
+
+// LoginRequest describes the credentials needed to perform a login
+type LoginRequest struct {
+	UserID   string `json:"user_id"`
+	Password string `json:"password"`
+}
+
+// LoginResponse describes the response from a login request
+type LoginResponse struct {
+	Token string `json:"token"`
+}
 
 // Login attempts to login a user
 func (a *auth) Login(request *LoginRequest) (*LoginResponse, error) {
@@ -83,4 +120,9 @@ func (a *auth) Validate(jwt string) error {
 		return errors.New("access token is invalid")
 	}
 	return nil
+}
+
+func stringPtr(str string) *string {
+	s := str
+	return &s
 }

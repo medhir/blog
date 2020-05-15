@@ -59,6 +59,5 @@ spec:
             items:
               - key: storage-credentials.json
                 path: storage-credentials.json
-
       imagePullSecrets:
         - name: regcred
