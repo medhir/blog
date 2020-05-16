@@ -1,12 +1,6 @@
 import React from 'react'
-import Layout from '../../../components/layout'
 import Uploader from '../../../components/uploader'
 
-const Upload = () => (
-    <Layout>
-        <Uploader />
-    </Layout>
-)
-
+const Upload = () => <Uploader />
 
 export default Upload

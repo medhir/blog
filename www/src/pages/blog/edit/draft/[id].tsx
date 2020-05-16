@@ -2,14 +2,9 @@ import { GetServerSideProps } from 'next'
 import http from '../../../../utility/http'
 import Notebook from '../../../../components/notebook'
 import { DraftMetadata } from '../../../../components/blog/types'
-import Layout from '../../../../components/layout'
 
 const DraftEditor = ({ mdx }) => {
-  return (
-    <Layout>
-      <Notebook mdx={mdx} />
-    </Layout>
-  )
+  return <Notebook mdx={mdx} />
 }
 
 export default DraftEditor

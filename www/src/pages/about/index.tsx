@@ -5,7 +5,7 @@ import styles from './about.module.scss'
 import Head from '../../components/head'
 
 const About = () => (
-  <Layout>
+  <>
     <Head title="about.medhir" />
     <section className={styles.about}>
       <p>
@@ -34,7 +34,7 @@ const About = () => (
         e-mail via mail AT medhir.com.
       </p>
     </section>
-  </Layout>
+  </>
 )
 
 export default About
