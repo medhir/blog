@@ -8,17 +8,24 @@ import React, {
 
 import Login from './login'
 import http from '../../utility/http'
+import { Snackbar } from '@material-ui/core'
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert'
 
 interface AuthProps {
   prompt?: Boolean // if true, will show a login form when user is unauthenticated
   children: ReactNode
 }
 
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />
+}
+
 const Auth = ({ children, prompt }: AuthProps): ReactElement => {
   const [validated, setValidated] = useState(false)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState(null)
+  const [alertOpen, setAlertOpen] = React.useState(false)
+  // const [error, setError] = useState(null)
 
   const login = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
@@ -33,7 +40,7 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
         setValidated(true)
       })
       .catch((error) => {
-        setError({ error: error })
+        setAlertOpen(true)
       })
   }
 
@@ -43,6 +50,14 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value)
+  }
+
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return
+    }
+
+    setAlertOpen(false)
   }
 
   useEffect(() => {
@@ -71,11 +86,17 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
           username={username}
           password={password}
         />
-        {error && (
-          <>
-            <p>Login Failed</p>
-            <pre>{JSON.stringify(error, undefined, 2)}</pre>
-          </>
+        {alertOpen && (
+          <Snackbar
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            open={alertOpen}
+            autoHideDuration={6000}
+            onClose={handleClose}
+          >
+            <Alert onClose={handleClose} severity="error">
+              there was an issue logging you in. please try again.
+            </Alert>
+          </Snackbar>
         )}
       </>
     )
