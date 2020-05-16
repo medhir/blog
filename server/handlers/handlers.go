@@ -24,6 +24,7 @@ type Handlers interface {
 	Login() http.HandlerFunc
 	ValidateJWT() http.HandlerFunc
 	Authorize(handler http.HandlerFunc) http.HandlerFunc
+	RegisterNewUser() http.HandlerFunc
 
 	// Blog
 	GetDraft() http.HandlerFunc

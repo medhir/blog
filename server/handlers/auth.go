@@ -172,3 +172,21 @@ func (h *handlers) Username() http.HandlerFunc {
 		})
 	}
 }
+
+func (h *handlers) RegisterNewUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+		var newUser auth.CreateUserRequest
+		err := json.NewDecoder(r.Body).Decode(&newUser)
+		if err != nil {
+			http.Error(w, "Unable to decode data in request body", http.StatusInternalServerError)
+			return
+		}
+		resp, err := h.auth.CreateUser(&newUser)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Unable to create new user - %s", err.Error()), http.StatusInternalServerError)
+			return
+		}
+		writeJSON(w, resp)
+	}
+}

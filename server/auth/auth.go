@@ -49,16 +49,16 @@ func NewAuth() (Auth, error) {
 
 // CreateUserRequest describes the request for creating a new user
 type CreateUserRequest struct {
-	FirstName string
-	LastName  string
-	Username  string
-	Email     string
-	Password  string
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
 }
 
 // CreateUserResponse is the response for a call to CreateUser
 type CreateUserResponse struct {
-	Token string
+	Token string `json:"token"`
 }
 
 func (a *auth) CreateUser(req *CreateUserRequest) (*CreateUserResponse, error) {
