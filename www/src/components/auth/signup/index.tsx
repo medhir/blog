@@ -8,7 +8,7 @@ const SignUpForm = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState(false)
   const [confirmPasswordHelperText, setConfirmPasswordHelperText] = useState('')
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
     if (password != confirmPassword) {
       setConfirmPasswordError(true)
@@ -31,8 +31,8 @@ const SignUpForm = () => {
   return (
     <section className={styles.signup}>
       <Container maxWidth="sm">
-        <h2>start learning.</h2>
-        <form onSubmit={handleSubmit}>
+        <div>
+          <h2>start learning.</h2>
           <TextField
             required
             className={styles.textField}
@@ -74,11 +74,11 @@ const SignUpForm = () => {
             className={styles.button}
             variant="contained"
             color="primary"
-            type="submit"
+            onClick={handleSubmit}
           >
             Sign Up
           </Button>
-        </form>
+        </div>
       </Container>
     </section>
   )
