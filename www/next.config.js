@@ -4,6 +4,6 @@ const withMDX = require('@next/mdx')({
 module.exports = withMDX({
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   env: {
-    ENV: process.env.NODE_ENV,
+    ENV: process.env.APP_ENV,
   },
 })
