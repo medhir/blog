@@ -7,7 +7,7 @@
     "build": "next build",
     "build:production": "NODE_ENV=production next build",
     "build:review": "NODE_ENV=review next build",
-    "start": "next start",
+    "start": "NODE_ENV=production next start",
     "lint": "eslint .",
     "test": "jest --watch",
     "test:ci": "jest --ci"
