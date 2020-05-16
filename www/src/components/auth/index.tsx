@@ -16,13 +16,15 @@ interface AuthProps {
 
 const Auth = ({ children, prompt }: AuthProps): ReactElement => {
   const [validated, setValidated] = useState(false)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
 
-  const login = (e: FormEvent<HTMLElement>) => {
+  const login = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
     const credentials = {
-      loginID: e.target[0].value,
-      password: e.target[1].value,
+      loginID: username,
+      password: password,
     }
 
     http
@@ -33,6 +35,14 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
       .catch((error) => {
         setError({ error: error })
       })
+  }
+
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value)
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value)
   }
 
   useEffect(() => {
@@ -52,7 +62,15 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
     // if prompt prop is specified as true, show a login form
     return (
       <>
-        <Login login={login} />
+        <Login
+          login={login}
+          inputHandlers={{
+            handleUsernameChange,
+            handlePasswordChange,
+          }}
+          username={username}
+          password={password}
+        />
         {error && (
           <>
             <p>Login Failed</p>
