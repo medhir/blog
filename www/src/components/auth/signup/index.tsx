@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { TextField, Button, Container } from '@material-ui/core'
 import styles from './signup.module.scss'
+import Head from '../../head'
 
 const SignUpForm = () => {
   const [password, setPassword] = useState('')
@@ -29,58 +30,61 @@ const SignUpForm = () => {
   }
 
   return (
-    <section className={styles.signup}>
-      <Container maxWidth="sm">
-        <div>
-          <h2>start learning.</h2>
-          <TextField
-            required
-            className={styles.textField}
-            label="username"
-            variant="outlined"
-            size="small"
-          />
-          <TextField
-            required
-            className={styles.textField}
-            label="email address"
-            variant="outlined"
-            size="small"
-            type="email"
-          />
-          <TextField
-            required
-            className={styles.textField}
-            label="password"
-            variant="outlined"
-            size="small"
-            type="password"
-            value={password}
-            onChange={handleUpdatePassword}
-          />
-          <TextField
-            required
-            className={styles.textField}
-            label="confirm password"
-            variant="outlined"
-            size="small"
-            type="password"
-            value={confirmPassword}
-            onChange={handleUpdateConfirmPassword}
-            helperText={confirmPasswordHelperText}
-            error={confirmPasswordError}
-          />
-          <Button
-            className={styles.button}
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-          >
-            Sign Up
-          </Button>
-        </div>
-      </Container>
-    </section>
+    <>
+      <Head title="sign up" />
+      <section className={styles.signup}>
+        <Container maxWidth="sm">
+          <div>
+            <h2>start learning.</h2>
+            <TextField
+              required
+              className={styles.textField}
+              label="username"
+              variant="outlined"
+              size="small"
+            />
+            <TextField
+              required
+              className={styles.textField}
+              label="email address"
+              variant="outlined"
+              size="small"
+              type="email"
+            />
+            <TextField
+              required
+              className={styles.textField}
+              label="password"
+              variant="outlined"
+              size="small"
+              type="password"
+              value={password}
+              onChange={handleUpdatePassword}
+            />
+            <TextField
+              required
+              className={styles.textField}
+              label="confirm password"
+              variant="outlined"
+              size="small"
+              type="password"
+              value={confirmPassword}
+              onChange={handleUpdateConfirmPassword}
+              helperText={confirmPasswordHelperText}
+              error={confirmPasswordError}
+            />
+            <Button
+              className={styles.button}
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+            >
+              Sign Up
+            </Button>
+          </div>
+        </Container>
+      </section>
+    </>
   )
 }
 

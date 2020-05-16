@@ -1,15 +1,10 @@
-import React, {
-  useState,
-  useEffect,
-  FormEvent,
-  ReactNode,
-  ReactElement,
-} from 'react'
+import React, { useState, useEffect, ReactNode, ReactElement } from 'react'
 
 import Login from './login'
 import http from '../../utility/http'
 import { Snackbar } from '@material-ui/core'
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert'
+import { ErrorAlert } from '../alert'
 
 interface AuthProps {
   prompt?: Boolean // if true, will show a login form when user is unauthenticated
@@ -87,16 +82,9 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
           password={password}
         />
         {alertOpen && (
-          <Snackbar
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            open={alertOpen}
-            autoHideDuration={6000}
-            onClose={handleClose}
-          >
-            <Alert onClose={handleClose} severity="error">
-              there was an issue logging you in. please try again.
-            </Alert>
-          </Snackbar>
+          <ErrorAlert onClose={handleClose} open={alertOpen}>
+            there was an issue logging you in. please try again.
+          </ErrorAlert>
         )}
       </>
     )
