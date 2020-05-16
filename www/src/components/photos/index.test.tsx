@@ -1,6 +1,5 @@
 import React from 'react'
 import Photos from './index'
-import Layout from '../../components/layout'
 import { shallow } from 'enzyme'
 
 describe('Photos', () => {
@@ -16,6 +15,5 @@ describe('Photos', () => {
   it('renders photos', () => {
     const wrapper = shallow(<Photos photos={photos} />)
     expect(wrapper.find('img').length).toEqual(5)
-    expect(wrapper.find(Layout).length).toEqual(1)
   })
 })
