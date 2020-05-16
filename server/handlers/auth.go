@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"path"
 	"time"
 
 	"gitlab.medhir.com/medhir/blog/server/auth"
@@ -150,5 +151,23 @@ func (h *handlers) ValidateJWT() http.HandlerFunc {
 			http.SetCookie(w, jwtCookie)
 			w.WriteHeader(http.StatusOK)
 		}
+	}
+}
+
+type UsernameAvailable struct {
+	Available bool `json:"available"`
+}
+
+func (h *handlers) Username() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		username := path.Base(r.URL.Path)
+		defer r.Body.Close()
+		available, err := h.auth.UsernameAvailable(username)
+		if err != nil {
+			http.Error(w, fmt.Sprint("unable to query for username - %s", err.Error()), http.StatusInternalServerError)
+		}
+		writeJSON(w, UsernameAvailable{
+			Available: available,
+		})
 	}
 }

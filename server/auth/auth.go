@@ -17,6 +17,7 @@ const (
 // that can be taken within the application context
 type Auth interface {
 	CreateUser(req *CreateUserRequest) (*CreateUserResponse, error)
+	UsernameAvailable(username string) (bool, error)
 	Login(request *LoginRequest) (*LoginResponse, error)
 	Validate(accessToken string) error
 	RefreshJWT(refreshToken string) (string, error)
@@ -92,6 +93,24 @@ func (a *auth) CreateUser(req *CreateUserRequest) (*CreateUserResponse, error) {
 	return &CreateUserResponse{
 		Token: jwt.AccessToken,
 	}, nil
+}
+
+// UsernameAvailable checks to see if a user for the given username already exists
+func (a *auth) UsernameAvailable(username string) (bool, error) {
+	token, err := a.client.LoginClient(a.clientID, a.clientSecret, realm)
+	if err != nil {
+		return false, err
+	}
+	users, err := a.client.GetUsers(token.AccessToken, realm, gocloak.GetUsersParams{
+		Username: stringPtr(username),
+	})
+	if err != nil {
+		return false, err
+	}
+	if len(users) > 0 {
+		return false, nil
+	}
+	return true, nil
 }
 
 // LoginRequest describes the credentials needed to perform a login
