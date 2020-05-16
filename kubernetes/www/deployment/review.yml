@@ -25,6 +25,6 @@ spec:
             - containerPort: 3000
           env:
             - name: NODE_ENV
-              value: "review"
+              value: "PRODUCTION"
       imagePullSecrets:
         - name: regcred
