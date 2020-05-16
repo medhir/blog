@@ -165,7 +165,7 @@ func (h *handlers) Username() http.HandlerFunc {
 		defer r.Body.Close()
 		available, err := h.auth.UsernameAvailable(username)
 		if err != nil {
-			http.Error(w, fmt.Sprint("unable to query for username - %s", err.Error()), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("unable to query for username - %s", err.Error()), http.StatusInternalServerError)
 		}
 		writeJSON(w, UsernameAvailable{
 			Available: available,
