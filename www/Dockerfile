@@ -9,8 +9,7 @@ ARG ENV=production
 RUN yarn build:$ENV
 
 FROM mhart/alpine-node:12
-ENV ENV=production
 WORKDIR /www
 COPY --from=builder /www .
 EXPOSE 3000
-ENTRYPOINT ENV=$ENV ./node_modules/.bin/next start
+ENTRYPOINT NODE_ENV=production ./node_modules/.bin/next start
