@@ -154,6 +154,7 @@ func (h *handlers) ValidateJWT() http.HandlerFunc {
 	}
 }
 
+// UsernameAvailable describes the response to username checks
 type UsernameAvailable struct {
 	Available bool `json:"available"`
 }
