@@ -127,8 +127,3 @@ func TestValidate(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
-
-func boolPtr(val bool) *bool {
-	b := val
-	return &b
-}
