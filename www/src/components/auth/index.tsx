@@ -20,7 +20,6 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [alertOpen, setAlertOpen] = React.useState(false)
-  // const [error, setError] = useState(null)
 
   const login = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()

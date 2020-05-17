@@ -24,9 +24,11 @@ type Auth interface {
 }
 
 type auth struct {
-	client       gocloak.GoCloak
-	clientID     string
-	clientSecret string
+	client        gocloak.GoCloak
+	clientID      string
+	clientSecret  string
+	adminUsername string
+	adminPassword string
 }
 
 // NewAuth instantiates a new authentication controller for the application
@@ -39,10 +41,21 @@ func NewAuth() (Auth, error) {
 	if !ok {
 		return nil, errors.New("KEYCLOAK_CLIENT_SECRET environment variable must be provided")
 	}
+	adminUsername, ok := os.LookupEnv("KEYCLOAK_ADMIN_USERNAME")
+	if !ok {
+		return nil, errors.New("KEYCLOAK_ADMIN_USERNAME environment variable must be provided")
+	}
+	adminPassword, ok := os.LookupEnv("KEYCLOAK_ADMIN_PASSWORD")
+	if !ok {
+		return nil, errors.New("KEYCLOAK_ADMIN_PASSWORD environment variable must be provided")
+	}
+
 	auth := &auth{
-		client:       gocloak.NewClient(baseURL),
-		clientID:     clientID,
-		clientSecret: clientSecret,
+		client:        gocloak.NewClient(baseURL),
+		clientID:      clientID,
+		clientSecret:  clientSecret,
+		adminUsername: adminUsername,
+		adminPassword: adminPassword,
 	}
 	return auth, nil
 }
@@ -62,7 +75,7 @@ type CreateUserResponse struct {
 }
 
 func (a *auth) CreateUser(req *CreateUserRequest) (*CreateUserResponse, error) {
-	token, err := a.client.LoginClient(a.clientID, a.clientSecret, realm)
+	token, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
 	if err != nil {
 		return nil, err
 	}
@@ -75,6 +88,7 @@ func (a *auth) CreateUser(req *CreateUserRequest) (*CreateUserResponse, error) {
 			LastName:   stringPtr(req.LastName),
 			Username:   stringPtr(req.Username),
 			Email:      stringPtr(req.Email),
+			Enabled:    boolPtr(true),
 			RealmRoles: []string{roleUnverifiedUser},
 		})
 	if err != nil {
@@ -82,6 +96,21 @@ func (a *auth) CreateUser(req *CreateUserRequest) (*CreateUserResponse, error) {
 	}
 	// set the user's password
 	err = a.client.SetPassword(token.AccessToken, userID, realm, req.Password, false)
+	if err != nil {
+		return nil, err
+	}
+	//// send verification email
+	err = a.client.ExecuteActionsEmail(
+		token.AccessToken,
+		realm, gocloak.ExecuteActionsEmail{
+			UserID:      stringPtr(userID),
+			ClientID:    stringPtr(a.clientID),
+			RedirectURI: stringPtr("https://medhir.com/verified"),
+			Actions: []string{
+				"VERIFY_EMAIL",
+			},
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +126,7 @@ func (a *auth) CreateUser(req *CreateUserRequest) (*CreateUserResponse, error) {
 
 // UsernameAvailable checks to see if a user for the given username already exists
 func (a *auth) UsernameAvailable(username string) (bool, error) {
-	token, err := a.client.LoginClient(a.clientID, a.clientSecret, realm)
+	token, err := a.client.LoginAdmin(a.adminPassword, a.adminPassword, realm)
 	if err != nil {
 		return false, err
 	}
@@ -162,4 +191,9 @@ func (a *auth) RefreshJWT(refreshToken string) (string, error) {
 func stringPtr(str string) *string {
 	s := str
 	return &s
+}
+
+func boolPtr(bool bool) *bool {
+	b := bool
+	return &b
 }
