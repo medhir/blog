@@ -25,7 +25,9 @@ type Auth interface {
 	CreateUser(req *CreateUserRequest) error
 	UsernameAvailable(username string) (bool, error)
 	Login(request *LoginRequest) (*LoginResponse, error)
-	Validate(accessToken string, role Role) error
+
+	ValidateJWT(jwt string) error
+	ValidateRole(jwt string, role Role) error
 	RefreshJWT(refreshToken string) (string, error)
 }
 
@@ -166,8 +168,20 @@ func (a *auth) Login(request *LoginRequest) (*LoginResponse, error) {
 	}, nil
 }
 
-// Validate checks if a jwt is a valid authentication token for the specified role
-func (a *auth) Validate(jwt string, role Role) error {
+// ValidateJWT determines if a jwt is still a valid authentication token
+func (a *auth) ValidateJWT(jwt string) error {
+	rptResult, err := a.client.RetrospectToken(jwt, a.clientID, a.clientSecret, realm)
+	if err != nil {
+		return err
+	}
+	if *rptResult.Active != true {
+		return errors.New("jwt is no longer valid")
+	}
+	return nil
+}
+
+// ValidateRole checks if a jwt has the proper claims for the specified role
+func (a *auth) ValidateRole(jwt string, role Role) error {
 	_, claims, err := a.client.DecodeAccessToken(jwt, realm)
 	if err != nil {
 		return err

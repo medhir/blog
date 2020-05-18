@@ -81,7 +81,11 @@ func (h *handlers) Authorize(role auth.Role, handler http.HandlerFunc) http.Hand
 			http.Error(w, fmt.Sprintf("Could not find authorization cookie - %v", err), http.StatusInternalServerError)
 			return
 		}
-		err = h.auth.Validate(jwtCookie.Value, role)
+		err = h.auth.ValidateRole(jwtCookie.Value, role)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+		}
+		err = h.auth.ValidateJWT(jwtCookie.Value)
 		if err != nil {
 			// if this token is not valid, first attempt to refresh the authorization
 			refreshCookie, err := r.Cookie(refreshCookieName)
@@ -122,7 +126,7 @@ func (h *handlers) ValidateJWT() http.HandlerFunc {
 			http.Error(w, fmt.Sprintf("Could not find authorization cookie - %v", err), http.StatusInternalServerError)
 			return
 		}
-		err = h.auth.Validate(jwtCookie.Value, auth.VerifiedUser)
+		err = h.auth.ValidateJWT(jwtCookie.Value)
 		if err != nil {
 			// if this token is not valid, first attempt to refresh the authorization
 			refreshCookie, err := r.Cookie(refreshCookieName)
