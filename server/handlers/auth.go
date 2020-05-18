@@ -74,14 +74,14 @@ func (h *handlers) Login() http.HandlerFunc {
 }
 
 // Authorize is a middleware that checks the validity of a jwt before proceeding with a request
-func (h *handlers) Authorize(handler http.HandlerFunc) http.HandlerFunc {
+func (h *handlers) Authorize(role auth.Role, handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		jwtCookie, err := r.Cookie(jwtCookieName)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Could not find authorization cookie - %v", err), http.StatusInternalServerError)
 			return
 		}
-		err = h.auth.Validate(jwtCookie.Value)
+		err = h.auth.Validate(jwtCookie.Value, role)
 		if err != nil {
 			// if this token is not valid, first attempt to refresh the authorization
 			refreshCookie, err := r.Cookie(refreshCookieName)
@@ -122,7 +122,7 @@ func (h *handlers) ValidateJWT() http.HandlerFunc {
 			http.Error(w, fmt.Sprintf("Could not find authorization cookie - %v", err), http.StatusInternalServerError)
 			return
 		}
-		err = h.auth.Validate(jwtCookie.Value)
+		err = h.auth.Validate(jwtCookie.Value, auth.VerifiedUser)
 		if err != nil {
 			// if this token is not valid, first attempt to refresh the authorization
 			refreshCookie, err := r.Cookie(refreshCookieName)
@@ -182,11 +182,11 @@ func (h *handlers) RegisterNewUser() http.HandlerFunc {
 			http.Error(w, "Unable to decode data in request body", http.StatusInternalServerError)
 			return
 		}
-		resp, err := h.auth.CreateUser(&newUser)
+		err = h.auth.CreateUser(&newUser)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Unable to create new user - %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
-		writeJSON(w, resp)
+		w.WriteHeader(http.StatusOK)
 	}
 }

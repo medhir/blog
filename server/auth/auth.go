@@ -9,17 +9,23 @@ import (
 const (
 	baseURL = "https://auth.medhir.com"
 	realm   = "medhir.com"
+)
 
-	roleUnverifiedUser = "unverified-user"
+type Role string
+
+const (
+	UnverifiedUser = Role("unverified-user")
+	VerifiedUser   = Role("verified-user")
+	BlogOwner      = Role("blog-owner")
 )
 
 // Auth is the interface describing authentication actions
 // that can be taken within the application context
 type Auth interface {
-	CreateUser(req *CreateUserRequest) (*CreateUserResponse, error)
+	CreateUser(req *CreateUserRequest) error
 	UsernameAvailable(username string) (bool, error)
 	Login(request *LoginRequest) (*LoginResponse, error)
-	Validate(accessToken string) error
+	Validate(accessToken string, role Role) error
 	RefreshJWT(refreshToken string) (string, error)
 }
 
@@ -74,10 +80,10 @@ type CreateUserResponse struct {
 	Token string `json:"token"`
 }
 
-func (a *auth) CreateUser(req *CreateUserRequest) (*CreateUserResponse, error) {
+func (a *auth) CreateUser(req *CreateUserRequest) error {
 	token, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	// Create new user in the realm
 	userID, err := a.client.CreateUser(
@@ -89,15 +95,15 @@ func (a *auth) CreateUser(req *CreateUserRequest) (*CreateUserResponse, error) {
 			Username:   stringPtr(req.Username),
 			Email:      stringPtr(req.Email),
 			Enabled:    boolPtr(true),
-			RealmRoles: []string{roleUnverifiedUser},
+			RealmRoles: []string{string(UnverifiedUser)},
 		})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	// set the user's password
 	err = a.client.SetPassword(token.AccessToken, userID, realm, req.Password, false)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	//// send verification email
 	err = a.client.ExecuteActionsEmail(
@@ -112,16 +118,9 @@ func (a *auth) CreateUser(req *CreateUserRequest) (*CreateUserResponse, error) {
 		},
 	)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	// login the user and return the jwt
-	jwt, err := a.client.Login(a.clientID, a.clientSecret, realm, req.Username, req.Password)
-	if err != nil {
-		return nil, err
-	}
-	return &CreateUserResponse{
-		Token: jwt.AccessToken,
-	}, nil
+	return nil
 }
 
 // UsernameAvailable checks to see if a user for the given username already exists
@@ -167,14 +166,38 @@ func (a *auth) Login(request *LoginRequest) (*LoginResponse, error) {
 	}, nil
 }
 
-// Validate checks if a jwt is still a valid authentication token
-func (a *auth) Validate(jwt string) error {
-	rptResult, err := a.client.RetrospectToken(jwt, a.clientID, a.clientSecret, realm)
+// Validate checks if a jwt is a valid authentication token for the specified role
+func (a *auth) Validate(jwt string, role Role) error {
+	_, claims, err := a.client.DecodeAccessToken(jwt, realm)
 	if err != nil {
 		return err
 	}
-	if !*rptResult.Active {
-		return errors.New("access token is invalid")
+	mapClaims := *claims
+	resourceAccess, ok := mapClaims["resource_access"].(map[string]interface{})
+	if !ok {
+		return errors.New("validation error - could not read resource_access")
+	}
+	goServer, ok := resourceAccess["go-server"].(map[string]interface{})
+	if !ok {
+		return errors.New("validation error - could not read go-server")
+	}
+	roles, ok := goServer["roles"].([]interface{})
+	if !ok {
+		return errors.New("validation error - could not read roles")
+	}
+	validated := false
+	for _, claimRole := range roles {
+		r, ok := claimRole.(string)
+		if !ok {
+			return errors.New("could not convert role to string")
+		}
+		if r == string(role) {
+			validated = true
+			break
+		}
+	}
+	if !validated {
+		return errors.New("user is not authorized to access this resource")
 	}
 	return nil
 }

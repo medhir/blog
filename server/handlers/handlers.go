@@ -23,7 +23,7 @@ type Handlers interface {
 	// Authentication
 	Login() http.HandlerFunc
 	ValidateJWT() http.HandlerFunc
-	Authorize(handler http.HandlerFunc) http.HandlerFunc
+	Authorize(role auth.Role, handler http.HandlerFunc) http.HandlerFunc
 	RegisterNewUser() http.HandlerFunc
 
 	// Blog
