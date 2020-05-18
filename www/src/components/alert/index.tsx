@@ -27,3 +27,16 @@ export const ErrorAlert = ({ children, onClose, open }: AlertProps) => (
     </Alert>
   </Snackbar>
 )
+
+export const SuccessAlert = ({ children, onClose, open }: AlertProps) => (
+  <Snackbar
+    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    open={open}
+    autoHideDuration={6000}
+    onClose={onClose}
+  >
+    <Alert onClose={onClose} severity="success">
+      {children}
+    </Alert>
+  </Snackbar>
+)

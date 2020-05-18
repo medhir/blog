@@ -5,7 +5,7 @@ import Head from '../../head'
 import http from '../../../utility/http'
 import { AxiosError } from 'axios'
 import Router from 'next/router'
-import { ErrorAlert } from '../../alert'
+import { ErrorAlert, SuccessAlert } from '../../alert'
 
 interface SubmitErrorAlert {
   open: boolean
@@ -21,6 +21,7 @@ const SignUpForm = () => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [confirmPasswordError, setConfirmPasswordError] = useState(false)
   const [confirmPasswordHelperText, setConfirmPasswordHelperText] = useState('')
+  const [submitSuccessAlert, setSubmitSuccessAlert] = useState(false)
   const [submitErrorAlert, setSubmitErrorAlert] = useState({
     open: false,
     message: '',
@@ -42,7 +43,7 @@ const SignUpForm = () => {
         password: password,
       })
       .then(() => {
-        Router.replace('/signup', '/', { shallow: true })
+        setSubmitSuccessAlert(true)
       })
       .catch((error: AxiosError) => {
         setSubmitErrorAlert({
@@ -82,7 +83,7 @@ const SignUpForm = () => {
     setConfirmPassword(value)
   }
 
-  const handleSubmitAlertClose = (
+  const handleSubmitErrorAlertClose = (
     event?: React.SyntheticEvent,
     reason?: string
   ) => {
@@ -94,6 +95,17 @@ const SignUpForm = () => {
       open: false,
       message: '',
     })
+  }
+
+  const handleSubmitSuccessAlertClose = (
+    event?: React.SyntheticEvent,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return
+    }
+
+    setSubmitSuccessAlert(false)
   }
 
   return (
@@ -170,10 +182,19 @@ const SignUpForm = () => {
             >
               Sign Up
             </Button>
+            {submitSuccessAlert && (
+              <SuccessAlert
+                open={submitSuccessAlert}
+                onClose={handleSubmitSuccessAlertClose}
+              >
+                Registration request received. Please check your email to
+                complete your account creation.
+              </SuccessAlert>
+            )}
             {submitErrorAlert.open && (
               <ErrorAlert
                 open={submitErrorAlert.open}
-                onClose={handleSubmitAlertClose}
+                onClose={handleSubmitErrorAlertClose}
               >
                 {`there was an issue registering your account - ${submitErrorAlert.message}`}
               </ErrorAlert>
