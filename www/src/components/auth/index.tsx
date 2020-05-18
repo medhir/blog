@@ -2,30 +2,34 @@ import React, { useState, useEffect, ReactNode, ReactElement } from 'react'
 
 import Login from './login'
 import http from '../../utility/http'
-import { Snackbar } from '@material-ui/core'
-import MuiAlert, { AlertProps } from '@material-ui/lab/Alert'
 import { ErrorAlert } from '../alert'
+import { AxiosError } from 'axios'
 
 interface AuthProps {
   prompt?: Boolean // if true, will show a login form when user is unauthenticated
+  role: String
   children: ReactNode
 }
 
-function Alert(props: AlertProps) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />
+export const Roles = {
+  BlogOwner: 'blog-owner',
 }
 
-const Auth = ({ children, prompt }: AuthProps): ReactElement => {
+const Auth = ({ children, prompt, role }: AuthProps): ReactElement => {
   const [validated, setValidated] = useState(false)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [alertOpen, setAlertOpen] = React.useState(false)
+  const [loginErrorAlert, setLoginErrorAlert] = React.useState({
+    open: false,
+    message: '',
+  })
 
   const login = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
     const credentials = {
       loginID: username,
       password: password,
+      role: role,
     }
 
     http
@@ -33,8 +37,8 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
       .then(() => {
         setValidated(true)
       })
-      .catch((error) => {
-        setAlertOpen(true)
+      .catch((error: AxiosError) => {
+        setLoginErrorAlert({ open: true, message: String(error.response.data) })
       })
   }
 
@@ -51,7 +55,10 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
       return
     }
 
-    setAlertOpen(false)
+    setLoginErrorAlert({
+      open: false,
+      message: '',
+    })
   }
 
   useEffect(() => {
@@ -80,9 +87,9 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
           username={username}
           password={password}
         />
-        {alertOpen && (
-          <ErrorAlert onClose={handleClose} open={alertOpen}>
-            there was an issue logging you in. please try again.
+        {loginErrorAlert.open && (
+          <ErrorAlert onClose={handleClose} open={loginErrorAlert.open}>
+            there was an issue logging you in. {loginErrorAlert.message}
           </ErrorAlert>
         )}
       </>

@@ -21,6 +21,7 @@ const (
 type Credentials struct {
 	LoginID  string `json:"loginID"`
 	Password string `json:"password"`
+	Role     string `json:"role"`
 }
 
 // Login handles the logging in of a user
@@ -34,6 +35,10 @@ func (h *handlers) Login() http.HandlerFunc {
 			http.Error(w, "Unable to decode data in request body", http.StatusInternalServerError)
 			return
 		}
+		if credentials.Role == "" {
+			http.Error(w, "role must be provided", http.StatusBadRequest)
+			return
+		}
 		// attempt to log in the user
 		authResponse, err := h.auth.Login(&auth.LoginRequest{
 			UserID:   credentials.LoginID,
@@ -41,6 +46,11 @@ func (h *handlers) Login() http.HandlerFunc {
 		})
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Error trying to login the user - %v", err), http.StatusInternalServerError)
+			return
+		}
+		err = h.auth.ValidateRole(authResponse.Token, auth.Role(credentials.Role))
+		if err != nil {
+			http.Error(w, "cannot login user for this role", http.StatusUnauthorized)
 			return
 		}
 		// set authentication tokens as http-only cookies
@@ -66,7 +76,6 @@ func (h *handlers) Login() http.HandlerFunc {
 			refreshCookie.Domain = medhircom
 			refreshCookie.Secure = true
 		}
-
 		http.SetCookie(w, jwtCookie)
 		http.SetCookie(w, refreshCookie)
 		w.WriteHeader(http.StatusOK)

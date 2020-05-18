@@ -4,7 +4,6 @@ import styles from './signup.module.scss'
 import Head from '../../head'
 import http from '../../../utility/http'
 import { AxiosError } from 'axios'
-import Router from 'next/router'
 import { ErrorAlert, SuccessAlert } from '../../alert'
 
 interface SubmitErrorAlert {
