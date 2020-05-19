@@ -16,8 +16,8 @@ func (i *Instance) AddRoutes() error {
 	// api endpoints
 	//	auth
 	i.router.HandleFunc("/login", h.Login())
-	i.router.HandleFunc("/jwt/validate", h.ValidateJWT())
-	//i.router.HandleFunc("/register", h.RegisterNewUser())
+	i.router.HandleFunc("/jwt/validate/", h.ValidateJWT())
+	i.router.HandleFunc("/register", h.RegisterNewUser())
 	// 	blog
 	i.router.HandleFunc("/blog/asset", func(w http.ResponseWriter, r *http.Request) {})
 	i.router.HandleFunc("/blog/drafts", h.Authorize(auth.BlogOwner, h.GetDrafts()))

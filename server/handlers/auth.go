@@ -50,7 +50,7 @@ func (h *handlers) Login() http.HandlerFunc {
 		}
 		err = h.auth.ValidateRole(authResponse.Token, auth.Role(credentials.Role))
 		if err != nil {
-			http.Error(w, "cannot login user for this role", http.StatusUnauthorized)
+			http.Error(w, "you do not have access to this resource", http.StatusUnauthorized)
 			return
 		}
 		// set authentication tokens as http-only cookies
@@ -130,10 +130,15 @@ func (h *handlers) Authorize(role auth.Role, handler http.HandlerFunc) http.Hand
 // ValidateJWT indicates whether or not an application has a valid authentication token
 func (h *handlers) ValidateJWT() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		role := path.Base(r.URL.Path)
 		jwtCookie, err := r.Cookie(jwtCookieName)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Could not find authorization cookie - %v", err), http.StatusInternalServerError)
 			return
+		}
+		err = h.auth.ValidateRole(jwtCookie.Value, auth.Role(role))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
 		}
 		err = h.auth.ValidateJWT(jwtCookie.Value)
 		if err != nil {

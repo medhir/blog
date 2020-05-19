@@ -11,12 +11,12 @@ const (
 	realm   = "medhir.com"
 )
 
+// Role represents a user role required to authenticate users selectively to application resources
 type Role string
 
 const (
-	UnverifiedUser = Role("unverified-user")
-	VerifiedUser   = Role("verified-user")
-	BlogOwner      = Role("blog-owner")
+	// BlogOwner represents the blog owner role
+	BlogOwner = Role("blog-owner")
 )
 
 // Auth is the interface describing authentication actions
@@ -92,12 +92,11 @@ func (a *auth) CreateUser(req *CreateUserRequest) error {
 		token.AccessToken,
 		realm,
 		gocloak.User{
-			FirstName:  stringPtr(req.FirstName),
-			LastName:   stringPtr(req.LastName),
-			Username:   stringPtr(req.Username),
-			Email:      stringPtr(req.Email),
-			Enabled:    boolPtr(true),
-			RealmRoles: []string{string(UnverifiedUser)},
+			FirstName: stringPtr(req.FirstName),
+			LastName:  stringPtr(req.LastName),
+			Username:  stringPtr(req.Username),
+			Email:     stringPtr(req.Email),
+			Enabled:   boolPtr(true),
 		})
 	if err != nil {
 		return err
@@ -107,13 +106,13 @@ func (a *auth) CreateUser(req *CreateUserRequest) error {
 	if err != nil {
 		return err
 	}
-	//// send verification email
+	// send verification email
 	err = a.client.ExecuteActionsEmail(
 		token.AccessToken,
 		realm, gocloak.ExecuteActionsEmail{
 			UserID:      stringPtr(userID),
 			ClientID:    stringPtr(a.clientID),
-			RedirectURI: stringPtr("https://medhir.com/verified"),
+			RedirectURI: stringPtr("https://medhir.com/"),
 			Actions: []string{
 				"VERIFY_EMAIL",
 			},

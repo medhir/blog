@@ -63,7 +63,7 @@ const Auth = ({ children, prompt, role }: AuthProps): ReactElement => {
 
   useEffect(() => {
     http
-      .Get('/jwt/validate', {
+      .Get(`/jwt/validate/${role}`, {
         withCredentials: true,
       })
       .then(() => {
