@@ -5,14 +5,17 @@
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
-    "build:production": "NODE_ENV=production next build",
-    "build:review": "NODE_ENV=review next build",
-    "start": "next start",
+    "build:production": "APP_ENV=production next build",
+    "build:review": "APP_ENV=review next build",
+    "start": "NODE_ENV=production next start",
     "lint": "eslint .",
     "test": "jest --watch",
     "test:ci": "jest --ci"
   },
   "dependencies": {
+    "@material-ui/core": "^4.9.14",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.53",
     "@mdx-js/loader": "^1.5.8",
     "@mdx-js/mdx": "^1.5.8",
     "@next/mdx": "^9.3.4",

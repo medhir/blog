@@ -3,7 +3,6 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 
 import renderToString from 'next-mdx-remote/render-to-string'
 import { Components } from '../../components/mdx-viewer'
-import Layout from '../../components/layout'
 import Post from '../../components/blog/modules/Post'
 import { PostMetadata } from '../../components/blog/types'
 import http from '../../utility/http'
@@ -15,10 +14,10 @@ interface BlogProps {
 }
 
 const Blog = ({ post, source }: BlogProps) => (
-  <Layout>
+  <>
     <Head title={post.title} />
     <Post source={source} />
-  </Layout>
+  </>
 )
 
 export default Blog
@@ -36,9 +35,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const response = await http.Get(
-    `/blog/post/${params.slug}`
-  )
+  const response = await http.Get(`/blog/post/${params.slug}`)
 
   const post: PostMetadata = response.data
   const renderedString = await renderToString(post.markdown, Components)

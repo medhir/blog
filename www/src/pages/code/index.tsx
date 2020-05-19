@@ -1,13 +1,10 @@
-import Layout from '../../components/layout'
-import Auth from '../../components/auth'
+import Auth, { Roles } from '../../components/auth'
 import Coder from '../../components/coder'
 
 const Code = () => (
-  <Layout>
-    <Auth prompt>
-      <Coder />
-    </Auth>
-  </Layout>
+  <Auth role={Roles.BlogOwner} prompt>
+    <Coder />
+  </Auth>
 )
 
 export default Code

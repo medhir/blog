@@ -1,28 +1,35 @@
-import React, {
-  useState,
-  useEffect,
-  FormEvent,
-  ReactNode,
-  ReactElement,
-} from 'react'
+import React, { useState, useEffect, ReactNode, ReactElement } from 'react'
 
 import Login from './login'
 import http from '../../utility/http'
+import { ErrorAlert } from '../alert'
+import { AxiosError } from 'axios'
 
 interface AuthProps {
   prompt?: Boolean // if true, will show a login form when user is unauthenticated
+  role: String
   children: ReactNode
 }
 
-const Auth = ({ children, prompt }: AuthProps): ReactElement => {
-  const [validated, setValidated] = useState(false)
-  const [error, setError] = useState(null)
+export const Roles = {
+  BlogOwner: 'blog-owner',
+}
 
-  const login = (e: FormEvent<HTMLElement>) => {
+const Auth = ({ children, prompt, role }: AuthProps): ReactElement => {
+  const [validated, setValidated] = useState(false)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [loginErrorAlert, setLoginErrorAlert] = React.useState({
+    open: false,
+    message: '',
+  })
+
+  const login = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
     const credentials = {
-      loginID: e.target[0].value,
-      password: e.target[1].value,
+      loginID: username,
+      password: password,
+      role: role,
     }
 
     http
@@ -30,14 +37,33 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
       .then(() => {
         setValidated(true)
       })
-      .catch((error) => {
-        setError({ error: error })
+      .catch((error: AxiosError) => {
+        setLoginErrorAlert({ open: true, message: String(error.response.data) })
       })
+  }
+
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value)
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value)
+  }
+
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return
+    }
+
+    setLoginErrorAlert({
+      open: false,
+      message: '',
+    })
   }
 
   useEffect(() => {
     http
-      .Get('/jwt/validate', {
+      .Get(`/jwt/validate/${role}`, {
         withCredentials: true,
       })
       .then(() => {
@@ -52,12 +78,19 @@ const Auth = ({ children, prompt }: AuthProps): ReactElement => {
     // if prompt prop is specified as true, show a login form
     return (
       <>
-        <Login login={login} />
-        {error && (
-          <>
-            <p>Login Failed</p>
-            <pre>{JSON.stringify(error, undefined, 2)}</pre>
-          </>
+        <Login
+          login={login}
+          inputHandlers={{
+            handleUsernameChange,
+            handlePasswordChange,
+          }}
+          username={username}
+          password={password}
+        />
+        {loginErrorAlert.open && (
+          <ErrorAlert onClose={handleClose} open={loginErrorAlert.open}>
+            there was an issue logging you in. {loginErrorAlert.message}
+          </ErrorAlert>
         )}
       </>
     )

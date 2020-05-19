@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import Head from '../head'
 import styles from './photos.module.scss'
-import Layout from '../layout'
 
 interface PhotosProps {
   photos: string[]
@@ -34,7 +33,7 @@ const Photos = ({ photos }: PhotosProps) => {
   })
 
   return (
-    <Layout>
+    <>
       <Head title="medhir.photos" />
       <section className={styles.photos}>
         {displayPhotos.map((photo) => (
@@ -43,7 +42,7 @@ const Photos = ({ photos }: PhotosProps) => {
           </div>
         ))}
       </section>
-    </Layout>
+    </>
   )
 }
 

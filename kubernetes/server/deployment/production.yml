@@ -52,6 +52,16 @@ spec:
                 secretKeyRef:
                   name: keycloak-server-client
                   key: client-secret
+            - name: KEYCLOAK_ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-medhir-com-admin
+                  key: username
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-medhir-com-admin
+                  key: password
       volumes:
         - name: creds
           secret:
@@ -59,6 +69,5 @@ spec:
             items:
               - key: storage-credentials.json
                 path: storage-credentials.json
-
       imagePullSecrets:
         - name: regcred

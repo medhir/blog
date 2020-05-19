@@ -74,7 +74,7 @@ func TestLogin(t *testing.T) {
 	})
 }
 
-func TestValidate(t *testing.T) {
+func TestValidateJWT(t *testing.T) {
 	t.Run("Should return true if provided a valid jwt.", func(t *testing.T) {
 		mockGoCloak := &MockGoCloak{}
 		defer mockGoCloak.AssertExpectations(t)
@@ -97,7 +97,7 @@ func TestValidate(t *testing.T) {
 			clientSecret: "*whisper*",
 		}
 
-		err := auth.Validate("aValidToken")
+		err := auth.ValidateJWT("aValidToken")
 		assert.NoError(t, err)
 	})
 
@@ -123,12 +123,7 @@ func TestValidate(t *testing.T) {
 			clientSecret: "*whisper*",
 		}
 
-		err := auth.Validate("anInvalidToken")
+		err := auth.ValidateJWT("anInvalidToken")
 		assert.Error(t, err)
 	})
-}
-
-func boolPtr(val bool) *bool {
-	b := val
-	return &b
 }

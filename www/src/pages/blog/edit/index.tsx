@@ -1,16 +1,13 @@
-import Auth from '../../../components/auth'
-import Layout from '../../../components/layout'
+import Auth, { Roles } from '../../../components/auth'
 import Blog from '../../../components/blog'
 import { GetServerSideProps } from 'next'
 import http from '../../../utility/http'
 
 const Edit = ({ posts }) => {
   return (
-    <Layout>
-      <Auth prompt={true}>
-        <Blog posts={posts} withDrafts />
-      </Auth>
-    </Layout>
+    <Auth role={Roles.BlogOwner} prompt={true}>
+      <Blog posts={posts} withDrafts />
+    </Auth>
   )
 }
 

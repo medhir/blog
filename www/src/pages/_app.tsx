@@ -1,18 +1,41 @@
-import App from 'next/app'
 import React from 'react'
-
-// import CodeBlock from '../components/CodeBlock/index'
+import PropTypes from 'prop-types'
+import Head from 'next/head'
+import { ThemeProvider } from '@material-ui/core/styles'
 import '../styles.scss'
+import theme from '../theme'
+import Layout from '../components/layout'
 
-// Override the App class to put layout component around the page contents
-// https://github.com/zeit/next.js#custom-app
+export default function MyApp(props) {
+  const { Component, pageProps } = props
 
+  React.useEffect(() => {
+    // Remove the server-side injected CSS.
+    const jssStyles = document.querySelector('#jss-server-side')
+    if (jssStyles) {
+      jssStyles.parentElement.removeChild(jssStyles)
+    }
+  }, [])
 
-export default class MyApp extends App {
-  render() {
-    const { Component, pageProps } = this.props
-    return (
-        <Component {...pageProps} />
-    )
-  }
+  return (
+    <React.Fragment>
+      <Head>
+        <title>medhir.com</title>
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width"
+        />
+      </Head>
+      <Layout>
+        <ThemeProvider theme={theme}>
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </Layout>
+    </React.Fragment>
+  )
+}
+
+MyApp.propTypes = {
+  Component: PropTypes.elementType.isRequired,
+  pageProps: PropTypes.object.isRequired,
 }
