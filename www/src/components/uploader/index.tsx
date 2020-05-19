@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Auth from '../auth'
+import Auth, { Roles } from '../auth'
 import styles from './uploader.module.scss'
 import http from '../../utility/http'
 
@@ -97,7 +97,7 @@ class Uploader extends Component<{}, UploaderState> {
   render() {
     const { files, progress, success } = this.state
     return (
-      <Auth prompt>
+      <Auth role={Roles.BlogOwner} prompt>
         <form className={styles.imageForm}>
           <input
             type="file"
