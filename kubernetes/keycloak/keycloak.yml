@@ -7,7 +7,6 @@ spec:
     app: keycloak
   ports:
     - port: 8080
-      name: http
 ---
 apiVersion: apps/v1
 kind: Deployment
