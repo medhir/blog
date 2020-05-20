@@ -10,6 +10,7 @@ require (
 	github.com/disintegration/imaging v1.6.2
 	github.com/go-resty/resty/v2 v2.0.0
 	github.com/google/uuid v1.1.1
+	github.com/honeycombio/beeline-go v0.5.1
 	github.com/jetstack/cert-manager v0.15.0
 	github.com/rs/cors v1.7.0
 	github.com/stretchr/testify v1.5.1

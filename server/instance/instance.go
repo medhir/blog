@@ -4,11 +4,14 @@ package instance
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/honeycombio/beeline-go"
+	"github.com/honeycombio/beeline-go/wrappers/hnynethttp"
 	"github.com/rs/cors"
 	"gitlab.medhir.com/medhir/blog/server/auth"
 	"gitlab.medhir.com/medhir/blog/server/storage/gcs"
@@ -16,8 +19,9 @@ import (
 
 const (
 	// TODO - Move to config
-	serverPort = ":9000"
-	local      = "local"
+	serverPort  = ":9000"
+	local       = "local"
+	serviceName = "go-server"
 )
 
 // Instance represents an instance of the server
@@ -54,6 +58,21 @@ func NewInstance() (*Instance, error) {
 		environment = local
 	}
 
+	// send data to honeycomb
+	apiKey, ok := os.LookupEnv("HONEYCOMB_API_KEY")
+	if !ok {
+		return nil, errors.New("HONEYCOMB_API_KEY must be provided")
+	}
+	dataset, ok := os.LookupEnv("HONEYCOMB_DATASET")
+	if !ok {
+		return nil, errors.New("HONEYCOMB_DATASET must be provided")
+	}
+	beeline.Init(beeline.Config{
+		WriteKey:    apiKey,
+		Dataset:     dataset,
+		ServiceName: serviceName,
+	})
+
 	instance := &Instance{
 		ctx:    ctx,
 		router: http.DefaultServeMux,
@@ -77,7 +96,7 @@ func NewInstance() (*Instance, error) {
 			AllowCredentials: true,
 			AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 			AllowedHeaders:   []string{"Authorization", "Content-Type", "Set-Cookie"}})
-		instance.server.Handler = c.Handler(instance.router)
+		instance.server.Handler = hnynethttp.WrapHandler(c.Handler(instance.router))
 	} else {
 		c := cors.New(cors.Options{
 			AllowedOrigins:   []string{"https://review.medhir.com", "https://medhir.com"},
@@ -85,7 +104,7 @@ func NewInstance() (*Instance, error) {
 			AllowCredentials: true,
 			AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 			AllowedHeaders:   []string{"Authorization", "Content-Type", "Set-Cookie"}})
-		instance.server.Handler = c.Handler(instance.router)
+		instance.server.Handler = hnynethttp.WrapHandler(c.Handler(instance.router))
 	}
 
 	return instance, nil
