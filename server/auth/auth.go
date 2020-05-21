@@ -22,8 +22,7 @@ const (
 // Auth is the interface describing authentication actions
 // that can be taken within the application context
 type Auth interface {
-	CreateUser(req *CreateUserRequest) error
-	UsernameAvailable(username string) (bool, error)
+	CreateUser(req *CreateUserRequest) (*CreateUserResponse, error)
 	Login(request *LoginRequest) (*LoginResponse, error)
 
 	ValidateJWT(jwt string) error
@@ -79,13 +78,14 @@ type CreateUserRequest struct {
 
 // CreateUserResponse is the response for a call to CreateUser
 type CreateUserResponse struct {
-	Token string `json:"token"`
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
-func (a *auth) CreateUser(req *CreateUserRequest) error {
+func (a *auth) CreateUser(req *CreateUserRequest) (*CreateUserResponse, error) {
 	token, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	// Create new user in the realm
 	userID, err := a.client.CreateUser(
@@ -99,47 +99,22 @@ func (a *auth) CreateUser(req *CreateUserRequest) error {
 			Enabled:   boolPtr(true),
 		})
 	if err != nil {
-		return err
+		return nil, err
 	}
 	// set the user's password
 	err = a.client.SetPassword(token.AccessToken, userID, realm, req.Password, false)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	// send verification email
-	err = a.client.ExecuteActionsEmail(
-		token.AccessToken,
-		realm, gocloak.ExecuteActionsEmail{
-			UserID:      stringPtr(userID),
-			ClientID:    stringPtr(a.clientID),
-			RedirectURI: stringPtr("https://medhir.com/"),
-			Actions: []string{
-				"VERIFY_EMAIL",
-			},
-		},
-	)
+	token, err = a.client.Login(a.clientID, a.clientSecret, realm, req.Username, req.Password)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
-}
 
-// UsernameAvailable checks to see if a user for the given username already exists
-func (a *auth) UsernameAvailable(username string) (bool, error) {
-	token, err := a.client.LoginAdmin(a.adminPassword, a.adminPassword, realm)
-	if err != nil {
-		return false, err
-	}
-	users, err := a.client.GetUsers(token.AccessToken, realm, gocloak.GetUsersParams{
-		Username: stringPtr(username),
-	})
-	if err != nil {
-		return false, err
-	}
-	if len(users) > 0 {
-		return false, nil
-	}
-	return true, nil
+	return &CreateUserResponse{
+		Token:        token.AccessToken,
+		RefreshToken: token.RefreshToken,
+	}, nil
 }
 
 // LoginRequest describes the credentials needed to perform a login
