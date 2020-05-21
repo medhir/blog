@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Router from 'next/router'
 import { TextField, Button, Container } from '@material-ui/core'
 import styles from './signup.module.scss'
 import Head from '../../head'
@@ -43,6 +44,9 @@ const SignUpForm = () => {
       })
       .then(() => {
         setSubmitSuccessAlert(true)
+        setTimeout(() => {
+          Router.push('/courses')
+        }, 2000)
       })
       .catch((error: AxiosError) => {
         setSubmitErrorAlert({
@@ -186,8 +190,7 @@ const SignUpForm = () => {
                 open={submitSuccessAlert}
                 onClose={handleSubmitSuccessAlertClose}
               >
-                Registration request received. Please check your email to
-                complete your account creation.
+                Registration successful!
               </SuccessAlert>
             )}
             {submitErrorAlert.open && (

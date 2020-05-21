@@ -54,30 +54,7 @@ func (h *handlers) Login() http.HandlerFunc {
 			return
 		}
 		// set authentication tokens as http-only cookies
-		jwtCookie := &http.Cookie{
-			Name:     jwtCookieName,
-			Value:    authResponse.Token,
-			Path:     "/",
-			HttpOnly: true,
-			Expires:  time.Now().AddDate(0, 0, 1),
-		}
-		refreshCookie := &http.Cookie{
-			Name:     refreshCookieName,
-			Value:    authResponse.RefreshToken,
-			Path:     "/",
-			HttpOnly: true,
-			Expires:  time.Now().AddDate(0, 0, 1),
-		}
-
-		if h.env != local {
-			// ensure https if not on localhost
-			jwtCookie.Domain = medhircom
-			jwtCookie.Secure = true
-			refreshCookie.Domain = medhircom
-			refreshCookie.Secure = true
-		}
-		http.SetCookie(w, jwtCookie)
-		http.SetCookie(w, refreshCookie)
+		h.setCookies(w, authResponse.Token, authResponse.RefreshToken)
 		w.WriteHeader(http.StatusOK)
 	}
 }
@@ -108,19 +85,7 @@ func (h *handlers) Authorize(role auth.Role, handler http.HandlerFunc) http.Hand
 				return
 			}
 			// if we successfully get a new access token, set this as the new jwt cookie
-			jwtCookie := &http.Cookie{
-				Name:     jwtCookieName,
-				Value:    newJWT,
-				Path:     "/",
-				HttpOnly: true,
-				Expires:  time.Now().AddDate(0, 0, 1),
-			}
-			if h.env != local {
-				// ensure https if not on localhost
-				jwtCookie.Domain = medhircom
-				jwtCookie.Secure = true
-			}
-			http.SetCookie(w, jwtCookie)
+			h.setCookies(w, newJWT, "")
 		}
 		// and then proceed with the rest of the authorized code
 		handler(w, r)
@@ -145,7 +110,7 @@ func (h *handlers) ValidateJWT() http.HandlerFunc {
 			// if this token is not valid, first attempt to refresh the authorization
 			refreshCookie, err := r.Cookie(refreshCookieName)
 			if err != nil {
-				http.Error(w, fmt.Sprintf("authorization token no longer valid - %s", err.Error()), http.StatusInternalServerError)
+				http.Error(w, fmt.Sprintf("could not get refresh token - %s", err.Error()), http.StatusInternalServerError)
 				return
 			}
 			newJWT, err := h.auth.RefreshJWT(refreshCookie.Value)
@@ -154,40 +119,9 @@ func (h *handlers) ValidateJWT() http.HandlerFunc {
 				return
 			}
 			// if we successfully get a new access token, set this as the new jwt cookie
-			jwtCookie := &http.Cookie{
-				Name:     jwtCookieName,
-				Value:    newJWT,
-				Path:     "/",
-				HttpOnly: true,
-				Expires:  time.Now().AddDate(0, 0, 1),
-			}
-			if h.env != local {
-				// ensure https if not on localhost
-				jwtCookie.Domain = medhircom
-				jwtCookie.Secure = true
-			}
-			http.SetCookie(w, jwtCookie)
+			h.setCookies(w, newJWT, "")
 			w.WriteHeader(http.StatusOK)
 		}
-	}
-}
-
-// UsernameAvailable describes the response to username checks
-type UsernameAvailable struct {
-	Available bool `json:"available"`
-}
-
-func (h *handlers) Username() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		username := path.Base(r.URL.Path)
-		defer r.Body.Close()
-		available, err := h.auth.UsernameAvailable(username)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("unable to query for username - %s", err.Error()), http.StatusInternalServerError)
-		}
-		writeJSON(w, UsernameAvailable{
-			Available: available,
-		})
 	}
 }
 
@@ -200,11 +134,46 @@ func (h *handlers) RegisterNewUser() http.HandlerFunc {
 			http.Error(w, "Unable to decode data in request body", http.StatusInternalServerError)
 			return
 		}
-		err = h.auth.CreateUser(&newUser)
+		resp, err := h.auth.CreateUser(&newUser)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Unable to create new user - %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
+		h.setCookies(w, resp.Token, resp.RefreshToken)
 		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) setCookies(w http.ResponseWriter, jwt, refresh string) {
+	// set authentication tokens as http-only cookies
+	if jwt != "" {
+		jwtCookie := &http.Cookie{
+			Name:     jwtCookieName,
+			Value:    jwt,
+			Path:     "/",
+			HttpOnly: true,
+			Expires:  time.Now().AddDate(0, 0, 1),
+		}
+		if h.env != local {
+			// ensure https if not on localhost
+			jwtCookie.Domain = medhircom
+			jwtCookie.Secure = true
+		}
+		http.SetCookie(w, jwtCookie)
+	}
+
+	if refresh != "" {
+		refreshCookie := &http.Cookie{
+			Name:     refreshCookieName,
+			Value:    refresh,
+			Path:     "/",
+			HttpOnly: true,
+			Expires:  time.Now().AddDate(0, 0, 1),
+		}
+		if h.env != local {
+			refreshCookie.Domain = medhircom
+			refreshCookie.Secure = true
+		}
+		http.SetCookie(w, refreshCookie)
 	}
 }
