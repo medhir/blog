@@ -16,6 +16,7 @@ spec:
         - auth.medhir.com
         - new-auth.medhir.com
         - review.medhir.com
+        - code.medhir.com
       secretName: medhir-main-prod-cert
   rules:
     - host: medhir.com
