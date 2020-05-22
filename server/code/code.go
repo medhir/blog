@@ -378,7 +378,7 @@ func makeCoderDeployment(deploymentName, projectPVCName string) *appsv1.Deployme
 							VolumeMounts: []apiv1.VolumeMount{
 								{
 									Name:      projectPVCName,
-									MountPath: "/opt/app-root/src",
+									MountPath: "/home/project",
 								},
 							},
 						},
