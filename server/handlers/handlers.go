@@ -65,7 +65,7 @@ func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, env string) (
 	} else {
 		dev = true
 	}
-	coderManager, err := code.NewManager(ctx, dev)
+	coderManager, err := code.NewManager(ctx, auth, dev)
 	if err != nil {
 		return nil, err
 	}

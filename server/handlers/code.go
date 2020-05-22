@@ -80,7 +80,7 @@ func (h *handlers) createCodeDeployment() http.HandlerFunc {
 		if !exists {
 			_, err = h.coder.AddInstance(jwt)
 			if err != nil {
-				http.Error(w, "unable to create a new instance for the user", http.StatusInternalServerError)
+				http.Error(w, fmt.Sprintf("Unable to add instance for user - %s", err.Error()), http.StatusInternalServerError)
 				return
 			}
 		}

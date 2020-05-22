@@ -26,7 +26,7 @@ const (
 	urlFormatter       = "https://code-%s.medhir.com"
 )
 
-// Manager describes the methods for managing coder instances
+// Manager describes the methods for managing coder instances, given a user token
 type Manager interface {
 	HasInstance(token string) (bool, error)
 	AddInstance(token string) (*Instance, error)
@@ -42,7 +42,7 @@ type manager struct {
 }
 
 // NewManager instantiates a new coder manager
-func NewManager(ctx context.Context, dev bool) (Manager, error) {
+func NewManager(ctx context.Context, auth auth.Auth, dev bool) (Manager, error) {
 	k8sManager, err := k8s.NewManager(ctx, dev)
 	if err != nil {
 		return nil, err
@@ -52,8 +52,9 @@ func NewManager(ctx context.Context, dev bool) (Manager, error) {
 		return nil, err
 	}
 	return &manager{
-		dns: dnsManager,
-		k8s: k8sManager,
+		dns:  dnsManager,
+		k8s:  k8sManager,
+		auth: auth,
 	}, nil
 }
 
@@ -70,7 +71,7 @@ func (m *manager) HasInstance(token string) (bool, error) {
 		return false, errors.New("could not retrieve user for the provided token")
 	}
 	instanceAttribute := user.Attributes["instance_id"]
-	if instanceAttribute == nil {
+	if len(instanceAttribute) == 0 {
 		return false, nil
 	}
 	return true, nil
@@ -80,10 +81,10 @@ func (m *manager) AddInstance(token string) (*Instance, error) {
 	// check if user already has an instance associated with them
 	user, err := m.auth.GetUser(token)
 	if err != nil {
-		return nil, errors.New("could not retrieve user for the provided token")
+		return nil, errors.New(fmt.Sprintf("could not retrieve user for the provided token - %s", err.Error()))
 	}
 	instanceID := user.Attributes["instance_id"]
-	if instanceID != nil {
+	if len(instanceID) > 0 && instanceID[0] != "" {
 		return nil, errors.New("user already has an instance")
 	}
 	// if not, create a new instance
@@ -115,7 +116,10 @@ func (m *manager) AddInstance(token string) (*Instance, error) {
 		return nil, err
 	}
 	// add instance id to user attributes
-	err = m.auth.AddAttributeToUser(*user.ID, "instance_id", []string{id})
+	err = m.auth.AddAttributeToUser(token, "instance_id", []string{id})
+	if err != nil {
+		return nil, err
+	}
 	instance := &Instance{
 		ID:  id,
 		URL: resources.url,
@@ -307,7 +311,7 @@ func makeCoderIngressRule(hostName, serviceName string) v1beta1.IngressRule {
 			HTTP: &v1beta1.HTTPIngressRuleValue{
 				Paths: []v1beta1.HTTPIngressPath{
 					{
-						Path: "/.*",
+						Path: "/",
 						Backend: v1beta1.IngressBackend{
 							ServiceName: serviceName,
 							ServicePort: intstr.IntOrString{

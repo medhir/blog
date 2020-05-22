@@ -142,6 +142,7 @@ func (a *auth) GetUser(jwt string) (*gocloak.User, error) {
 }
 
 func (a *auth) AddAttributeToUser(jwt, key string, values []string) error {
+	fmt.Println("Add Attributes called")
 	_, claims, err := a.client.DecodeAccessToken(jwt, realm)
 	if err != nil {
 		return err
@@ -156,10 +157,18 @@ func (a *auth) AddAttributeToUser(jwt, key string, values []string) error {
 		return err
 	}
 	user, err := a.client.GetUserByID(adminToken.AccessToken, realm, userID)
+	fmt.Printf("User: %+v\n", user)
 	if err != nil {
 		return err
 	}
-	user.Attributes[key] = values
+	if user.Attributes != nil {
+		user.Attributes[key] = values
+	} else {
+		user.Attributes = map[string][]string{
+			key: values,
+		}
+	}
+	fmt.Printf("User w attributes: %+v\n", user)
 	err = a.client.UpdateUser(adminToken.AccessToken, realm, *user)
 	if err != nil {
 		return err
@@ -185,7 +194,6 @@ func (a *auth) Login(request *LoginRequest) (*LoginResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("Token: %+v\n", token)
 	return &LoginResponse{
 		Token:        token.AccessToken,
 		RefreshToken: token.RefreshToken,
