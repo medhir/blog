@@ -25,10 +25,3 @@ spec:
             backend:
               serviceName: code
               servicePort: 3000
-    - host: review.medhir.com
-      http:
-        paths:
-          - path: /47ff758e-82f7-4f4e-b6f1-31ac1392b37a(/|$)(.*)
-            backend:
-              serviceName: coder-47ff758e-82f7-4f4e-b6f1-31ac1392b37a-service
-              servicePort: 3000

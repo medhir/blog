@@ -23,7 +23,7 @@ const (
 	dnsNameFormatter   = "code-%s.medhir.com"
 	hostName           = "review.medhir.com"
 	cnameFormatter     = "code-%s"
-	urlFormatter       = "https://review.medhir.com/%s"
+	urlFormatter       = "https://review.medhir.com/%s/"
 	pathFormatter      = "/%s(/|$)(.*)"
 )
 
