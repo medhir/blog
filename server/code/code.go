@@ -14,7 +14,6 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	"time"
 )
 
 const (
@@ -22,8 +21,9 @@ const (
 	servicePort        = 3000
 	containerImageName = "theiaide/theia-go:latest"
 	dnsNameFormatter   = "code-%s.medhir.com"
+	hostName           = "review.medhir.com"
 	cnameFormatter     = "code-%s"
-	urlFormatter       = "https://code-%s.medhir.com"
+	urlFormatter       = "https://review.medhir.com/%s"
 )
 
 // Manager describes the methods for managing coder instances, given a user token
@@ -94,12 +94,12 @@ func (m *manager) AddInstance(token string) (*Instance, error) {
 		return nil, err
 	}
 	// add DNS record
-	err = m.dns.AddCNAMERecord(resources.cname)
-	if err != nil {
-		return nil, err
-	}
+	//err = m.dns.AddCNAMERecord(resources.cname)
+	//if err != nil {
+	//	return nil, err
+	//}
 	// give a sec for DNS to register
-	time.Sleep(2 * time.Second)
+	//time.Sleep(2 * time.Second)
 	// add persistent volume claim
 	err = m.k8s.AddPersistentVolumeClaim(resources.projectPVC)
 	if err != nil {
@@ -245,13 +245,13 @@ func makeCoderK8sResources(id string) (*coderK8sResources, error) {
 	pvcName := fmt.Sprintf("coder-%s-project-data", id)
 	svcName := fmt.Sprintf("coder-%s-service", id)
 	deploymentName := fmt.Sprintf("coder-%s", id)
-	hostName := fmt.Sprintf(dnsNameFormatter, id)
+	//hostName := fmt.Sprintf(dnsNameFormatter, id)
 	projectPVC, err := makeProjectPVC(pvcName)
 	if err != nil {
 		return nil, err
 	}
 	svc := makeCoderService(svcName, deploymentName)
-	ingressRule := makeCoderIngressRule(hostName, svcName)
+	ingressRule := makeCoderIngressRule(hostName, svcName, id)
 	deployment := makeCoderDeployment(deploymentName, pvcName)
 	return &coderK8sResources{
 		projectPVC:     projectPVC,
@@ -309,14 +309,14 @@ func makeCoderService(svcName, deploymentName string) *apiv1.Service {
 	return svc
 }
 
-func makeCoderIngressRule(hostName, serviceName string) v1beta1.IngressRule {
+func makeCoderIngressRule(hostName, serviceName, id string) v1beta1.IngressRule {
 	rule := v1beta1.IngressRule{
 		Host: hostName,
 		IngressRuleValue: v1beta1.IngressRuleValue{
 			HTTP: &v1beta1.HTTPIngressRuleValue{
 				Paths: []v1beta1.HTTPIngressPath{
 					{
-						Path: "/",
+						Path: "/" + id,
 						Backend: v1beta1.IngressBackend{
 							ServiceName: serviceName,
 							ServicePort: intstr.IntOrString{
