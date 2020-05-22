@@ -17,14 +17,17 @@ import (
 )
 
 const (
-	ingressName        = "code"
-	servicePort        = 3000
-	containerImageName = "theiaide/theia-go:latest"
-	dnsNameFormatter   = "code-%s.medhir.com"
-	hostName           = "review.medhir.com"
-	cnameFormatter     = "code-%s"
-	urlFormatter       = "https://review.medhir.com/%s/"
-	pathFormatter      = "/%s(/|$)(.*)"
+	ingressName            = "code"
+	servicePort            = 3000
+	containerImageName     = "theiaide/theia-go:latest"
+	reviewHostName         = "review.medhir.com"
+	productionHostName     = "medhir.com"
+	cnameFormatter         = "code-%s"
+	reviewUrlFormatter     = "https://review.medhir.com/%s/"
+	productionUrlFormatter = "https://medhir.com/%s/"
+	pathFormatter          = "/%s(/|$)(.*)"
+	reviewEnv              = "review"
+	productionEnv          = "production"
 )
 
 // Manager describes the methods for managing coder instances, given a user token
@@ -40,10 +43,17 @@ type manager struct {
 	dns  dns.Manager
 	k8s  k8s.Manager
 	auth auth.Auth
+	env  string
 }
 
 // NewManager instantiates a new coder manager
-func NewManager(ctx context.Context, auth auth.Auth, dev bool) (Manager, error) {
+func NewManager(ctx context.Context, auth auth.Auth, env string) (Manager, error) {
+	var dev bool
+	if env == reviewEnv || env == productionEnv {
+		dev = false
+	} else {
+		dev = true
+	}
 	k8sManager, err := k8s.NewManager(ctx, dev)
 	if err != nil {
 		return nil, err
@@ -56,6 +66,7 @@ func NewManager(ctx context.Context, auth auth.Auth, dev bool) (Manager, error) 
 		dns:  dnsManager,
 		k8s:  k8sManager,
 		auth: auth,
+		env:  env,
 	}, nil
 }
 
@@ -90,17 +101,10 @@ func (m *manager) AddInstance(token string) (*Instance, error) {
 	}
 	// if not, create a new instance
 	id := uuid.New().String()
-	resources, err := makeCoderK8sResources(id)
+	resources, err := makeCoderK8sResources(id, m.env)
 	if err != nil {
 		return nil, err
 	}
-	// add DNS record
-	//err = m.dns.AddCNAMERecord(resources.cname)
-	//if err != nil {
-	//	return nil, err
-	//}
-	// give a sec for DNS to register
-	//time.Sleep(2 * time.Second)
 	// add persistent volume claim
 	err = m.k8s.AddPersistentVolumeClaim(resources.projectPVC)
 	if err != nil {
@@ -108,11 +112,6 @@ func (m *manager) AddInstance(token string) (*Instance, error) {
 	}
 	// add service
 	err = m.k8s.AddService(resources.service)
-	if err != nil {
-		return nil, err
-	}
-	// add ingress rule
-	err = m.k8s.AddIngressRule(ingressName, resources.ingressRule)
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +138,7 @@ func (m *manager) StartInstance(token string) (*Instance, error) {
 		return nil, errors.New("user does not have a registered instance")
 	}
 	instanceID := instanceAttribute[0]
-	resources, err := makeCoderK8sResources(instanceID)
+	resources, err := makeCoderK8sResources(instanceID, m.env)
 	if err != nil {
 		return nil, err
 	}
@@ -148,6 +147,11 @@ func (m *manager) StartInstance(token string) (*Instance, error) {
 	if err != nil {
 		// deployment doesn't exist, so create one
 		err = m.k8s.AddDeployment(resources.deployment)
+		if err != nil {
+			return nil, err
+		}
+		// add ingress rule
+		err = m.k8s.AddIngressRule(ingressName, resources.ingressRule)
 		if err != nil {
 			return nil, err
 		}
@@ -170,7 +174,12 @@ func (m *manager) StopInstance(token string) error {
 		return errors.New("user does not have a registered instance")
 	}
 	instanceID := instanceAttribute[0]
-	resources, err := makeCoderK8sResources(instanceID)
+	resources, err := makeCoderK8sResources(instanceID, m.env)
+	if err != nil {
+		return err
+	}
+	// add ingress rule
+	err = m.k8s.RemoveIngressRule(ingressName, resources.ingressRule)
 	if err != nil {
 		return err
 	}
@@ -193,7 +202,7 @@ func (m *manager) RemoveInstance(token string) error {
 		return errors.New("user does not have a registered instance")
 	}
 	instanceID := instanceAttribute[0]
-	resources, err := makeCoderK8sResources(instanceID)
+	resources, err := makeCoderK8sResources(instanceID, m.env)
 	if err != nil {
 		return err
 	}
@@ -240,19 +249,28 @@ type coderK8sResources struct {
 	url            string
 }
 
-func makeCoderK8sResources(id string) (*coderK8sResources, error) {
+func makeCoderK8sResources(id string, env string) (*coderK8sResources, error) {
 	cname := fmt.Sprintf(cnameFormatter, id)
-	url := fmt.Sprintf(urlFormatter, id)
+	var url string
+	if env == reviewEnv {
+		url = fmt.Sprintf(reviewUrlFormatter, id)
+	} else {
+		url = fmt.Sprintf(productionUrlFormatter, id)
+	}
 	pvcName := fmt.Sprintf("coder-%s-project-data", id)
 	svcName := fmt.Sprintf("coder-%s-service", id)
 	deploymentName := fmt.Sprintf("coder-%s", id)
-	//hostName := fmt.Sprintf(dnsNameFormatter, id)
 	projectPVC, err := makeProjectPVC(pvcName)
 	if err != nil {
 		return nil, err
 	}
 	svc := makeCoderService(svcName, deploymentName)
-	ingressRule := makeCoderIngressRule(hostName, svcName, id)
+	var ingressRule v1beta1.IngressRule
+	if env == reviewEnv {
+		ingressRule = makeCoderIngressRule(reviewHostName, svcName, id)
+	} else {
+		ingressRule = makeCoderIngressRule(productionHostName, svcName, id)
+	}
 	deployment := makeCoderDeployment(deploymentName, pvcName)
 	return &coderK8sResources{
 		projectPVC:     projectPVC,

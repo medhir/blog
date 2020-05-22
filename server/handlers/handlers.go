@@ -12,11 +12,6 @@ import (
 	"net/http"
 )
 
-const (
-	reviewEnv     = "review"
-	productionEnv = "production"
-)
-
 // Handlers describes all the http handlers available within the package
 type Handlers interface {
 	// Authentication
@@ -59,13 +54,7 @@ type handlers struct {
 
 // NewHandlers instantiates a new set of handlers
 func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, env string) (Handlers, error) {
-	var dev bool
-	if env == reviewEnv || env == productionEnv {
-		dev = false
-	} else {
-		dev = true
-	}
-	coderManager, err := code.NewManager(ctx, auth, dev)
+	coderManager, err := code.NewManager(ctx, auth, env)
 	if err != nil {
 		return nil, err
 	}
