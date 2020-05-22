@@ -23,8 +23,8 @@ const (
 	reviewHostName         = "review.medhir.com"
 	productionHostName     = "medhir.com"
 	cnameFormatter         = "code-%s"
-	reviewUrlFormatter     = "https://review.medhir.com/%s/"
-	productionUrlFormatter = "https://medhir.com/%s/"
+	reviewURLFormatter     = "https://review.medhir.com/%s/"
+	productionURLFormatter = "https://medhir.com/%s/"
 	pathFormatter          = "/%s(/|$)(.*)"
 	reviewEnv              = "review"
 	productionEnv          = "production"
@@ -253,9 +253,9 @@ func makeCoderK8sResources(id string, env string) (*coderK8sResources, error) {
 	cname := fmt.Sprintf(cnameFormatter, id)
 	var url string
 	if env == reviewEnv {
-		url = fmt.Sprintf(reviewUrlFormatter, id)
+		url = fmt.Sprintf(reviewURLFormatter, id)
 	} else {
-		url = fmt.Sprintf(productionUrlFormatter, id)
+		url = fmt.Sprintf(productionURLFormatter, id)
 	}
 	pvcName := fmt.Sprintf("coder-%s-project-data", id)
 	svcName := fmt.Sprintf("coder-%s-service", id)
