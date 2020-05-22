@@ -84,7 +84,7 @@ func (m *manager) AddIngressRule(ingressName string, rule v1beta1.IngressRule) e
 	if err != nil {
 		return err
 	}
-	ingress.Spec.TLS[0].Hosts = append(ingress.Spec.TLS[0].Hosts, rule.Host)
+	//ingress.Spec.TLS[0].Hosts = append(ingress.Spec.TLS[0].Hosts, rule.Host)
 	ingress.Spec.Rules = append(ingress.Spec.Rules, rule)
 	_, err = m.clientset.
 		ExtensionsV1beta1().

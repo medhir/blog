@@ -73,7 +73,7 @@ resource "google_container_node_pool" "node_pool" {
 
   node_config {
     image_type   = "COS"
-    machine_type = "n1-standard-1"
+    machine_type = "e2-small"
 
     labels = {
       private-pools-example = "true"
@@ -88,7 +88,7 @@ resource "google_container_node_pool" "node_pool" {
 
     disk_size_gb = "10"
     disk_type    = "pd-standard"
-    preemptible = true
+    preemptible = false
 
     service_account = var.cluster_service_account_email
 

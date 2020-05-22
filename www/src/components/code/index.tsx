@@ -96,7 +96,12 @@ class Code extends Component<{}, CodeState> {
         </div>
         <div className={styles.coder_environment}>
           {loading && <Loading />}
-          {url && !loading && <iframe src={url} />}
+          {url && !loading && (
+            <iframe
+              sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin"
+              src={url}
+            />
+          )}
         </div>
       </section>
     )
