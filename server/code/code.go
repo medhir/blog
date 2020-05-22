@@ -81,7 +81,7 @@ func (m *manager) AddInstance(token string) (*Instance, error) {
 	// check if user already has an instance associated with them
 	user, err := m.auth.GetUser(token)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("could not retrieve user for the provided token - %s", err.Error()))
+		return nil, fmt.Errorf("could not retrieve user for the provided token - %s", err.Error())
 	}
 	instanceID := user.Attributes["instance_id"]
 	if len(instanceID) > 0 && instanceID[0] != "" {
