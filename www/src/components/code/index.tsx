@@ -1,20 +1,19 @@
 import React, { Component } from 'react'
 import http from '../../utility/http'
-import Button, { GreenButton, RedButton } from '../button'
+import { GreenButton, RedButton } from '../button'
 import Loading from '../loading'
 import { AxiosError } from 'axios'
 
-import styles from './coder.module.scss'
+import styles from './code.module.scss'
 
-interface CoderState {
+interface CodeState {
   error: string
   id: string
   loading: boolean
-  password: string
   url: string
 }
 
-class Coder extends Component<{}, CoderState> {
+class Code extends Component<{}, CodeState> {
   constructor(props: Readonly<{}>) {
     super(props)
 
@@ -22,7 +21,6 @@ class Coder extends Component<{}, CoderState> {
       id: null,
       url: null,
       loading: false,
-      password: null,
       error: null,
     }
 
@@ -39,13 +37,12 @@ class Coder extends Component<{}, CoderState> {
       () => {
         // request a new coder instance from the server
         http
-          .Post('/coder/', {}, { withCredentials: true })
+          .Post('/code/', {}, { withCredentials: true })
           .then((response) => {
             console.dir(response)
             this.setState({
               id: response.data.id,
               url: response.data.url,
-              password: response.data.password,
             })
             setTimeout(() => {
               this.setState({
@@ -69,9 +66,8 @@ class Coder extends Component<{}, CoderState> {
   }
 
   stopEnvironment() {
-    const { id } = this.state
     http
-      .Delete(`/coder/${id}`, { withCredentials: true })
+      .Delete(`/code/`, { withCredentials: true })
       .catch((error: AxiosError) => {
         if (error.response) {
           this.setState({
@@ -86,7 +82,7 @@ class Coder extends Component<{}, CoderState> {
   }
 
   render() {
-    const { error, loading, password, url } = this.state
+    const { error, loading, url } = this.state
     return (
       <section className={styles.coder}>
         <div className={styles.coder_controls}>
@@ -94,7 +90,6 @@ class Coder extends Component<{}, CoderState> {
             Start Environment
           </GreenButton>
           <RedButton onClick={this.stopEnvironment}>Stop Environment</RedButton>
-          {password && <p>The password for your environment is: {password}</p>}
           {error && (
             <p>There was an error getting the environment set up: {error}</p>
           )}
@@ -108,4 +103,4 @@ class Coder extends Component<{}, CoderState> {
   }
 }
 
-export default Coder
+export default Code

@@ -1,10 +1,9 @@
 package instance
 
 import (
-	"gitlab.medhir.com/medhir/blog/server/auth"
+	"gitlab.com/medhir/blog/server/auth"
+	"gitlab.com/medhir/blog/server/handlers"
 	"net/http"
-
-	"gitlab.medhir.com/medhir/blog/server/handlers"
 )
 
 // AddRoutes registers all the application handlers to their corresponding url prefixes
@@ -27,8 +26,8 @@ func (i *Instance) AddRoutes() error {
 	// 	photos
 	i.router.HandleFunc("/photos", h.GetPhotos())
 	i.router.HandleFunc("/photo", h.HandlePhoto())
-	//	coder
-	i.router.HandleFunc("/coder/", h.Authorize(auth.BlogOwner, h.HandleCoder()))
+	//	code
+	i.router.HandleFunc("/code/", h.Authorize(auth.BlogOwner, h.HandleCodeDeployment()))
 
 	return nil
 }

@@ -52,7 +52,7 @@ func NewManager(ctx context.Context, dev bool) (Manager, error) {
 	var config *rest.Config
 	var err error
 
-	// development happens outside of the cluster, so we must pass a kubeconfig file.
+	// local development happens outside of the cluster, so we must pass a kubeconfig file.
 	// gcloud stores this by default under $HOME/.kube/config
 	if dev {
 		kubeconfig := flag.String("kubeconfig", filepath.Join(os.Getenv("HOME"), ".kube", "config"), "absolute path to the kubeconfig file")
@@ -87,6 +87,7 @@ func (m *manager) AddIngressRule(ingressName string, rule v1beta1.IngressRule) e
 	if err != nil {
 		return err
 	}
+	ingress.Spec.TLS[0].Hosts = append(ingress.Spec.TLS[0].Hosts, rule.Host)
 	ingress.Spec.Rules = append(ingress.Spec.Rules, rule)
 	_, err = m.clientset.
 		ExtensionsV1beta1().

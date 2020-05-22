@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"gitlab.com/medhir/blog/server/storage/gcs"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
-	"gitlab.medhir.com/medhir/blog/server/storage/gcs"
 )
 
 const (
