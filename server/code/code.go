@@ -142,11 +142,16 @@ func (m *manager) StartInstance(token string) (*Instance, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = m.k8s.AddDeployment(resources.deployment)
+	// check if deployment already exists
+	_, err = m.k8s.GetDeployment(resources.deploymentName)
 	if err != nil {
-		return nil, err
+		// deployment doesn't exist, so create one
+		err = m.k8s.AddDeployment(resources.deployment)
+		if err != nil {
+			return nil, err
+		}
 	}
-	// health check?
+	// return metadata about the instance
 	return &Instance{
 		ID:  instanceID,
 		URL: resources.url,

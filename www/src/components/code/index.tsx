@@ -48,7 +48,7 @@ class Code extends Component<{}, CodeState> {
               this.setState({
                 loading: false,
               })
-            }, 45000)
+            }, 15000)
           })
           .catch((error: AxiosError) => {
             if (error.response) {

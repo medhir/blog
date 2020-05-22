@@ -20,7 +20,6 @@ import (
 
 const (
 	defaultNamespace = "default"
-	istioNamespace   = "istio-system"
 )
 
 // Manager describes the actions that can be taken against the kubernetes cluster
@@ -28,6 +27,7 @@ type Manager interface {
 	AddIngressRule(ingressName string, rule v1beta1.IngressRule) error
 	RemoveIngressRule(ingressName string, rule v1beta1.IngressRule) error
 
+	GetDeployment(name string) (*v1.Deployment, error)
 	AddDeployment(deployment *v1.Deployment) error
 	RemoveDeployment(deployment *v1.Deployment) error
 
@@ -36,9 +36,6 @@ type Manager interface {
 
 	AddService(svc *v1core.Service) error
 	RemoveService(svc *v1core.Service) error
-
-	AddDNSNamesToCert(certName string, dnsNames []string) error
-	RemoveDNSNameFromCert(certName, dnsName string) error
 }
 
 type manager struct {
@@ -121,6 +118,14 @@ func (m *manager) RemoveIngressRule(ingressName string, rule v1beta1.IngressRule
 	return nil
 }
 
+func (m *manager) GetDeployment(name string) (*v1.Deployment, error) {
+	deployment, err := m.clientset.AppsV1().Deployments(defaultNamespace).Get(m.ctx, name, v1meta.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+	return deployment, nil
+}
+
 func (m *manager) AddDeployment(deployment *v1.Deployment) error {
 	_, err := m.clientset.AppsV1().Deployments(defaultNamespace).Create(m.ctx, deployment, v1meta.CreateOptions{})
 	if err != nil {
@@ -163,50 +168,6 @@ func (m *manager) AddService(svc *v1core.Service) error {
 
 func (m *manager) RemoveService(svc *v1core.Service) error {
 	err := m.clientset.CoreV1().Services(defaultNamespace).Delete(m.ctx, svc.Name, v1meta.DeleteOptions{})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *manager) AddDNSNamesToCert(certName string, dnsNames []string) error {
-	cert, err := m.certClientset.
-		CertmanagerV1alpha2().
-		Certificates(istioNamespace).
-		Get(m.ctx, certName, v1meta.GetOptions{})
-	if err != nil {
-		return err
-	}
-	cert.Spec.DNSNames = append(cert.Spec.DNSNames, dnsNames...)
-	_, err = m.certClientset.
-		CertmanagerV1alpha2().
-		Certificates(istioNamespace).
-		Update(m.ctx, cert, v1meta.UpdateOptions{})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *manager) RemoveDNSNameFromCert(certName, dnsName string) error {
-	cert, err := m.certClientset.
-		CertmanagerV1alpha2().
-		Certificates(istioNamespace).
-		Get(m.ctx, certName, v1meta.GetOptions{})
-	if err != nil {
-		return err
-	}
-	updatedDNSNames := []string{}
-	for _, name := range cert.Spec.DNSNames {
-		if name != dnsName {
-			updatedDNSNames = append(updatedDNSNames, name)
-		}
-	}
-	cert.Spec.DNSNames = updatedDNSNames
-	_, err = m.certClientset.
-		CertmanagerV1alpha2().
-		Certificates(istioNamespace).
-		Update(m.ctx, cert, v1meta.UpdateOptions{})
 	if err != nil {
 		return err
 	}
