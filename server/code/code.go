@@ -24,6 +24,7 @@ const (
 	hostName           = "review.medhir.com"
 	cnameFormatter     = "code-%s"
 	urlFormatter       = "https://review.medhir.com/%s"
+	pathFormatter      = "/%s(/|$)(.*)"
 )
 
 // Manager describes the methods for managing coder instances, given a user token
@@ -309,6 +310,11 @@ func makeCoderService(svcName, deploymentName string) *apiv1.Service {
 	return svc
 }
 
+func pathTypePtr(pathType v1beta1.PathType) *v1beta1.PathType {
+	p := pathType
+	return &p
+}
+
 func makeCoderIngressRule(hostName, serviceName, id string) v1beta1.IngressRule {
 	rule := v1beta1.IngressRule{
 		Host: hostName,
@@ -316,7 +322,8 @@ func makeCoderIngressRule(hostName, serviceName, id string) v1beta1.IngressRule 
 			HTTP: &v1beta1.HTTPIngressRuleValue{
 				Paths: []v1beta1.HTTPIngressPath{
 					{
-						Path: "/" + id,
+						Path:     fmt.Sprintf(pathFormatter, id),
+						PathType: pathTypePtr(v1beta1.PathTypePrefix),
 						Backend: v1beta1.IngressBackend{
 							ServiceName: serviceName,
 							ServicePort: intstr.IntOrString{
