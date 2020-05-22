@@ -26,9 +26,8 @@ func (i *Instance) AddRoutes() error {
 	// 	photos
 	i.router.HandleFunc("/photos", h.GetPhotos())
 	i.router.HandleFunc("/photo", h.HandlePhoto())
-	//	coder
-	i.router.HandleFunc("/code/instance/", h.Authorize(auth.BlogOwner, h.HandleCodeInstance()))
-	i.router.HandleFunc("/code/deployment/", h.Authorize(auth.BlogOwner, h.HandleCodeDeployment()))
+	//	code
+	i.router.HandleFunc("/code/", h.Authorize(auth.BlogOwner, h.HandleCodeDeployment()))
 
 	return nil
 }

@@ -54,6 +54,7 @@ func (h *handlers) removeCodeInstance() http.HandlerFunc {
 		jwt, err := h.getJWTCookie(r)
 		if err != nil {
 			http.Error(w, "could not read authorization cookie", http.StatusInternalServerError)
+			return
 		}
 		err = h.coder.RemoveInstance(jwt)
 		if err != nil {
@@ -69,13 +70,30 @@ func (h *handlers) createCodeDeployment() http.HandlerFunc {
 		jwt, err := h.getJWTCookie(r)
 		if err != nil {
 			http.Error(w, "could not read authorization cookie", http.StatusInternalServerError)
+			return
 		}
-		err = h.coder.StartInstance(jwt)
+		exists, err := h.coder.HasInstance(jwt)
+		if err != nil {
+			http.Error(w, "unable to determine if instance exists", http.StatusInternalServerError)
+			return
+		}
+		if !exists {
+			_, err = h.coder.AddInstance(jwt)
+			if err != nil {
+				http.Error(w, "unable to create a new instance for the user", http.StatusInternalServerError)
+				return
+			}
+		}
+		instance, err := h.coder.StartInstance(jwt)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("unable to start code instance - %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
+		err = writeJSON(w, instance)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("unable to encode data as JSON - %s", err.Error()), http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
@@ -84,6 +102,7 @@ func (h *handlers) removeCodeDeployment() http.HandlerFunc {
 		jwt, err := h.getJWTCookie(r)
 		if err != nil {
 			http.Error(w, "could not read authorization cookie", http.StatusInternalServerError)
+			return
 		}
 		err = h.coder.StopInstance(jwt)
 		if err != nil {

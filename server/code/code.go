@@ -28,8 +28,9 @@ const (
 
 // Manager describes the methods for managing coder instances
 type Manager interface {
+	HasInstance(token string) (bool, error)
 	AddInstance(token string) (*Instance, error)
-	StartInstance(token string) error
+	StartInstance(token string) (*Instance, error)
 	StopInstance(token string) error
 	RemoveInstance(id string) error
 }
@@ -60,6 +61,19 @@ func NewManager(ctx context.Context, dev bool) (Manager, error) {
 type Instance struct {
 	ID  string `json:"id"`
 	URL string `json:"url"`
+}
+
+func (m *manager) HasInstance(token string) (bool, error) {
+	// check to ensure the user has an instance associated with them
+	user, err := m.auth.GetUser(token)
+	if err != nil {
+		return false, errors.New("could not retrieve user for the provided token")
+	}
+	instanceAttribute := user.Attributes["instance_id"]
+	if instanceAttribute == nil {
+		return false, nil
+	}
+	return true, nil
 }
 
 func (m *manager) AddInstance(token string) (*Instance, error) {
@@ -109,27 +123,30 @@ func (m *manager) AddInstance(token string) (*Instance, error) {
 	return instance, nil
 }
 
-func (m *manager) StartInstance(token string) error {
+func (m *manager) StartInstance(token string) (*Instance, error) {
 	// check to ensure the user has an instance associated with them
 	user, err := m.auth.GetUser(token)
 	if err != nil {
-		return errors.New("could not retrieve user for the provided token")
+		return nil, errors.New("could not retrieve user for the provided token")
 	}
 	instanceAttribute := user.Attributes["instance_id"]
 	if instanceAttribute == nil {
-		return errors.New("user does not have a registered instance")
+		return nil, errors.New("user does not have a registered instance")
 	}
 	instanceID := instanceAttribute[0]
 	resources, err := makeCoderK8sResources(instanceID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = m.k8s.AddDeployment(resources.deployment)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	// health check?
-	return nil
+	return &Instance{
+		ID:  instanceID,
+		URL: resources.url,
+	}, nil
 }
 
 func (m *manager) StopInstance(token string) error {
