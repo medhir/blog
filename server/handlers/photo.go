@@ -4,11 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/google/uuid"
+	"gitlab.com/medhir/blog/server/storage/gcs"
 	"io"
 	"net/http"
 	"path"
-
-	"gitlab.medhir.com/medhir/blog/server/storage/gcs"
 )
 
 const (

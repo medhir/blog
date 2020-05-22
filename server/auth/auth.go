@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"github.com/Nerzal/gocloak/v5"
 	"os"
 )
@@ -22,7 +23,9 @@ const (
 // Auth is the interface describing authentication actions
 // that can be taken within the application context
 type Auth interface {
+	GetUser(jwt string) (*gocloak.User, error)
 	CreateUser(req *CreateUserRequest) (*CreateUserResponse, error)
+	AddAttributeToUser(userID, key string, values []string) error
 	Login(request *LoginRequest) (*LoginResponse, error)
 
 	ValidateJWT(jwt string) error
@@ -117,6 +120,53 @@ func (a *auth) CreateUser(req *CreateUserRequest) (*CreateUserResponse, error) {
 	}, nil
 }
 
+func (a *auth) GetUser(jwt string) (*gocloak.User, error) {
+	_, claims, err := a.client.DecodeAccessToken(jwt, realm)
+	if err != nil {
+		return nil, err
+	}
+	mapClaims := *claims
+	userID, ok := mapClaims["sub"].(string)
+	if !ok {
+		return nil, errors.New("validation error - could not read jwt subject")
+	}
+	adminToken, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
+	if err != nil {
+		return nil, err
+	}
+	user, err := a.client.GetUserByID(adminToken.AccessToken, realm, userID)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (a *auth) AddAttributeToUser(jwt, key string, values []string) error {
+	_, claims, err := a.client.DecodeAccessToken(jwt, realm)
+	if err != nil {
+		return err
+	}
+	mapClaims := *claims
+	userID, ok := mapClaims["sub"].(string)
+	if !ok {
+		return errors.New("validation error - could not read jwt subject")
+	}
+	adminToken, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
+	if err != nil {
+		return err
+	}
+	user, err := a.client.GetUserByID(adminToken.AccessToken, realm, userID)
+	if err != nil {
+		return err
+	}
+	user.Attributes[key] = values
+	err = a.client.UpdateUser(adminToken.AccessToken, realm, *user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // LoginRequest describes the credentials needed to perform a login
 type LoginRequest struct {
 	UserID   string `json:"user_id"`
@@ -135,7 +185,7 @@ func (a *auth) Login(request *LoginRequest) (*LoginResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Printf("Token: %+v\n", token)
 	return &LoginResponse{
 		Token:        token.AccessToken,
 		RefreshToken: token.RefreshToken,

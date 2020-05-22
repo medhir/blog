@@ -6,6 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"gitlab.com/medhir/blog/server/auth"
+	"gitlab.com/medhir/blog/server/storage/gcs"
 	"net/http"
 	"os"
 	"time"
@@ -13,8 +15,6 @@ import (
 	"github.com/honeycombio/beeline-go"
 	"github.com/honeycombio/beeline-go/wrappers/hnynethttp"
 	"github.com/rs/cors"
-	"gitlab.medhir.com/medhir/blog/server/auth"
-	"gitlab.medhir.com/medhir/blog/server/storage/gcs"
 )
 
 const (

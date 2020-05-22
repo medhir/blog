@@ -1,4 +1,4 @@
-module gitlab.medhir.com/medhir/blog/server
+module gitlab.com/medhir/blog/server
 
 go 1.14
 

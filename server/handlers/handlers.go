@@ -4,13 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gitlab.medhir.com/medhir/blog/server/coder"
-	"gitlab.medhir.com/medhir/blog/server/imageprocessor"
+	"gitlab.com/medhir/blog/server/auth"
+	"gitlab.com/medhir/blog/server/blog"
+	"gitlab.com/medhir/blog/server/code"
+	"gitlab.com/medhir/blog/server/imageprocessor"
+	"gitlab.com/medhir/blog/server/storage/gcs"
 	"net/http"
-
-	"gitlab.medhir.com/medhir/blog/server/auth"
-	"gitlab.medhir.com/medhir/blog/server/blog"
-	"gitlab.medhir.com/medhir/blog/server/storage/gcs"
 )
 
 const (
@@ -42,7 +41,8 @@ type Handlers interface {
 	HandlePhoto() http.HandlerFunc
 
 	// Coder
-	HandleCoder() http.HandlerFunc
+	HandleCodeInstance() http.HandlerFunc
+	HandleCodeDeployment() http.HandlerFunc
 }
 
 // handlers describes dependencies needed to serve http requests
@@ -53,7 +53,7 @@ type handlers struct {
 	gcs          gcs.GCS
 	blog         blog.Blog
 	imgProcessor imageprocessor.ImageProcessor
-	coder        coder.Manager
+	coder        code.Manager
 	env          string
 }
 
@@ -65,7 +65,7 @@ func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, env string) (
 	} else {
 		dev = true
 	}
-	coderManager, err := coder.NewManager(ctx, dev)
+	coderManager, err := code.NewManager(ctx, dev)
 	if err != nil {
 		return nil, err
 	}

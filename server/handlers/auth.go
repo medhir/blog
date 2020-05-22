@@ -3,11 +3,10 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"gitlab.com/medhir/blog/server/auth"
 	"net/http"
 	"path"
 	"time"
-
-	"gitlab.medhir.com/medhir/blog/server/auth"
 )
 
 const (
@@ -176,4 +175,12 @@ func (h *handlers) setCookies(w http.ResponseWriter, jwt, refresh string) {
 		}
 		http.SetCookie(w, refreshCookie)
 	}
+}
+
+func (h *handlers) getJWTCookie(r *http.Request) (string, error) {
+	cookie, err := r.Cookie(jwtCookieName)
+	if err != nil {
+		return "", err
+	}
+	return cookie.Value, nil
 }

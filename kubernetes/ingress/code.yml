@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: coder
+  name: code
   annotations:
     kubernetes.io/ingress.class: nginx
     # Set this annotation to prevent 413 "Request entity too large" error on image uploads
@@ -15,12 +15,12 @@ spec:
   tls:
     - hosts:
         - code.medhir.com
-      secretName: medhir-coder-prod-cert
+      secretName: medhir-code-prod-cert
   rules:
     - host: code.medhir.com
       http:
         paths:
           - path: /
             backend:
-              serviceName: coder
+              serviceName: code
               servicePort: 3000

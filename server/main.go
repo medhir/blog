@@ -1,9 +1,8 @@
 package main
 
 import (
+	"gitlab.com/medhir/blog/server/instance"
 	"log"
-
-	"gitlab.medhir.com/medhir/blog/server/instance"
 )
 
 func main() {

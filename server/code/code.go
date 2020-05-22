@@ -1,11 +1,13 @@
-package coder
+package code
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"gitlab.medhir.com/medhir/blog/server/dns"
-	"gitlab.medhir.com/medhir/blog/server/k8s"
+	"gitlab.com/medhir/blog/server/auth"
+	"gitlab.com/medhir/blog/server/code/dns"
+	"gitlab.com/medhir/blog/server/code/k8s"
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/api/extensions/v1beta1"
@@ -16,9 +18,8 @@ import (
 )
 
 const (
-	ingressName        = "istio"
+	ingressName        = "code"
 	servicePort        = 3000
-	certName           = "ingress-cert"
 	containerImageName = "theiaide/theia-go:latest"
 	dnsNameFormatter   = "code-%s.medhir.com"
 	cnameFormatter     = "code-%s"
@@ -27,13 +28,16 @@ const (
 
 // Manager describes the methods for managing coder instances
 type Manager interface {
-	AddInstance() (*Instance, error)
+	AddInstance(token string) (*Instance, error)
+	StartInstance(token string) error
+	StopInstance(token string) error
 	RemoveInstance(id string) error
 }
 
 type manager struct {
-	dns dns.Manager
-	k8s k8s.Manager
+	dns  dns.Manager
+	k8s  k8s.Manager
+	auth auth.Auth
 }
 
 // NewManager instantiates a new coder manager
@@ -58,18 +62,29 @@ type Instance struct {
 	URL string `json:"url"`
 }
 
-func (m *manager) AddInstance() (*Instance, error) {
-	id := uuid.New().String()
-	// add DNS record
-	err := m.dns.AddCNAMERecord(fmt.Sprintf(cnameFormatter, id))
+func (m *manager) AddInstance(token string) (*Instance, error) {
+	// check if user already has an instance associated with them
+	user, err := m.auth.GetUser(token)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("could not retrieve user for the provided token")
 	}
-	time.Sleep(2 * time.Second)
+	instanceID := user.Attributes["instance_id"]
+	if instanceID != nil {
+		return nil, errors.New("user already has an instance")
+	}
+	// if not, create a new instance
+	id := uuid.New().String()
 	resources, err := makeCoderK8sResources(id)
 	if err != nil {
 		return nil, err
 	}
+	// add DNS record
+	err = m.dns.AddCNAMERecord(resources.cname)
+	if err != nil {
+		return nil, err
+	}
+	// give a sec for DNS to register
+	time.Sleep(2 * time.Second)
 	// add persistent volume claim
 	err = m.k8s.AddPersistentVolumeClaim(resources.projectPVC)
 	if err != nil {
@@ -80,27 +95,78 @@ func (m *manager) AddInstance() (*Instance, error) {
 	if err != nil {
 		return nil, err
 	}
-	// add certificate
-	err = m.k8s.AddDNSNamesToCert(certName, []string{fmt.Sprintf(dnsNameFormatter, id)})
 	// add ingress rule
 	err = m.k8s.AddIngressRule(ingressName, resources.ingressRule)
 	if err != nil {
 		return nil, err
 	}
-	// add deployment
-	err = m.k8s.AddDeployment(resources.deployment)
-	if err != nil {
-		return nil, err
-	}
+	// add instance id to user attributes
+	err = m.auth.AddAttributeToUser(*user.ID, "instance_id", []string{id})
 	instance := &Instance{
 		ID:  id,
-		URL: fmt.Sprintf(urlFormatter, id),
+		URL: resources.url,
 	}
 	return instance, nil
 }
 
-func (m *manager) RemoveInstance(id string) error {
-	resources, err := makeCoderK8sResources(id)
+func (m *manager) StartInstance(token string) error {
+	// check to ensure the user has an instance associated with them
+	user, err := m.auth.GetUser(token)
+	if err != nil {
+		return errors.New("could not retrieve user for the provided token")
+	}
+	instanceAttribute := user.Attributes["instance_id"]
+	if instanceAttribute == nil {
+		return errors.New("user does not have a registered instance")
+	}
+	instanceID := instanceAttribute[0]
+	resources, err := makeCoderK8sResources(instanceID)
+	if err != nil {
+		return err
+	}
+	err = m.k8s.AddDeployment(resources.deployment)
+	if err != nil {
+		return err
+	}
+	// health check?
+	return nil
+}
+
+func (m *manager) StopInstance(token string) error {
+	// check to ensure the user has an instance associated with them
+	user, err := m.auth.GetUser(token)
+	if err != nil {
+		return errors.New("could not retrieve user for the provided token")
+	}
+	instanceAttribute := user.Attributes["instance_id"]
+	if instanceAttribute == nil {
+		return errors.New("user does not have a registered instance")
+	}
+	instanceID := instanceAttribute[0]
+	resources, err := makeCoderK8sResources(instanceID)
+	if err != nil {
+		return err
+	}
+	err = m.k8s.RemoveDeployment(resources.deployment)
+	if err != nil {
+		return err
+	}
+	// health check?
+	return nil
+}
+
+func (m *manager) RemoveInstance(token string) error {
+	// check to ensure the user has an instance associated with them
+	user, err := m.auth.GetUser(token)
+	if err != nil {
+		return errors.New("could not retrieve user for the provided token")
+	}
+	instanceAttribute := user.Attributes["instance_id"]
+	if instanceAttribute == nil {
+		return errors.New("user does not have a registered instance")
+	}
+	instanceID := instanceAttribute[0]
+	resources, err := makeCoderK8sResources(instanceID)
 	if err != nil {
 		return err
 	}
@@ -127,7 +193,7 @@ func (m *manager) RemoveInstance(id string) error {
 		fmt.Println(fmt.Sprintf("error occured while removing deployment - %s", err.Error()))
 	}
 	// remove CNAME record
-	err = m.dns.DeleteCNAMERecord(fmt.Sprintf(cnameFormatter, id))
+	err = m.dns.DeleteCNAMERecord(resources.cname)
 	if err != nil {
 		return err
 	}
@@ -139,33 +205,49 @@ type coderK8sResources struct {
 	deployment  *appsv1.Deployment
 	service     *apiv1.Service
 	ingressRule v1beta1.IngressRule
+
+	projectPVCName string
+	serviceName    string
+	deploymentName string
+	cname          string
+	url            string
 }
 
 func makeCoderK8sResources(id string) (*coderK8sResources, error) {
-	projectPVC, err := makeProjectPVC(id)
+	cname := fmt.Sprintf(cnameFormatter, id)
+	url := fmt.Sprintf(urlFormatter, id)
+	pvcName := fmt.Sprintf("coder-%s-project-data", id)
+	svcName := fmt.Sprintf("coder-%s-service", id)
+	deploymentName := fmt.Sprintf("coder-%s", id)
+	hostName := fmt.Sprintf(dnsNameFormatter, id)
+	projectPVC, err := makeProjectPVC(pvcName)
 	if err != nil {
 		return nil, err
 	}
-	svc := makeCoderService(id)
-	ingressRule := makeCoderIngressRule(id)
-	deployment := makeCoderDeployment(id)
+	svc := makeCoderService(svcName, deploymentName)
+	ingressRule := makeCoderIngressRule(hostName, svcName)
+	deployment := makeCoderDeployment(deploymentName, pvcName)
 	return &coderK8sResources{
-		projectPVC:  projectPVC,
-		deployment:  deployment,
-		service:     svc,
-		ingressRule: ingressRule,
+		projectPVC:     projectPVC,
+		deployment:     deployment,
+		service:        svc,
+		ingressRule:    ingressRule,
+		projectPVCName: pvcName,
+		serviceName:    svcName,
+		deploymentName: deploymentName,
+		cname:          cname,
+		url:            url,
 	}, nil
 }
 
-func makeProjectPVC(id string) (*apiv1.PersistentVolumeClaim, error) {
-	pvcName := fmt.Sprintf("coder-%s-project-data", id)
+func makeProjectPVC(name string) (*apiv1.PersistentVolumeClaim, error) {
 	quantity, err := resource.ParseQuantity("1Gi")
 	if err != nil {
 		return nil, err
 	}
 	projectPVC := &apiv1.PersistentVolumeClaim{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: pvcName,
+			Name: name,
 		},
 		Spec: apiv1.PersistentVolumeClaimSpec{
 			AccessModes: []apiv1.PersistentVolumeAccessMode{
@@ -182,9 +264,7 @@ func makeProjectPVC(id string) (*apiv1.PersistentVolumeClaim, error) {
 	return projectPVC, nil
 }
 
-func makeCoderService(id string) *apiv1.Service {
-	svcName := fmt.Sprintf("coder-%s-service", id)
-	deploymentName := fmt.Sprintf("coder-%s", id)
+func makeCoderService(svcName, deploymentName string) *apiv1.Service {
 	svc := &apiv1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: svcName,
@@ -203,11 +283,9 @@ func makeCoderService(id string) *apiv1.Service {
 	return svc
 }
 
-func makeCoderIngressRule(id string) v1beta1.IngressRule {
-	host := fmt.Sprintf(dnsNameFormatter, id)
-	serviceName := fmt.Sprintf("coder-%s-service", id)
+func makeCoderIngressRule(hostName, serviceName string) v1beta1.IngressRule {
 	rule := v1beta1.IngressRule{
-		Host: host,
+		Host: hostName,
 		IngressRuleValue: v1beta1.IngressRuleValue{
 			HTTP: &v1beta1.HTTPIngressRuleValue{
 				Paths: []v1beta1.HTTPIngressPath{
@@ -227,9 +305,7 @@ func makeCoderIngressRule(id string) v1beta1.IngressRule {
 	return rule
 }
 
-func makeCoderDeployment(id string) *appsv1.Deployment {
-	deploymentName := fmt.Sprintf("coder-%s", id)
-	projectPVCName := fmt.Sprintf("coder-%s-project-data", id)
+func makeCoderDeployment(deploymentName, projectPVCName string) *appsv1.Deployment {
 	return &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: deploymentName,
