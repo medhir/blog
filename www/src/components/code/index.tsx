@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import http from '../../utility/http'
-import { GreenButton, RedButton } from '../button'
+import { RedButton } from '../button'
 import Loading from '../loading'
 import { AxiosError } from 'axios'
 
@@ -66,7 +66,7 @@ class Code extends Component<{}, CodeState> {
                         }
                       )
                     })
-                    .catch(() => {}) // just to acknowledge the promise
+                    .catch(() => {}) // just to acknowledge the promise (you will be caught my friend!)
                 }, 500)
               }
             )
