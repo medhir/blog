@@ -28,6 +28,10 @@ class Code extends Component<{}, CodeState> {
     this.stopEnvironment = this.stopEnvironment.bind(this)
   }
 
+  componentDidMount() {
+    this.createEnvironment()
+  }
+
   createEnvironment() {
     // display a loading state to the user
     this.setState(
@@ -35,20 +39,37 @@ class Code extends Component<{}, CodeState> {
         loading: true,
       },
       () => {
-        // request a new coder instance from the server
+        // request a new code instance from the server
         http
           .Post('/code/', {}, { withCredentials: true })
           .then((response) => {
-            console.dir(response)
-            this.setState({
-              id: response.data.id,
-              url: response.data.url,
-            })
-            setTimeout(() => {
-              this.setState({
-                loading: false,
-              })
-            }, 15000)
+            // set the metadata associated with a code instance
+            this.setState(
+              {
+                id: response.data.id,
+                url: response.data.url,
+              },
+              () => {
+                // poll the endpoint until it is healthy
+                const { url } = this.state
+                const poll = setInterval(() => {
+                  http
+                    .Get(url)
+                    .then(() => {
+                      // turn off loading state once endpoint is reachable & stop polling
+                      this.setState(
+                        {
+                          loading: false,
+                        },
+                        () => {
+                          clearInterval(poll)
+                        }
+                      )
+                    })
+                    .catch(() => {}) // just to acknowledge the promise
+                }, 500)
+              }
+            )
           })
           .catch((error: AxiosError) => {
             if (error.response) {
@@ -86,9 +107,6 @@ class Code extends Component<{}, CodeState> {
     return (
       <section className={styles.coder}>
         <div className={styles.coder_controls}>
-          <GreenButton onClick={this.createEnvironment}>
-            Start Environment
-          </GreenButton>
           <RedButton onClick={this.stopEnvironment}>Stop Environment</RedButton>
           {error && (
             <p>There was an error getting the environment set up: {error}</p>
