@@ -1,20 +1,24 @@
 import React, { Component } from 'react'
-import http from '../../utility/http'
-import { RedButton } from '../button'
-import Loading from '../loading'
+import http from '../../../utility/http'
+import { RedButton } from '../../button'
+import Loading from '../../loading'
 import { AxiosError } from 'axios'
 
-import styles from './code.module.scss'
+import styles from './ide.module.scss'
 
-interface CodeState {
+interface IDEState {
   error: string
   id: string
   loading: boolean
   url: string
 }
 
-class Code extends Component<{}, CodeState> {
-  constructor(props: Readonly<{}>) {
+interface IDEProps {
+  className?: string
+}
+
+class IDE extends Component<IDEProps, IDEState> {
+  constructor(props: IDEProps) {
     super(props)
 
     this.state = {
@@ -103,27 +107,25 @@ class Code extends Component<{}, CodeState> {
   }
 
   render() {
+    const { className } = this.props
     const { error, loading, url } = this.state
     return (
-      <section className={styles.coder}>
-        <div className={styles.coder_controls}>
-          <RedButton onClick={this.stopEnvironment}>Stop Environment</RedButton>
-          {error && (
-            <p>There was an error getting the environment set up: {error}</p>
-          )}
-        </div>
-        <div className={styles.coder_environment}>
+      <section className={`${styles.ide} ${className}`}>
+        <div className={styles.ide_environment}>
+          <div className={styles.ide_controls}>
+            <RedButton onClick={this.stopEnvironment}>
+              Stop Environment
+            </RedButton>
+            {error && (
+              <p>There was an error getting the environment set up: {error}</p>
+            )}
+          </div>
           {loading && <Loading />}
-          {url && !loading && (
-            <iframe
-              sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin"
-              src={url}
-            />
-          )}
+          {url && !loading && <iframe src={url} />}
         </div>
       </section>
     )
   }
 }
 
-export default Code
+export default IDE

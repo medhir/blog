@@ -7,6 +7,7 @@ import { debounce } from 'lodash'
 import { Button } from '@material-ui/core'
 
 interface NotebookProps {
+  className?: string
   mdx?: string
 }
 
@@ -87,9 +88,10 @@ class Notebook extends Component<NotebookProps, NotebookState> {
   }
 
   render() {
+    const { className } = this.props
     const { mdx, preview } = this.state
     return (
-      <div className={styles.notebook}>
+      <div className={`${styles.notebook} ${className}`}>
         {!preview && (
           <Button
             className={styles.button}
