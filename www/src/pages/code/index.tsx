@@ -1,9 +1,9 @@
 import Auth, { Roles } from '../../components/auth'
-import Coder from '../../components/code'
+import Lesson from '../../components/learn/lesson'
 
 const Code = () => (
   <Auth role={Roles.BlogOwner} prompt>
-    <Coder />
+    <Lesson />
   </Auth>
 )
 

@@ -4,8 +4,12 @@ import Preview from './preview'
 import styles from './notebook.module.scss'
 import http from '../../utility/http'
 import { debounce } from 'lodash'
+import { Button, IconButton } from '@material-ui/core'
+import EditIcon from '@material-ui/icons/Edit'
+import VisibilityIcon from '@material-ui/icons/Visibility'
 
 interface NotebookProps {
+  className?: string
   mdx?: string
 }
 
@@ -16,11 +20,8 @@ interface NotebookState {
   error?: any
 }
 
-const Error = ({ error }) => (
-  <pre className={styles.error}>{JSON.stringify(error, undefined, 3)}</pre>
-)
-
 const FetchSource = (mdx: string) =>
+  // we unset the baseURL since this is a node api driven by the next framework
   http.Post('/api/mdx/draft', { mdx }, { baseURL: '' })
 
 class Notebook extends Component<NotebookProps, NotebookState> {
@@ -29,20 +30,32 @@ class Notebook extends Component<NotebookProps, NotebookState> {
   constructor(props: NotebookProps) {
     super(props)
     this.state = {
-      mdx:
-        props.mdx ||
-        `# Blog 2.0
-
-<Button>With MDX</Button>
-`,
+      mdx: props.mdx || '',
       id: uuid(),
     }
     this.handleTextareaChange = this.handleTextareaChange.bind(this)
     this.renderMDXToSource = this.renderMDXToSource.bind(this)
+    this.setPreview = this.setPreview.bind(this)
+    this.unsetPreview = this.unsetPreview.bind(this)
   }
 
-  componentDidMount() {
-    this.renderMDXToSource()
+  setPreview() {
+    const { mdx } = this.state
+    FetchSource(mdx)
+      .then((response) => {
+        this.setState({
+          preview: <Preview source={response.data.source} />,
+        })
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+  }
+
+  unsetPreview() {
+    this.setState({
+      preview: null,
+    })
   }
 
   renderMDXToSource() {
@@ -71,21 +84,39 @@ class Notebook extends Component<NotebookProps, NotebookState> {
   }
 
   handleTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
-    this.setState(
-      {
-        mdx: e.target.value,
-      },
-      () => {
-        this.renderMDXToSource()
-      }
-    )
+    this.setState({
+      mdx: e.target.value,
+    })
   }
 
   render() {
+    const { className } = this.props
     const { mdx, preview } = this.state
     return (
-      <div className={styles.notebook}>
-        <textarea onChange={this.handleTextareaChange} value={mdx}></textarea>
+      <div className={`${styles.notebook} ${className}`}>
+        {!preview && (
+          <IconButton
+            size="medium"
+            color="primary"
+            className={styles.button}
+            onClick={this.setPreview}
+          >
+            <VisibilityIcon />
+          </IconButton>
+        )}
+        {preview && (
+          <IconButton
+            size="medium"
+            color="primary"
+            className={styles.button}
+            onClick={this.unsetPreview}
+          >
+            <EditIcon />
+          </IconButton>
+        )}
+        {!preview && (
+          <textarea onChange={this.handleTextareaChange} value={mdx}></textarea>
+        )}
         {preview}
       </div>
     )

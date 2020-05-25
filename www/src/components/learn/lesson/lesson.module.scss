@@ -1,0 +1,12 @@
+.lesson {
+  display: flex;
+  height: 100%;
+
+  .notebook {
+    flex: 1;
+  }
+
+  .ide {
+    flex: 1.75;
+  }
+}
