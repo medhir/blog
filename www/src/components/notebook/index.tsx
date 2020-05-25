@@ -36,10 +36,6 @@ class Notebook extends Component<NotebookProps, NotebookState> {
     this.unsetPreview = this.unsetPreview.bind(this)
   }
 
-  componentDidMount() {
-    this.renderMDXToSource()
-  }
-
   setPreview() {
     const { mdx } = this.state
     FetchSource(mdx)
