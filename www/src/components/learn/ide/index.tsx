@@ -5,7 +5,7 @@ import { AxiosError } from 'axios'
 
 import styles from './ide.module.scss'
 import { IconButton } from '@material-ui/core'
-import HighlightOffIcon from '@material-ui/icons/HighlightOff'
+import StopIcon from '@material-ui/icons/Stop'
 
 interface IDEState {
   error: string
@@ -118,7 +118,7 @@ class IDE extends Component<IDEProps, IDEState> {
               className={styles.button}
               onClick={this.stopEnvironment}
             >
-              <HighlightOffIcon />
+              <StopIcon />
             </IconButton>
             {error && (
               <p>There was an error getting the environment set up: {error}</p>

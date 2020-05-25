@@ -7,41 +7,51 @@
   height: 100%;
 
   header {
-    padding: 30px 50px 10px 50px;
+    display: flex;
+    padding: 8px 16px;
     background-color: white;
     border-bottom: 1px solid black;
-  }
-  nav > ul > li {
-    position: relative;
-    cursor: pointer;
-    color: rgb(0, 0, 255);
-    font-size: 1.15rem;
-    display: inline-block;
-    margin: 10px 10px 0px 10px;
-  }
 
-  nav > ul > li:first-child {
-    margin: 10px 10px 10px 0px;
-  }
+    h1 {
+      margin-right: 24px;
+      font-size: 2em;
+    }
 
-  nav > ul > li > a {
-    text-decoration: none;
-  }
+    nav {
+      ul {
+        li:first-child {
+          margin: 10px 10px 10px 0px;
+        }
+        li {
+          position: relative;
+          cursor: pointer;
+          color: rgb(0, 0, 255);
+          font-size: 1.15rem;
+          display: inline-block;
+          margin: 10px 10px 0px 10px;
 
-  nav > ul > li > a:visited {
-    color: rgb(0, 0, 255);
-  }
+          a {
+            text-decoration: none;
+          }
 
-  nav > ul > li:hover:after {
-    content: '';
-    width: 100%;
-    position: absolute;
-    left: 0;
-    bottom: -4px;
-    height: 2px;
-    background: linear-gradient(270deg, #1100ff, #f700ff, #1100ff);
-    background-size: 200% 200%;
-    animation: underanimate 5s infinite;
+          a:visited {
+            color: rgb(0, 0, 255);
+          }
+        }
+
+        li:hover:after {
+          content: '';
+          width: 100%;
+          position: absolute;
+          left: 0;
+          bottom: -4px;
+          height: 2px;
+          background: linear-gradient(270deg, #1100ff, #f700ff, #1100ff);
+          background-size: 200% 200%;
+          animation: underanimate 5s infinite;
+        }
+      }
+    }
   }
 
   @media only screen and (max-width: 600px) {
@@ -70,13 +80,6 @@
     margin: 0 45px;
     flex-grow: 1;
     padding: 0.1px; /* to prevent margin collapsing */
-    /* background: linear-gradient(
-      45deg,
-      rgba(0, 255, 179, 0.1),
-      rgba(253, 0, 0, 0.1)
-    );
-    background-size: 400% 200%;
-    animation: underanimate 30s infinite; */
   }
 
   @media only screen and (max-width: 600px) {
