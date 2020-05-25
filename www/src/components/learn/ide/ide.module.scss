@@ -1,9 +1,18 @@
 .ide {
   height: 100%;
-  padding: 16px;
   &_controls {
     position: absolute;
     right: 0;
+    margin-top: -8px;
+
+    .button {
+      color: white;
+      transition: all 200ms ease;
+    }
+
+    .button:hover {
+      color: red;
+    }
   }
 
   &_environment {

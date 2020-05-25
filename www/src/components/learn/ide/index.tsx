@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import http from '../../../utility/http'
-import { RedButton } from '../../button'
 import Loading from '../../loading'
 import { AxiosError } from 'axios'
 
 import styles from './ide.module.scss'
+import { IconButton } from '@material-ui/core'
+import HighlightOffIcon from '@material-ui/icons/HighlightOff'
 
 interface IDEState {
   error: string
@@ -113,9 +114,12 @@ class IDE extends Component<IDEProps, IDEState> {
       <section className={`${styles.ide} ${className}`}>
         <div className={styles.ide_environment}>
           <div className={styles.ide_controls}>
-            <RedButton onClick={this.stopEnvironment}>
-              Stop Environment
-            </RedButton>
+            <IconButton
+              className={styles.button}
+              onClick={this.stopEnvironment}
+            >
+              <HighlightOffIcon />
+            </IconButton>
             {error && (
               <p>There was an error getting the environment set up: {error}</p>
             )}

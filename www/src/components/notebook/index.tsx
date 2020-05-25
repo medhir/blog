@@ -4,7 +4,9 @@ import Preview from './preview'
 import styles from './notebook.module.scss'
 import http from '../../utility/http'
 import { debounce } from 'lodash'
-import { Button } from '@material-ui/core'
+import { Button, IconButton } from '@material-ui/core'
+import EditIcon from '@material-ui/icons/Edit'
+import VisibilityIcon from '@material-ui/icons/Visibility'
 
 interface NotebookProps {
   className?: string
@@ -93,24 +95,24 @@ class Notebook extends Component<NotebookProps, NotebookState> {
     return (
       <div className={`${styles.notebook} ${className}`}>
         {!preview && (
-          <Button
-            className={styles.button}
-            variant="contained"
+          <IconButton
+            size="medium"
             color="primary"
+            className={styles.button}
             onClick={this.setPreview}
           >
-            Preview
-          </Button>
+            <VisibilityIcon />
+          </IconButton>
         )}
         {preview && (
-          <Button
+          <IconButton
+            size="medium"
+            color="primary"
             className={styles.button}
-            variant="contained"
-            color="secondary"
             onClick={this.unsetPreview}
           >
-            Edit
-          </Button>
+            <EditIcon />
+          </IconButton>
         )}
         {!preview && (
           <textarea onChange={this.handleTextareaChange} value={mdx}></textarea>
