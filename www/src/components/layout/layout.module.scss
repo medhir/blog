@@ -77,7 +77,7 @@
   }
 
   main {
-    margin: 0 45px;
+    margin: 0 16px;
     flex: 1;
 
     display: flex;
@@ -104,7 +104,7 @@
 
   footer {
     height: auto;
-    padding: 15px 45px;
+    padding: 8px 16px;
     background: linear-gradient(45deg, rgb(0, 0, 255), rgb(255, 50, 231));
     background-size: 400% 200%;
     animation: underanimate 30s infinite;
