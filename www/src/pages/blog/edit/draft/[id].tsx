@@ -8,7 +8,7 @@ import styles from './draft.module.scss'
 const DraftEditor = ({ mdx }) => {
   return (
     <div className={styles.draft}>
-      <Notebook mdx={mdx} />
+      <Notebook scroll={false} mdx={mdx} />
     </div>
   )
 }
