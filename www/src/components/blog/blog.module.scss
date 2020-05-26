@@ -1,5 +1,6 @@
 .blog {
-  background: transparent;
+  display: flex;
+  flex-direction: column;
 
   .posts,
   .drafts {
@@ -58,7 +59,7 @@
 
   li.post h3,
   li.draft h3 {
-    font-size: 2em;
+    font-size: 1.75em;
     font-weight: 500;
     margin: 5px 0px;
   }
@@ -80,5 +81,21 @@
 
   li.post p {
     display: inline-block;
+  }
+
+  @media only screen and (min-width: 500px) {
+    width: 100%;
+  }
+
+  @media only screen and (min-width: 800px) {
+    width: 80%;
+  }
+
+  @media only screen and (min-width: 1000px) {
+    width: 60%;
+  }
+
+  @media only screen and (min-width: 1500px) {
+    width: 50%;
   }
 }

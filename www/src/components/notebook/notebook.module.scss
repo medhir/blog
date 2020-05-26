@@ -1,7 +1,6 @@
 .notebook {
   display: flex;
-  flex-direction: column;
-  height: 100%;
+  flex: 1;
   position: relative;
 
   .button {
@@ -37,8 +36,18 @@
     background-color: rgba($color: #ff0000, $alpha: 0.2);
   }
 
-  .article {
+  .preview {
+    flex: 1;
     width: 100%;
     padding: 16px;
+
+    article {
+      width: 100%;
+    }
+  }
+
+  .scroll {
+    height: 85vh;
+    overflow-y: auto;
   }
 }

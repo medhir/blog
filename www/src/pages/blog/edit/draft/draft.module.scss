@@ -1,0 +1,20 @@
+.draft {
+  display: flex;
+  flex-direction: column;
+
+  @media only screen and (min-width: 500px) {
+    width: 100%;
+  }
+
+  @media only screen and (min-width: 800px) {
+    width: 80%;
+  }
+
+  @media only screen and (min-width: 1000px) {
+    width: 60%;
+  }
+
+  @media only screen and (min-width: 1500px) {
+    width: 50%;
+  }
+}

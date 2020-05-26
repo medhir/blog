@@ -4,13 +4,14 @@ import Preview from './preview'
 import styles from './notebook.module.scss'
 import http from '../../utility/http'
 import { debounce } from 'lodash'
-import { Button, IconButton } from '@material-ui/core'
+import { IconButton } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit'
 import VisibilityIcon from '@material-ui/icons/Visibility'
 
 interface NotebookProps {
   className?: string
   mdx?: string
+  scroll: boolean
 }
 
 interface NotebookState {
@@ -40,11 +41,12 @@ class Notebook extends Component<NotebookProps, NotebookState> {
   }
 
   setPreview() {
+    const { scroll } = this.props
     const { mdx } = this.state
     FetchSource(mdx)
       .then((response) => {
         this.setState({
-          preview: <Preview source={response.data.source} />,
+          preview: <Preview scroll={scroll} source={response.data.source} />,
         })
       })
       .catch((err) => {
@@ -61,6 +63,7 @@ class Notebook extends Component<NotebookProps, NotebookState> {
   renderMDXToSource() {
     if (!this.debouncedRenderMDX) {
       this.debouncedRenderMDX = debounce(() => {
+        const { scroll } = this.props
         const { mdx } = this.state
         FetchSource(mdx)
           .then((response) => {
@@ -70,7 +73,9 @@ class Notebook extends Component<NotebookProps, NotebookState> {
               },
               () => {
                 this.setState({
-                  preview: <Preview source={response.data.source} />,
+                  preview: (
+                    <Preview scroll={scroll} source={response.data.source} />
+                  ),
                 })
               }
             )

@@ -3,8 +3,14 @@ import http from '../../../../utility/http'
 import Notebook from '../../../../components/notebook'
 import { DraftMetadata } from '../../../../components/blog/types'
 
+import styles from './draft.module.scss'
+
 const DraftEditor = ({ mdx }) => {
-  return <Notebook mdx={mdx} />
+  return (
+    <div className={styles.draft}>
+      <Notebook scroll={false} mdx={mdx} />
+    </div>
+  )
 }
 
 export default DraftEditor
