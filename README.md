@@ -17,12 +17,10 @@ The application is hosted as a set of loosely coupled microservices running on c
 
 ## Set up / Installation
 
-The Go server connects to a postgres database for certain application operations. For local development, run postgres in a Docker container. This can be accomplished with the following commands:
+The Go server connects to a postgres database for certain application operations. For local development, you can initialize the database by running:
 
 ```shell script
-docker pull postgres:9.6
-mkdir -p $HOME/docker/volumes/postgres
-docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data postgres
+make init-db
 ```
 
 The local database can be accessed using the following command: 
