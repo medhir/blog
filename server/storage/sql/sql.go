@@ -1,15 +1,17 @@
 package sql
 
 import (
-	// pq is the database driver for connecting to postgres
 	"database/sql"
 	"errors"
 	"fmt"
+	// pq is the database driver for connecting to postgres
 	_ "github.com/lib/pq"
 	"os"
 
 	"github.com/golang-migrate/migrate/v4"
+	// postgres migration driver
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	// migration file reading driver
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
