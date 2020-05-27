@@ -17,6 +17,7 @@ import (
 	"github.com/honeycombio/beeline-go/wrappers/hnynethttp"
 	"github.com/rs/cors"
 
+	// pq is the database driver for connecting to postgres
 	_ "github.com/lib/pq"
 )
 
