@@ -37,12 +37,12 @@ resource "google_sql_database_instance" "blog-121419-sql" {
   }
 }
 
-resource "google_sql_database" "gitlab_database" {
-  name     = "gitlab"
+resource "google_sql_database" "keycloak_database" {
+  name = "keycloak"
   instance = google_sql_database_instance.blog-121419-sql.name
 }
 
-resource "google_sql_database" "keycloak_database" {
-  name = "keycloak"
+resource "google_sql_database" "medhir_com_database" {
+  name= "medhir-com"
   instance = google_sql_database_instance.blog-121419-sql.name
 }
