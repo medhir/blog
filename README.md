@@ -1,66 +1,57 @@
+# blog 
+
 Personal blogging engine (among other things) written in Go and Typescript.
 
 ## Architecture
 
 The application is hosted as a set of loosely coupled microservices running on containers managed by Google's Kubernetes engine.
 
-![Blog GKE Architecture](https://user-images.githubusercontent.com/5160860/71571934-be53aa00-2a91-11ea-9024-fa6a6071bbd1.png)
-The entrypoint for the blog application is through a Go web service. The files are broken out into different functionalities under package `api`. (Refactor in progress) Examples of functions include
+- `server` contains the logic that drives the back-end API layer (`api.medhir.com`)
+    - `auth` authenticates / authorizes access to API resources
+    - `blog` contains code that drives my personal blog
+    - `handlers` contains the "glue" for exposing the API over HTTP
+    - `code` provisions & manages kubernetes-hosted IDEs 
+    - `instance` contains logic for starting an instance of the server
+    - `storage` contains interfaces for interacting with application data stores
+- `www` contains front-end application views and serves HTML driven by server-rendered React components (`medhir.com`)
 
-- Image Processing / Uploading
-- Authentication
-- A blog editing REST API
-- Static HTML template-driven endpoints
+## Set up / Installation
 
-The front-end is written with Javascript and makes use of the Create React App framework. There are a few high-level folders for organization of components by purpose:
+The Go server connects to a postgres database for certain application operations. For local development, run postgres in a Docker container. This can be accomplished with the following commands:
 
-- **Auth** is for all relevant logic pertaining to authentication initiation and verification
-- **Components** define areas of the site driven by more complex UI logic, may require state. (e.g. a Markdown editor)
-- **Controls** are actionable elements. These include inputs, forms, and buttons.
-- **Layout** defines the high-level layout of the entire web page.
+```shell script
+docker pull postgres:9.6
+mkdir -p $HOME/docker/volumes/postgres
+docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data postgres
+```
+
+The local database can be accessed using the following command: 
+```shell script
+psql -h localhost -U postgres -d postgres
+```
 
 ## Running Locally
 
-At the repository root, run the following command in your terminal:
+At the repository root, run the following command to start the Go server in your terminal:
 
-```sh
-make blog
+```shell script
+make server
 ```
 
-This command builds client assets and starts the Go server. To hot-reload the React client as a separate process, run
+The front-end is a Node server that uses the Next.js framework. To start it, run  
 
-```sh
-make webapp
+```shell script
+make www
 ```
 
-## Deploying with `kubectl`
+## Connecting to the GKE Cluster
 
-- insert info here on how to authenticate into the cluster with kubectl 
-
-The blog will be run with GKE, Google's managed kubernetes controller. Deployments can be created, scaled up, torn down, and more with the `kubectl` command. 
-
-### To run a blog deployment
-- Only run this against the latest version of master!
-- Build & push the docker image using the command `make image version=<version_number>`
-- Update `kubernetes/blog.yml`'s `image` field to the latest image
-- Run `kubectl apply -f kubernetes/blog.yml` to configure the deployment to use the latest image
-- Submit a PR with the new image name to check in the changes to the source code
+[Write some things here about how to connect to GKE]
 
 
-### Useful commands: 
+### Useful Kubernetes commands: 
 
 Provide a shell into a pod
 ```sh
 kubectl exec -it <pod-name> -- sh
-```
-
-## FusionAuth
-
-FusionAuth provides authentication for the site and its APIs. The default is to have one "instance" running at a time (as a set of coordinated deployments for the auth service, elasticsearch, and the db). It is given relatively low resource constraints since it's literally just me using it lol. 
-
-To deploy FusionAuth, modify the `kubernetes/fusionauth/` resource definitions and then run: 
-```sh
-kubectl apply --recursive -f kubernetes/fusionauth/volume-claims
-kubectl apply --recursive -f kubernetes/fusionauth/deployments
-kubectl apply --recursive -f kubernetes/fusionauth/services
 ```
