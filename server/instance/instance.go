@@ -4,6 +4,7 @@ package instance
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"gitlab.com/medhir/blog/server/auth"
@@ -15,6 +16,8 @@ import (
 	"github.com/honeycombio/beeline-go"
 	"github.com/honeycombio/beeline-go/wrappers/hnynethttp"
 	"github.com/rs/cors"
+
+	_ "github.com/lib/pq"
 )
 
 const (
@@ -31,6 +34,7 @@ type Instance struct {
 	server *http.Server
 	auth   auth.Auth
 	gcs    gcs.GCS
+	db     *sql.DB
 	env    string
 }
 
@@ -112,10 +116,30 @@ func NewInstance() (*Instance, error) {
 
 // Start initializes a server instance
 func (i *Instance) Start() {
-	err := i.server.ListenAndServe() // Start doesn't return until the server connection breaks
+	// start connection to database
+	db, err := sql.Open(
+		"postgres",
+		fmt.Sprintf(
+			"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+			"localhost",  // host
+			5432,         // port
+			"postgres",   // user
+			"docker",     // password
+			"medhir-com", // database name
+		),
+	)
+	if err != nil {
+		fmt.Println("Could not start connection to the database -", err.Error())
+		i.Shutdown() // gracefully shut down on exit
+	}
+	defer db.Close()
+	// ping db to check connection
+	err = db.Ping()
+	i.db = db
+	err = i.server.ListenAndServe() // Start doesn't return until the server connection breaks
 	if err != nil {
 		fmt.Println("Server stopped unexpectedly.", err)
-		i.Shutdown() // gracefully shut down on exit
+		i.Shutdown()
 	}
 }
 
