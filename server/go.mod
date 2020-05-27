@@ -9,6 +9,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/disintegration/imaging v1.6.2
 	github.com/go-resty/resty/v2 v2.0.0
+	github.com/golang-migrate/migrate/v4 v4.11.0
 	github.com/google/uuid v1.1.1
 	github.com/honeycombio/beeline-go v0.5.1
 	github.com/jetstack/cert-manager v0.15.0

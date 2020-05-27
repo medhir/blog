@@ -17,7 +17,8 @@ The application is hosted as a set of loosely coupled microservices running on c
 
 ## Set up / Installation
 
-The Go server connects to a postgres database for certain application operations. For local development, you can initialize the database by running:
+The Go server connects to a postgres database for certain application operations. 
+For local development, you can initialize the database by running:
 
 ```shell script
 make init-db
@@ -55,3 +56,17 @@ Provide a shell into a pod
 ```sh
 kubectl exec -it <pod-name> -- sh
 ```
+
+## Database Migrations
+
+Changes to the database should be managed through .sql migrations. To create a new migration, run the following command at the 
+directory root:
+ 
+```shell script
+make migration name=<migration_name>
+```
+
+There will be two new migration files located at `server/storage/sql/migrations`. The `up` file moves the database forward a version,
+and `down` moves the database back a version.
+
+The Go server will automatically migrate the database up to the most recent version once the migration file is present. 

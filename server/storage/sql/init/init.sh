@@ -1,1 +1,0 @@
-psql -h localhost -U postgres -d postgres < $PWD/server/storage/sql/init/schema.sql

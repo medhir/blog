@@ -43,5 +43,9 @@ init-db:
 	docker pull postgres:9.6
 	- mkdir -p ${HOME}/docker/volumes/postgres
 	- docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v ${HOME}/docker/volumes/postgres:/var/lib/postgresql/data postgres
-	chmod +x ./server/storage/sql/init/init.sh
-	 /bin/bash ./server/storage/sql/init/init.sh
+	sleep 3
+	psql -h localhost -U postgres -d postgres < ${PWD}/server/storage/sql/init/schema.sql
+
+.PHONY: migration
+migration:
+	migrate create -ext  sql -dir server/storage/sql/migrations -seq $(name)

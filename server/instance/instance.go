@@ -4,11 +4,11 @@ package instance
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"gitlab.com/medhir/blog/server/auth"
 	"gitlab.com/medhir/blog/server/storage/gcs"
+	"gitlab.com/medhir/blog/server/storage/sql"
 	"net/http"
 	"os"
 	"time"
@@ -35,7 +35,7 @@ type Instance struct {
 	server *http.Server
 	auth   auth.Auth
 	gcs    gcs.GCS
-	db     *sql.DB
+	db     sql.Postgres
 	env    string
 }
 
@@ -78,6 +78,12 @@ func NewInstance() (*Instance, error) {
 		ServiceName: serviceName,
 	})
 
+	// init database connection
+	db, err := sql.NewPostgres()
+	if err != nil {
+		return nil, err
+	}
+
 	instance := &Instance{
 		ctx:    ctx,
 		router: http.DefaultServeMux,
@@ -85,6 +91,7 @@ func NewInstance() (*Instance, error) {
 		auth:   auth,
 		gcs:    gcs,
 		env:    environment,
+		db:     db,
 	}
 
 	err = instance.AddRoutes() // initialize routes for serve mux
@@ -117,30 +124,10 @@ func NewInstance() (*Instance, error) {
 
 // Start initializes a server instance
 func (i *Instance) Start() {
-	// start connection to database
-	db, err := sql.Open(
-		"postgres",
-		fmt.Sprintf(
-			"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-			"localhost",  // host
-			5432,         // port
-			"postgres",   // user
-			"docker",     // password
-			"medhir-com", // database name
-		),
-	)
-	if err != nil {
-		fmt.Println("Could not start connection to the database -", err.Error())
-		i.Shutdown() // gracefully shut down on exit
-	}
-	defer db.Close()
-	// ping db to check connection
-	err = db.Ping()
-	i.db = db
-	err = i.server.ListenAndServe() // Start doesn't return until the server connection breaks
+	err := i.server.ListenAndServe() // Start doesn't return until the server connection breaks
 	if err != nil {
 		fmt.Println("Server stopped unexpectedly.", err)
-		i.Shutdown()
+		i.Shutdown() // gracefully shut down on exit
 	}
 }
 
@@ -149,7 +136,11 @@ func (i *Instance) Shutdown() {
 	if i.server != nil {
 		ctx, cancel := context.WithTimeout(i.ctx, 10*time.Second)
 		defer cancel()
-		err := i.server.Shutdown(ctx)
+		err := i.db.Close()
+		if err != nil {
+			fmt.Println("Failed to shut down server gracefully.", err)
+		}
+		err = i.server.Shutdown(ctx)
 		if err != nil {
 			fmt.Println("Failed to shut down server gracefully.", err)
 		}
