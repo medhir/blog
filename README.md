@@ -23,6 +23,8 @@ The Go server connects to a postgres database for certain application operations
 make init-db
 ```
 
+You will be prompted to enter a password for the `postgres` user, to which you should enter `docker`.
+
 The local database can be accessed using the following command: 
 ```shell script
 psql -h localhost -U postgres -d postgres

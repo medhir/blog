@@ -41,7 +41,7 @@ mocks:
 .PHONY: init-db
 init-db:
 	docker pull postgres:9.6
-	- mkdir -p $HOME/docker/volumes/postgres
-	- docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data postgres
+	- mkdir -p ${HOME}/docker/volumes/postgres
+	- docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v ${HOME}/docker/volumes/postgres:/var/lib/postgresql/data postgres
 	chmod +x ./server/storage/sql/init/init.sh
 	 /bin/bash ./server/storage/sql/init/init.sh
