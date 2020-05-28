@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS courses(
-    id uuid primary key,
+    id uuid primary key not null,
     author_id uuid not null,
     title text not null,
     description text,

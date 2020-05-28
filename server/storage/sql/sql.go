@@ -20,6 +20,12 @@ const databaseName = "medhir-com"
 // Postgres is the interface for interacting with the postgres database
 type Postgres interface {
 	Close() error
+
+	// Course API
+	CreateCourse(course Course) error
+	GetCourse(courseUUID string) (*Course, error)
+	UpdateCourse(course Course) error
+	DeleteCourse(courseUUID string) error
 }
 
 type postgres struct {
