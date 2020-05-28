@@ -69,6 +69,23 @@ spec:
                   key: api-key
             - name: HONEYCOMB_DATASET
               value: review
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: medhir-com-database
+                  value: host
+            - name: POSTGRES_PORT
+              value: 5432
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: medhir-com-database
+                  value: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: medhir-com-database
+                  value: password
       volumes:
         - name: creds
           secret:
