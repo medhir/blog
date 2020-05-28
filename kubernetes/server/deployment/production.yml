@@ -75,7 +75,7 @@ spec:
                   name: medhir-com-database
                   key: host
             - name: POSTGRES_PORT
-              value: 5432
+              value: "5432"
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
