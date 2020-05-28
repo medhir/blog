@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Course describes the metadata for a course
 type Course struct {
 	ID          string       `json:"id"`
 	AuthorID    string       `json:"author_id"`
