@@ -17,6 +17,7 @@ import (
 
 const databaseName = "medhir-com"
 
+// Postgres is the interface for interacting with the postgres database
 type Postgres interface {
 	Close() error
 }
