@@ -48,4 +48,4 @@ init-db:
 
 .PHONY: migration
 migration:
-	migrate create -ext  sql -dir server/storage/sql/migrations -seq $(name)
+	migrate create -ext sql -dir server/storage/sql/migrations -seq $(name)

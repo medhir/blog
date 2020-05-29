@@ -8,7 +8,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o app .
 
 FROM alpine
-COPY --from=builder /server/app ./
+COPY --from=builder /server ./
 RUN apk add --no-cache ca-certificates && update-ca-certificates
 EXPOSE 9000
 CMD ["./app"]
