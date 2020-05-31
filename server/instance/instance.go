@@ -23,9 +23,10 @@ import (
 
 const (
 	// TODO - Move to config
-	serverPort  = ":9000"
-	local       = "local"
-	serviceName = "go-server"
+	serverPort   = ":9000"
+	local        = "local"
+	serviceName  = "go-server"
+	databaseName = "medhir-com"
 )
 
 // Instance represents an instance of the server
@@ -79,7 +80,26 @@ func NewInstance() (*Instance, error) {
 	})
 
 	// init database connection
-	db, err := sql.NewPostgres()
+	host, ok := os.LookupEnv("POSTGRES_HOST")
+	if !ok {
+		return nil, errors.New("POSTGRES_HOST must be provided")
+	}
+	port, ok := os.LookupEnv("POSTGRES_PORT")
+	if !ok {
+		return nil, errors.New("POSTGRES_PORT must be provided")
+	}
+	user, ok := os.LookupEnv("POSTGRES_USER")
+	if !ok {
+		return nil, errors.New("POSTGRES_USER must be provided")
+	}
+	password, ok := os.LookupEnv("POSTGRES_PASSWORD")
+	if !ok {
+		return nil, errors.New("POSTGRES_PASSWORD must be provided")
+	}
+	db, err := sql.NewPostgres(
+		fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, databaseName),
+		"storage/sql/migrations",
+	)
 	if err != nil {
 		return nil, err
 	}

@@ -29,6 +29,6 @@ func (i *Instance) AddRoutes() error {
 	//	code
 	i.router.HandleFunc("/code/", h.Authorize(auth.BlogOwner, h.HandleCodeDeployment()))
 	//  course
-	i.router.HandleFunc("/courses/", h.Authorize(auth.BlogOwner, h.HandleCourses()))
+	i.router.HandleFunc("/courses/", h.HandleCourses())
 	return nil
 }

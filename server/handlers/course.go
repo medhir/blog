@@ -37,7 +37,7 @@ func (h *handlers) postCourse() http.HandlerFunc {
 		}
 		// add new UUID to course
 		course.ID = uuid.New().String()
-		err = h.db.CreateCourse(course)
+		_, err = h.db.CreateCourse(course)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

@@ -18,19 +18,21 @@ func courseValid(course Course) error {
 	return nil
 }
 
-func (p *postgres) CreateCourse(course Course) error {
+func (p *postgres) CreateCourse(course Course) (string, error) {
 	err := courseValid(course)
 	if err != nil {
-		return err
+		return "", err
 	}
 	query := `
 INSERT INTO courses (id, author_id, title, description, created_at)
-VALUES ($1, $2, $3, $4, $5);`
-	_, err = p.db.Exec(query, course.ID, course.AuthorID, course.Title, course.Description, time.Now())
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id;`
+	var id string
+	err = p.db.QueryRow(query, course.ID, course.AuthorID, course.Title, course.Description, time.Now()).Scan(&id)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return id, nil
 }
 
 func (p *postgres) GetCourse(courseUUID string) (*Course, error) {
