@@ -19,15 +19,6 @@ stages:
   - go mod download
   - go get -u golang.org/x/lint/golint
 
-.setup-server-docker-job: &setup-server-docker-job
-  - wget https://dl.google.com/go/go1.14.linux-amd64.tar.gz
-  - sha256sum go1.14.linux-amd64.tar.gz
-  - tar -C /usr/local -xzf go1.14.linux-amd64.tar.gz
-  - export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
-  - cd server
-  - go mod download
-  - go get -u golang.org/x/lint/golint
-
 .setup-deploy-job: &setup-deploy-job
   - apk add --no-cache curl
   - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
@@ -194,10 +185,10 @@ server lint:
     - golint -set_exit_status ./...
 
 server test:
-  image: docker:stable
+  image: seanhoughton/golang_docker:1.14
   stage: test
   before_script:
-    - *setup-server-docker-job
+    - *setup-server-job
   script:
     - go test ./...
 
