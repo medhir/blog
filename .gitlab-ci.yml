@@ -187,12 +187,16 @@ server lint:
 server test:
   image: seanhoughton/golang_docker:1.14
   stage: test
-  variables:
-    DOCKER_HOST: tcp://docker:2375
   services:
     - docker:stable-dind
   before_script:
     - *setup-server-job
+    - |
+      if ! docker info &>/dev/null; then
+        if [ -z "$DOCKER_HOST" ] && [ "$KUBERNETES_PORT" ]; then
+          export DOCKER_HOST='tcp://localhost:2375'
+        fi
+      fi
   script:
     - go test ./...
 
