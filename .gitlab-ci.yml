@@ -191,6 +191,7 @@ server test:
     - postgres:9.6
   variables:
     POSTGRES_HOST: postgres
+    POSTGRES_PORT: "5432"
     POSTGRES_DB: medhir-com
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: docker
