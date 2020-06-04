@@ -9,6 +9,7 @@ import (
 	"gitlab.com/medhir/blog/server/code"
 	"gitlab.com/medhir/blog/server/imageprocessor"
 	"gitlab.com/medhir/blog/server/storage/gcs"
+	"gitlab.com/medhir/blog/server/storage/sql"
 	"net/http"
 )
 
@@ -38,6 +39,9 @@ type Handlers interface {
 	// Coder
 	HandleCodeInstance() http.HandlerFunc
 	HandleCodeDeployment() http.HandlerFunc
+
+	// Courses
+	HandleCourses() http.HandlerFunc
 }
 
 // handlers describes dependencies needed to serve http requests
@@ -49,11 +53,12 @@ type handlers struct {
 	blog         blog.Blog
 	imgProcessor imageprocessor.ImageProcessor
 	coder        code.Manager
+	db           sql.Postgres
 	env          string
 }
 
 // NewHandlers instantiates a new set of handlers
-func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, env string) (Handlers, error) {
+func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, db sql.Postgres, env string) (Handlers, error) {
 	coderManager, err := code.NewManager(ctx, auth, env)
 	if err != nil {
 		return nil, err
@@ -65,6 +70,7 @@ func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, env string) (
 		blog:         blog.NewBlog(gcs),
 		imgProcessor: imageprocessor.NewImageProcessor(),
 		coder:        coderManager,
+		db:           db,
 		env:          env,
 	}, nil
 }

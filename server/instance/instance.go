@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"gitlab.com/medhir/blog/server/auth"
 	"gitlab.com/medhir/blog/server/storage/gcs"
+	"gitlab.com/medhir/blog/server/storage/sql"
 	"net/http"
 	"os"
 	"time"
@@ -15,13 +16,17 @@ import (
 	"github.com/honeycombio/beeline-go"
 	"github.com/honeycombio/beeline-go/wrappers/hnynethttp"
 	"github.com/rs/cors"
+
+	// pq is the database driver for connecting to postgres
+	_ "github.com/lib/pq"
 )
 
 const (
 	// TODO - Move to config
-	serverPort  = ":9000"
-	local       = "local"
-	serviceName = "go-server"
+	serverPort   = ":9000"
+	local        = "local"
+	serviceName  = "go-server"
+	databaseName = "medhir-com"
 )
 
 // Instance represents an instance of the server
@@ -31,6 +36,7 @@ type Instance struct {
 	server *http.Server
 	auth   auth.Auth
 	gcs    gcs.GCS
+	db     sql.Postgres
 	env    string
 }
 
@@ -73,6 +79,31 @@ func NewInstance() (*Instance, error) {
 		ServiceName: serviceName,
 	})
 
+	// init database connection
+	host, ok := os.LookupEnv("POSTGRES_HOST")
+	if !ok {
+		return nil, errors.New("POSTGRES_HOST must be provided")
+	}
+	port, ok := os.LookupEnv("POSTGRES_PORT")
+	if !ok {
+		return nil, errors.New("POSTGRES_PORT must be provided")
+	}
+	user, ok := os.LookupEnv("POSTGRES_USER")
+	if !ok {
+		return nil, errors.New("POSTGRES_USER must be provided")
+	}
+	password, ok := os.LookupEnv("POSTGRES_PASSWORD")
+	if !ok {
+		return nil, errors.New("POSTGRES_PASSWORD must be provided")
+	}
+	db, err := sql.NewPostgres(
+		fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, databaseName),
+		"storage/sql/migrations",
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	instance := &Instance{
 		ctx:    ctx,
 		router: http.DefaultServeMux,
@@ -80,6 +111,7 @@ func NewInstance() (*Instance, error) {
 		auth:   auth,
 		gcs:    gcs,
 		env:    environment,
+		db:     db,
 	}
 
 	err = instance.AddRoutes() // initialize routes for serve mux
@@ -124,7 +156,11 @@ func (i *Instance) Shutdown() {
 	if i.server != nil {
 		ctx, cancel := context.WithTimeout(i.ctx, 10*time.Second)
 		defer cancel()
-		err := i.server.Shutdown(ctx)
+		err := i.db.Close()
+		if err != nil {
+			fmt.Println("Failed to shut down server gracefully.", err)
+		}
+		err = i.server.Shutdown(ctx)
 		if err != nil {
 			fmt.Println("Failed to shut down server gracefully.", err)
 		}
