@@ -8,42 +8,39 @@ import (
 	"os"
 	"testing"
 )
-import "github.com/ory/dockertest/v3"
+
+const databaseName = "medhir-com"
 
 var pg Postgres
 var err error
 
 func TestMain(m *testing.M) {
-	pool, err := dockertest.NewPool("")
-	if err != nil {
-		log.Fatalf("Could not connect to docker: %s", err)
+	// init database connection
+	host, ok := os.LookupEnv("POSTGRES_HOST")
+	if !ok {
+		log.Fatal("POSTGRES_HOST must be provided")
 	}
-	// pull postgres image
-	resource, err := pool.Run("postgres", "9.6", []string{"POSTGRES_PASSWORD=docker", "POSTGRES_DB=medhir-com"})
-	if err != nil {
-		log.Fatalf("Could not start resource: %s", err)
+	port, ok := os.LookupEnv("POSTGRES_PORT")
+	if !ok {
+		log.Fatal("POSTGRES_PORT must be provided")
 	}
-
-	err = pool.Retry(func() error {
-		var err error
-		pg, err = NewPostgres(
-			fmt.Sprintf("postgres://postgres:docker@localhost:%s/medhir-com?sslmode=disable", resource.GetPort("5432/tcp")),
-			"migrations",
-		)
-		if err != nil {
-			return err
-		}
-		return nil
-	})
+	user, ok := os.LookupEnv("POSTGRES_USER")
+	if !ok {
+		log.Fatal("POSTGRES_USER must be provided")
+	}
+	password, ok := os.LookupEnv("POSTGRES_PASSWORD")
+	if !ok {
+		log.Fatal("POSTGRES_PASSWORD must be provided")
+	}
+	pg, err = NewPostgres(
+		fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, databaseName),
+		"migrations",
+	)
 	if err != nil {
-		log.Fatalf("Could not connect to docker: %s", err)
+		log.Fatalf("Could not connect to database, %s", err)
 	}
 
 	code := m.Run()
-	err = pool.Purge(resource)
-	if err != nil {
-		log.Fatalf("Could not purge resource: %s", err)
-	}
 
 	os.Exit(code)
 }

@@ -177,7 +177,7 @@ www production deploy:
 ########################################################################################################
 
 server lint:
-  image: "golang:1.14.2"
+  image: golang:1.14.2
   stage: lint
   before_script:
     - *setup-server-job
@@ -185,10 +185,16 @@ server lint:
     - golint -set_exit_status ./...
 
 server test:
-  image: seanhoughton/golang_docker:1.14
+  image: golang:1.14.2
   stage: test
   services:
-    - docker:stable-dind
+    - postgres:9.6
+  variables:
+    POSTGRES_HOST: postgres
+    POSTGRES_DB: medhir-com
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: docker
+    POSTGRES_HOST_AUTH_METHOD: trust
   before_script:
     - *setup-server-job
   script:
