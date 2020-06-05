@@ -9,11 +9,13 @@ import (
 	"path"
 )
 
+const coursesBase = "courses"
+
 func (h *handlers) getCourse() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		courseID := path.Base(r.URL.Path)
-		fmt.Println("Course ID", courseID)
-		if courseID == "/" {
+		// if no ID is provided, return all courses
+		if courseID == coursesBase {
 			courses, err := h.db.GetCourses()
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
