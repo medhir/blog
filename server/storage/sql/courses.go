@@ -92,9 +92,9 @@ FROM courses;`
 	}
 	defer rows.Close()
 
-	courses := []*Course{}
+	var courses []*Course
 	for rows.Next() {
-		var course *Course
+		course := &Course{}
 		err := rows.Scan(&course.ID, &course.AuthorID, &course.Title, &course.Description, &course.CreatedAt, &course.UpdatedAt)
 		if err != nil {
 			return nil, err
