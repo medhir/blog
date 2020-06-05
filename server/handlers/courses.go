@@ -50,11 +50,12 @@ func (h *handlers) postCourse() http.HandlerFunc {
 		}
 		// add new UUID to course
 		course.ID = uuid.New().String()
-		_, err = h.db.CreateCourse(course)
+		id, err := h.db.CreateCourse(course)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		w.Write([]byte(id))
 		w.WriteHeader(http.StatusOK)
 	}
 }
