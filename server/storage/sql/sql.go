@@ -21,6 +21,7 @@ type Postgres interface {
 	GetCourse(courseUUID string) (*Course, error)
 	UpdateCourse(course Course) error
 	DeleteCourse(courseUUID string) error
+	GetCourses() ([]*Course, error)
 }
 
 type postgres struct {

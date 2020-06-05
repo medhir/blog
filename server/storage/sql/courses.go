@@ -81,3 +81,25 @@ WHERE id = $1;`
 	}
 	return nil
 }
+
+func (p *postgres) GetCourses() ([]*Course, error) {
+	query := `
+SELECT id, author_id, title, description, created_at, updated_at 
+FROM courses;`
+	rows, err := p.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	courses := []*Course{}
+	for rows.Next() {
+		var course *Course
+		err := rows.Scan(&course.ID, &course.AuthorID, &course.Title, &course.Description, &course.CreatedAt, &course.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		courses = append(courses, course)
+	}
+	return courses, nil
+}

@@ -12,15 +12,28 @@ import (
 func (h *handlers) getCourse() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		courseID := path.Base(r.URL.Path)
-		course, err := h.db.GetCourse(courseID)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		err = writeJSON(w, course)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+		if courseID == "" {
+			courses, err := h.db.GetCourses()
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			err = writeJSON(w, courses)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		} else {
+			course, err := h.db.GetCourse(courseID)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			err = writeJSON(w, course)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		}
 	}
 }
