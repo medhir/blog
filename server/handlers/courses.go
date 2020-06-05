@@ -12,7 +12,8 @@ import (
 func (h *handlers) getCourse() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		courseID := path.Base(r.URL.Path)
-		if courseID == "" {
+		fmt.Println("Course ID", courseID)
+		if courseID == "/" {
 			courses, err := h.db.GetCourses()
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
