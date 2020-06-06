@@ -9,18 +9,34 @@ import (
 	"path"
 )
 
+const coursesBase = "courses"
+
 func (h *handlers) getCourse() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		courseID := path.Base(r.URL.Path)
-		course, err := h.db.GetCourse(courseID)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		err = writeJSON(w, course)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+		// if no ID is provided, return all courses
+		if courseID == coursesBase {
+			courses, err := h.db.GetCourses()
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			err = writeJSON(w, courses)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		} else {
+			course, err := h.db.GetCourse(courseID)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			err = writeJSON(w, course)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		}
 	}
 }
@@ -37,11 +53,12 @@ func (h *handlers) postCourse() http.HandlerFunc {
 		}
 		// add new UUID to course
 		course.ID = uuid.New().String()
-		_, err = h.db.CreateCourse(course)
+		id, err := h.db.CreateCourse(course)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		w.Write([]byte(id))
 		w.WriteHeader(http.StatusOK)
 	}
 }
