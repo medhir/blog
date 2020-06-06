@@ -19,7 +19,7 @@ import (
 const (
 	ingressName            = "code"
 	servicePort            = 3000
-	containerImageName     = "theiaide/theia-go:latest"
+	containerImageName     = "theiaide/theia-go:1.1.0"
 	reviewHostName         = "review.medhir.com"
 	productionHostName     = "medhir.com"
 	cnameFormatter         = "code-%s"
