@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode, ReactElement } from 'react'
+import React, { useState, useEffect, ReactNode, ReactElement, Component } from 'react'
 
 import Login from './login'
 import http from '../../utility/http'
@@ -11,12 +11,27 @@ interface AuthProps {
   children: ReactNode
 }
 
+interface LoginErrorAlert {
+  open: boolean
+  message: string
+}
+
+interface AuthState {
+  authorized: boolean
+  username: string
+  password: string
+  loginErrorAlert: LoginErrorAlert
+}
+
+const LocalStorageAuthorizationKey = 'medhir-com-authorization'
+const StatusAuthorized = 'authorized'
+
 export const Roles = {
   BlogOwner: 'blog-owner',
 }
 
 const Auth = ({ children, prompt, role }: AuthProps): ReactElement => {
-  const [validated, setValidated] = useState(false)
+  const [validated, setValidated] = useState(true)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [loginErrorAlert, setLoginErrorAlert] = React.useState({
@@ -36,6 +51,7 @@ const Auth = ({ children, prompt, role }: AuthProps): ReactElement => {
       .Post('/login', { ...credentials }, { withCredentials: true })
       .then(() => {
         setValidated(true)
+        localStorage.setItem(LocalStorageAuthorizationKey, StatusAuthorized)
       })
       .catch((error: AxiosError) => {
         setLoginErrorAlert({ open: true, message: String(error.response.data) })
@@ -62,12 +78,20 @@ const Auth = ({ children, prompt, role }: AuthProps): ReactElement => {
   }
 
   useEffect(() => {
+    const authorizationStatus = localStorage.getItem(LocalStorageAuthorizationKey)
+    if (authorizationStatus !== StatusAuthorized) {
+      setValidated(false)
+    }
     http
       .Get(`/jwt/validate/${role}`, {
         withCredentials: true,
       })
       .then(() => {
         setValidated(true)
+        localStorage.setItem(LocalStorageAuthorizationKey, StatusAuthorized)
+      }).catch(() => {
+        setValidated(false)
+        localStorage.setItem(LocalStorageAuthorizationKey, '')
       })
   }, [])
 
