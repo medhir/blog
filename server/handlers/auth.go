@@ -53,8 +53,7 @@ func (h *handlers) Login() http.HandlerFunc {
 			return
 		}
 		// set authentication tokens as http-only cookies
-		h.setCookies(w, authResponse.Token, authResponse.RefreshToken)
-		w.WriteHeader(http.StatusOK)
+		h.setAuthCookies(w, authResponse.Token, authResponse.RefreshToken)
 	}
 }
 
@@ -65,10 +64,6 @@ func (h *handlers) Authorize(role auth.Role, handler http.HandlerFunc) http.Hand
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Could not find authorization cookie - %v", err), http.StatusInternalServerError)
 			return
-		}
-		err = h.auth.ValidateRole(jwtCookie.Value, role)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusUnauthorized)
 		}
 		err = h.auth.ValidateJWT(jwtCookie.Value)
 		if err != nil {
@@ -84,7 +79,17 @@ func (h *handlers) Authorize(role auth.Role, handler http.HandlerFunc) http.Hand
 				return
 			}
 			// if we successfully get a new access token, set this as the new jwt cookie
-			h.setCookies(w, newJWT, "")
+			h.setAuthCookies(w, newJWT, "")
+			jwtCookie.Value = newJWT
+		}
+		err = h.auth.ValidateRole(jwtCookie.Value, role)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+		}
+		// make sure this user has the role claims necessary to access the resource
+		err = h.auth.ValidateRole(jwtCookie.Value, role)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
 		}
 		// and then proceed with the rest of the authorized code
 		handler(w, r)
@@ -100,10 +105,6 @@ func (h *handlers) ValidateJWT() http.HandlerFunc {
 			http.Error(w, fmt.Sprintf("Could not find authorization cookie - %v", err), http.StatusInternalServerError)
 			return
 		}
-		err = h.auth.ValidateRole(jwtCookie.Value, auth.Role(role))
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusUnauthorized)
-		}
 		err = h.auth.ValidateJWT(jwtCookie.Value)
 		if err != nil {
 			// if this token is not valid, first attempt to refresh the authorization
@@ -118,8 +119,12 @@ func (h *handlers) ValidateJWT() http.HandlerFunc {
 				return
 			}
 			// if we successfully get a new access token, set this as the new jwt cookie
-			h.setCookies(w, newJWT, "")
-			w.WriteHeader(http.StatusOK)
+			h.setAuthCookies(w, newJWT, "")
+			jwtCookie.Value = newJWT
+		}
+		err = h.auth.ValidateRole(jwtCookie.Value, auth.Role(role))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
 		}
 	}
 }
@@ -138,12 +143,11 @@ func (h *handlers) RegisterNewUser() http.HandlerFunc {
 			http.Error(w, fmt.Sprintf("Unable to create new user - %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
-		h.setCookies(w, resp.Token, resp.RefreshToken)
-		w.WriteHeader(http.StatusOK)
+		h.setAuthCookies(w, resp.Token, resp.RefreshToken)
 	}
 }
 
-func (h *handlers) setCookies(w http.ResponseWriter, jwt, refresh string) {
+func (h *handlers) setAuthCookies(w http.ResponseWriter, jwt, refresh string) {
 	// set authentication tokens as http-only cookies
 	if jwt != "" {
 		jwtCookie := &http.Cookie{
@@ -154,6 +158,7 @@ func (h *handlers) setCookies(w http.ResponseWriter, jwt, refresh string) {
 			Expires:  time.Now().AddDate(0, 0, 1),
 		}
 		if h.env != local {
+			// ensure https if not on localhost
 			// ensure https if not on localhost
 			jwtCookie.Domain = medhircom
 			jwtCookie.Secure = true
