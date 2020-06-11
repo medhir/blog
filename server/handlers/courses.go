@@ -16,7 +16,15 @@ func (h *handlers) getCourse() http.HandlerFunc {
 		courseID := path.Base(r.URL.Path)
 		// if no ID is provided, return all courses
 		if courseID == coursesBase {
-			courses, err := h.db.GetCourses()
+			jwt, err := h.getJWTCookie(r)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+			user, err := h.auth.GetUser(jwt)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+			courses, err := h.db.GetCourses(*user.ID)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -53,6 +61,18 @@ func (h *handlers) postCourse() http.HandlerFunc {
 		}
 		// add new UUID to course
 		course.ID = uuid.New().String()
+
+		// get author ID and add to course
+		jwt, err := h.getJWTCookie(r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		user, err := h.auth.GetUser(jwt)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		course.AuthorID = *user.ID
+
 		id, err := h.db.CreateCourse(course)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -72,6 +92,21 @@ func (h *handlers) patchCourse() http.HandlerFunc {
 			http.Error(w, fmt.Sprintf("Unable to decode data in request body - %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
+
+		// verify user can update this course
+		jwt, err := h.getJWTCookie(r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		user, err := h.auth.GetUser(jwt)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		if course.AuthorID != *user.ID {
+			http.Error(w, fmt.Sprintf("insufficient permissions to update course %s", course.ID), http.StatusUnauthorized)
+			return
+		}
+
 		err = h.db.UpdateCourse(course)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -84,7 +119,26 @@ func (h *handlers) patchCourse() http.HandlerFunc {
 func (h *handlers) deleteCourse() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		courseID := path.Base(r.URL.Path)
-		err := h.db.DeleteCourse(courseID)
+		course, err := h.db.GetCourse(courseID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+
+		// verify user can delete this course
+		jwt, err := h.getJWTCookie(r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		user, err := h.auth.GetUser(jwt)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		if course.AuthorID != *user.ID {
+			http.Error(w, fmt.Sprintf("insufficient permissions to update course %s", course.ID), http.StatusUnauthorized)
+			return
+		}
+
+		err = h.db.DeleteCourse(courseID)
 		if err != nil {
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)

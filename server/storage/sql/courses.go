@@ -35,13 +35,13 @@ RETURNING id;`
 	return id, nil
 }
 
-func (p *postgres) GetCourse(courseUUID string) (*Course, error) {
+func (p *postgres) GetCourse(courseID string) (*Course, error) {
 	course := &Course{}
 	query := `
 SELECT id, author_id, title, description, created_at, updated_at
 FROM courses
 WHERE id = $1;`
-	err := p.db.QueryRow(query, courseUUID).Scan(&course.ID, &course.AuthorID, &course.Title, &course.Description, &course.CreatedAt, &course.UpdatedAt)
+	err := p.db.QueryRow(query, courseID).Scan(&course.ID, &course.AuthorID, &course.Title, &course.Description, &course.CreatedAt, &course.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -64,11 +64,11 @@ WHERE id = $1;`
 	return nil
 }
 
-func (p *postgres) DeleteCourse(courseUUID string) error {
+func (p *postgres) DeleteCourse(courseID string) error {
 	query := `
 DELETE FROM courses
 WHERE id = $1;`
-	res, err := p.db.Exec(query, courseUUID)
+	res, err := p.db.Exec(query, courseID)
 	if err != nil {
 		return err
 	}
@@ -82,11 +82,12 @@ WHERE id = $1;`
 	return nil
 }
 
-func (p *postgres) GetCourses() ([]*Course, error) {
+func (p *postgres) GetCourses(authorID string) ([]*Course, error) {
 	query := `
 SELECT id, author_id, title, description, created_at, updated_at 
-FROM courses;`
-	rows, err := p.db.Query(query)
+FROM courses
+WHERE author_id = $1;`
+	rows, err := p.db.Query(query, authorID)
 	if err != nil {
 		return nil, err
 	}
