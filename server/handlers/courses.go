@@ -49,6 +49,7 @@ func (h *handlers) getCourse() http.HandlerFunc {
 	}
 }
 
+// postCourse handles a POST request to the /courses/ endpoint.
 func (h *handlers) postCourse() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
@@ -61,7 +62,6 @@ func (h *handlers) postCourse() http.HandlerFunc {
 		}
 		// add new UUID to course
 		course.ID = uuid.New().String()
-
 		// get author ID and add to course
 		jwt, err := h.getJWTCookie(r)
 		if err != nil {
@@ -72,7 +72,6 @@ func (h *handlers) postCourse() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		course.AuthorID = *user.ID
-
 		id, err := h.db.CreateCourse(course)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

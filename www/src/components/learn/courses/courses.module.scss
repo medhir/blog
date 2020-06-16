@@ -1,0 +1,22 @@
+.courses {
+  display: flex;
+  flex-direction: column;
+  h2 {
+    text-align: center;
+    margin-top: 36px;
+    margin-bottom: 36px;
+  }
+  &_cards {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  &_card {
+    margin: 24px;
+    width: 25%;
+  }
+
+  &_add_card {
+    text-align: center;
+  }
+}

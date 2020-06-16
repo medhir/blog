@@ -30,6 +30,7 @@
     "next-mdx-remote": "https://github.com/hashicorp/next-mdx-remote",
     "node-fetch": "^2.6.0",
     "react": "16.13.1",
+    "react-contenteditable": "^3.3.4",
     "react-dom": "16.13.1",
     "remark-emoji": "^2.1.0",
     "remark-images": "^2.0.0",
