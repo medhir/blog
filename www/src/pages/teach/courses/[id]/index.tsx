@@ -1,6 +1,6 @@
 import { GetServerSideProps } from 'next'
-import Auth, { Roles } from '../../../components/auth'
-import Course from '../../../components/learn/course'
+import Auth, { Roles } from '../../../../components/auth'
+import Course from '../../../../components/learn/course'
 
 const CourseByID = ({ id }) => (
   <Auth prompt role={Roles.BlogOwner}>

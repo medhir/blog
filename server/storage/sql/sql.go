@@ -22,6 +22,23 @@ type Postgres interface {
 	UpdateCourse(course Course) error
 	DeleteCourse(courseID string) error
 	GetCourses(authorID string) ([]*Course, error)
+
+	// Lessons API
+	CreateLesson(
+		id string,
+		courseID string,
+		title string,
+		description string,
+		mdx string,
+	) error
+	GetLesson(id string) (*Lesson, error)
+	UpdateLesson(
+		id string,
+		title string,
+		description string,
+		mdx string,
+	) error
+	GetLessons(courseID string) ([]*Lesson, error)
 }
 
 type postgres struct {

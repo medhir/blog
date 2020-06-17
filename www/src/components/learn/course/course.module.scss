@@ -9,11 +9,26 @@
     right: 0;
   }
 
+  &_image {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    img {
+      width: 85%;
+      border: 1px solid black;
+      margin: 0px auto;
+    }
+  }
+
   &_description {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    // justify-content: center;
+    justify-content: space-around;
+    position: relative;
 
     header {
       border: none;
@@ -41,24 +56,19 @@
       line-height: 1.5rem;
     }
 
-    img {
-      width: 85%;
-      border: 1px solid black;
+    .lessons_header {
       margin: 0px auto;
-    }
-  }
-
-  &_lessons {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    position: relative;
-    h4 {
+      width: 80%;
+      display: flex;
+      padding: 16px 8px;
       margin-bottom: 24px;
+      border-bottom: 1px solid black;
+      justify-content: space-between;
     }
+
     ul {
       list-style-type: none;
+      margin-bottom: 24px;
       li {
         display: flex;
         align-items: center;

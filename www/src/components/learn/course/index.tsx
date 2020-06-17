@@ -3,11 +3,13 @@ import http from '../../../utility/http'
 import styles from './course.module.scss'
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt'
 import { Button } from '@material-ui/core'
+import AddCircleIcon from '@material-ui/icons/AddCircle'
 import SaveIcon from '@material-ui/icons/Save'
 import Router from 'next/router'
 import { ErrorAlert, SuccessAlert } from '../../alert'
 import { AxiosError } from 'axios'
 import ContentEditable from 'react-contenteditable'
+import { LessonMetadata } from '../lesson'
 
 interface AlertState {
   open: boolean
@@ -35,34 +37,10 @@ interface CourseState {
   description?: string
   created_at?: number
   updated_at?: number
+  lessons: Array<LessonMetadata>
   errorAlert: AlertState
   successAlert: AlertState
 }
-
-const Lessons = ({ lessons, onSave }) => (
-  <div className={styles.course_lessons}>
-    <div className={styles.course_controls}>
-      <Button
-        variant="contained"
-        color="primary"
-        size="small"
-        startIcon={<SaveIcon />}
-        onClick={onSave}
-      >
-        Save
-      </Button>
-    </div>
-    <h4>📓 Lessons</h4>
-    <ul>
-      {lessons.map((lesson) => (
-        <li>
-          <ArrowRightAltIcon />
-          <p>{lesson}</p>
-        </li>
-      ))}
-    </ul>
-  </div>
-)
 
 class Course extends Component<CourseProps, CourseState> {
   titleRef: React.RefObject<HTMLElement>
@@ -75,6 +53,7 @@ class Course extends Component<CourseProps, CourseState> {
       author_id: '',
       title: 'New Course',
       description: 'Write a description for your course.',
+      lessons: [],
       errorAlert: {
         open: false,
         message: '',
@@ -212,9 +191,19 @@ class Course extends Component<CourseProps, CourseState> {
   }
 
   render() {
-    const { title, description, errorAlert, successAlert } = this.state
+    const {
+      id,
+      title,
+      description,
+      lessons,
+      errorAlert,
+      successAlert,
+    } = this.state
     return (
       <section className={styles.course}>
+        <div className={styles.course_image}>
+          <img src="https://yourbasic.org/golang/square-gopher.png" />
+        </div>
         <div className={styles.course_description}>
           <header>
             <ContentEditable
@@ -230,12 +219,38 @@ class Course extends Component<CourseProps, CourseState> {
               tagName="p"
             />
           </header>
-          <img src="https://yourbasic.org/golang/square-gopher.png" />
+          <div className={styles.course_controls}>
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              startIcon={<SaveIcon />}
+              onClick={this.saveCourse}
+            >
+              Save
+            </Button>
+          </div>
+          <div className={styles.lessons_header}>
+            <h4>📓 Lessons</h4>
+            <Button
+              variant="contained"
+              color="secondary"
+              size="small"
+              startIcon={<AddCircleIcon />}
+              onClick={() => Router.push(`/teach/courses/${id}/lesson/new`)}
+            >
+              New Lesson
+            </Button>
+          </div>
+          <ul>
+            {lessons.map((lesson) => (
+              <li>
+                <ArrowRightAltIcon />
+                <p>{lesson}</p>
+              </li>
+            ))}
+          </ul>
         </div>
-        <Lessons
-          lessons={['Getting Started', 'Working with the Terminal']}
-          onSave={this.saveCourse}
-        />
         {errorAlert.open && (
           <ErrorAlert
             open={errorAlert.open}
