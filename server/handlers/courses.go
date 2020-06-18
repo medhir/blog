@@ -11,6 +11,7 @@ import (
 
 const coursesBase = "courses"
 
+// GetCourseResponse describes the fields associated with a GET course request
 type GetCourseResponse struct {
 	Metadata *sql.Course   `json:"metadata"`
 	Lessons  []*sql.Lesson `json:"lessons"`
