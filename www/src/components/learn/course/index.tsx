@@ -253,17 +253,18 @@ class Course extends Component<CourseProps, CourseState> {
               </Button>
             </div>
             <ul>
-              {lessons.map((lesson) => (
-                <li
-                  key={lesson.id}
-                  onClick={() =>
-                    Router.push(`/teach/courses/${id}/lesson/${lesson.id}`)
-                  }
-                >
-                  <ArrowRightAltIcon />
-                  <p>{lesson.title}</p>
-                </li>
-              ))}
+              {lessons &&
+                lessons.map((lesson) => (
+                  <li
+                    key={lesson.id}
+                    onClick={() =>
+                      Router.push(`/teach/courses/${id}/lesson/${lesson.id}`)
+                    }
+                  >
+                    <ArrowRightAltIcon />
+                    <p>{lesson.title}</p>
+                  </li>
+                ))}
             </ul>
           </div>
         </div>
