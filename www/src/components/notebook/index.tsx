@@ -13,7 +13,7 @@ interface NotebookProps {
   className?: string
   mdx?: string
   scroll: boolean
-  onSave?: () => void
+  onSave: () => void
   handleTextareaChange: (e: ChangeEvent<HTMLTextAreaElement>) => void
 }
 

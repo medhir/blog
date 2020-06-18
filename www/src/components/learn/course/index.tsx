@@ -86,13 +86,14 @@ class Course extends Component<CourseProps, CourseState> {
             description,
             created_at,
             updated_at,
-          } = response.data
+          } = response.data.metadata
           this.setState({
             author_id,
             title,
             description,
             created_at,
             updated_at,
+            lessons: response.data.lessons,
           })
         })
         .catch((error) => {
@@ -187,6 +188,14 @@ class Course extends Component<CourseProps, CourseState> {
             },
           })
         })
+        .catch((error: AxiosError) => {
+          this.setState({
+            errorAlert: {
+              open: true,
+              message: error.response.data,
+            },
+          })
+        })
     }
   }
 
@@ -230,26 +239,33 @@ class Course extends Component<CourseProps, CourseState> {
               Save
             </Button>
           </div>
-          <div className={styles.lessons_header}>
-            <h4>📓 Lessons</h4>
-            <Button
-              variant="contained"
-              color="secondary"
-              size="small"
-              startIcon={<AddCircleIcon />}
-              onClick={() => Router.push(`/teach/courses/${id}/lesson/new`)}
-            >
-              New Lesson
-            </Button>
+          <div className={styles.lessons}>
+            <div className={styles.lessons_header}>
+              <h4>📓 Lessons</h4>
+              <Button
+                variant="contained"
+                color="secondary"
+                size="small"
+                startIcon={<AddCircleIcon />}
+                onClick={() => Router.push(`/teach/courses/${id}/lesson/new`)}
+              >
+                New Lesson
+              </Button>
+            </div>
+            <ul>
+              {lessons.map((lesson) => (
+                <li
+                  key={lesson.id}
+                  onClick={() =>
+                    Router.push(`/teach/courses/${id}/lesson/${lesson.id}`)
+                  }
+                >
+                  <ArrowRightAltIcon />
+                  <p>{lesson.title}</p>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul>
-            {lessons.map((lesson) => (
-              <li>
-                <ArrowRightAltIcon />
-                <p>{lesson}</p>
-              </li>
-            ))}
-          </ul>
         </div>
         {errorAlert.open && (
           <ErrorAlert

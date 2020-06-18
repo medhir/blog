@@ -38,6 +38,7 @@ type Postgres interface {
 		description string,
 		mdx string,
 	) error
+	DeleteLesson(id string) error
 	GetLessons(courseID string) ([]*Lesson, error)
 }
 

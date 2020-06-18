@@ -11,6 +11,11 @@ import (
 
 const coursesBase = "courses"
 
+type GetCourseResponse struct {
+	Metadata *sql.Course   `json:"metadata"`
+	Lessons  []*sql.Lesson `json:"lessons"`
+}
+
 func (h *handlers) getCourse() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		courseID := path.Base(r.URL.Path)
@@ -40,7 +45,15 @@ func (h *handlers) getCourse() http.HandlerFunc {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			err = writeJSON(w, course)
+			lessons, err := h.db.GetLessons(courseID)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			err = writeJSON(w, GetCourseResponse{
+				Metadata: course,
+				Lessons:  lessons,
+			})
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -159,6 +172,9 @@ func (h *handlers) HandleCourses() http.HandlerFunc {
 			h.patchCourse()(w, r)
 		case http.MethodDelete:
 			h.deleteCourse()(w, r)
+		default:
+			http.Error(w, fmt.Sprintf("unimplemented method %s", r.Method), http.StatusNotImplemented)
+			return
 		}
 	}
 }

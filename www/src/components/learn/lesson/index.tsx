@@ -4,6 +4,9 @@ import IDE from '../ide'
 import styles from './lesson.module.scss'
 import { Component, ChangeEvent } from 'react'
 import http from '../../../utility/http'
+import { ErrorAlert, SuccessAlert } from '../../alert'
+import Router from 'next/router'
+import { AxiosError } from 'axios'
 
 export interface LessonMetadata {
   id: string
@@ -21,6 +24,7 @@ interface AlertState {
 
 interface LessonProps {
   id?: string
+  courseID: string
 }
 
 interface LessonState {
@@ -31,7 +35,8 @@ interface LessonState {
   mdx?: string
   createdAt?: number
   updatedAt?: number
-  errorAlert?: AlertState
+  errorAlert: AlertState
+  successAlert: AlertState
   loading: boolean
 }
 
@@ -46,14 +51,33 @@ class Lesson extends Component<LessonProps, LessonState> {
         description: 'New lesson description.',
         mdx: '# New Lesson',
         loading: false,
+        errorAlert: {
+          open: false,
+          message: '',
+        },
+        successAlert: {
+          open: false,
+          message: '',
+        },
       }
     } else {
       this.state = {
         loading: true,
+        errorAlert: {
+          open: false,
+          message: '',
+        },
+        successAlert: {
+          open: false,
+          message: '',
+        },
       }
     }
 
     this.handleTextareaChange = this.handleTextareaChange.bind(this)
+    this.handleErrorAlertClose = this.handleErrorAlertClose.bind(this)
+    this.handleSuccessAlertClose = this.handleSuccessAlertClose.bind(this)
+    this.saveLesson = this.saveLesson.bind(this)
   }
 
   componentDidMount() {
@@ -89,18 +113,129 @@ class Lesson extends Component<LessonProps, LessonState> {
     })
   }
 
+  handleErrorAlertClose(event?: React.SyntheticEvent, reason?: string) {
+    if (reason === 'clickaway') {
+      return
+    }
+    this.setState({
+      errorAlert: {
+        open: false,
+        message: '',
+      },
+    })
+  }
+
+  handleSuccessAlertClose(event?: React.SyntheticEvent, reason?: string) {
+    if (reason === 'clickaway') {
+      return
+    }
+    this.setState({
+      successAlert: {
+        open: false,
+        message: '',
+      },
+    })
+  }
+
+  saveLesson() {
+    const { id, courseID } = this.props
+    const { title, description, mdx } = this.state
+    if (id === undefined) {
+      http
+        .Post(
+          '/lessons/',
+          {
+            course_id: courseID,
+            title,
+            description,
+            mdx,
+          },
+          { withCredentials: true }
+        )
+        .then((response) => {
+          this.setState(
+            {
+              id: response.data.id,
+              successAlert: {
+                open: true,
+                message: 'Lesson saved successfully',
+              },
+            },
+            () => {
+              Router.push(
+                `/teach/courses/${courseID}/lesson/${response.data.id}`
+              )
+            }
+          )
+        })
+        .catch((error: AxiosError) => {
+          this.setState({
+            errorAlert: {
+              open: true,
+              message: error.response.data,
+            },
+          })
+        })
+    } else {
+      http
+        .Patch(
+          '/lessons/',
+          {
+            id,
+            title,
+            description,
+            mdx,
+          },
+          { withCredentials: true }
+        )
+        .then(() => {
+          this.setState({
+            successAlert: {
+              open: true,
+              message: 'Lesson saved successfully',
+            },
+          })
+        })
+        .catch((error: AxiosError) => {
+          this.setState({
+            errorAlert: {
+              open: true,
+              message: error.response.data,
+            },
+          })
+        })
+    }
+  }
+
   render() {
-    const { mdx } = this.state
+    const { mdx, errorAlert, successAlert } = this.state
     return (
-      <div className={styles.lesson}>
+      <section className={styles.lesson}>
         <Notebook
           scroll={true}
           mdx={mdx}
           className={styles.notebook}
           handleTextareaChange={this.handleTextareaChange}
+          onSave={this.saveLesson}
         />
         <IDE className={styles.ide} />
-      </div>
+        {errorAlert.open && (
+          <ErrorAlert
+            open={errorAlert.open}
+            onClose={this.handleErrorAlertClose}
+          >
+            {errorAlert.message}
+          </ErrorAlert>
+        )}
+        {successAlert.open && (
+          <SuccessAlert
+            open={successAlert.open}
+            onClose={this.handleSuccessAlertClose}
+          >
+            {successAlert.message}
+          </SuccessAlert>
+        )}
+      </section>
     )
   }
 }

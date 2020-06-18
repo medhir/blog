@@ -13,9 +13,9 @@ func (p *postgres) CreateLesson(
 	mdx string,
 ) error {
 	query := `
-INSERT INTO lessons (id, course_id, title, description, mdx, created_at)
-VALUES ($1, $2, $3, $4, $5);`
-	_, err := p.db.Exec(query, id, courseID, title, description, mdx, time.Now())
+INSERT INTO lessons (id, course_id, section, title, description, mdx, created_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7);`
+	_, err := p.db.Exec(query, id, courseID, "", title, description, mdx, time.Now())
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,8 @@ func (p *postgres) GetLessons(courseID string) ([]*Lesson, error) {
 	query := `
 SELECT id, course_id, title, description, created_at, updated_at
 FROM lessons
-WHERE course_id = $1;`
+WHERE course_id = $1
+ORDER BY created_at ASC;`
 	rows, err := p.db.Query(query, courseID)
 	if err != nil {
 		return nil, err
