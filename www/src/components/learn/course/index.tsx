@@ -8,8 +8,8 @@ import SaveIcon from '@material-ui/icons/Save'
 import Router from 'next/router'
 import { ErrorAlert, SuccessAlert } from '../../alert'
 import { AxiosError } from 'axios'
-import ContentEditable from 'react-contenteditable'
 import { LessonMetadata } from '../lesson'
+import Editable from '../../editable'
 
 interface AlertState {
   open: boolean
@@ -215,18 +215,23 @@ class Course extends Component<CourseProps, CourseState> {
         </div>
         <div className={styles.course_description}>
           <header>
-            <ContentEditable
-              innerRef={this.titleRef}
-              html={title}
+            <Editable
+              className={styles.course_editableH1}
+              value={title}
               onChange={this.handleTitleInput}
-              tagName="h2"
             />
-            <ContentEditable
+            <Editable
+              className={styles.course_editableP}
+              value={description}
+              multiline
+              onChange={this.handleDescriptionInput}
+            />
+            {/* <ContentEditable
               innerRef={this.descriptionRef}
               html={description}
               onChange={this.handleDescriptionInput}
               tagName="p"
-            />
+            /> */}
           </header>
           <div className={styles.course_controls}>
             <Button

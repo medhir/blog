@@ -7,6 +7,7 @@ import http from '../../../utility/http'
 import { ErrorAlert, SuccessAlert } from '../../alert'
 import Router from 'next/router'
 import { AxiosError } from 'axios'
+import Editable from '../../editable'
 
 export interface LessonMetadata {
   id: string
@@ -77,6 +78,7 @@ class Lesson extends Component<LessonProps, LessonState> {
     this.handleTextareaChange = this.handleTextareaChange.bind(this)
     this.handleErrorAlertClose = this.handleErrorAlertClose.bind(this)
     this.handleSuccessAlertClose = this.handleSuccessAlertClose.bind(this)
+    this.handleTitleChange = this.handleTitleChange.bind(this)
     this.saveLesson = this.saveLesson.bind(this)
   }
 
@@ -110,6 +112,12 @@ class Lesson extends Component<LessonProps, LessonState> {
   handleTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
     this.setState({
       mdx: e.target.value,
+    })
+  }
+
+  handleTitleChange(e: ChangeEvent<HTMLInputElement>) {
+    this.setState({
+      title: e.target.value,
     })
   }
 
@@ -208,16 +216,23 @@ class Lesson extends Component<LessonProps, LessonState> {
   }
 
   render() {
-    const { mdx, errorAlert, successAlert } = this.state
+    const { mdx, title, errorAlert, successAlert } = this.state
     return (
       <section className={styles.lesson}>
-        <Notebook
-          scroll={true}
-          mdx={mdx}
-          className={styles.notebook}
-          handleTextareaChange={this.handleTextareaChange}
-          onSave={this.saveLesson}
-        />
+        <div className={styles.lesson_content}>
+          <Editable
+            className={styles.lesson_title}
+            value={title}
+            onChange={this.handleTitleChange}
+          />
+          <Notebook
+            scroll={true}
+            mdx={mdx}
+            className={styles.notebook}
+            handleTextareaChange={this.handleTextareaChange}
+            onSave={this.saveLesson}
+          />
+        </div>
         <IDE className={styles.ide} />
         {errorAlert.open && (
           <ErrorAlert

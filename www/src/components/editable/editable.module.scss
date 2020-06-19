@@ -1,0 +1,14 @@
+.editable {
+  &_input {
+    width: 100%;
+    border: none;
+    transition: all 200ms ease;
+    font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', sans-serif;
+    resize: none;
+
+    &:focus {
+      outline: none;
+      border-left: 3px solid red;
+    }
+  }
+}
