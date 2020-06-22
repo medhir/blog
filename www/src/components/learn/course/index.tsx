@@ -218,6 +218,7 @@ class Course extends Component<CourseProps, CourseState> {
             <Editable
               className={styles.course_editableH1}
               value={title}
+              multiline
               onChange={this.handleTitleInput}
             />
             <Editable
