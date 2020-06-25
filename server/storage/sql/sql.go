@@ -18,10 +18,28 @@ type Postgres interface {
 
 	// Course API
 	CreateCourse(course Course) (string, error)
-	GetCourse(courseUUID string) (*Course, error)
+	GetCourse(courseID string) (*Course, error)
 	UpdateCourse(course Course) error
-	DeleteCourse(courseUUID string) error
-	GetCourses() ([]*Course, error)
+	DeleteCourse(courseID string) error
+	GetCourses(authorID string) ([]*Course, error)
+
+	// Lessons API
+	CreateLesson(
+		id string,
+		courseID string,
+		title string,
+		description string,
+		mdx string,
+	) error
+	GetLesson(id string) (*Lesson, error)
+	UpdateLesson(
+		id string,
+		title string,
+		description string,
+		mdx string,
+	) error
+	DeleteLesson(id string) error
+	GetLessons(courseID string) ([]*Lesson, error)
 }
 
 type postgres struct {

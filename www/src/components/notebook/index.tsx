@@ -6,16 +6,18 @@ import http from '../../utility/http'
 import { debounce } from 'lodash'
 import { IconButton } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit'
+import SaveIcon from '@material-ui/icons/Save'
 import VisibilityIcon from '@material-ui/icons/Visibility'
 
 interface NotebookProps {
   className?: string
   mdx?: string
   scroll: boolean
+  onSave: () => void
+  handleTextareaChange: (e: ChangeEvent<HTMLTextAreaElement>) => void
 }
 
 interface NotebookState {
-  mdx: string
   preview?: JSX.Element
   id: string
   error?: any
@@ -31,18 +33,15 @@ class Notebook extends Component<NotebookProps, NotebookState> {
   constructor(props: NotebookProps) {
     super(props)
     this.state = {
-      mdx: props.mdx || '',
       id: uuid(),
     }
-    this.handleTextareaChange = this.handleTextareaChange.bind(this)
     this.renderMDXToSource = this.renderMDXToSource.bind(this)
     this.setPreview = this.setPreview.bind(this)
     this.unsetPreview = this.unsetPreview.bind(this)
   }
 
   setPreview() {
-    const { scroll } = this.props
-    const { mdx } = this.state
+    const { mdx, scroll } = this.props
     FetchSource(mdx)
       .then((response) => {
         this.setState({
@@ -63,8 +62,7 @@ class Notebook extends Component<NotebookProps, NotebookState> {
   renderMDXToSource() {
     if (!this.debouncedRenderMDX) {
       this.debouncedRenderMDX = debounce(() => {
-        const { scroll } = this.props
-        const { mdx } = this.state
+        const { mdx, scroll } = this.props
         FetchSource(mdx)
           .then((response) => {
             this.setState(
@@ -88,39 +86,34 @@ class Notebook extends Component<NotebookProps, NotebookState> {
     this.debouncedRenderMDX()
   }
 
-  handleTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
-    this.setState({
-      mdx: e.target.value,
-    })
-  }
-
   render() {
-    const { className } = this.props
-    const { mdx, preview } = this.state
+    const { className, mdx, onSave, handleTextareaChange } = this.props
+    const { preview } = this.state
     return (
       <div className={`${styles.notebook} ${className}`}>
         {!preview && (
-          <IconButton
-            size="medium"
-            color="primary"
-            className={styles.button}
-            onClick={this.setPreview}
-          >
-            <VisibilityIcon />
-          </IconButton>
+          <div className={styles.controls}>
+            <IconButton size="medium" color="primary" onClick={this.setPreview}>
+              <VisibilityIcon />
+            </IconButton>
+          </div>
         )}
         {preview && (
-          <IconButton
-            size="medium"
-            color="primary"
-            className={styles.button}
-            onClick={this.unsetPreview}
-          >
-            <EditIcon />
-          </IconButton>
+          <div className={styles.controls}>
+            <IconButton size="medium" color="primary" onClick={onSave}>
+              <SaveIcon />
+            </IconButton>
+            <IconButton
+              size="medium"
+              color="primary"
+              onClick={this.unsetPreview}
+            >
+              <EditIcon />
+            </IconButton>
+          </div>
         )}
         {!preview && (
-          <textarea onChange={this.handleTextareaChange} value={mdx}></textarea>
+          <textarea onChange={handleTextareaChange} value={mdx}></textarea>
         )}
         {preview}
       </div>

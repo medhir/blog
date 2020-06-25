@@ -42,6 +42,9 @@ type Handlers interface {
 
 	// Courses
 	HandleCourses() http.HandlerFunc
+
+	// Lessons
+	HandleLessons() http.HandlerFunc
 }
 
 // handlers describes dependencies needed to serve http requests

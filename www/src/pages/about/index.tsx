@@ -17,15 +17,11 @@ const About = () => (
         biology, electrochemistry, graphic design, and computer science
         education.
       </p>
-      <p className={styles.strikethrough}>
-        I currently work at <a href="https://lightstep.com">LightStep</a>,
-        taking a deep dive on distributed systems and implementing tools to help
-        better understand system performance in the world of microservices.
-      </p>
       <p>
-        I was unfortunately laid off, as many others have, from macro-economic
-        shifts caused by COVID-19. If you are currently hiring and are
-        interested in chatting, please feel free to send me a message!
+        I previously worked at <a href="https://lightstep.com">LightStep</a>,
+        but was unfortunately laid off recently from macro-economic shifts
+        caused by COVID-19. If you are currently hiring and are interested in
+        chatting, please feel free to send me a message!
       </p>
       <p>
         You can view some of my work through this site and{' '}

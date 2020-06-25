@@ -126,7 +126,7 @@ func NewInstance() (*Instance, error) {
 			AllowedOrigins:   []string{"http://localhost:3000", "http://127.0.0.1:3000"},
 			Debug:            true,
 			AllowCredentials: true,
-			AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
+			AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
 			AllowedHeaders:   []string{"Authorization", "Content-Type", "Set-Cookie"}})
 		instance.server.Handler = hnynethttp.WrapHandler(c.Handler(instance.router))
 	} else {
@@ -134,7 +134,7 @@ func NewInstance() (*Instance, error) {
 			AllowedOrigins:   []string{"https://review.medhir.com", "https://medhir.com"},
 			Debug:            true,
 			AllowCredentials: true,
-			AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
+			AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
 			AllowedHeaders:   []string{"Authorization", "Content-Type", "Set-Cookie"}})
 		instance.server.Handler = hnynethttp.WrapHandler(c.Handler(instance.router))
 	}
