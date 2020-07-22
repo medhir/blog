@@ -1,6 +1,5 @@
 import React from 'react'
 
-import Layout from '../../components/layout'
 import styles from './about.module.scss'
 import Head from '../../components/head'
 
@@ -18,10 +17,12 @@ const About = () => (
         education.
       </p>
       <p>
-        I previously worked at <a href="https://lightstep.com">LightStep</a>,
-        but was unfortunately laid off recently from macro-economic shifts
-        caused by COVID-19. If you are currently hiring and are interested in
-        chatting, please feel free to send me a message!
+        I currently work on cyber-security things at{' '}
+        <a href="https://defensestorm.com">DefenseStorm</a>. I am also a member
+        of the University of Washington's{' '}
+        <a href="https://comotion.uw.edu">CoMotion</a> program, working on
+        developing textile-based electrochemcial sensors towards healthcare
+        monitoring applications.
       </p>
       <p>
         You can view some of my work through this site and{' '}
