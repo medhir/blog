@@ -27,7 +27,7 @@
     "marked": "^1.0.0",
     "next": "9.3.4",
     "next-compose-plugins": "^2.2.0",
-    "next-mdx-remote": "https://github.com/hashicorp/next-mdx-remote",
+    "next-mdx-remote": "^0.6.0",
     "node-fetch": "^2.6.0",
     "prism-react-renderer": "^1.1.1",
     "react": "16.13.1",

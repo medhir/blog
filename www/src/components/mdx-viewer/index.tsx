@@ -1,4 +1,4 @@
-import hydrate from './hydrate'
+import hydrate from 'next-mdx-remote/hydrate'
 import CodeBlock from './codeBlock'
 
 interface MDXViewerProps {
@@ -13,7 +13,7 @@ export const Components = {
       {children}
     </button>
   ),
-  Code: (props) => <CodeBlock {...props} />,
+  code: (props) => <CodeBlock {...props} />,
 }
 
 const MDXViewer = ({ source }: MDXViewerProps) => {
