@@ -1,12 +1,21 @@
 import React, { Component, ReactNode } from 'react'
 import { RedButton, GreenButton } from './index'
-import './Deleter.css'
-import { AxiosPromise } from 'axios'
-import styles from 'button.module.scss'
+import styles from './button.module.scss'
+import http from '../../utility/http'
+
+export enum HttpMethod {
+  GET = 'GET',
+  POST = 'POST',
+  PATCH = 'PATCH',
+  DELETE = 'DELETE',
+}
 
 interface ApiButtonProps {
   children: ReactNode
-  endpoint: AxiosPromise
+  className?: string
+  endpoint: string
+  httpMethod: HttpMethod
+  data?: any
   callback: () => void
   successMessage: string
   occuringMessage: string
@@ -53,14 +62,25 @@ class ApiButton extends Component<ApiButtonProps, ApiButtonState> {
   }
 
   setResource() {
-    const { endpoint, callback } = this.props
+    const { endpoint, httpMethod, data, callback } = this.props
     this.setState(
       {
         confirm: false,
         occuring: true,
       },
       () => {
-        endpoint.then(
+        let request
+        switch (httpMethod) {
+          case HttpMethod.GET:
+            request = http.Get(endpoint, { withCredentials: true })
+          case HttpMethod.POST:
+            request = http.Post(endpoint, data, { withCredentials: true })
+          case HttpMethod.PATCH:
+            request = http.Patch(endpoint, data, { withCredentials: true })
+          case HttpMethod.DELETE:
+            request = http.Delete(endpoint, { withCredentials: true })
+        }
+        request.then(
           (success) => {
             if (success.status !== 200) {
               this.setState({
@@ -92,7 +112,7 @@ class ApiButton extends Component<ApiButtonProps, ApiButtonState> {
     )
   }
 
-  render() {
+  renderButton() {
     const { initial, confirm, occuring, success, error } = this.state
     const {
       children,
@@ -119,6 +139,11 @@ class ApiButton extends Component<ApiButtonProps, ApiButtonState> {
     } else if (error) {
       return <RedButton>{errorMessage}</RedButton>
     }
+  }
+
+  render() {
+    const { className } = this.props
+    return <div className={className}>{this.renderButton()}</div>
   }
 }
 
