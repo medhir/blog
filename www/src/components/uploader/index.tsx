@@ -74,7 +74,7 @@ class Uploader extends Component<{}, UploaderState> {
         formData.append('photo', this.state.files[i])
       }
       http
-        .Post('/photo', formData, {
+        .Post('/photos/', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
