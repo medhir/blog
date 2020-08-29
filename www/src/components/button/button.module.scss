@@ -40,15 +40,12 @@
 }
 
 .confirm {
-  display: inline-block;
-  background-color: white;
-  border: 1px dashed black;
-  margin: 5px;
-  padding: 5px 10px;
-  border-radius: 5px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
 
   p {
-    margin-right: 5px;
-    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
   }
 }

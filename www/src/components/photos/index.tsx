@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Head from '../head'
 import styles from './photos.module.scss'
-import ApiButton, { HttpMethod } from '../button/api'
+import DeleteButton from '../button/delete'
 import Auth, { Roles } from '../auth'
 
 export interface PhotoData {
@@ -47,9 +47,8 @@ const Photos = ({ photos }: PhotosProps) => {
           <div className={styles.photo} key={photo.name}>
             <img src={photo.url} />
             <Auth role={Roles.BlogOwner}>
-              <ApiButton
+              <DeleteButton
                 endpoint={`/photos/${photo.name}`}
-                httpMethod={HttpMethod.DELETE}
                 className={styles.delete}
                 successMessage="photo deleted"
                 occuringMessage="deleting..."
@@ -61,7 +60,7 @@ const Photos = ({ photos }: PhotosProps) => {
                 }}
               >
                 Delete
-              </ApiButton>
+              </DeleteButton>
             </Auth>
           </div>
         ))}
