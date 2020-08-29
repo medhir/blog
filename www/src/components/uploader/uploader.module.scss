@@ -1,6 +1,35 @@
+.uploader {
+  display: flex;
+  flex-direction: column;
+
+  width: 50%;
+}
+
+@media only screen and (max-width: 1024px) {
+  .uploader {
+    width: 60%;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .uploader {
+    width: 75%;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .uploader {
+    width: 100%;
+  }
+}
+
 .imageForm {
   margin-top: 20px;
   margin-bottom: 20px;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 
   input {
     width: 0.1px;

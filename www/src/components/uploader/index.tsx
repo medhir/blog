@@ -98,30 +98,32 @@ class Uploader extends Component<{}, UploaderState> {
     const { files, progress, success } = this.state
     return (
       <Auth role={Roles.BlogOwner} prompt>
-        <form className={styles.imageForm}>
-          <input
-            type="file"
-            accept="image/*"
-            id="imagesInput"
-            className={styles.imagesInput}
-            multiple
-            onChange={this.handleFileStateChange}
-          />
-          <label htmlFor="imagesInput">Choose Images</label>
-          <button
-            className={styles.uploadButton}
-            onClick={(e) => {
-              this.handleUpload(e)
-            }}
-          >
-            Upload
-          </button>
-        </form>
-        <div className={styles.progressIndicator}>
-          <div style={{ width: progress }} />
+        <div className={styles.uploader}>
+          <form className={styles.imageForm}>
+            <input
+              type="file"
+              accept="image/*"
+              id="imagesInput"
+              className={styles.imagesInput}
+              multiple
+              onChange={this.handleFileStateChange}
+            />
+            <label htmlFor="imagesInput">Choose Images</label>
+            <button
+              className={styles.uploadButton}
+              onClick={(e) => {
+                this.handleUpload(e)
+              }}
+            >
+              Upload
+            </button>
+          </form>
+          <div className={styles.progressIndicator}>
+            <div style={{ width: progress }} />
+          </div>
+          {success && <SuccessMessage />}
+          {files && <Files files={files} />}
         </div>
-        {success && <SuccessMessage />}
-        {files && <Files files={files} />}
       </Auth>
     )
   }
