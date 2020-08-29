@@ -8,13 +8,6 @@
       width: 100%;
       border: 1px solid black;
     }
-
-    button,
-    .confirmation {
-      position: absolute;
-      top: 0;
-      right: 0;
-    }
   }
 }
 
@@ -62,9 +55,9 @@
   }
 }
 
-.photo > button,
-.photo > .confirmation {
+.delete {
   position: absolute;
   top: 0;
   right: 0;
+  margin: 5px;
 }

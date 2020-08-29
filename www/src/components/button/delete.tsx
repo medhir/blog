@@ -1,12 +1,15 @@
 import React, { Component, ReactNode } from 'react'
 import { RedButton, GreenButton } from './index'
-import './Deleter.css'
-import { AxiosPromise } from 'axios'
-import styles from 'button.module.scss'
+import styles from './button.module.scss'
+import http from '../../utility/http'
+import { IconButton } from '@material-ui/core'
+import DeleteIcon from '@material-ui/icons/Delete'
+import Paper from '@material-ui/core/Paper'
 
 interface ApiButtonProps {
   children: ReactNode
-  endpoint: AxiosPromise
+  className?: string
+  endpoint: string
   callback: () => void
   successMessage: string
   occuringMessage: string
@@ -22,11 +25,11 @@ interface ApiButtonState {
 }
 
 /*
-    ApiButton is a component for targeted API-based actions.
+    DeleteButton is a component for targeted API-based delete actions.
     'endpoint' prop specifies an api endpoint
     'callback' prop specifies a callback function that is called once the request is successful
  */
-class ApiButton extends Component<ApiButtonProps, ApiButtonState> {
+class DeleteButton extends Component<ApiButtonProps, ApiButtonState> {
   constructor(props: ApiButtonProps) {
     super(props)
     this.state = {
@@ -60,7 +63,7 @@ class ApiButton extends Component<ApiButtonProps, ApiButtonState> {
         occuring: true,
       },
       () => {
-        endpoint.then(
+        http.Delete(endpoint).then(
           (success) => {
             if (success.status !== 200) {
               this.setState({
@@ -92,25 +95,26 @@ class ApiButton extends Component<ApiButtonProps, ApiButtonState> {
     )
   }
 
-  render() {
+  renderButton() {
     const { initial, confirm, occuring, success, error } = this.state
-    const {
-      children,
-      successMessage,
-      occuringMessage,
-      errorMessage,
-    } = this.props
+    const { successMessage, occuringMessage, errorMessage } = this.props
     if (initial) {
       return (
-        <RedButton onClick={this.setToConfirm.bind(this)}>{children}</RedButton>
+        <IconButton
+          size="medium"
+          className="delete"
+          onClick={this.setToConfirm.bind(this)}
+        >
+          <DeleteIcon />
+        </IconButton>
       )
     } else if (confirm) {
       return (
-        <div className={styles.confirm}>
+        <Paper className={styles.confirm}>
           <p>Are you sure?</p>
           <RedButton onClick={this.setResource.bind(this)}>Yes</RedButton>
           <GreenButton onClick={this.revert.bind(this)}>No</GreenButton>
-        </div>
+        </Paper>
       )
     } else if (occuring) {
       return <RedButton>{occuringMessage}</RedButton>
@@ -120,6 +124,11 @@ class ApiButton extends Component<ApiButtonProps, ApiButtonState> {
       return <RedButton>{errorMessage}</RedButton>
     }
   }
+
+  render() {
+    const { className } = this.props
+    return <div className={className}>{this.renderButton()}</div>
+  }
 }
 
-export default ApiButton
+export default DeleteButton

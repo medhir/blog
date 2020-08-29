@@ -34,7 +34,7 @@ type Handlers interface {
 	GetPhotos() http.HandlerFunc
 	PostPhoto() http.HandlerFunc
 	DeletePhoto() http.HandlerFunc
-	HandlePhoto() http.HandlerFunc
+	HandlePhotos() http.HandlerFunc
 
 	// Coder
 	HandleCodeInstance() http.HandlerFunc

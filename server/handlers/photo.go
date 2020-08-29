@@ -16,6 +16,11 @@ const (
 )
 
 func (h *handlers) GetPhotos() http.HandlerFunc {
+	type photoData struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		objects, err := h.gcs.ListObjects(bucket, prefix)
 		if err != nil {
@@ -23,11 +28,15 @@ func (h *handlers) GetPhotos() http.HandlerFunc {
 			return
 		}
 		objects.Sort(gcs.ByDateDescending)
-		imageUrls := make([]string, 0, len(objects))
+		imageData := make([]photoData, 0, len(objects))
 		for _, object := range objects {
-			imageUrls = append(imageUrls, object.URL)
+			data := photoData{
+				Name: path.Base(object.Name),
+				URL:  object.URL,
+			}
+			imageData = append(imageData, data)
 		}
-		err = writeJSON(w, imageUrls)
+		err = writeJSON(w, imageData)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Could not write image urls as json: %v", err), http.StatusInternalServerError)
 			return
@@ -71,8 +80,8 @@ func (h *handlers) PostPhoto() http.HandlerFunc {
 
 func (h *handlers) DeletePhoto() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := path.Base(r.URL.Path)
-		objectName := fmt.Sprintf("%s%s.jpg", prefix, id)
+		key := path.Base(r.URL.Path)
+		objectName := fmt.Sprintf("%s%s", prefix, key)
 		err := h.gcs.DeleteObject(objectName, bucket)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Unable to delete image: %s", err.Error()), http.StatusInternalServerError)
@@ -82,9 +91,11 @@ func (h *handlers) DeletePhoto() http.HandlerFunc {
 	}
 }
 
-func (h *handlers) HandlePhoto() http.HandlerFunc {
+func (h *handlers) HandlePhotos() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
+		case http.MethodGet:
+			h.GetPhotos()(w, r)
 		case http.MethodPost:
 			h.PostPhoto()(w, r)
 		case http.MethodDelete:
