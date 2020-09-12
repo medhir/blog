@@ -32,7 +32,7 @@ module "gke_cluster" {
       cidr_blocks = [
         {
           # This block is for internet access from 8221 4th Ave NE Seattle, WA
-          cidr_block   = "174.21.0.0/16"
+          cidr_block   = "71.212.0.0/16"
           display_name = "personal"
         },
         {
