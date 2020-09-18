@@ -6,6 +6,9 @@
 /build
 /www/node_modules
 
+# server
+server/tmp
+
 # infrastructure (terraform)
 terraform/account.json
 terraform/.terraform
