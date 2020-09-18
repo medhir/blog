@@ -114,7 +114,8 @@ func NewInstance() (*Instance, error) {
 		db:     db,
 	}
 
-	err = instance.AddRoutes() // initialize routes for serve mux
+	// initialize routes for serve mux
+	err = instance.AddRoutes()
 	if err != nil {
 		return nil, err
 	}
