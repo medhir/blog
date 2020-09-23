@@ -14,6 +14,8 @@ import (
 
 // Postgres is the interface for interacting with the postgres database
 type Postgres interface {
+	MigrateUp() error
+	MigrateDown() error
 	Close() error
 
 	// Course API
@@ -40,10 +42,42 @@ type Postgres interface {
 	) error
 	DeleteLesson(id string) error
 	GetLessons(courseID string) ([]*Lesson, error)
+
+	// Blog API
+	CreateDraft(title string, markdown string) (id string, _ error)
+	GetDraft(id string) (*BlogPost, error)
+	SaveDraft(
+		id string,
+		title string,
+		markdown string,
+	) error
+	DeleteDraftOrPost(id string) error
+	GetDrafts() ([]*BlogPost, error)
+
+	PublishPost(id string) error
+	GetPost(id string) (*BlogPost, error)
+	RevisePost(
+		id string,
+		title string,
+		markdown string,
+	) error
+	GetPosts() ([]*BlogPost, error)
+
+	AddAsset(
+		postId string,
+		name string,
+		url string,
+	) error
+	DeleteAsset(
+		postId string,
+		name string,
+	) error
+	GetAssets(postId string) ([]*BlogPostAsset, error)
 }
 
 type postgres struct {
-	db *sql.DB
+	db       *sql.DB
+	migrator *migrate.Migrate
 }
 
 // NewPostgres instantiates a new connection to a postgres database, as well as providing an interface for interacting with the db.
@@ -71,6 +105,24 @@ func NewPostgres(url, migrationsPath string) (Postgres, error) {
 	return &postgres{
 		db: db,
 	}, nil
+}
+
+// MigrateUp migrates the postgres instance to the next version by one step
+func (p *postgres) MigrateUp() error {
+	err := p.migrator.Steps(1)
+	if err != nil && err != migrate.ErrNoChange {
+		return fmt.Errorf("could not migrate the database - %s", err.Error())
+	}
+	return nil
+}
+
+// MigrateDown migrates the postgres instance to the previous version by one step
+func (p *postgres) MigrateDown() error {
+	err := p.migrator.Steps(-1)
+	if err != nil && err != migrate.ErrNoChange {
+		return fmt.Errorf("could not migrate the database - %s", err.Error())
+	}
+	return nil
 }
 
 func (p *postgres) Close() error {
