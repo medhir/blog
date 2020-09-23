@@ -24,7 +24,7 @@ interface NotebookState {
 }
 
 const FetchSource = (mdx: string) =>
-  // we unset the baseURL since this is a node api driven by the next framework
+  // we unset the baseURL since this is a node api driven by the Next framework rather than the Go server
   http.Post('/api/mdx/draft', { mdx }, { baseURL: '' })
 
 class Notebook extends Component<NotebookProps, NotebookState> {
