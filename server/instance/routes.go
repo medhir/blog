@@ -17,6 +17,9 @@ func (i *Instance) AddRoutes() error {
 	i.router.HandleFunc("/login", h.Login())
 	i.router.HandleFunc("/jwt/validate/", h.ValidateJWT())
 	i.router.HandleFunc("/register", h.RegisterNewUser())
+	//	database
+	i.router.HandleFunc("/migrate/up", h.Authorize(auth.BlogOwner, h.MigrateUp()))
+	i.router.HandleFunc("/migrate/down", h.Authorize(auth.BlogOwner, h.MigrateDown()))
 	// 	blog
 	i.router.HandleFunc("/blog/asset", func(w http.ResponseWriter, r *http.Request) {})
 	i.router.HandleFunc("/blog/drafts", h.Authorize(auth.BlogOwner, h.GetDrafts()))

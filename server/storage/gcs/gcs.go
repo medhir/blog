@@ -15,6 +15,7 @@ import (
 // GCS describes the interface for interacting with the GCS client
 type GCS interface {
 	GetObject(name, bucket string) ([]byte, error)
+	GetObjectMetadata(name, bucket string) (*storage.ObjectAttrs, error)
 	UploadObject(name, bucket string, obj []byte, public bool) error
 	DeleteObject(name, bucket string) error
 	ListObjects(bucket, prefix string) (Objects, error)
@@ -35,6 +36,16 @@ func NewGCS(ctx context.Context) (GCS, error) {
 		ctx:    ctx,
 		client: client,
 	}, nil
+}
+
+func (gcs *gcs) GetObjectMetadata(name, bucket string) (*storage.ObjectAttrs, error) {
+	ctx, cancel := context.WithTimeout(gcs.ctx, time.Second*60)
+	defer cancel()
+	attrs, err := gcs.client.Bucket(bucket).Object(name).Attrs(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return attrs, nil
 }
 
 // GetObject reads the data from an object into a buffer

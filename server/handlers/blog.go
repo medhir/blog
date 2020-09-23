@@ -14,7 +14,7 @@ func (h *handlers) GetDraft() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		sendJSON(w, draft)
+		writeJSON(w, draft)
 	}
 }
 
@@ -53,7 +53,7 @@ func (h *handlers) GetDrafts() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		sendJSON(w, drafts)
+		writeJSON(w, drafts)
 	}
 }
 
@@ -65,7 +65,7 @@ func (h *handlers) GetPost() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		sendJSON(w, post)
+		writeJSON(w, post)
 	}
 }
 
@@ -76,6 +76,6 @@ func (h *handlers) GetPosts() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		sendJSON(w, posts)
+		writeJSON(w, posts)
 	}
 }
