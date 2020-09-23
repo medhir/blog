@@ -49,3 +49,7 @@ start-db:
 .PHONY: migration
 migration:
 	migrate create -ext sql -dir server/storage/sql/migrations -seq $(name)
+
+.PHONY: migrate-up-local
+migrate-up-local:
+	migrate -source file://server/storage/sql/migrations -database postgres://postgres:docker@localhost:5432/medhir-com?sslmode=disable up

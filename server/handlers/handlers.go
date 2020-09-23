@@ -21,6 +21,10 @@ type Handlers interface {
 	Authorize(role auth.Role, handler http.HandlerFunc) http.HandlerFunc
 	RegisterNewUser() http.HandlerFunc
 
+	// Database
+	MigrateUp() http.HandlerFunc
+	MigrateDown() http.HandlerFunc
+
 	// Blog
 	GetDraft() http.HandlerFunc
 	GetDrafts() http.HandlerFunc
@@ -70,7 +74,7 @@ func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, db sql.Postgr
 		ctx:          ctx,
 		auth:         auth,
 		gcs:          gcs,
-		blog:         blog.NewBlog(gcs),
+		blog:         blog.NewBlog(db, gcs),
 		imgProcessor: imageprocessor.NewImageProcessor(),
 		coder:        coderManager,
 		db:           db,
