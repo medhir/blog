@@ -191,8 +191,8 @@ class Migrate extends Component<MigrateProps, MigrateState> {
 export default Migrate
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const auth = await Authenticated(ctx, Roles.BlogOwner)
+  const response = await Authenticated(ctx, Roles.BlogOwner)
   return {
-    props: { auth },
+    props: { auth: response.auth },
   }
 }
