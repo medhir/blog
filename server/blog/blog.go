@@ -10,6 +10,7 @@ const (
 	bucket = "medhir-com"
 )
 
+// Post describes the metadata for a blog post sent to the client
 type Post struct {
 	ID          string `json:"id"`
 	Title       string `json:"title"`

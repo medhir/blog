@@ -63,7 +63,7 @@ func (h *handlers) MigrateBlog() http.HandlerFunc {
 			return
 		}
 		if len(dbPosts) > 0 || len(dbDrafts) > 0 {
-			http.Error(w, errors.New("there are already entries in the database. aborting migration.").Error(), http.StatusUnauthorized)
+			http.Error(w, errors.New("there are already entries in the database, aborting migration").Error(), http.StatusUnauthorized)
 			return
 		}
 		// get posts from GCS
@@ -137,6 +137,7 @@ func (h *handlers) MigrateBlog() http.HandlerFunc {
 	}
 }
 
+// TimeFromMillis converts a millisecond UNIX timestamp to a Go time object
 func TimeFromMillis(millis int64) time.Time {
 	return time.Unix(0, millis*int64(time.Millisecond))
 }
