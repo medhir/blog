@@ -1,9 +1,12 @@
 package blog
 
-import "fmt"
+import (
+	"fmt"
+	uuid2 "github.com/google/uuid"
+)
 
 func (b *blog) AddAsset(postID string, data []byte) error {
-	objectName := fmt.Sprintf("blog/assets/%s/%s.jpg")
+	objectName := fmt.Sprintf("blog/assets/%s/%s.jpg", postID, uuid2.New())
 	err := b.gcs.UploadObject(objectName, bucket, data, true)
 	if err != nil {
 		return err
