@@ -1,15 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Link from 'next/link'
-import { DraftMetadata } from '../types'
+
 import styles from '../blog.module.scss'
+import { PostMetadata } from '..'
 
 interface DraftListItemProps {
-  draft: DraftMetadata
+  draft: PostMetadata
 }
 
 const DraftListItem = ({ draft }: DraftListItemProps) => {
-  const saved = new Date(draft.saved).toString()
+  const saved = new Date(draft.saved_on).toString()
   return (
     <li className={styles.draft}>
       <h3>{draft.title}</h3>
@@ -20,7 +21,7 @@ const DraftListItem = ({ draft }: DraftListItemProps) => {
 }
 
 interface DraftsListProps {
-  drafts: Array<DraftMetadata>
+  drafts: Array<PostMetadata>
 }
 
 const DraftsList = ({ drafts }: DraftsListProps) => {

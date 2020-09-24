@@ -1,19 +1,19 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+
 import Link from 'next/link'
 
-import { PostMetadata } from '../types'
 import styles from '../blog.module.scss'
+import { PostMetadata } from '..'
 
 interface PostListItemProps {
   post: PostMetadata
 }
 
 const PostListItem = ({ post }: PostListItemProps) => {
-  const publishedDate = new Date(post.published).toDateString()
+  const publishedDate = new Date(post.published_on).toDateString()
   return (
     <li className={styles.post}>
-      <Link href={`/blog/${post.titlePath}`} key={post.id}>
+      <Link href={`/blog/${post.slug}`} key={post.id}>
         <a>
           <h3>{post.title}</h3>
           <p>{publishedDate}</p>

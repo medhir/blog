@@ -1,29 +1,29 @@
-import React, { useEffect, useState } from 'react'
-
-import { PostMetadata } from './types'
+import React from 'react'
 import PostsList from './modules/PostsList'
 import styles from './blog.module.scss'
-import http from '../../utility/http'
 import DraftsList from './modules/DraftsList'
 
 interface BlogProps {
   posts: Array<PostMetadata>
-  withDrafts?: boolean
+  drafts?: Array<PostMetadata>
 }
 
-const Blog = ({ posts, withDrafts }: BlogProps) => {
-  const [drafts, setDrafts] = useState(null)
-  if (withDrafts) {
-    useEffect(() => {
-      http.Get('/blog/drafts', { withCredentials: true }).then((response) => {
-        setDrafts(response.data)
-      })
-    }, [])
-  }
+export interface PostMetadata {
+  id: string
+  title: string
+  slug: string
+  markdown: string
+  created_on: string
+  saved_on?: string
+  published_on?: string
+  revised_on: string
+}
+
+const Blog = ({ posts, drafts }: BlogProps) => {
   return (
     <section className={styles.blog}>
       <PostsList posts={posts} />
-      {withDrafts && <DraftsList drafts={drafts} />}
+      {drafts && <DraftsList drafts={drafts} />}
     </section>
   )
 }

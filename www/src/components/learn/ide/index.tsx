@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import http from '../../../utility/http'
+import http, { Protected } from '../../../utility/http'
 import Loading from '../../loading'
 import { AxiosError } from 'axios'
 
@@ -45,8 +45,7 @@ class IDE extends Component<IDEProps, IDEState> {
       },
       () => {
         // request a new code instance from the server
-        http
-          .Post('/code/', {}, { withCredentials: true })
+        Protected.Client.Post('/code/', {})
           .then((response) => {
             // set the metadata associated with a code instance
             this.setState(
@@ -92,19 +91,17 @@ class IDE extends Component<IDEProps, IDEState> {
   }
 
   stopEnvironment() {
-    http
-      .Delete(`/code/`, { withCredentials: true })
-      .catch((error: AxiosError) => {
-        if (error.response) {
-          this.setState({
-            error: error.response.data,
-          })
-        } else {
-          this.setState({
-            error: error.message,
-          })
-        }
-      })
+    Protected.Client.Delete(`/code/`).catch((error: AxiosError) => {
+      if (error.response) {
+        this.setState({
+          error: error.response.data,
+        })
+      } else {
+        this.setState({
+          error: error.message,
+        })
+      }
+    })
   }
 
   render() {

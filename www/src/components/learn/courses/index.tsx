@@ -1,5 +1,5 @@
 import { Component } from 'react'
-import http from '../../../utility/http'
+import http, { Protected } from '../../../utility/http'
 import Router from 'next/router'
 
 import styles from './courses.module.scss'
@@ -8,38 +8,25 @@ import { Card, CardActionArea, CardContent } from '@material-ui/core'
 import LibraryAddIcon from '@material-ui/icons/LibraryAdd'
 import { CourseMetadata } from '../course'
 
-interface CoursesState {
+interface CoursesProps {
   courses: Array<CourseMetadata>
+}
+
+interface CoursesState {
   error: any
 }
 
-export default class Courses extends Component<{}, CoursesState> {
+export default class Courses extends Component<CoursesProps, CoursesState> {
   constructor(props) {
     super(props)
     this.state = {
-      courses: null,
       error: null,
     }
   }
 
-  componentDidMount() {
-    http
-      .Get('/courses/', { withCredentials: true })
-      .then((response) => {
-        this.setState({
-          courses: response.data ? response.data : [],
-        })
-      })
-      .catch((error) => {
-        this.setState({
-          courses: [], // set courses to an empty array to render the courses container with the error
-          error: error,
-        })
-      })
-  }
-
   render() {
-    const { courses, error } = this.state
+    const { courses } = this.props
+    const { error } = this.state
     return (
       <>
         {

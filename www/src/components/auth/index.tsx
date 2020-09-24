@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode, ReactElement, Component } from 'react'
+import React, { useState, useEffect, ReactNode, ReactElement } from 'react'
 
 import Login from './login'
 import http from '../../utility/http'
@@ -78,7 +78,9 @@ const Auth = ({ children, prompt, role }: AuthProps): ReactElement => {
   }
 
   useEffect(() => {
-    const authorizationStatus = localStorage.getItem(LocalStorageAuthorizationKey)
+    const authorizationStatus = localStorage.getItem(
+      LocalStorageAuthorizationKey
+    )
     if (authorizationStatus !== StatusAuthorized) {
       setValidated(false)
     }
@@ -89,7 +91,8 @@ const Auth = ({ children, prompt, role }: AuthProps): ReactElement => {
       .then(() => {
         setValidated(true)
         localStorage.setItem(LocalStorageAuthorizationKey, StatusAuthorized)
-      }).catch(() => {
+      })
+      .catch(() => {
         setValidated(false)
         localStorage.setItem(LocalStorageAuthorizationKey, '')
       })
@@ -103,7 +106,7 @@ const Auth = ({ children, prompt, role }: AuthProps): ReactElement => {
     return (
       <>
         <Login
-          login={login}
+          role={role}
           inputHandlers={{
             handleUsernameChange,
             handlePasswordChange,

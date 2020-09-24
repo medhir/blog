@@ -18,6 +18,8 @@ type Handlers interface {
 	// Authentication
 	Login() http.HandlerFunc
 	ValidateJWT() http.HandlerFunc
+	RefreshJWT() http.HandlerFunc
+	RefreshForNext() http.HandlerFunc
 	Authorize(role auth.Role, handler http.HandlerFunc) http.HandlerFunc
 	RegisterNewUser() http.HandlerFunc
 
