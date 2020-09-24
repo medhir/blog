@@ -25,13 +25,16 @@ export default Blog
 export const getStaticPaths: GetStaticPaths = async () => {
   const response = await http.Get('/blog/posts')
   const posts: Array<PostMetadata> = response.data
-  const paths = posts.map((post) => ({
-    params: { slug: post.titlePath },
-  }))
-
-  // We'll pre-render only these paths at build time.
-  // { fallback: false } means other routes should 404.
-  return { paths, fallback: false }
+  if (posts) {
+    const paths = posts.map((post) => ({
+      params: { slug: post.titlePath },
+    }))
+    // We'll pre-render only these paths at build time.
+    // { fallback: false } means other routes should 404.
+    return { paths, fallback: false }
+  } else {
+    return { paths: [], fallback: false }
+  }
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {

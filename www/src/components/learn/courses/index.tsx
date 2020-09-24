@@ -1,5 +1,4 @@
 import { Component } from 'react'
-import http, { Protected } from '../../../utility/http'
 import Router from 'next/router'
 
 import styles from './courses.module.scss'

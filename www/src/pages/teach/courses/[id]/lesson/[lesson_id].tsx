@@ -1,4 +1,4 @@
-import Auth, { Roles } from '../../../../../components/auth'
+import { Roles } from '../../../../../components/auth'
 import Lesson from '../../../../../components/learn/lesson'
 import { GetServerSideProps } from 'next'
 import { Authenticated } from '../../../../../utility/auth'

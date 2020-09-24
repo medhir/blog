@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import Head from '../head'
 import styles from './photos.module.scss'
 import DeleteButton from '../button/delete'
-import Auth, { Roles } from '../auth'
 
 export interface PhotoData {
   name: string
