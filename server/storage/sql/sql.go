@@ -18,6 +18,7 @@ import (
 type Postgres interface {
 	MigrateUp() error
 	MigrateDown() error
+	MigrateUpAll() error
 	Close() error
 
 	// Course API
@@ -127,6 +128,15 @@ func (p *postgres) MigrateUp() error {
 // MigrateDown migrates the postgres instance to the previous version by one step
 func (p *postgres) MigrateDown() error {
 	err := p.migrator.Steps(-1)
+	if err != nil && err != migrate.ErrNoChange {
+		return fmt.Errorf("could not migrate the database - %s", err.Error())
+	}
+	return nil
+}
+
+// MigrateUpAll migrates the postgres instance to the latest version
+func (p *postgres) MigrateUpAll() error {
+	err := p.migrator.Up()
 	if err != nil && err != migrate.ErrNoChange {
 		return fmt.Errorf("could not migrate the database - %s", err.Error())
 	}

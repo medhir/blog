@@ -39,7 +39,10 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("Could not connect to database, %s", err)
 	}
-
+	err = pg.MigrateUpAll()
+	if err != nil {
+		log.Fatalf("Could not migrate database, %s", err)
+	}
 	code := m.Run()
 
 	os.Exit(code)
