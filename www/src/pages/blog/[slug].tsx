@@ -27,7 +27,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const posts: Array<PostMetadata> = response.data
   if (posts) {
     const paths = posts.map((post) => ({
-      params: { slug: post.titlePath },
+      params: { slug: post.slug },
     }))
     // We'll pre-render only these paths at build time.
     // { fallback: false } means other routes should 404.

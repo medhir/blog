@@ -27,6 +27,27 @@ type BlogPostAsset struct {
 	URL    string `json:"url"`
 }
 
+// For migrating blog posts from gcs to the sql db
+func (p *postgres) AddDraftOrPost(
+	id string,
+	title string,
+	markdown string,
+	createdOn time.Time,
+	savedOn sql.NullTime,
+	publishedOn sql.NullTime,
+) error {
+	slug := makeSlug(title)
+	query := `
+INSERT INTO BlogPost(id, title, slug, markdown, created_on, saved_on, published_on)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+`
+	_, err := p.db.Exec(query, id, title, slug, markdown, createdOn, savedOn, publishedOn)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (p *postgres) CreateDraft(title string, markdown string) (id string, _ error) {
 	uuid := uuid2.New().String()
 	slug := makeSlug(title)
@@ -97,7 +118,7 @@ func (p *postgres) GetDrafts() ([]*BlogPost, error) {
 SELECT id, title, slug, markdown, created_on, saved_on
 FROM BlogPost
 WHERE published_on IS NULL
-ORDER BY created_on ASC;
+ORDER BY saved_on DESC;
 `
 	rows, err := p.db.Query(query)
 	if err != nil {
@@ -125,17 +146,31 @@ ORDER BY created_on ASC;
 }
 
 func (p *postgres) GetPost(id string) (*BlogPost, error) {
-	draft := &BlogPost{}
+	post := &BlogPost{}
 	query := `
 SELECT id, title, slug, markdown, published_on, revised_on
 FROM blogpost
 WHERE id = $1;
 `
-	err := p.db.QueryRow(query, id).Scan(&draft.ID, &draft.Title, &draft.Slug, &draft.Markdown, &draft.CreatedOn, &draft.SavedOn)
+	err := p.db.QueryRow(query, id).Scan(&post.ID, &post.Title, &post.Slug, &post.Markdown, &post.PublishedOn, &post.RevisedOn)
 	if err != nil {
 		return nil, err
 	}
-	return draft, nil
+	return post, nil
+}
+
+func (p *postgres) GetPostBySlug(slug string) (*BlogPost, error) {
+	post := &BlogPost{}
+	query := `
+SELECT id, title, slug, markdown, published_on, revised_on
+FROM blogpost
+WHERE slug = $1;
+`
+	err := p.db.QueryRow(query, slug).Scan(&post.ID, &post.Title, &post.Slug, &post.Markdown, &post.PublishedOn, &post.RevisedOn)
+	if err != nil {
+		return nil, err
+	}
+	return post, nil
 }
 
 func (p *postgres) PublishPost(id string) error {
@@ -174,7 +209,7 @@ func (p *postgres) GetPosts() ([]*BlogPost, error) {
 SELECT id, title, slug, markdown, published_on, revised_on
 FROM BlogPost
 WHERE published_on IS NOT NULL
-ORDER BY created_on ASC;
+ORDER BY published_on DESC;
 `
 	rows, err := p.db.Query(query)
 	if err != nil {
@@ -184,19 +219,19 @@ ORDER BY created_on ASC;
 
 	var posts []*BlogPost
 	for rows.Next() {
-		draft := &BlogPost{}
+		post := &BlogPost{}
 		err := rows.Scan(
-			&draft.ID,
-			&draft.Title,
-			&draft.Slug,
-			&draft.Markdown,
-			&draft.CreatedOn,
-			&draft.SavedOn,
+			&post.ID,
+			&post.Title,
+			&post.Slug,
+			&post.Markdown,
+			&post.PublishedOn,
+			&post.RevisedOn,
 		)
 		if err != nil {
 			return nil, err
 		}
-		posts = append(posts, draft)
+		posts = append(posts, post)
 	}
 	return posts, nil
 }

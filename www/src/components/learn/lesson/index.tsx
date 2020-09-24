@@ -195,7 +195,6 @@ class Lesson extends Component<LessonProps, LessonState> {
           })
         })
         .catch((error: AxiosError) => {
-          debugger
           this.setState({
             errorAlert: {
               open: true,

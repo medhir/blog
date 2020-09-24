@@ -23,7 +23,6 @@ func (h *handlers) getCourse() http.HandlerFunc {
 		// if no ID is provided, return all courses
 		if courseID == coursesBase {
 			jwt, err := h.getJWTCookie(r)
-			fmt.Println("JWT Inner Handler:", jwt)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}

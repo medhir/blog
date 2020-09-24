@@ -59,8 +59,8 @@ func (h *handlers) GetDrafts() http.HandlerFunc {
 
 func (h *handlers) GetPost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := path.Base(r.URL.Path)
-		post, err := h.blog.GetPost(id)
+		slug := path.Base(r.URL.Path)
+		post, err := h.blog.GetPostBySlug(slug)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

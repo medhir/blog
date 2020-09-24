@@ -22,6 +22,7 @@ func (i *Instance) AddRoutes() error {
 	//	database
 	i.router.HandleFunc("/migrate/up", h.Authorize(auth.BlogOwner, h.MigrateUp()))
 	i.router.HandleFunc("/migrate/down", h.Authorize(auth.BlogOwner, h.MigrateDown()))
+	i.router.HandleFunc("/migrate/blog", h.MigrateBlog())
 	// 	blog
 	i.router.HandleFunc("/blog/asset", func(w http.ResponseWriter, r *http.Request) {})
 	i.router.HandleFunc("/blog/drafts", h.Authorize(auth.BlogOwner, h.GetDrafts()))

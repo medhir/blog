@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/golang-migrate/migrate/v4"
+	"time"
+
 	// pq is the database driver for connecting to postgres
 	_ "github.com/lib/pq"
 	// postgres migration driver
@@ -44,6 +46,14 @@ type Postgres interface {
 	GetLessons(courseID string) ([]*Lesson, error)
 
 	// Blog API
+	AddDraftOrPost(
+		id string,
+		title string,
+		markdown string,
+		createdOn time.Time,
+		savedOn sql.NullTime,
+		publishedOn sql.NullTime,
+	) error
 	CreateDraft(title string, markdown string) (id string, _ error)
 	GetDraft(id string) (*BlogPost, error)
 	SaveDraft(
@@ -56,6 +66,7 @@ type Postgres interface {
 
 	PublishPost(id string) error
 	GetPost(id string) (*BlogPost, error)
+	GetPostBySlug(slug string) (*BlogPost, error)
 	RevisePost(
 		id string,
 		title string,

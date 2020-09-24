@@ -61,7 +61,6 @@ func (h *handlers) Login() http.HandlerFunc {
 func (h *handlers) Authorize(role auth.Role, handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		jwtCookie, err := r.Cookie(jwtCookieName)
-		fmt.Println("JWT Starting:", jwtCookie.Value)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Could not find authorization cookie - %v", err), http.StatusInternalServerError)
 			return

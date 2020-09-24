@@ -1,11 +1,39 @@
 package blog
 
-import "gitlab.com/medhir/blog/server/storage/sql"
-
-func (b *blog) GetPost(id string) (*sql.BlogPost, error) {
-	post, err := b.db.GetPost(id)
+func (b *blog) GetPost(id string) (*Post, error) {
+	postData, err := b.db.GetPost(id)
 	if err != nil {
 		return nil, err
+	}
+	post := &Post{
+		ID:          postData.ID,
+		Title:       postData.Title,
+		Slug:        postData.Slug,
+		Markdown:    postData.Markdown,
+		CreatedOn:   makeTimestamp(postData.CreatedOn),
+		PublishedOn: makeTimestamp(postData.PublishedOn.Time),
+	}
+	if postData.RevisedOn.Valid {
+		post.RevisedOn = makeTimestamp(postData.RevisedOn.Time)
+	}
+	return post, nil
+}
+
+func (b *blog) GetPostBySlug(slug string) (*Post, error) {
+	postData, err := b.db.GetPostBySlug(slug)
+	if err != nil {
+		return nil, err
+	}
+	post := &Post{
+		ID:          postData.ID,
+		Title:       postData.Title,
+		Slug:        postData.Slug,
+		Markdown:    postData.Markdown,
+		CreatedOn:   makeTimestamp(postData.CreatedOn),
+		PublishedOn: makeTimestamp(postData.PublishedOn.Time),
+	}
+	if postData.RevisedOn.Valid {
+		post.RevisedOn = makeTimestamp(postData.RevisedOn.Time)
 	}
 	return post, nil
 }
@@ -35,10 +63,25 @@ func (b *blog) DeletePost(id string) error {
 	return nil
 }
 
-func (b *blog) GetPosts() ([]*sql.BlogPost, error) {
-	posts, err := b.db.GetPosts()
+func (b *blog) GetPosts() ([]*Post, error) {
+	postsData, err := b.db.GetPosts()
 	if err != nil {
 		return nil, err
+	}
+	var posts []*Post
+	for _, postData := range postsData {
+		post := &Post{
+			ID:          postData.ID,
+			Title:       postData.Title,
+			Slug:        postData.Slug,
+			Markdown:    postData.Markdown,
+			CreatedOn:   makeTimestamp(postData.CreatedOn),
+			PublishedOn: makeTimestamp(postData.PublishedOn.Time),
+		}
+		if postData.RevisedOn.Valid {
+			post.RevisedOn = makeTimestamp(postData.RevisedOn.Time)
+		}
+		posts = append(posts, post)
 	}
 	return posts, nil
 }

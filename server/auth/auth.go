@@ -142,7 +142,6 @@ func (a *auth) GetUser(jwt string) (*gocloak.User, error) {
 }
 
 func (a *auth) AddAttributeToUser(jwt, key string, values []string) error {
-	fmt.Println("Add Attributes called")
 	_, claims, err := a.client.DecodeAccessToken(jwt, realm)
 	if err != nil {
 		return err
