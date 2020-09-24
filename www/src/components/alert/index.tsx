@@ -15,6 +15,11 @@ interface AlertProps {
   open: boolean
 }
 
+export interface AlertData {
+  open: boolean
+  message: string
+}
+
 export const ErrorAlert = ({ children, onClose, open }: AlertProps) => (
   <Snackbar
     anchorOrigin={{ vertical: 'top', horizontal: 'center' }}

@@ -109,12 +109,9 @@ func NewPostgres(url, migrationsPath string) (Postgres, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not start database migrations - %s", err.Error())
 	}
-	err = m.Up()
-	if err != nil && err != migrate.ErrNoChange {
-		return nil, fmt.Errorf("could not migrate the database - %s", err.Error())
-	}
 	return &postgres{
-		db: db,
+		db:       db,
+		migrator: m,
 	}, nil
 }
 

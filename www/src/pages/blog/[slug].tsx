@@ -4,9 +4,9 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import renderToString from 'next-mdx-remote/render-to-string'
 import { Components } from '../../components/mdx-viewer'
 import Post from '../../components/blog/modules/Post'
-import { PostMetadata } from '../../components/blog/types'
 import http from '../../utility/http'
 import Head from '../../components/head'
+import { PostMetadata } from '../../components/blog'
 
 interface BlogProps {
   post: PostMetadata
