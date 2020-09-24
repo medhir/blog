@@ -1,9 +1,9 @@
 import { GetServerSideProps } from 'next'
 import http from '../../../../utility/http'
 import Notebook from '../../../../components/notebook'
-import { DraftMetadata } from '../../../../components/blog/types'
 
 import styles from './draft.module.scss'
+import { PostMetadata } from '../../../../components/blog'
 
 const DraftEditor = ({ mdx }) => {
   return (
@@ -24,7 +24,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const response = await http.Get(`/blog/draft/${ctx.params.id}`, {
     headers: ctx.req ? { cookie: ctx.req.headers.cookie } : undefined,
   })
-  const draft: DraftMetadata = response.data
+  const draft: PostMetadata = response.data
   return {
     props: {
       mdx: draft.markdown,
