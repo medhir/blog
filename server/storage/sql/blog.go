@@ -202,7 +202,7 @@ ORDER BY created_on ASC;
 }
 
 func (p *postgres) AddAsset(
-	postId string,
+	postID string,
 	name string,
 	url string,
 ) error {
@@ -210,7 +210,7 @@ func (p *postgres) AddAsset(
 INSERT INTO BlogPostAsset (post_id, name, url)
 VALUES ($1, $2, $3);
 `
-	_, err := p.db.Exec(query, postId, name, url)
+	_, err := p.db.Exec(query, postID, name, url)
 	if err != nil {
 		return err
 	}
@@ -218,14 +218,14 @@ VALUES ($1, $2, $3);
 }
 
 func (p *postgres) DeleteAsset(
-	postId string,
+	postID string,
 	name string,
 ) error {
 	query := `
 DELETE FROM BlogPostAsset 
 WHERE post_id = $1 AND name = $2;
 `
-	res, err := p.db.Exec(query, postId, name)
+	res, err := p.db.Exec(query, postID, name)
 	if err != nil {
 		return err
 	}
@@ -239,13 +239,13 @@ WHERE post_id = $1 AND name = $2;
 	return nil
 }
 
-func (p *postgres) GetAssets(postId string) ([]*BlogPostAsset, error) {
+func (p *postgres) GetAssets(postID string) ([]*BlogPostAsset, error) {
 	query := `
 SELECT post_id, name, url
 FROM BlogPostAsset 
 WHERE post_id = $1;
 `
-	rows, err := p.db.Query(query, postId)
+	rows, err := p.db.Query(query, postID)
 	if err != nil {
 		return nil, err
 	}

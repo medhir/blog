@@ -23,8 +23,8 @@ type Blog interface {
 	DeletePost(id string) error
 	GetPosts() ([]*sql.BlogPost, error)
 
-	AddAsset(postId string, data []byte) error
-	DeleteAsset(postId, name string) error
+	AddAsset(postID string, data []byte) error
+	DeleteAsset(postID, name string) error
 }
 
 type blog struct {

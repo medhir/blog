@@ -64,15 +64,15 @@ type Postgres interface {
 	GetPosts() ([]*BlogPost, error)
 
 	AddAsset(
-		postId string,
+		postID string,
 		name string,
 		url string,
 	) error
 	DeleteAsset(
-		postId string,
+		postID string,
 		name string,
 	) error
-	GetAssets(postId string) ([]*BlogPostAsset, error)
+	GetAssets(postID string) ([]*BlogPostAsset, error)
 }
 
 type postgres struct {

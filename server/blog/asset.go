@@ -2,7 +2,7 @@ package blog
 
 import "fmt"
 
-func (b *blog) AddAsset(postId string, data []byte) error {
+func (b *blog) AddAsset(postID string, data []byte) error {
 	objectName := fmt.Sprintf("blog/assets/%s/%s.jpg")
 	err := b.gcs.UploadObject(objectName, bucket, data, true)
 	if err != nil {
@@ -12,19 +12,19 @@ func (b *blog) AddAsset(postId string, data []byte) error {
 	if err != nil {
 		return err
 	}
-	err = b.db.AddAsset(postId, objectName, attrs.MediaLink)
+	err = b.db.AddAsset(postID, objectName, attrs.MediaLink)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (b *blog) DeleteAsset(postId, name string) error {
+func (b *blog) DeleteAsset(postID, name string) error {
 	err := b.gcs.DeleteObject(name, bucket)
 	if err != nil {
 		return err
 	}
-	err = b.db.DeleteAsset(postId, name)
+	err = b.db.DeleteAsset(postID, name)
 	if err != nil {
 		return err
 	}
