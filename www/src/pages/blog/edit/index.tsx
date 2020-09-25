@@ -7,7 +7,7 @@ import { Authenticated } from '../../../utility/auth'
 
 const Edit = ({ auth, posts, drafts }) => {
   if (auth) {
-    return <Blog posts={posts} drafts={drafts} />
+    return <Blog edit={true} posts={posts} drafts={drafts} />
   } else {
     return <Login role={Roles.BlogOwner} />
   }

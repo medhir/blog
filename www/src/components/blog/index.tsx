@@ -4,8 +4,9 @@ import styles from './blog.module.scss'
 import DraftsList from './modules/DraftsList'
 
 interface BlogProps {
-  posts: Array<PostMetadata>
   drafts?: Array<PostMetadata>
+  edit?: boolean
+  posts: Array<PostMetadata>
 }
 
 export interface PostMetadata {
@@ -19,10 +20,10 @@ export interface PostMetadata {
   revised_on: string
 }
 
-const Blog = ({ posts, drafts }: BlogProps) => {
+const Blog = ({ drafts, edit, posts }: BlogProps) => {
   return (
     <section className={styles.blog}>
-      <PostsList posts={posts} />
+      <PostsList posts={posts} edit={edit} />
       {drafts && <DraftsList drafts={drafts} />}
     </section>
   )

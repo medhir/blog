@@ -18,7 +18,8 @@
     padding: 5px 10px;
   }
 
-  .posts > li > a {
+  .posts > li > a,
+  .drafts > li > a {
     display: block;
     color: inherit;
     text-decoration: none;
@@ -48,12 +49,14 @@
     border: 1px solid white;
   }
 
-  li.post {
+  li.post,
+  li.draft {
     cursor: pointer;
     transition: all 250ms ease-in-out;
   }
 
-  li.post:hover {
+  li.post:hover,
+  li.draft:hover {
     background-color: rgb(235, 235, 235);
   }
 
@@ -64,11 +67,11 @@
     margin: 5px 0px;
   }
 
-  li.post > a > h3 {
+  li.post h3 {
     border-bottom: 1px solid blue;
   }
 
-  li.draft > h3 {
+  li.draft h3 {
     border-bottom: 1px dashed red;
   }
 

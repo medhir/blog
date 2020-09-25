@@ -13,9 +13,12 @@ const DraftListItem = ({ draft }: DraftListItemProps) => {
   const saved = new Date(draft.saved_on).toString()
   return (
     <li className={styles.draft}>
-      <h3>{draft.title}</h3>
-      <p>{`Last saved at: ${saved}`}</p>
-      <Link href={`/blog/edit/draft/${draft.id}`}>View in Editor</Link>
+      <Link href={`/blog/edit/draft/${draft.id}`}>
+        <a>
+          <h3>{draft.title}</h3>
+          <p>{`Last saved at: ${saved}`}</p>
+        </a>
+      </Link>
     </li>
   )
 }
