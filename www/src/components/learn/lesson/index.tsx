@@ -210,18 +210,15 @@ class Lesson extends Component<LessonProps, LessonState> {
     return (
       <section className={styles.lesson}>
         <div className={styles.lesson_content}>
-          <Editable
-            className={styles.lesson_title}
-            value={title}
-            onChange={this.handleTitleChange}
-          />
-          <Notebook
-            scroll={true}
-            mdx={mdx}
-            className={styles.notebook}
-            handleTextareaChange={this.handleTextareaChange}
-            onSave={this.saveLesson}
-          />
+          {mdx && (
+            <Notebook
+              splitPane={false}
+              scroll={true}
+              mdx={mdx}
+              className={styles.notebook}
+              handleTextareaChange={this.handleTextareaChange}
+            />
+          )}
         </div>
         <IDE className={styles.ide} />
         {errorAlert.open && (

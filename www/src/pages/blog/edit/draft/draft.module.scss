@@ -1,20 +1,30 @@
 .draft {
+  width: 100%;
   display: flex;
   flex-direction: column;
 
-  @media only screen and (min-width: 500px) {
-    width: 100%;
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 20px;
+    border-left: 2px dashed black;
+    border-bottom: 2px dashed black;
+    border-right: 2px dashed black;
   }
 
-  @media only screen and (min-width: 800px) {
-    width: 80%;
-  }
+  // @media only screen and (min-width: 500px) {
+  //   width: 100%;
+  // }
 
-  @media only screen and (min-width: 1000px) {
-    width: 60%;
-  }
+  // @media only screen and (min-width: 800px) {
+  //   width: 80%;
+  // }
 
-  @media only screen and (min-width: 1500px) {
-    width: 50%;
-  }
+  // @media only screen and (min-width: 1000px) {
+  //   width: 60%;
+  // }
+
+  // @media only screen and (min-width: 1500px) {
+  //   width: 50%;
+  // }
 }

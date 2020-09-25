@@ -71,7 +71,7 @@ class IDE extends Component<IDEProps, IDEState> {
                       )
                     })
                     .catch(() => {}) // just to acknowledge the promise (you will be caught my friend!)
-                }, 500)
+                }, 1500)
               }
             )
           })

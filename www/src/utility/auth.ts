@@ -4,7 +4,7 @@ import http from './http'
 const JWTCookieName = 'tr4x2ki0ptz'
 const RefreshCookieName = 'y4h3j18f92knu2'
 
-interface AuthenticatedResponse {
+export interface AuthenticatedResponse {
   auth: boolean
   cookies?: string
 }
