@@ -75,6 +75,17 @@ func (h *handlers) PatchDraft() http.HandlerFunc {
 	}
 }
 
+func (h *handlers) DeleteDraft() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := path.Base(r.URL.Path)
+		err := h.db.DeleteDraftOrPost(id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
 func (h *handlers) HandleDraft() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -84,6 +95,8 @@ func (h *handlers) HandleDraft() http.HandlerFunc {
 			h.PostDraft()(w, r)
 		case http.MethodPatch:
 			h.PatchDraft()(w, r)
+		case http.MethodDelete:
+			h.DeleteDraft()(w, r)
 		default:
 			http.Error(w, fmt.Sprintf("unimplemented http handler for method %s", r.Method), http.StatusMethodNotAllowed)
 			return

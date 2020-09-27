@@ -1,4 +1,5 @@
 import { GetServerSideProps } from 'next'
+import Router from 'next/router'
 import http, { Protected } from '../../../../utility/http'
 import Notebook from '../../../../components/notebook'
 import styles from './draft.module.scss'
@@ -16,6 +17,7 @@ import { AxiosError } from 'axios'
 import { Button } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
 import PublishIcon from '@material-ui/icons/Publish'
+import DeleteIcon from '@material-ui/icons/Delete'
 
 interface DraftEditorProps {
   auth: boolean
@@ -52,7 +54,8 @@ class DraftEditor extends Component<DraftEditorProps, DraftEditorState> {
     this.closeErrorAlert = this.closeErrorAlert.bind(this)
     this.closeSuccessAlert = this.closeSuccessAlert.bind(this)
     this.handleTextareaChange = this.handleTextareaChange.bind(this)
-    this.save = this.save.bind(this)
+    this.deleteDraft = this.deleteDraft.bind(this)
+    this.saveDraft = this.saveDraft.bind(this)
   }
 
   componentDidMount() {
@@ -100,7 +103,33 @@ class DraftEditor extends Component<DraftEditorProps, DraftEditorState> {
     })
   }
 
-  save() {
+  deleteDraft() {
+    const { id } = this.props
+    Protected.Client.Delete(`/blog/draft/${id}`)
+      .then(() => {
+        this.setState(
+          {
+            successAlert: {
+              open: true,
+              message: 'draft successfully deleted',
+            },
+          },
+          () => {
+            Router.push('/blog/edit')
+          }
+        )
+      })
+      .catch((error: AxiosError) => {
+        this.setState({
+          errorAlert: {
+            open: true,
+            message: error.response.data,
+          },
+        })
+      })
+  }
+
+  saveDraft() {
     const { id } = this.props
     const { mdx } = this.state
     const { articleRef } = this
@@ -142,7 +171,8 @@ class DraftEditor extends Component<DraftEditorProps, DraftEditorState> {
       closeErrorAlert,
       closeSuccessAlert,
       handleTextareaChange,
-      save,
+      saveDraft,
+      deleteDraft,
     } = this
     if (auth) {
       return (
@@ -153,9 +183,18 @@ class DraftEditor extends Component<DraftEditorProps, DraftEditorState> {
               color="secondary"
               size="small"
               startIcon={<SaveIcon />}
-              onClick={save}
+              onClick={saveDraft}
             >
               Save
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              size="small"
+              startIcon={<DeleteIcon />}
+              onClick={deleteDraft}
+            >
+              Delete
             </Button>
             <Button
               variant="contained"
