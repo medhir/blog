@@ -1,10 +1,18 @@
 package handlers
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"path"
 )
+
+type draftData struct {
+	Title    string `json:"title"`
+	Markdown string `json:"markdown"`
+}
 
 func (h *handlers) GetDraft() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -20,13 +28,45 @@ func (h *handlers) GetDraft() http.HandlerFunc {
 
 func (h *handlers) PostDraft() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		defer r.Body.Close()
+		var data draftData
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, "Unable to decode data in request body", http.StatusInternalServerError)
+			return
+		}
+		if data.Title == "" {
+			http.Error(w, "title must be provided", http.StatusBadRequest)
+			return
+		}
+		id, err := h.db.CreateDraft(data.Title, data.Markdown)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Write([]byte(id))
 	}
 }
 
 func (h *handlers) PatchDraft() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		id := path.Base(r.URL.Path)
+		defer r.Body.Close()
+		var data draftData
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, "Unable to decode data in request body", http.StatusInternalServerError)
+			return
+		}
+		if data.Title == "" {
+			http.Error(w, "title must be provided", http.StatusBadRequest)
+			return
+		}
+		err = h.db.SaveDraft(id, data.Title, data.Markdown)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
@@ -69,6 +109,18 @@ func (h *handlers) GetPost() http.HandlerFunc {
 	}
 }
 
+func (h *handlers) PostPost() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
+}
+
+func (h *handlers) PatchPost() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
+}
+
 func (h *handlers) GetPosts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		posts, err := h.blog.GetPosts()
@@ -77,5 +129,81 @@ func (h *handlers) GetPosts() http.HandlerFunc {
 			return
 		}
 		writeJSON(w, posts)
+	}
+}
+
+func (h *handlers) postAsset() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := path.Base(r.URL.Path)
+		r.ParseMultipartForm(32 << 20)
+		fileHeaders := r.MultipartForm.File["photo"]
+		for _, fileHeader := range fileHeaders {
+			file, err := fileHeader.Open()
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			defer file.Close()
+			buf := bytes.NewBuffer(nil)
+			_, err = io.Copy(buf, file)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			processedImage, err := h.imgProcessor.ProcessImage(buf.Bytes())
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Unable to process image: %s", err.Error()), http.StatusInternalServerError)
+				return
+			}
+			err = h.blog.AddAsset(id, processedImage)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (h *handlers) deleteAsset() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+	}
+}
+
+func (h *handlers) HandleAsset() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			h.postAsset()(w, r)
+		case http.MethodDelete:
+			h.deleteAsset()(w, r)
+		default:
+			http.Error(w, fmt.Sprintf("unimplemented http handler for method %s", r.Method), http.StatusMethodNotAllowed)
+			return
+		}
+	}
+}
+
+func (h *handlers) getAssets() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+	}
+}
+
+func (h *handlers) deleteAssets() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+	}
+}
+
+func (h *handlers) HandleAssets() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			h.getAssets()(w, r)
+		case http.MethodDelete:
+			h.deleteAssets()(w, r)
+		default:
+			http.Error(w, fmt.Sprintf("unimplemented http handler for method %s", r.Method), http.StatusMethodNotAllowed)
+			return
+		}
 	}
 }

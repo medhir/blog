@@ -30,12 +30,14 @@ type Handlers interface {
 
 	// Blog
 	GetDraft() http.HandlerFunc
-	GetDrafts() http.HandlerFunc
 	PostDraft() http.HandlerFunc
 	PatchDraft() http.HandlerFunc
 	HandleDraft() http.HandlerFunc
 	GetPost() http.HandlerFunc
+	GetDrafts() http.HandlerFunc
 	GetPosts() http.HandlerFunc
+	HandleAsset() http.HandlerFunc
+	HandleAssets() http.HandlerFunc
 
 	// Photos
 	GetPhotos() http.HandlerFunc
