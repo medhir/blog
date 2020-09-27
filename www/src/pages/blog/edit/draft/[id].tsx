@@ -1,5 +1,4 @@
 import { GetServerSideProps } from 'next'
-import Marked from 'marked'
 import http, { Protected } from '../../../../utility/http'
 import Notebook from '../../../../components/notebook'
 import styles from './draft.module.scss'
@@ -26,6 +25,7 @@ interface DraftEditorProps {
 
 interface DraftEditorState {
   mdx: string
+  mobile: boolean
   errorAlert: AlertData
   successAlert: AlertData
 }
@@ -36,6 +36,7 @@ class DraftEditor extends Component<DraftEditorProps, DraftEditorState> {
     super(props)
     this.state = {
       mdx: props.mdx,
+      mobile: false,
       errorAlert: {
         open: false,
         message: '',
@@ -47,10 +48,32 @@ class DraftEditor extends Component<DraftEditorProps, DraftEditorState> {
     }
 
     this.articleRef = React.createRef()
+    this.checkIfMobile = this.checkIfMobile.bind(this)
     this.closeErrorAlert = this.closeErrorAlert.bind(this)
     this.closeSuccessAlert = this.closeSuccessAlert.bind(this)
     this.handleTextareaChange = this.handleTextareaChange.bind(this)
     this.save = this.save.bind(this)
+  }
+
+  componentDidMount() {
+    this.checkIfMobile()
+    window.addEventListener('resize', this.checkIfMobile)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.checkIfMobile)
+  }
+
+  checkIfMobile() {
+    if (window.innerWidth < 600) {
+      this.setState({
+        mobile: true,
+      })
+    } else {
+      this.setState({
+        mobile: false,
+      })
+    }
   }
 
   closeSuccessAlert() {
@@ -113,7 +136,7 @@ class DraftEditor extends Component<DraftEditorProps, DraftEditorState> {
 
   render() {
     const { auth } = this.props
-    const { mdx, errorAlert, successAlert } = this.state
+    const { mdx, mobile, errorAlert, successAlert } = this.state
     const {
       articleRef,
       closeErrorAlert,
@@ -145,7 +168,7 @@ class DraftEditor extends Component<DraftEditorProps, DraftEditorState> {
           </div>
           <Notebook
             articleRef={articleRef}
-            splitPane={true}
+            splitPane={!mobile}
             scroll={false}
             mdx={mdx}
             handleTextareaChange={handleTextareaChange}
