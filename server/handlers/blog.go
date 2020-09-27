@@ -27,6 +27,9 @@ func (h *handlers) GetDraft() http.HandlerFunc {
 }
 
 func (h *handlers) PostDraft() http.HandlerFunc {
+	type postDraftResponse struct {
+		ID string `json:"id"`
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		var data draftData
@@ -44,7 +47,9 @@ func (h *handlers) PostDraft() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Write([]byte(id))
+		writeJSON(w, postDraftResponse{
+			ID: id,
+		})
 	}
 }
 

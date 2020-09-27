@@ -59,7 +59,7 @@ VALUES ($1, $2, $3, $4, $5);
 	if err != nil {
 		return uuid, err
 	}
-	return "", nil
+	return uuid, nil
 }
 
 func (p *postgres) GetDraft(id string) (*BlogPost, error) {

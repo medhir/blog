@@ -1,7 +1,10 @@
 import React from 'react'
+import Router from 'next/router'
 import PostsList from './modules/PostsList'
 import styles from './blog.module.scss'
 import DraftsList from './modules/DraftsList'
+import { Button } from '@material-ui/core'
+import { Protected } from '../../utility/http'
 
 interface BlogProps {
   drafts?: Array<PostMetadata>
@@ -21,10 +24,30 @@ export interface PostMetadata {
 }
 
 const Blog = ({ drafts, edit, posts }: BlogProps) => {
+  const AddDraft = () => {
+    const title = `Untitled ${Math.random()}`
+    Protected.Client.Post('/blog/draft/', {
+      title,
+      markdown: `# ${title}`,
+    }).then((response) => {
+      Router.push(`/blog/edit/draft/${response.data.id}`)
+    })
+  }
   return (
     <section className={styles.blog}>
       <PostsList posts={posts} edit={edit} />
       {drafts && <DraftsList drafts={drafts} />}
+      {edit && (
+        <Button
+          className={styles.draftButton}
+          variant="contained"
+          color="primary"
+          size="medium"
+          onClick={AddDraft}
+        >
+          Add New Draft
+        </Button>
+      )}
     </section>
   )
 }
