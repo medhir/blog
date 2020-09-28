@@ -14,7 +14,7 @@ type draftData struct {
 	Markdown string `json:"markdown"`
 }
 
-func (h *handlers) GetDraft() http.HandlerFunc {
+func (h *handlers) getDraft() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := path.Base(r.URL.Path)
 		draft, err := h.blog.GetDraft(id)
@@ -26,7 +26,7 @@ func (h *handlers) GetDraft() http.HandlerFunc {
 	}
 }
 
-func (h *handlers) PostDraft() http.HandlerFunc {
+func (h *handlers) postDraft() http.HandlerFunc {
 	type postDraftResponse struct {
 		ID string `json:"id"`
 	}
@@ -53,7 +53,7 @@ func (h *handlers) PostDraft() http.HandlerFunc {
 	}
 }
 
-func (h *handlers) PatchDraft() http.HandlerFunc {
+func (h *handlers) patchDraft() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := path.Base(r.URL.Path)
 		defer r.Body.Close()
@@ -75,10 +75,14 @@ func (h *handlers) PatchDraft() http.HandlerFunc {
 	}
 }
 
-func (h *handlers) DeleteDraft() http.HandlerFunc {
+func (h *handlers) deleteDraft() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := path.Base(r.URL.Path)
-		err := h.db.DeleteDraftOrPost(id)
+		err := h.blog.DeleteAssets(id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		err = h.db.DeleteDraftOrPost(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -90,13 +94,13 @@ func (h *handlers) HandleDraft() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			h.GetDraft()(w, r)
+			h.getDraft()(w, r)
 		case http.MethodPost:
-			h.PostDraft()(w, r)
+			h.postDraft()(w, r)
 		case http.MethodPatch:
-			h.PatchDraft()(w, r)
+			h.patchDraft()(w, r)
 		case http.MethodDelete:
-			h.DeleteDraft()(w, r)
+			h.deleteDraft()(w, r)
 		default:
 			http.Error(w, fmt.Sprintf("unimplemented http handler for method %s", r.Method), http.StatusMethodNotAllowed)
 			return
@@ -151,6 +155,9 @@ func (h *handlers) GetPosts() http.HandlerFunc {
 }
 
 func (h *handlers) postAsset() http.HandlerFunc {
+	type postAssetResponse struct {
+		URL string `json:"url"`
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := path.Base(r.URL.Path)
 		r.ParseMultipartForm(32 << 20)
@@ -173,18 +180,33 @@ func (h *handlers) postAsset() http.HandlerFunc {
 				http.Error(w, fmt.Sprintf("Unable to process image: %s", err.Error()), http.StatusInternalServerError)
 				return
 			}
-			err = h.blog.AddAsset(id, processedImage)
+			url, err := h.blog.AddAsset(id, processedImage)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+			writeJSON(w, postAssetResponse{
+				URL: url,
+			})
+			return
 		}
-		w.WriteHeader(http.StatusOK)
 	}
 }
 
 func (h *handlers) deleteAsset() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		id := path.Base(r.URL.Path)
+		names, ok := r.URL.Query()["name"]
+		if !ok || len(names) < 1 {
+			http.Error(w, "name must be provided as a query parameter", http.StatusBadRequest)
+			return
+		}
+		name := names[0]
+		err := h.blog.DeleteAsset(id, name)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
@@ -204,11 +226,13 @@ func (h *handlers) HandleAsset() http.HandlerFunc {
 
 func (h *handlers) getAssets() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-	}
-}
-
-func (h *handlers) deleteAssets() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+		id := path.Base(r.URL.Path)
+		assets, err := h.db.GetAssets(id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		writeJSON(w, assets)
 	}
 }
 
@@ -217,8 +241,6 @@ func (h *handlers) HandleAssets() http.HandlerFunc {
 		switch r.Method {
 		case http.MethodGet:
 			h.getAssets()(w, r)
-		case http.MethodDelete:
-			h.deleteAssets()(w, r)
 		default:
 			http.Error(w, fmt.Sprintf("unimplemented http handler for method %s", r.Method), http.StatusMethodNotAllowed)
 			return

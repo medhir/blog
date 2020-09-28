@@ -29,9 +29,6 @@ type Handlers interface {
 	MigrateBlog() http.HandlerFunc
 
 	// Blog
-	GetDraft() http.HandlerFunc
-	PostDraft() http.HandlerFunc
-	PatchDraft() http.HandlerFunc
 	HandleDraft() http.HandlerFunc
 	GetPost() http.HandlerFunc
 	GetDrafts() http.HandlerFunc

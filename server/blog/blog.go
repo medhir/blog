@@ -37,8 +37,9 @@ type Blog interface {
 	DeletePost(id string) error
 	GetPosts() ([]*Post, error)
 
-	AddAsset(postID string, data []byte) error
+	AddAsset(postID string, data []byte) (url string, _ error)
 	DeleteAsset(postID, name string) error
+	DeleteAssets(postID string) error
 }
 
 type blog struct {
