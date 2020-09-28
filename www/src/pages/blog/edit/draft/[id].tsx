@@ -192,8 +192,11 @@ class DraftEditor extends Component<DraftEditorProps, DraftEditorState> {
     const { id } = this.props
     e.persist()
     // store selection start/end positions, original value
+    // @ts-ignore
     const start = e.target.selectionStart
+    // @ts-ignore
     const end = e.target.selectionEnd
+    // @ts-ignore
     const originalValue = e.target.value
 
     let blob
