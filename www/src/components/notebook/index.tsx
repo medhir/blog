@@ -1,4 +1,4 @@
-import { Component, ChangeEvent } from 'react'
+import { Component, ChangeEvent, ClipboardEvent, DragEvent } from 'react'
 import { v4 as uuid } from 'uuid'
 import Preview from './preview'
 import styles from './notebook.module.scss'
@@ -6,7 +6,6 @@ import http from '../../utility/http'
 import { debounce } from 'lodash'
 import { IconButton } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit'
-import SaveIcon from '@material-ui/icons/Save'
 import VisibilityIcon from '@material-ui/icons/Visibility'
 
 interface NotebookProps {
@@ -16,6 +15,8 @@ interface NotebookProps {
   scroll: boolean
   splitPane: boolean
   handleTextareaChange: (e: ChangeEvent<HTMLTextAreaElement>) => void
+  handleDrop?: (e: DragEvent<HTMLTextAreaElement>) => void
+  handlePaste?: (e: ClipboardEvent<HTMLTextAreaElement>) => void
 }
 
 interface NotebookState {
@@ -105,13 +106,25 @@ class Notebook extends Component<NotebookProps, NotebookState> {
   }
 
   render() {
-    const { articleRef, className, scroll, splitPane } = this.props
+    const {
+      articleRef,
+      className,
+      scroll,
+      splitPane,
+      handleDrop,
+      handlePaste,
+    } = this.props
     const { iMDX, parsedMDX, preview } = this.state
     const { onTextareaChange, togglePreview } = this
     if (splitPane) {
       return (
         <div className={`${styles.notebook} ${className}`}>
-          <textarea onChange={onTextareaChange} value={iMDX}></textarea>
+          <textarea
+            onChange={onTextareaChange}
+            onDrop={handleDrop}
+            onPaste={handlePaste}
+            value={iMDX}
+          ></textarea>
           <Preview articleRef={articleRef} scroll={scroll} source={parsedMDX} />
         </div>
       )

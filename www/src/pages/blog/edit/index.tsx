@@ -20,7 +20,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   if (response.auth) {
     const postsResponse = await http.Get('/blog/posts')
     const draftsResponse = await http.Get('/blog/drafts', {
-      headers: ctx.req ? { cookie: ctx.req.headers.cookie } : undefined,
+      headers: {
+        cookie: response.cookies,
+      },
     })
     return {
       props: {
