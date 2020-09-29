@@ -30,7 +30,7 @@ type Handlers interface {
 
 	// Blog
 	HandleDraft() http.HandlerFunc
-	GetPost() http.HandlerFunc
+	HandlePost() http.HandlerFunc
 	GetDrafts() http.HandlerFunc
 	GetPosts() http.HandlerFunc
 	HandleAsset() http.HandlerFunc

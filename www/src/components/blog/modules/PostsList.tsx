@@ -15,7 +15,7 @@ const PostListItem = ({ edit, post }: PostListItemProps) => {
   return (
     <li className={styles.post}>
       <Link
-        href={edit ? `/blog/edit/${post.id}` : `/blog/${post.slug}`}
+        href={edit ? `/blog/edit/post/${post.slug}` : `/blog/${post.slug}`}
         key={post.id}
       >
         <a>

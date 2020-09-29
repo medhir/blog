@@ -25,9 +25,9 @@ func (i *Instance) AddRoutes() error {
 	// 	blog
 	i.router.HandleFunc("/blog/asset/", h.Authorize(auth.BlogOwner, h.HandleAsset()))
 	i.router.HandleFunc("/blog/assets/", h.Authorize(auth.BlogOwner, h.HandleAssets()))
-	i.router.HandleFunc("/blog/drafts", h.Authorize(auth.BlogOwner, h.GetDrafts()))
 	i.router.HandleFunc("/blog/draft/", h.Authorize(auth.BlogOwner, h.HandleDraft()))
-	i.router.HandleFunc("/blog/post/", h.GetPost())
+	i.router.HandleFunc("/blog/drafts", h.Authorize(auth.BlogOwner, h.GetDrafts()))
+	i.router.HandleFunc("/blog/post/", h.HandlePost())
 	i.router.HandleFunc("/blog/posts", h.GetPosts())
 	// 	photos
 	i.router.HandleFunc("/photos/", h.HandlePhotos())
