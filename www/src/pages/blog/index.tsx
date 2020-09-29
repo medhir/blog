@@ -1,5 +1,5 @@
 import React from 'react'
-import { GetStaticProps } from 'next'
+import { GetServerSideProps, GetStaticProps } from 'next'
 
 import BlogComponent from '../../components/blog'
 import http from '../../utility/http'
@@ -14,7 +14,7 @@ const Blog = ({ posts }) => (
 
 export default Blog
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async () => {
   const response = await http.Get('/blog/posts')
 
   return {
