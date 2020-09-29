@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import http from '../../../utility/http'
+import http, { Protected } from '../../../utility/http'
 import styles from './course.module.scss'
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt'
 import { Button } from '@material-ui/core'
@@ -77,8 +77,7 @@ class Course extends Component<CourseProps, CourseState> {
   componentDidMount() {
     const { id } = this.state
     if (id !== '') {
-      http
-        .Get(`/courses/${id}`, { withCredentials: true })
+      Protected.Client.Get(`/courses/${id}`)
         .then((response) => {
           const {
             author_id,
@@ -147,15 +146,10 @@ class Course extends Component<CourseProps, CourseState> {
     const { author_id, id, title, description } = this.state
     if (id === '') {
       // create a new course
-      http
-        .Post(
-          '/courses/',
-          {
-            title,
-            description,
-          },
-          { withCredentials: true }
-        )
+      Protected.Client.Post('/courses/', {
+        title,
+        description,
+      })
         .then((response) => {
           Router.push(`/teach/courses/${response.data}`)
         })
@@ -169,17 +163,12 @@ class Course extends Component<CourseProps, CourseState> {
         })
     } else {
       // update the course
-      http
-        .Patch(
-          '/courses/',
-          {
-            author_id,
-            id,
-            title,
-            description,
-          },
-          { withCredentials: true }
-        )
+      Protected.Client.Patch('/courses/', {
+        author_id,
+        id,
+        title,
+        description,
+      })
         .then(() => {
           this.setState({
             successAlert: {
@@ -227,12 +216,6 @@ class Course extends Component<CourseProps, CourseState> {
               multiline
               onChange={this.handleDescriptionInput}
             />
-            {/* <ContentEditable
-              innerRef={this.descriptionRef}
-              html={description}
-              onChange={this.handleDescriptionInput}
-              tagName="p"
-            /> */}
           </header>
           <div className={styles.course_controls}>
             <Button

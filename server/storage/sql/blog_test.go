@@ -1,15 +1,9 @@
-package blog
+package sql
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
-
-func TestAddDraft(t *testing.T) {
-	t.Run("Successfully uploads a blog post", func(t *testing.T) {})
-	t.Run("Returns an error if upload to gcs fails", func(t *testing.T) {})
-}
 
 func Test_makeSlug(t *testing.T) {
 	slug1 := makeSlug("a title")

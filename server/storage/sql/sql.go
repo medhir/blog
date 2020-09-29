@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/golang-migrate/migrate/v4"
+	"time"
+
 	// pq is the database driver for connecting to postgres
 	_ "github.com/lib/pq"
 	// postgres migration driver
@@ -14,6 +16,9 @@ import (
 
 // Postgres is the interface for interacting with the postgres database
 type Postgres interface {
+	MigrateUp() error
+	MigrateDown() error
+	MigrateUpAll() error
 	Close() error
 
 	// Course API
@@ -40,10 +45,51 @@ type Postgres interface {
 	) error
 	DeleteLesson(id string) error
 	GetLessons(courseID string) ([]*Lesson, error)
+
+	// Blog API
+	AddDraftOrPost(
+		id string,
+		title string,
+		markdown string,
+		createdOn time.Time,
+		savedOn sql.NullTime,
+		publishedOn sql.NullTime,
+	) error
+	CreateDraft(title string, markdown string) (id string, _ error)
+	GetDraft(id string) (*BlogPost, error)
+	SaveDraft(
+		id string,
+		title string,
+		markdown string,
+	) error
+	DeleteDraftOrPost(id string) error
+	GetDrafts() ([]*BlogPost, error)
+
+	PublishPost(id string) error
+	GetPost(id string) (*BlogPost, error)
+	GetPostBySlug(slug string) (*BlogPost, error)
+	RevisePost(
+		id string,
+		title string,
+		markdown string,
+	) error
+	GetPosts() ([]*BlogPost, error)
+
+	AddAsset(
+		postID string,
+		name string,
+		url string,
+	) error
+	DeleteAsset(
+		postID string,
+		name string,
+	) error
+	GetAssets(postID string) ([]*BlogPostAsset, error)
 }
 
 type postgres struct {
-	db *sql.DB
+	db       *sql.DB
+	migrator *migrate.Migrate
 }
 
 // NewPostgres instantiates a new connection to a postgres database, as well as providing an interface for interacting with the db.
@@ -64,13 +110,37 @@ func NewPostgres(url, migrationsPath string) (Postgres, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not start database migrations - %s", err.Error())
 	}
-	err = m.Up()
-	if err != nil && err != migrate.ErrNoChange {
-		return nil, fmt.Errorf("could not migrate the database - %s", err.Error())
-	}
 	return &postgres{
-		db: db,
+		db:       db,
+		migrator: m,
 	}, nil
+}
+
+// MigrateUp migrates the postgres instance to the next version by one step
+func (p *postgres) MigrateUp() error {
+	err := p.migrator.Steps(1)
+	if err != nil && err != migrate.ErrNoChange {
+		return fmt.Errorf("could not migrate the database - %s", err.Error())
+	}
+	return nil
+}
+
+// MigrateDown migrates the postgres instance to the previous version by one step
+func (p *postgres) MigrateDown() error {
+	err := p.migrator.Steps(-1)
+	if err != nil && err != migrate.ErrNoChange {
+		return fmt.Errorf("could not migrate the database - %s", err.Error())
+	}
+	return nil
+}
+
+// MigrateUpAll migrates the postgres instance to the latest version
+func (p *postgres) MigrateUpAll() error {
+	err := p.migrator.Up()
+	if err != nil && err != migrate.ErrNoChange {
+		return fmt.Errorf("could not migrate the database - %s", err.Error())
+	}
+	return nil
 }
 
 func (p *postgres) Close() error {

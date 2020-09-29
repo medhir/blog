@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import Head from '../head'
 import styles from './photos.module.scss'
 import DeleteButton from '../button/delete'
-import Auth, { Roles } from '../auth'
 
 export interface PhotoData {
   name: string
@@ -10,10 +9,11 @@ export interface PhotoData {
 }
 
 export interface PhotosProps {
+  auth: boolean
   photos: PhotoData[]
 }
 
-const Photos = ({ photos }: PhotosProps) => {
+const Photos = ({ auth, photos }: PhotosProps) => {
   const [displayPhotos, setDisplayPhotos] = useState(photos.slice(0, 5))
 
   const handleScroll = () => {
@@ -46,7 +46,7 @@ const Photos = ({ photos }: PhotosProps) => {
         {displayPhotos.map((photo, i) => (
           <div className={styles.photo} key={photo.name}>
             <img src={photo.url} />
-            <Auth role={Roles.BlogOwner}>
+            {auth && (
               <DeleteButton
                 endpoint={`/photos/${photo.name}`}
                 className={styles.delete}
@@ -61,7 +61,7 @@ const Photos = ({ photos }: PhotosProps) => {
               >
                 Delete
               </DeleteButton>
-            </Auth>
+            )}
           </div>
         ))}
       </section>

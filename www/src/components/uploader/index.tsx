@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import Auth, { Roles } from '../auth'
 import styles from './uploader.module.scss'
-import http from '../../utility/http'
+import http, { Protected } from '../../utility/http'
 
 interface FilesProps {
   files: FileList
@@ -73,14 +72,12 @@ class Uploader extends Component<{}, UploaderState> {
       for (let i = 0; i < this.state.files.length; i++) {
         formData.append('photo', this.state.files[i])
       }
-      http
-        .Post('/photos/', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          withCredentials: true,
-          onUploadProgress: this.handleProgressEvent,
-        })
+      Protected.Client.Post('/photos/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: this.handleProgressEvent,
+      })
         .then(() => {
           this.setState({
             success: true,
@@ -97,34 +94,32 @@ class Uploader extends Component<{}, UploaderState> {
   render() {
     const { files, progress, success } = this.state
     return (
-      <Auth role={Roles.BlogOwner} prompt>
-        <div className={styles.uploader}>
-          <form className={styles.imageForm}>
-            <input
-              type="file"
-              accept="image/*"
-              id="imagesInput"
-              className={styles.imagesInput}
-              multiple
-              onChange={this.handleFileStateChange}
-            />
-            <label htmlFor="imagesInput">Choose Images</label>
-            <button
-              className={styles.uploadButton}
-              onClick={(e) => {
-                this.handleUpload(e)
-              }}
-            >
-              Upload
-            </button>
-          </form>
-          <div className={styles.progressIndicator}>
-            <div style={{ width: progress }} />
-          </div>
-          {success && <SuccessMessage />}
-          {files && <Files files={files} />}
+      <div className={styles.uploader}>
+        <form className={styles.imageForm}>
+          <input
+            type="file"
+            accept="image/*"
+            id="imagesInput"
+            className={styles.imagesInput}
+            multiple
+            onChange={this.handleFileStateChange}
+          />
+          <label htmlFor="imagesInput">Choose Images</label>
+          <button
+            className={styles.uploadButton}
+            onClick={(e) => {
+              this.handleUpload(e)
+            }}
+          >
+            Upload
+          </button>
+        </form>
+        <div className={styles.progressIndicator}>
+          <div style={{ width: progress }} />
         </div>
-      </Auth>
+        {success && <SuccessMessage />}
+        {files && <Files files={files} />}
+      </div>
     )
   }
 }

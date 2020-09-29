@@ -1,10 +1,18 @@
+.PHONY: local
+local:
+	  osascript \
+    -e 'tell application "iTerm2" to tell current window to set newWindow to (create tab with default profile)'\
+    -e "tell application \"iTerm2\" to tell current session of newWindow to write text \"cd ~/Documents/code/blog && make server\""\
+		-e 'tell application "iTerm2" to tell current window to set newWindow to (create tab with default profile)'\
+    -e "tell application \"iTerm2\" to tell current session of newWindow to write text \"cd ~/Documents/code/blog && make www\""
+
 .PHONY: blog
 blog: 
 	rm -rf build/ && cd client && REACT_APP_MOBILE_TEST=true npm run build && cd ../ && go run application.go
 
 .PHONY: server
 server:
-	cd server && go run main.go
+	cd server && air
 
 .PHONY: www
 www:
@@ -13,18 +21,6 @@ www:
 .PHONY: code 
 code:
 	code blog.code-workspace
-
-.PHONY: image
-image:
-	docker build -t gcr.io/blog-121419/blog:v$(version) . && docker push gcr.io/blog-121419/blog:v$(version)
-
-.PHONY: tfplan
-tfplan:
-	cd terraform && terraform plan
-
-.PHONY: tfapply
-tfapply:
-	cd terraform && terraform apply
 
 .PHONY: podshell
 podshell :
@@ -53,3 +49,7 @@ start-db:
 .PHONY: migration
 migration:
 	migrate create -ext sql -dir server/storage/sql/migrations -seq $(name)
+
+.PHONY: migrate-up-local
+migrate-up-local:
+	migrate -source file://server/storage/sql/migrations -database postgres://postgres:docker@localhost:5432/medhir-com?sslmode=disable up

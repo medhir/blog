@@ -114,7 +114,8 @@ func NewInstance() (*Instance, error) {
 		db:     db,
 	}
 
-	err = instance.AddRoutes() // initialize routes for serve mux
+	// initialize routes for serve mux
+	err = instance.AddRoutes()
 	if err != nil {
 		return nil, err
 	}
@@ -144,6 +145,7 @@ func NewInstance() (*Instance, error) {
 
 // Start initializes a server instance
 func (i *Instance) Start() {
+	fmt.Print(fmt.Sprintf("Instance listening on port %s...", i.server.Addr))
 	err := i.server.ListenAndServe() // Start doesn't return until the server connection breaks
 	if err != nil {
 		fmt.Println("Server stopped unexpectedly.", err)

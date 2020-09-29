@@ -1,10 +1,22 @@
-import Course from "../../../../components/learn/course"
-import Auth, { Roles } from "../../../../components/auth"
+import Course from '../../../../components/learn/course'
+import { Roles } from '../../../../components/auth'
+import { Authenticated } from '../../../../utility/auth'
+import { GetServerSideProps } from 'next'
+import Login from '../../../../components/auth/login'
 
-const NewCourse = () => (
-  <Auth prompt role={Roles.BlogOwner}>
-    <Course />
-  </Auth>
-)
+const NewCourse = ({ auth }) => {
+  if (auth) {
+    return <Course />
+  } else {
+    return <Login role={Roles.BlogOwner} />
+  }
+}
 
 export default NewCourse
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const auth = await Authenticated(ctx, Roles.BlogOwner)
+  return {
+    props: { auth },
+  }
+}

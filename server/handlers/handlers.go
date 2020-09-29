@@ -18,17 +18,23 @@ type Handlers interface {
 	// Authentication
 	Login() http.HandlerFunc
 	ValidateJWT() http.HandlerFunc
+	RefreshJWT() http.HandlerFunc
+	RefreshForNext() http.HandlerFunc
 	Authorize(role auth.Role, handler http.HandlerFunc) http.HandlerFunc
 	RegisterNewUser() http.HandlerFunc
 
+	// Database
+	MigrateUp() http.HandlerFunc
+	MigrateDown() http.HandlerFunc
+	MigrateBlog() http.HandlerFunc
+
 	// Blog
-	GetDraft() http.HandlerFunc
-	GetDrafts() http.HandlerFunc
-	PostDraft() http.HandlerFunc
-	PatchDraft() http.HandlerFunc
 	HandleDraft() http.HandlerFunc
-	GetPost() http.HandlerFunc
+	HandlePost() http.HandlerFunc
+	GetDrafts() http.HandlerFunc
 	GetPosts() http.HandlerFunc
+	HandleAsset() http.HandlerFunc
+	HandleAssets() http.HandlerFunc
 
 	// Photos
 	GetPhotos() http.HandlerFunc
@@ -70,7 +76,7 @@ func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, db sql.Postgr
 		ctx:          ctx,
 		auth:         auth,
 		gcs:          gcs,
-		blog:         blog.NewBlog(gcs),
+		blog:         blog.NewBlog(db, gcs),
 		imgProcessor: imageprocessor.NewImageProcessor(),
 		coder:        coderManager,
 		db:           db,

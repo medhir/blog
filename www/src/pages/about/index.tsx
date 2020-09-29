@@ -28,7 +28,7 @@ const About = () => (
         You can view some of my work through this site and{' '}
         <a href="https://github.com/medhir">GitHub</a>, connect with me on{' '}
         <a href="https://linkedin.com/in/medhir">LinkedIn</a>, or send me an{' '}
-        e-mail via mail AT medhir.com.
+        email via mail AT medhir.com.
       </p>
     </section>
   </>

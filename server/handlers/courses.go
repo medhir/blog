@@ -30,6 +30,7 @@ func (h *handlers) getCourse() http.HandlerFunc {
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
+			fmt.Println(user)
 			courses, err := h.db.GetCourses(*user.ID)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)

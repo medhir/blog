@@ -7,13 +7,19 @@ const Header = () => (
     <nav>
       <ul>
         <li>
-          <Link href="/about">about</Link>
+          <Link href="/about">
+            <a>about</a>
+          </Link>
         </li>
         <li>
-          <Link href="/blog">blog</Link>
+          <Link href="/blog">
+            <a>blog</a>
+          </Link>
         </li>
         <li>
-          <Link href="/photos">photos</Link>
+          <Link href="/photos">
+            <a>photos</a>
+          </Link>
         </li>
       </ul>
     </nav>

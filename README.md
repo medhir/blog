@@ -18,13 +18,21 @@ The application is hosted as a set of loosely coupled microservices running on c
 ## Set up / Installation
 
 The Go server connects to a postgres database for certain application operations. 
-For local development, you can initialize the database by running:
+For local development, there are some utility scripts to run a local postgres instance in a Docker container.
+ 
+You can initialize the database by running:
 
 ```shell script
 make init-db
 ```
 
 You will be prompted to enter a password for the `postgres` user, to which you should enter `docker`.
+
+To restart the database container, use the command: 
+
+```shell script
+make start-db
+```
 
 The local database can be accessed using the following command: 
 ```shell script

@@ -3,7 +3,7 @@ import IDE from '../ide'
 
 import styles from './lesson.module.scss'
 import { Component, ChangeEvent } from 'react'
-import http from '../../../utility/http'
+import http, { Protected } from '../../../utility/http'
 import { ErrorAlert, SuccessAlert } from '../../alert'
 import Router from 'next/router'
 import { AxiosError } from 'axios'
@@ -85,7 +85,7 @@ class Lesson extends Component<LessonProps, LessonState> {
   componentDidMount() {
     const { id } = this.props
     if (id) {
-      http.Get(`/lessons/${id}`, { withCredentials: true }).then((response) => {
+      Protected.Client.Get(`/lessons/${id}`).then((response) => {
         const {
           id,
           course_id,
@@ -149,17 +149,12 @@ class Lesson extends Component<LessonProps, LessonState> {
     const { id, courseID } = this.props
     const { title, description, mdx } = this.state
     if (id === undefined) {
-      http
-        .Post(
-          '/lessons/',
-          {
-            course_id: courseID,
-            title,
-            description,
-            mdx,
-          },
-          { withCredentials: true }
-        )
+      Protected.Client.Post('/lessons/', {
+        course_id: courseID,
+        title,
+        description,
+        mdx,
+      })
         .then((response) => {
           this.setState(
             {
@@ -185,17 +180,12 @@ class Lesson extends Component<LessonProps, LessonState> {
           })
         })
     } else {
-      http
-        .Patch(
-          '/lessons/',
-          {
-            id,
-            title,
-            description,
-            mdx,
-          },
-          { withCredentials: true }
-        )
+      Protected.Client.Patch('/lessons/', {
+        id,
+        title,
+        description,
+        mdx,
+      })
         .then(() => {
           this.setState({
             successAlert: {
@@ -220,18 +210,15 @@ class Lesson extends Component<LessonProps, LessonState> {
     return (
       <section className={styles.lesson}>
         <div className={styles.lesson_content}>
-          <Editable
-            className={styles.lesson_title}
-            value={title}
-            onChange={this.handleTitleChange}
-          />
-          <Notebook
-            scroll={true}
-            mdx={mdx}
-            className={styles.notebook}
-            handleTextareaChange={this.handleTextareaChange}
-            onSave={this.saveLesson}
-          />
+          {mdx && (
+            <Notebook
+              splitPane={false}
+              scroll={true}
+              mdx={mdx}
+              className={styles.notebook}
+              handleTextareaChange={this.handleTextareaChange}
+            />
+          )}
         </div>
         <IDE className={styles.ide} />
         {errorAlert.open && (

@@ -1,9 +1,20 @@
 package sql
 
 import (
+	"database/sql"
 	"errors"
 	"time"
 )
+
+// Course describes the metadata for a course
+type Course struct {
+	ID          string       `json:"id"`
+	AuthorID    string       `json:"author_id"`
+	Title       string       `json:"title"`
+	Description string       `json:"description"`
+	CreatedAt   time.Time    `json:"created_at"`
+	UpdatedAt   sql.NullTime `json:"updated_at"`
+}
 
 func courseValid(course Course) error {
 	if course.ID == "" {

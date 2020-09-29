@@ -1,19 +1,23 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+
 import Link from 'next/link'
 
-import { PostMetadata } from '../types'
 import styles from '../blog.module.scss'
+import { PostMetadata } from '..'
 
 interface PostListItemProps {
   post: PostMetadata
+  edit?: boolean
 }
 
-const PostListItem = ({ post }: PostListItemProps) => {
-  const publishedDate = new Date(post.published).toDateString()
+const PostListItem = ({ edit, post }: PostListItemProps) => {
+  const publishedDate = new Date(post.published_on).toDateString()
   return (
     <li className={styles.post}>
-      <Link href={`/blog/${post.titlePath}`} key={post.id}>
+      <Link
+        href={edit ? `/blog/edit/post/${post.slug}` : `/blog/${post.slug}`}
+        key={post.id}
+      >
         <a>
           <h3>{post.title}</h3>
           <p>{publishedDate}</p>
@@ -24,13 +28,14 @@ const PostListItem = ({ post }: PostListItemProps) => {
 }
 
 interface PostsListProps {
+  edit?: boolean
   posts: Array<PostMetadata>
 }
 
-const PostsList = ({ posts }: PostsListProps) => {
+const PostsList = ({ edit, posts }: PostsListProps) => {
   if (posts === null) return null
   const postListItems = posts.map((post) => {
-    return <PostListItem post={post} key={post.id} />
+    return <PostListItem edit={edit} post={post} key={post.id} />
   })
 
   return <ul className={styles.posts}>{postListItems}</ul>

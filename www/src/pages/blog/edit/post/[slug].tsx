@@ -6,7 +6,7 @@ import { Authenticated } from '../../../../utility/auth'
 import http from '../../../../utility/http'
 
 const DraftEditor = ({ auth, id, mdx }) => (
-  <BlogEditor auth={auth} id={id} draft={true} mdx={mdx} />
+  <BlogEditor auth={auth} id={id} draft={false} mdx={mdx} />
 )
 
 export default DraftEditor
@@ -15,14 +15,14 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const authResponse = await Authenticated(ctx, Roles.BlogOwner)
 
   if (authResponse.auth) {
-    const draftResponse = await http.Get(`/blog/draft/${ctx.params.id}`, {
+    const postResponse = await http.Get(`/blog/post/${ctx.params.slug}`, {
       headers: { cookie: authResponse.cookies },
     })
     return {
       props: {
         auth: authResponse.auth,
-        id: ctx.params.id,
-        mdx: draftResponse.data.markdown,
+        id: postResponse.data.id,
+        mdx: postResponse.data.markdown,
       },
     }
   } else {

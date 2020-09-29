@@ -1,4 +1,4 @@
-import { Component, ChangeEvent } from 'react'
+import { Component, ChangeEvent, ClipboardEvent, DragEvent } from 'react'
 import { v4 as uuid } from 'uuid'
 import Preview from './preview'
 import styles from './notebook.module.scss'
@@ -6,25 +6,29 @@ import http from '../../utility/http'
 import { debounce } from 'lodash'
 import { IconButton } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit'
-import SaveIcon from '@material-ui/icons/Save'
 import VisibilityIcon from '@material-ui/icons/Visibility'
 
 interface NotebookProps {
+  articleRef?: React.RefObject<HTMLElement>
   className?: string
-  mdx?: string
+  mdx: string
   scroll: boolean
-  onSave: () => void
+  splitPane: boolean
   handleTextareaChange: (e: ChangeEvent<HTMLTextAreaElement>) => void
+  handleDrop?: (e: DragEvent<HTMLTextAreaElement>) => void
+  handlePaste?: (e: ClipboardEvent<HTMLTextAreaElement>) => void
 }
 
 interface NotebookState {
-  preview?: JSX.Element
+  iMDX: string
+  parsedMDX: string
+  preview: boolean
   id: string
   error?: any
 }
 
 const FetchSource = (mdx: string) =>
-  // we unset the baseURL since this is a node api driven by the next framework
+  // we unset the baseURL since this is a node api driven by the Next framework rather than the Go server
   http.Post('/api/mdx/draft', { mdx }, { baseURL: '' })
 
 class Notebook extends Component<NotebookProps, NotebookState> {
@@ -33,36 +37,46 @@ class Notebook extends Component<NotebookProps, NotebookState> {
   constructor(props: NotebookProps) {
     super(props)
     this.state = {
+      iMDX: props.mdx,
       id: uuid(),
+      preview: false,
+      parsedMDX: '',
     }
+    this.onTextareaChange = this.onTextareaChange.bind(this)
     this.renderMDXToSource = this.renderMDXToSource.bind(this)
-    this.setPreview = this.setPreview.bind(this)
-    this.unsetPreview = this.unsetPreview.bind(this)
+    this.togglePreview = this.togglePreview.bind(this)
   }
 
-  setPreview() {
-    const { mdx, scroll } = this.props
+  componentDidMount() {
+    const { mdx } = this.props
     FetchSource(mdx)
       .then((response) => {
         this.setState({
-          preview: <Preview scroll={scroll} source={response.data.source} />,
+          parsedMDX: response.data.source,
         })
       })
       .catch((err) => {
-        console.error(err)
+        this.setState({ error: err })
       })
   }
 
-  unsetPreview() {
-    this.setState({
-      preview: null,
-    })
+  onTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
+    const { handleTextareaChange } = this.props
+    handleTextareaChange(e)
+    this.setState(
+      {
+        iMDX: e.target.value,
+      },
+      () => {
+        this.renderMDXToSource()
+      }
+    )
   }
 
   renderMDXToSource() {
     if (!this.debouncedRenderMDX) {
       this.debouncedRenderMDX = debounce(() => {
-        const { mdx, scroll } = this.props
+        const { mdx } = this.props
         FetchSource(mdx)
           .then((response) => {
             this.setState(
@@ -71,9 +85,7 @@ class Notebook extends Component<NotebookProps, NotebookState> {
               },
               () => {
                 this.setState({
-                  preview: (
-                    <Preview scroll={scroll} source={response.data.source} />
-                  ),
+                  parsedMDX: response.data.source,
                 })
               }
             )
@@ -86,36 +98,64 @@ class Notebook extends Component<NotebookProps, NotebookState> {
     this.debouncedRenderMDX()
   }
 
-  render() {
-    const { className, mdx, onSave, handleTextareaChange } = this.props
+  togglePreview() {
     const { preview } = this.state
+    this.setState({
+      preview: !preview,
+    })
+  }
+
+  render() {
+    const {
+      articleRef,
+      className,
+      scroll,
+      splitPane,
+      handleDrop,
+      handlePaste,
+    } = this.props
+    const { iMDX, parsedMDX, preview } = this.state
+    const { onTextareaChange, togglePreview } = this
+    if (splitPane) {
+      return (
+        <div className={`${styles.notebook} ${className}`}>
+          <textarea
+            className={`${styles.textarea} ${styles.textarea_splitpane}`}
+            onChange={onTextareaChange}
+            onDrop={handleDrop}
+            onPaste={handlePaste}
+            value={iMDX}
+          ></textarea>
+          <Preview articleRef={articleRef} scroll={scroll} source={parsedMDX} />
+        </div>
+      )
+    }
     return (
       <div className={`${styles.notebook} ${className}`}>
         {!preview && (
           <div className={styles.controls}>
-            <IconButton size="medium" color="primary" onClick={this.setPreview}>
+            <IconButton size="medium" color="primary" onClick={togglePreview}>
               <VisibilityIcon />
             </IconButton>
           </div>
         )}
         {preview && (
           <div className={styles.controls}>
-            <IconButton size="medium" color="primary" onClick={onSave}>
-              <SaveIcon />
-            </IconButton>
-            <IconButton
-              size="medium"
-              color="primary"
-              onClick={this.unsetPreview}
-            >
+            <IconButton size="medium" color="primary" onClick={togglePreview}>
               <EditIcon />
             </IconButton>
           </div>
         )}
         {!preview && (
-          <textarea onChange={handleTextareaChange} value={mdx}></textarea>
+          <textarea
+            className={`${styles.textarea}`}
+            onChange={onTextareaChange}
+            value={iMDX}
+          ></textarea>
         )}
-        {preview}
+        {preview && (
+          <Preview articleRef={articleRef} scroll={scroll} source={parsedMDX} />
+        )}
       </div>
     )
   }
