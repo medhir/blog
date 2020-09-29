@@ -120,6 +120,7 @@ class Notebook extends Component<NotebookProps, NotebookState> {
       return (
         <div className={`${styles.notebook} ${className}`}>
           <textarea
+            className={`${styles.textarea} ${styles.textarea_splitpane}`}
             onChange={onTextareaChange}
             onDrop={handleDrop}
             onPaste={handlePaste}
@@ -146,7 +147,11 @@ class Notebook extends Component<NotebookProps, NotebookState> {
           </div>
         )}
         {!preview && (
-          <textarea onChange={onTextareaChange} value={iMDX}></textarea>
+          <textarea
+            className={`${styles.textarea}`}
+            onChange={onTextareaChange}
+            value={iMDX}
+          ></textarea>
         )}
         {preview && (
           <Preview articleRef={articleRef} scroll={scroll} source={parsedMDX} />

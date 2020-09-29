@@ -7,9 +7,9 @@
     display: flex;
     justify-content: space-between;
     padding: 5px 20px;
-    border-left: 2px dashed black;
-    border-bottom: 2px dashed black;
-    border-right: 2px dashed black;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
   }
 
   // @media only screen and (min-width: 500px) {
@@ -29,18 +29,20 @@
   // }
 
   .assets {
-    transition: all 300ms ease-in-out;
+    transition: all 300ms ease-out;
     display: flex;
     align-items: center;
     overflow-x: scroll;
     &_hidden {
       height: 0;
-      border: 2px dashed rgba(0, 0, 0, 0);
+      border: 1px solid rgba(0, 0, 0, 0);
     }
     &_show {
-      height: 150px;
-      border-left: 2px dashed black;
-      border-right: 2px dashed black;
+      height: 130px;
+      background-color: rgb(231, 255, 247);
+      border-left: 1px solid black;
+      border-right: 1px solid black;
+      border-bottom: 1px solid black;
     }
     &_preview {
       cursor: pointer;

@@ -451,7 +451,7 @@ class DraftEditor extends Component<DraftEditorProps, DraftEditorState> {
               return (
                 <Paper
                   key={asset.name}
-                  elevation={1}
+                  elevation={5}
                   className={styles.assets_preview}
                   onClick={() => copyToClipboard(asset.url)}
                 >
