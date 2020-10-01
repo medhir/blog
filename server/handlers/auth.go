@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Nerzal/gocloak/v5"
 	"gitlab.com/medhir/blog/server/auth"
 	"net/http"
 	"path"
@@ -195,4 +196,16 @@ func (h *handlers) getJWTCookie(r *http.Request) (string, error) {
 		return "", err
 	}
 	return cookie.Value, nil
+}
+
+func (h *handlers) getUser(r *http.Request) (*gocloak.User, error) {
+	jwt, err := h.getJWTCookie(r)
+	if err != nil {
+		return nil, err
+	}
+	user, err := h.auth.GetUser(jwt)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

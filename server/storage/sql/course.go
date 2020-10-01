@@ -3,6 +3,7 @@ package sql
 import (
 	"database/sql"
 	"errors"
+	uuid2 "github.com/google/uuid"
 	"time"
 )
 
@@ -12,34 +13,33 @@ type Course struct {
 	AuthorID    string       `json:"author_id"`
 	Title       string       `json:"title"`
 	Description string       `json:"description"`
+	BucketName  string       `json:"bucket_name"`
 	CreatedAt   time.Time    `json:"created_at"`
 	UpdatedAt   sql.NullTime `json:"updated_at"`
 }
 
-func courseValid(course Course) error {
-	if course.ID == "" {
-		return errors.New("course id cannot be empty")
-	}
-	if course.AuthorID == "" {
+func courseValid(author_id, title string) error {
+	if author_id == "" {
 		return errors.New("course author id cannot be empty")
 	}
-	if course.Title == "" {
+	if title == "" {
 		return errors.New("course title cannot be empty")
 	}
 	return nil
 }
 
-func (p *postgres) CreateCourse(course Course) (string, error) {
-	err := courseValid(course)
+func (p *postgres) CreateCourse(authorID, title, description, bucketName string) (string, error) {
+	err := courseValid(authorID, title)
 	if err != nil {
 		return "", err
 	}
+	uuid := uuid2.New().String()
 	query := `
-INSERT INTO course (id, author_id, title, description, created_at)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO course (id, author_id, title, description, master_bucket_name, created_at)
+VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING id;`
 	var id string
-	err = p.db.QueryRow(query, course.ID, course.AuthorID, course.Title, course.Description, time.Now()).Scan(&id)
+	err = p.db.QueryRow(query, uuid, authorID, title, description, bucketName, time.Now()).Scan(&id)
 	if err != nil {
 		return "", err
 	}
@@ -49,26 +49,33 @@ RETURNING id;`
 func (p *postgres) GetCourse(courseID string) (*Course, error) {
 	course := &Course{}
 	query := `
-SELECT id, author_id, title, description, created_at, updated_at
+SELECT id, author_id, title, description, master_bucket_name, created_at, updated_at
 FROM course
 WHERE id = $1;`
-	err := p.db.QueryRow(query, courseID).Scan(&course.ID, &course.AuthorID, &course.Title, &course.Description, &course.CreatedAt, &course.UpdatedAt)
+	err := p.db.QueryRow(query, courseID).Scan(
+		&course.ID,
+		&course.AuthorID,
+		&course.Title,
+		&course.Description,
+		&course.BucketName,
+		&course.CreatedAt,
+		&course.UpdatedAt,
+	)
 	if err != nil {
 		return nil, err
 	}
 	return course, nil
 }
 
-func (p *postgres) UpdateCourse(course Course) error {
-	err := courseValid(course)
-	if err != nil {
-		return err
+func (p *postgres) UpdateCourse(id, title, description string) error {
+	if title == "" {
+		return errors.New("title must not be empty")
 	}
 	query := `
 UPDATE course
-SET author_id = $2, title = $3, description = $4, updated_at = $5
+SET title = $3, description = $4, updated_at = $5
 WHERE id = $1;`
-	_, err = p.db.Exec(query, course.ID, course.AuthorID, course.Title, course.Description, time.Now())
+	_, err := p.db.Exec(query, id, title, description, time.Now())
 	if err != nil {
 		return err
 	}
@@ -95,7 +102,7 @@ WHERE id = $1;`
 
 func (p *postgres) GetCourses(authorID string) ([]*Course, error) {
 	query := `
-SELECT id, author_id, title, description, created_at, updated_at 
+SELECT id, author_id, title, description, master_bucket_name, created_at, updated_at 
 FROM course
 WHERE author_id = $1;`
 	rows, err := p.db.Query(query, authorID)
@@ -107,7 +114,15 @@ WHERE author_id = $1;`
 	var courses []*Course
 	for rows.Next() {
 		course := &Course{}
-		err := rows.Scan(&course.ID, &course.AuthorID, &course.Title, &course.Description, &course.CreatedAt, &course.UpdatedAt)
+		err := rows.Scan(
+			&course.ID,
+			&course.AuthorID,
+			&course.Title,
+			&course.Description,
+			&course.BucketName,
+			&course.CreatedAt,
+			&course.UpdatedAt,
+		)
 		if err != nil {
 			return nil, err
 		}

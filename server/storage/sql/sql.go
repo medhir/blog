@@ -22,9 +22,9 @@ type Postgres interface {
 	Close() error
 
 	// Course API
-	CreateCourse(course Course) (string, error)
+	CreateCourse(authorID, title, description, bucketName string) (string, error)
 	GetCourse(courseID string) (*Course, error)
-	UpdateCourse(course Course) error
+	UpdateCourse(id, title, description string) error
 	DeleteCourse(courseID string) error
 	GetCourses(authorID string) ([]*Course, error)
 

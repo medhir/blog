@@ -77,7 +77,7 @@ class Course extends Component<CourseProps, CourseState> {
   componentDidMount() {
     const { id } = this.state
     if (id !== '') {
-      Protected.Client.Get(`/courses/${id}`)
+      Protected.Client.Get(`/course/${id}`)
         .then((response) => {
           const {
             author_id,
@@ -146,7 +146,7 @@ class Course extends Component<CourseProps, CourseState> {
     const { author_id, id, title, description } = this.state
     if (id === '') {
       // create a new course
-      Protected.Client.Post('/courses/', {
+      Protected.Client.Post('/course/', {
         title,
         description,
       })
@@ -163,7 +163,7 @@ class Course extends Component<CourseProps, CourseState> {
         })
     } else {
       // update the course
-      Protected.Client.Patch('/courses/', {
+      Protected.Client.Patch('/course/', {
         author_id,
         id,
         title,
@@ -247,7 +247,7 @@ class Course extends Component<CourseProps, CourseState> {
                   <li
                     key={lesson.id}
                     onClick={() =>
-                      Router.push(`/teach/courses/${id}/lesson/${lesson.id}`)
+                      Router.push(`/teach/course/${id}/lesson/${lesson.id}`)
                     }
                   >
                     <ArrowRightAltIcon />

@@ -10,6 +10,7 @@ import (
 	"gitlab.com/medhir/blog/server/imageprocessor"
 	"gitlab.com/medhir/blog/server/storage/gcs"
 	"gitlab.com/medhir/blog/server/storage/sql"
+	"gitlab.com/medhir/blog/server/tutorial"
 	"net/http"
 )
 
@@ -47,6 +48,7 @@ type Handlers interface {
 	HandleCodeDeployment() http.HandlerFunc
 
 	// Courses
+	HandleCourse() http.HandlerFunc
 	HandleCourses() http.HandlerFunc
 
 	// Lessons
@@ -62,6 +64,7 @@ type handlers struct {
 	blog         blog.Blog
 	imgProcessor imageprocessor.ImageProcessor
 	coder        code.Manager
+	tutorials    tutorial.Tutorials
 	db           sql.Postgres
 	env          string
 }
@@ -79,6 +82,7 @@ func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, db sql.Postgr
 		blog:         blog.NewBlog(db, gcs),
 		imgProcessor: imageprocessor.NewImageProcessor(),
 		coder:        coderManager,
+		tutorials:    tutorial.NewTutorials(db, gcs),
 		db:           db,
 		env:          env,
 	}, nil

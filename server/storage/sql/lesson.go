@@ -26,9 +26,9 @@ func (p *postgres) CreateLesson(
 	mdx string,
 ) error {
 	query := `
-INSERT INTO lesson (id, course_id, section, title, description, mdx, created_at)
+INSERT INTO lesson (id, course_id, title, description, mdx, created_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7);`
-	_, err := p.db.Exec(query, id, courseID, "", title, description, mdx, time.Now())
+	_, err := p.db.Exec(query, id, courseID, title, description, mdx, time.Now())
 	if err != nil {
 		return err
 	}
