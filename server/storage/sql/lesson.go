@@ -26,7 +26,7 @@ func (p *postgres) CreateLesson(
 	mdx string,
 ) error {
 	query := `
-INSERT INTO lessons (id, course_id, section, title, description, mdx, created_at)
+INSERT INTO lesson (id, course_id, section, title, description, mdx, created_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7);`
 	_, err := p.db.Exec(query, id, courseID, "", title, description, mdx, time.Now())
 	if err != nil {
@@ -39,7 +39,7 @@ func (p *postgres) GetLesson(id string) (*Lesson, error) {
 	lesson := &Lesson{}
 	query := `
 SELECT id, course_id, title, description, mdx, created_at, updated_at
-FROM lessons
+FROM lesson
 WHERE id = $1;`
 	err := p.db.QueryRow(query, id).Scan(
 		&lesson.ID,
@@ -63,7 +63,7 @@ func (p *postgres) UpdateLesson(
 	mdx string,
 ) error {
 	query := `
-UPDATE lessons
+UPDATE lesson
 SET title = $2, description = $3, mdx = $4, updated_at = $5
 WHERE id = $1;`
 	_, err := p.db.Exec(query, id, title, description, mdx, time.Now())
@@ -75,7 +75,7 @@ WHERE id = $1;`
 
 func (p *postgres) DeleteLesson(id string) error {
 	query := `
-DELETE FROM lessons
+DELETE FROM lesson
 WHERE id = $1`
 	res, err := p.db.Exec(query, id)
 	if err != nil {
@@ -94,7 +94,7 @@ WHERE id = $1`
 func (p *postgres) GetLessons(courseID string) ([]*Lesson, error) {
 	query := `
 SELECT id, course_id, title, description, created_at, updated_at
-FROM lessons
+FROM lesson
 WHERE course_id = $1
 ORDER BY created_at ASC;`
 	rows, err := p.db.Query(query, courseID)
