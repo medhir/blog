@@ -24,19 +24,18 @@ func (h *handlers) getLesson() http.HandlerFunc {
 	}
 }
 
-// PostLessonRequest describes the parameters needed to create a new lesson
-type PostLessonRequest struct {
-	CourseID    string `json:"course_id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	MDX         string `json:"mdx"`
-}
-
 func (h *handlers) postLesson() http.HandlerFunc {
+	type postLessonRequest struct {
+		CourseID    string `json:"course_id"`
+		Title       string `json:"title"`
+		Description string `json:"description"`
+		MDX         string `json:"mdx"`
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		var postLessonRequest PostLessonRequest
-		err := json.NewDecoder(r.Body).Decode(&postLessonRequest)
+		var request postLessonRequest
+		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -44,10 +43,10 @@ func (h *handlers) postLesson() http.HandlerFunc {
 		id := uuid.New().String()
 		err = h.db.CreateLesson(
 			id,
-			postLessonRequest.CourseID,
-			postLessonRequest.Title,
-			postLessonRequest.Description,
-			postLessonRequest.MDX,
+			request.CourseID,
+			request.Title,
+			request.Description,
+			request.MDX,
 		)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -66,28 +65,26 @@ func (h *handlers) postLesson() http.HandlerFunc {
 	}
 }
 
-// PatchLessonRequest describes the parameters needed to update a lesson
-type PatchLessonRequest struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	MDX         string `json:"mdx"`
-}
-
 func (h *handlers) patchLesson() http.HandlerFunc {
+	type patchLessonRequest struct {
+		ID          string `json:"id"`
+		Title       string `json:"title"`
+		Description string `json:"description"`
+		MDX         string `json:"mdx"`
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		var patchLessonRequest PatchLessonRequest
-		err := json.NewDecoder(r.Body).Decode(&patchLessonRequest)
+		var request patchLessonRequest
+		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		err = h.db.UpdateLesson(
-			patchLessonRequest.ID,
-			patchLessonRequest.Title,
-			patchLessonRequest.Description,
-			patchLessonRequest.MDX,
+			request.ID,
+			request.Title,
+			request.Description,
+			request.MDX,
 		)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -107,7 +104,7 @@ func (h *handlers) deleteLesson() http.HandlerFunc {
 	}
 }
 
-func (h *handlers) HandleLessons() http.HandlerFunc {
+func (h *handlers) HandleLesson() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:

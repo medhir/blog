@@ -5,6 +5,8 @@ import styles from './courses.module.scss'
 import { Card, CardActionArea, CardContent } from '@material-ui/core'
 import LibraryAddIcon from '@material-ui/icons/LibraryAdd'
 import { CourseMetadata } from '../course'
+import { Protected } from '../../../utility/http'
+import { AxiosError } from 'axios'
 
 interface CoursesProps {
   courses: Array<CourseMetadata>
@@ -48,7 +50,16 @@ export default class Courses extends Component<CoursesProps, CoursesState> {
                 height: '100%',
               }}
               onClick={() => {
-                Router.push('/teach/courses/new')
+                Protected.Client.Post('/course/', {
+                  title: 'Course Template',
+                  description: 'Enter Description',
+                })
+                  .then((response) => {
+                    Router.push(`/teach/courses/${response.data.id}`)
+                  })
+                  .catch((error: AxiosError) => {
+                    console.error(error)
+                  })
               }}
             >
               <CardContent>

@@ -52,6 +52,9 @@ func (h *handlers) postCourse() http.HandlerFunc {
 		Title       string `json:"title"`
 		Description string `json:"description"`
 	}
+	type postCourseResponse struct {
+		ID string `json:"id"`
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		// read course from the request
@@ -68,7 +71,9 @@ func (h *handlers) postCourse() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Write([]byte(id))
+		writeJSON(w, postCourseResponse{
+			ID: id,
+		})
 		w.WriteHeader(http.StatusOK)
 	}
 }

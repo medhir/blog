@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/Nerzal/gocloak/v5"
 	"github.com/google/uuid"
 	"gitlab.com/medhir/blog/server/auth"
 	"gitlab.com/medhir/blog/server/code/dns"
@@ -32,11 +33,11 @@ const (
 
 // Manager describes the methods for managing coder instances, given a user token
 type Manager interface {
-	HasInstance(token string) (bool, error)
-	AddInstance(token string) (*Instance, error)
-	StartInstance(token string) (*Instance, error)
-	StopInstance(token string) error
-	RemoveInstance(id string) error
+	SetInstance(user *gocloak.User, pvcName, subPath string) (*Instance, error)
+	RemoveInstance(user *gocloak.User) error
+
+	CreatePVC(name, size string) error
+	DeletePVC(name string) error
 }
 
 type manager struct {
@@ -101,7 +102,7 @@ func (m *manager) AddInstance(token string) (*Instance, error) {
 	}
 	// if not, create a new instance
 	id := uuid.New().String()
-	resources, err := makeCoderK8sResources(id, m.env)
+	resources, err := makeCodeK8sResources(id, m.env)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +134,7 @@ func (m *manager) StartInstance(token string) (*Instance, error) {
 		return nil, errors.New("user does not have a registered instance")
 	}
 	instanceID := instanceAttribute[0]
-	resources, err := makeCoderK8sResources(instanceID, m.env)
+	resources, err := makeCodeK8sResources(instanceID, m.env)
 	if err != nil {
 		return nil, err
 	}
@@ -174,7 +175,7 @@ func (m *manager) StopInstance(token string) error {
 		return errors.New("user does not have a registered instance")
 	}
 	instanceID := instanceAttribute[0]
-	resources, err := makeCoderK8sResources(instanceID, m.env)
+	resources, err := makeCodeK8sResources(instanceID, m.env)
 	if err != nil {
 		return err
 	}
@@ -207,7 +208,7 @@ func (m *manager) RemoveInstance(token string) error {
 		return errors.New("user does not have a registered instance")
 	}
 	instanceID := instanceAttribute[0]
-	resources, err := makeCoderK8sResources(instanceID, m.env)
+	resources, err := makeCodeK8sResources(instanceID, m.env)
 	if err != nil {
 		return err
 	}
@@ -254,7 +255,7 @@ type coderK8sResources struct {
 	url            string
 }
 
-func makeCoderK8sResources(id string, env string) (*coderK8sResources, error) {
+func makeCodeK8sResources(id string, env string) (*coderK8sResources, error) {
 	cname := fmt.Sprintf(cnameFormatter, id)
 	var url string
 	if env == reviewEnv {
@@ -276,7 +277,7 @@ func makeCoderK8sResources(id string, env string) (*coderK8sResources, error) {
 	} else {
 		ingressRule = makeCoderIngressRule(productionHostName, svcName, id)
 	}
-	deployment := makeCoderDeployment(deploymentName, pvcName)
+	deployment := makeCodeDeployment(deploymentName, pvcName)
 	return &coderK8sResources{
 		projectPVC:     projectPVC,
 		deployment:     deployment,
@@ -361,7 +362,7 @@ func makeCoderIngressRule(hostName, serviceName, id string) v1beta1.IngressRule 
 	return rule
 }
 
-func makeCoderDeployment(deploymentName, projectPVCName string) *appsv1.Deployment {
+func makeCodeDeployment(deploymentName, projectPVCName, subPath string) *appsv1.Deployment {
 	return &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: deploymentName,
@@ -409,6 +410,7 @@ func makeCoderDeployment(deploymentName, projectPVCName string) *appsv1.Deployme
 							VolumeMounts: []apiv1.VolumeMount{
 								{
 									Name:      projectPVCName,
+									SubPath:   subPath,
 									MountPath: "/home/coder/project",
 								},
 							},

@@ -43,16 +43,12 @@ type Handlers interface {
 	DeletePhoto() http.HandlerFunc
 	HandlePhotos() http.HandlerFunc
 
-	// Coder
-	HandleCodeInstance() http.HandlerFunc
-	HandleCodeDeployment() http.HandlerFunc
-
 	// Courses
 	HandleCourse() http.HandlerFunc
 	HandleCourses() http.HandlerFunc
 
 	// Lessons
-	HandleLessons() http.HandlerFunc
+	HandleLesson() http.HandlerFunc
 }
 
 // handlers describes dependencies needed to serve http requests
