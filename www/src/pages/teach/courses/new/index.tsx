@@ -15,8 +15,9 @@ const NewCourse = ({ auth }) => {
 export default NewCourse
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const auth = await Authenticated(ctx, Roles.BlogOwner)
+  const response = await Authenticated(ctx, Roles.BlogOwner)
+
   return {
-    props: { auth },
+    props: { auth: response.auth },
   }
 }

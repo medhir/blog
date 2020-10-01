@@ -26,7 +26,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     return {
       props: {
         auth: true,
-        courses: coursesResponse.data,
+        courses: coursesResponse.data || [],
       },
     }
   }
