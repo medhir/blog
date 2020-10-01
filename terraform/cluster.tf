@@ -117,11 +117,11 @@ resource "google_container_node_pool" "coder_node_pool" {
    location = var.zone
    cluster  = module.gke_cluster.name
 
-   initial_node_count = "0"
+   initial_node_count = "1"
 
    autoscaling {
-     min_node_count = "0"
-     max_node_count = "1"
+     min_node_count = "1"
+     max_node_count = "20"
    }
 
    management {
@@ -131,7 +131,7 @@ resource "google_container_node_pool" "coder_node_pool" {
 
    node_config {
      image_type   = "COS"
-     machine_type = "n1-standard-2"
+     machine_type = "n2-standard-2"
 
      labels = {
        coder = "true"
@@ -144,7 +144,7 @@ resource "google_container_node_pool" "coder_node_pool" {
        "medhir-blog-private-coder-pool",
      ]
 
-     disk_size_gb = "25"
+     disk_size_gb = "51"
      disk_type    = "pd-standard"
      preemptible  = true
 

@@ -18,8 +18,8 @@ import (
 
 const (
 	ingressName            = "code"
-	servicePort            = 3000
-	containerImageName     = "theiaide/theia-go:1.1.0"
+	servicePort            = 8080
+	containerImageName     = "gcr.io/blog-121419/ide-go:1.0"
 	reviewHostName         = "review.medhir.com"
 	productionHostName     = "medhir.com"
 	cnameFormatter         = "code-%s"
@@ -110,11 +110,6 @@ func (m *manager) AddInstance(token string) (*Instance, error) {
 	if err != nil {
 		return nil, err
 	}
-	// add service
-	err = m.k8s.AddService(resources.service)
-	if err != nil {
-		return nil, err
-	}
 	// add instance id to user attributes
 	err = m.auth.AddAttributeToUser(token, "instance_id", []string{id})
 	if err != nil {
@@ -150,6 +145,11 @@ func (m *manager) StartInstance(token string) (*Instance, error) {
 		if err != nil {
 			return nil, err
 		}
+		// add service
+		err = m.k8s.AddService(resources.service)
+		if err != nil {
+			return nil, err
+		}
 		// add ingress rule
 		err = m.k8s.AddIngressRule(ingressName, resources.ingressRule)
 		if err != nil {
@@ -178,7 +178,12 @@ func (m *manager) StopInstance(token string) error {
 	if err != nil {
 		return err
 	}
-	// add ingress rule
+	err = m.k8s.RemoveService(resources.service)
+	if err != nil {
+		// TODO - Make this part of a honeycomb event
+		fmt.Println(fmt.Sprintf("error occured while removing service - %s", err.Error()))
+	}
+	// remove ingress rule
 	err = m.k8s.RemoveIngressRule(ingressName, resources.ingressRule)
 	if err != nil {
 		return err
@@ -381,10 +386,10 @@ func makeCoderDeployment(deploymentName, projectPVCName string) *appsv1.Deployme
 				},
 				Spec: apiv1.PodSpec{
 					RestartPolicy: apiv1.RestartPolicyAlways,
-					// default definitions for user permissions and mounting volumes inspired by
-					// https://github.com/spring-projects/sts4/blob/master/theia-extensions/k8s-app-old/deploy.yml
 					SecurityContext: &apiv1.PodSecurityContext{
-						RunAsUser: int64Ptr(0),
+						RunAsUser:  int64Ptr(1000),
+						RunAsGroup: int64Ptr(3000),
+						FSGroup:    int64Ptr(2000),
 					},
 					NodeSelector: map[string]string{
 						"coder": "true",
@@ -393,6 +398,7 @@ func makeCoderDeployment(deploymentName, projectPVCName string) *appsv1.Deployme
 						{
 							Name:  deploymentName,
 							Image: containerImageName,
+							Args:  []string{"--auth", "none"},
 							Ports: []apiv1.ContainerPort{
 								{
 									Name:          "http",
@@ -403,7 +409,7 @@ func makeCoderDeployment(deploymentName, projectPVCName string) *appsv1.Deployme
 							VolumeMounts: []apiv1.VolumeMount{
 								{
 									Name:      projectPVCName,
-									MountPath: "/home/project",
+									MountPath: "/home/coder/project",
 								},
 							},
 						},
