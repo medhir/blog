@@ -26,10 +26,15 @@ func (h *handlers) getLesson() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if *user.ID != course.ID {
+		if *user.ID != course.AuthorID {
 			http.Error(w, errors.New("unauthorized to view this lesson").Error(), http.StatusUnauthorized)
+			return
 		}
 		instance, err := h.code.SetInstance(user, course.BucketName, lessonID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		lesson.InstanceURL = instance.URL
 		err = writeJSON(w, lesson)
 		if err != nil {
@@ -68,8 +73,9 @@ func (h *handlers) postLesson() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if *user.ID != course.ID {
+		if *user.ID != course.AuthorID {
 			http.Error(w, errors.New("unauthorized to create this lesson").Error(), http.StatusUnauthorized)
+			return
 		}
 		id, err := h.tutorials.CreateLesson(request.CourseID, request.Title, request.Description, request.MDX)
 		if err != nil {

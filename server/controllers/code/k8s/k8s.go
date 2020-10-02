@@ -29,6 +29,7 @@ type Manager interface {
 
 	GetDeployment(name string) (*v1.Deployment, error)
 	AddDeployment(deployment *v1.Deployment) error
+	UpdateDeployment(deployment *v1.Deployment) error
 	RemoveDeployment(deploymentName string) error
 
 	AddPersistentVolumeClaim(pvc *v1core.PersistentVolumeClaim) error
@@ -128,6 +129,14 @@ func (m *manager) GetDeployment(name string) (*v1.Deployment, error) {
 
 func (m *manager) AddDeployment(deployment *v1.Deployment) error {
 	_, err := m.clientset.AppsV1().Deployments(defaultNamespace).Create(m.ctx, deployment, v1meta.CreateOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *manager) UpdateDeployment(deployment *v1.Deployment) error {
+	_, err := m.clientset.AppsV1().Deployments(defaultNamespace).Update(m.ctx, deployment, v1meta.UpdateOptions{})
 	if err != nil {
 		return err
 	}

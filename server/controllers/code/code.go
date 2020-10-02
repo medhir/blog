@@ -80,17 +80,27 @@ func (m *manager) SetInstance(user *gocloak.User, pvcName, subPath string) (*Ins
 	if err != nil {
 		return nil, err
 	}
-	err = m.k8s.AddDeployment(resources.deployment)
+	_, err = m.k8s.GetDeployment(resources.deploymentName)
 	if err != nil {
-		return nil, err
-	}
-	err = m.k8s.AddService(resources.service)
-	if err != nil {
-		return nil, err
-	}
-	err = m.k8s.AddIngressRule(ingressName, resources.ingressRule)
-	if err != nil {
-		return nil, err
+		// deployment doesn't exist
+		err := m.k8s.AddDeployment(resources.deployment)
+		if err != nil {
+			return nil, err
+		}
+		err = m.k8s.AddService(resources.service)
+		if err != nil {
+			return nil, err
+		}
+		err = m.k8s.AddIngressRule(ingressName, resources.ingressRule)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// deployment does exist, so just update it
+		err := m.k8s.UpdateDeployment(resources.deployment)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return &Instance{
 		URL: resources.url,

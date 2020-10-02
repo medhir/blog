@@ -3,19 +3,19 @@ import IDE from '../ide'
 
 import styles from './lesson.module.scss'
 import { Component, ChangeEvent } from 'react'
-import http, { Protected } from '../../../utility/http'
+import { Protected } from '../../../utility/http'
 import { ErrorAlert, SuccessAlert } from '../../alert'
-import Router from 'next/router'
 import { AxiosError } from 'axios'
-import Editable from '../../editable'
 
 export interface LessonMetadata {
   id: string
   courseID: string
   title: string
   description: string
+  mdx?: string
   createdAt: number
   updatedAt: number
+  instance_url: string
 }
 
 interface AlertState {
@@ -24,13 +24,11 @@ interface AlertState {
 }
 
 interface LessonProps {
-  id?: string
+  lesson: LessonMetadata
   courseID: string
 }
 
 interface LessonState {
-  id?: string
-  courseID?: string
   title?: string
   description?: string
   mdx?: string
@@ -42,37 +40,19 @@ interface LessonState {
 }
 
 class Lesson extends Component<LessonProps, LessonState> {
-  constructor(props) {
+  constructor(props: LessonProps) {
     super(props)
-
-    // empty state lesson
-    if (!props.id) {
-      this.state = {
-        title: 'New Lesson',
-        description: 'New lesson description.',
-        mdx: '# New Lesson',
-        loading: false,
-        errorAlert: {
-          open: false,
-          message: '',
-        },
-        successAlert: {
-          open: false,
-          message: '',
-        },
-      }
-    } else {
-      this.state = {
-        loading: true,
-        errorAlert: {
-          open: false,
-          message: '',
-        },
-        successAlert: {
-          open: false,
-          message: '',
-        },
-      }
+    this.state = {
+      mdx: props.lesson.mdx,
+      loading: true,
+      errorAlert: {
+        open: false,
+        message: '',
+      },
+      successAlert: {
+        open: false,
+        message: '',
+      },
     }
 
     this.handleTextareaChange = this.handleTextareaChange.bind(this)
@@ -80,33 +60,6 @@ class Lesson extends Component<LessonProps, LessonState> {
     this.handleSuccessAlertClose = this.handleSuccessAlertClose.bind(this)
     this.handleTitleChange = this.handleTitleChange.bind(this)
     this.saveLesson = this.saveLesson.bind(this)
-  }
-
-  componentDidMount() {
-    const { id } = this.props
-    if (id) {
-      Protected.Client.Get(`/lessons/${id}`).then((response) => {
-        const {
-          id,
-          course_id,
-          title,
-          description,
-          mdx,
-          created_at,
-          updated_at,
-        } = response.data
-        this.setState({
-          id,
-          courseID: course_id,
-          title,
-          description,
-          mdx,
-          createdAt: created_at,
-          updatedAt: updated_at,
-          loading: false,
-        })
-      })
-    }
   }
 
   handleTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
@@ -146,67 +99,36 @@ class Lesson extends Component<LessonProps, LessonState> {
   }
 
   saveLesson() {
-    const { id, courseID } = this.props
+    const { id } = this.props.lesson
     const { title, description, mdx } = this.state
-    if (id === undefined) {
-      Protected.Client.Post('/lessons/', {
-        course_id: courseID,
-        title,
-        description,
-        mdx,
+
+    Protected.Client.Patch('/lessons/', {
+      id,
+      title,
+      description,
+      mdx,
+    })
+      .then(() => {
+        this.setState({
+          successAlert: {
+            open: true,
+            message: 'Lesson saved successfully',
+          },
+        })
       })
-        .then((response) => {
-          this.setState(
-            {
-              id: response.data.id,
-              successAlert: {
-                open: true,
-                message: 'Lesson saved successfully',
-              },
-            },
-            () => {
-              Router.push(
-                `/teach/courses/${courseID}/lesson/${response.data.id}`
-              )
-            }
-          )
+      .catch((error: AxiosError) => {
+        this.setState({
+          errorAlert: {
+            open: true,
+            message: error.response.data,
+          },
         })
-        .catch((error: AxiosError) => {
-          this.setState({
-            errorAlert: {
-              open: true,
-              message: error.response.data,
-            },
-          })
-        })
-    } else {
-      Protected.Client.Patch('/lessons/', {
-        id,
-        title,
-        description,
-        mdx,
       })
-        .then(() => {
-          this.setState({
-            successAlert: {
-              open: true,
-              message: 'Lesson saved successfully',
-            },
-          })
-        })
-        .catch((error: AxiosError) => {
-          this.setState({
-            errorAlert: {
-              open: true,
-              message: error.response.data,
-            },
-          })
-        })
-    }
   }
 
   render() {
-    const { mdx, title, errorAlert, successAlert } = this.state
+    const { mdx, errorAlert, successAlert } = this.state
+    const { lesson } = this.props
     return (
       <section className={styles.lesson}>
         <div className={styles.lesson_content}>
@@ -220,7 +142,10 @@ class Lesson extends Component<LessonProps, LessonState> {
             />
           )}
         </div>
-        <IDE className={styles.ide} />
+        <IDE
+          url={`${lesson.instance_url}?folder=/home/coder/project`}
+          className={styles.ide}
+        />
         {errorAlert.open && (
           <ErrorAlert
             open={errorAlert.open}

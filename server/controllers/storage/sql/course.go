@@ -73,7 +73,7 @@ func (p *postgres) UpdateCourse(id, title, description string) error {
 	}
 	query := `
 UPDATE course
-SET title = $3, description = $4, updated_at = $5
+SET title = $2, description = $3, updated_at = $4
 WHERE id = $1;`
 	_, err := p.db.Exec(query, id, title, description, time.Now())
 	if err != nil {

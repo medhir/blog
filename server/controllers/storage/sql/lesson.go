@@ -27,7 +27,7 @@ func (p *postgres) CreateLesson(
 	id := uuid2.New().String()
 	query := `
 INSERT INTO lesson (id, course_id, title, description, mdx, created_at)
-VALUES ($1, $2, $3, $4, $5, $6, $7);`
+VALUES ($1, $2, $3, $4, $5, $6);`
 	_, err := p.db.Exec(query, id, courseID, title, description, mdx, time.Now())
 	if err != nil {
 		return "", err

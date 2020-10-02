@@ -9,83 +9,57 @@ import StopIcon from '@material-ui/icons/Stop'
 
 interface IDEState {
   error: string
-  id: string
   loading: boolean
-  url: string
 }
 
 interface IDEProps {
+  url: string
   className?: string
 }
 
 class IDE extends Component<IDEProps, IDEState> {
   constructor(props: IDEProps) {
     super(props)
-
     this.state = {
-      id: null,
-      url: null,
       loading: false,
       error: null,
     }
 
-    this.createEnvironment = this.createEnvironment.bind(this)
+    this.startEnvironment = this.startEnvironment.bind(this)
     this.stopEnvironment = this.stopEnvironment.bind(this)
   }
 
   componentDidMount() {
-    this.createEnvironment()
+    this.startEnvironment()
   }
 
-  createEnvironment() {
+  startEnvironment() {
     // display a loading state to the user
     this.setState(
       {
         loading: true,
       },
       () => {
-        // request a new code instance from the server
-        Protected.Client.Post('/code/', {})
-          .then((response) => {
-            // set the metadata associated with a code instance
-            this.setState(
-              {
-                id: response.data.id,
-                url: response.data.url,
-              },
-              () => {
-                // poll the endpoint until it is healthy
-                const { url } = this.state
-                const poll = setInterval(() => {
-                  http
-                    .Get(url)
-                    .then(() => {
-                      // turn off loading state once endpoint is reachable & stop polling
-                      this.setState(
-                        {
-                          loading: false,
-                        },
-                        () => {
-                          clearInterval(poll)
-                        }
-                      )
-                    })
-                    .catch(() => {}) // just to acknowledge the promise (you will be caught my friend!)
-                }, 1500)
-              }
-            )
-          })
-          .catch((error: AxiosError) => {
-            if (error.response) {
-              this.setState({
-                error: error.response.data,
+        setTimeout(() => {
+          // poll the endpoint until it is healthy
+          const { url } = this.props
+          const poll = setInterval(() => {
+            http
+              .Get(url)
+              .then(() => {
+                // turn off loading state once endpoint is reachable & stop polling
+                this.setState(
+                  {
+                    loading: false,
+                  },
+                  () => {
+                    clearInterval(poll)
+                  }
+                )
               })
-            } else {
-              this.setState({
-                error: error.message,
-              })
-            }
-          })
+              .catch(() => {}) // just to acknowledge the promise (you will be caught my friend!)
+          }, 1500)
+        }, 2000)
       }
     )
   }
@@ -105,8 +79,8 @@ class IDE extends Component<IDEProps, IDEState> {
   }
 
   render() {
-    const { className } = this.props
-    const { error, loading, url } = this.state
+    const { className, url } = this.props
+    const { error, loading } = this.state
     return (
       <section className={`${styles.ide} ${className}`}>
         <div className={styles.ide_environment}>
