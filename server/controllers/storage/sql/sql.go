@@ -30,12 +30,11 @@ type Postgres interface {
 
 	// Lessons API
 	CreateLesson(
-		id string,
 		courseID string,
 		title string,
 		description string,
 		mdx string,
-	) error
+	) (string, error)
 	GetLesson(id string) (*Lesson, error)
 	UpdateLesson(
 		id string,

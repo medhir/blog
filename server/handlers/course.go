@@ -3,8 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"gitlab.com/medhir/blog/server/storage/sql"
-	"gitlab.com/medhir/blog/server/tutorial"
+	"gitlab.com/medhir/blog/server/controllers/tutorial"
 	"net/http"
 	"path"
 )
@@ -13,8 +12,8 @@ const coursesBase = "courses"
 
 // GetCourseResponse describes the fields associated with a GET course request
 type GetCourseResponse struct {
-	Metadata *tutorial.Course `json:"metadata"`
-	Lessons  []*sql.Lesson    `json:"lessons"`
+	Metadata *tutorial.Course   `json:"metadata"`
+	Lessons  []*tutorial.Lesson `json:"lessons"`
 }
 
 func (h *handlers) getCourse() http.HandlerFunc {
@@ -30,7 +29,7 @@ func (h *handlers) getCourse() http.HandlerFunc {
 			http.Error(w, fmt.Sprintf("insufficient permissions to update course %s", course.ID), http.StatusUnauthorized)
 			return
 		}
-		lessons, err := h.db.GetLessons(courseID)
+		lessons, err := h.tutorials.GetLessons(courseID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

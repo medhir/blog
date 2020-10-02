@@ -1,7 +1,7 @@
 package instance
 
 import (
-	"gitlab.com/medhir/blog/server/auth"
+	"gitlab.com/medhir/blog/server/controllers/auth"
 	"gitlab.com/medhir/blog/server/handlers"
 )
 

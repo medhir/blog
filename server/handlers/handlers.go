@@ -4,13 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gitlab.com/medhir/blog/server/auth"
-	"gitlab.com/medhir/blog/server/blog"
-	"gitlab.com/medhir/blog/server/code"
-	"gitlab.com/medhir/blog/server/imageprocessor"
-	"gitlab.com/medhir/blog/server/storage/gcs"
-	"gitlab.com/medhir/blog/server/storage/sql"
-	"gitlab.com/medhir/blog/server/tutorial"
+	"gitlab.com/medhir/blog/server/controllers/auth"
+	"gitlab.com/medhir/blog/server/controllers/blog"
+	"gitlab.com/medhir/blog/server/controllers/code"
+	"gitlab.com/medhir/blog/server/controllers/imageprocessor"
+	"gitlab.com/medhir/blog/server/controllers/storage/gcs"
+	"gitlab.com/medhir/blog/server/controllers/storage/sql"
+	"gitlab.com/medhir/blog/server/controllers/tutorial"
 	"net/http"
 )
 
@@ -59,7 +59,7 @@ type handlers struct {
 	gcs          gcs.GCS
 	blog         blog.Blog
 	imgProcessor imageprocessor.ImageProcessor
-	coder        code.Manager
+	code         code.Manager
 	tutorials    tutorial.Tutorials
 	db           sql.Postgres
 	env          string
@@ -67,7 +67,11 @@ type handlers struct {
 
 // NewHandlers instantiates a new set of handlers
 func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, db sql.Postgres, env string) (Handlers, error) {
-	coderManager, err := code.NewManager(ctx, auth, env)
+	codeManager, err := code.NewManager(ctx, auth, env)
+	if err != nil {
+		return nil, err
+	}
+	tutorials, err := tutorial.NewTutorials(db, gcs, codeManager)
 	if err != nil {
 		return nil, err
 	}
@@ -77,8 +81,8 @@ func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, db sql.Postgr
 		gcs:          gcs,
 		blog:         blog.NewBlog(db, gcs),
 		imgProcessor: imageprocessor.NewImageProcessor(),
-		coder:        coderManager,
-		tutorials:    tutorial.NewTutorials(db, gcs),
+		code:         codeManager,
+		tutorials:    tutorials,
 		db:           db,
 		env:          env,
 	}, nil

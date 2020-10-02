@@ -3,6 +3,7 @@ package sql
 import (
 	"database/sql"
 	"errors"
+	uuid2 "github.com/google/uuid"
 	"time"
 )
 
@@ -10,7 +11,6 @@ import (
 type Lesson struct {
 	ID          string       `json:"id"`
 	CourseID    string       `json:"course_id"`
-	Section     string       `json:"section"`
 	Title       string       `json:"title"`
 	Description string       `json:"description"`
 	MDX         string       `json:"mdx"`
@@ -19,20 +19,20 @@ type Lesson struct {
 }
 
 func (p *postgres) CreateLesson(
-	id string,
 	courseID string,
 	title string,
 	description string,
 	mdx string,
-) error {
+) (string, error) {
+	id := uuid2.New().String()
 	query := `
 INSERT INTO lesson (id, course_id, title, description, mdx, created_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7);`
 	_, err := p.db.Exec(query, id, courseID, title, description, mdx, time.Now())
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return id, nil
 }
 
 func (p *postgres) GetLesson(id string) (*Lesson, error) {

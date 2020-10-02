@@ -1,8 +1,8 @@
 package blog
 
 import (
-	"gitlab.com/medhir/blog/server/storage/gcs"
-	"gitlab.com/medhir/blog/server/storage/sql"
+	"gitlab.com/medhir/blog/server/controllers/storage/gcs"
+	"gitlab.com/medhir/blog/server/controllers/storage/sql"
 	"time"
 )
 

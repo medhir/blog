@@ -5,10 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Nerzal/gocloak/v5"
-	"github.com/google/uuid"
-	"gitlab.com/medhir/blog/server/auth"
-	"gitlab.com/medhir/blog/server/code/dns"
-	"gitlab.com/medhir/blog/server/code/k8s"
+	"gitlab.com/medhir/blog/server/controllers/auth"
+	"gitlab.com/medhir/blog/server/controllers/code/dns"
+	"gitlab.com/medhir/blog/server/controllers/code/k8s"
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/api/extensions/v1beta1"
@@ -24,9 +23,9 @@ const (
 	reviewHostName         = "review.medhir.com"
 	productionHostName     = "medhir.com"
 	cnameFormatter         = "code-%s"
-	reviewURLFormatter     = "https://review.medhir.com/%s/"
-	productionURLFormatter = "https://medhir.com/%s/"
-	pathFormatter          = "/%s(/|$)(.*)"
+	reviewURLFormatter     = "https://review.medhir.com/code-%s/"
+	productionURLFormatter = "https://medhir.com/code-%s/"
+	pathFormatter          = "/code-%s(/|$)(.*)"
 	reviewEnv              = "review"
 	productionEnv          = "production"
 )
@@ -73,8 +72,74 @@ func NewManager(ctx context.Context, auth auth.Auth, env string) (Manager, error
 
 // Instance describes properties of a coder instance
 type Instance struct {
-	ID  string `json:"id"`
 	URL string `json:"url"`
+}
+
+func (m *manager) SetInstance(user *gocloak.User, pvcName, subPath string) (*Instance, error) {
+	resources, err := makeCodeK8sResources(*user.Username, m.env, pvcName, subPath)
+	if err != nil {
+		return nil, err
+	}
+	err = m.k8s.AddDeployment(resources.deployment)
+	if err != nil {
+		return nil, err
+	}
+	err = m.k8s.AddService(resources.service)
+	if err != nil {
+		return nil, err
+	}
+	err = m.k8s.AddIngressRule(ingressName, resources.ingressRule)
+	if err != nil {
+		return nil, err
+	}
+	return &Instance{
+		URL: resources.url,
+	}, nil
+}
+
+func (m *manager) RemoveInstance(user *gocloak.User) error {
+	username := *user.Username
+	svcName := fmt.Sprintf("code-%s-service", username)
+	deploymentName := fmt.Sprintf("code-%s", username)
+	var ingressRule v1beta1.IngressRule
+	if m.env == reviewEnv {
+		ingressRule = makeCodeIngressRule(reviewHostName, svcName, username)
+	} else {
+		ingressRule = makeCodeIngressRule(productionHostName, svcName, username)
+	}
+	err := m.k8s.RemoveIngressRule(ingressName, ingressRule)
+	if err != nil {
+		return err
+	}
+	err = m.k8s.RemoveService(svcName)
+	if err != nil {
+		return err
+	}
+	err = m.k8s.RemoveDeployment(deploymentName)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *manager) CreatePVC(name, size string) error {
+	pvc, err := getPVC(name, size)
+	if err != nil {
+		return err
+	}
+	err = m.k8s.AddPersistentVolumeClaim(pvc)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *manager) DeletePVC(name string) error {
+	err := m.k8s.RemovePersistentVolumeClaim(name)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (m *manager) HasInstance(token string) (bool, error) {
@@ -90,158 +155,6 @@ func (m *manager) HasInstance(token string) (bool, error) {
 	return true, nil
 }
 
-func (m *manager) AddInstance(token string) (*Instance, error) {
-	// check if user already has an instance associated with them
-	user, err := m.auth.GetUser(token)
-	if err != nil {
-		return nil, fmt.Errorf("could not retrieve user for the provided token - %s", err.Error())
-	}
-	instanceID := user.Attributes["instance_id"]
-	if len(instanceID) > 0 && instanceID[0] != "" {
-		return nil, errors.New("user already has an instance")
-	}
-	// if not, create a new instance
-	id := uuid.New().String()
-	resources, err := makeCodeK8sResources(id, m.env)
-	if err != nil {
-		return nil, err
-	}
-	// add persistent volume claim
-	err = m.k8s.AddPersistentVolumeClaim(resources.projectPVC)
-	if err != nil {
-		return nil, err
-	}
-	// add instance id to user attributes
-	err = m.auth.AddAttributeToUser(token, "instance_id", []string{id})
-	if err != nil {
-		return nil, err
-	}
-	instance := &Instance{
-		ID:  id,
-		URL: resources.url,
-	}
-	return instance, nil
-}
-
-func (m *manager) StartInstance(token string) (*Instance, error) {
-	// check to ensure the user has an instance associated with them
-	user, err := m.auth.GetUser(token)
-	if err != nil {
-		return nil, errors.New("could not retrieve user for the provided token")
-	}
-	instanceAttribute := user.Attributes["instance_id"]
-	if instanceAttribute == nil {
-		return nil, errors.New("user does not have a registered instance")
-	}
-	instanceID := instanceAttribute[0]
-	resources, err := makeCodeK8sResources(instanceID, m.env)
-	if err != nil {
-		return nil, err
-	}
-	// check if deployment already exists
-	_, err = m.k8s.GetDeployment(resources.deploymentName)
-	if err != nil {
-		// deployment doesn't exist, so create one
-		err = m.k8s.AddDeployment(resources.deployment)
-		if err != nil {
-			return nil, err
-		}
-		// add service
-		err = m.k8s.AddService(resources.service)
-		if err != nil {
-			return nil, err
-		}
-		// add ingress rule
-		err = m.k8s.AddIngressRule(ingressName, resources.ingressRule)
-		if err != nil {
-			return nil, err
-		}
-	}
-	// return metadata about the instance
-	return &Instance{
-		ID:  instanceID,
-		URL: resources.url,
-	}, nil
-}
-
-func (m *manager) StopInstance(token string) error {
-	// check to ensure the user has an instance associated with them
-	user, err := m.auth.GetUser(token)
-	if err != nil {
-		return errors.New("could not retrieve user for the provided token")
-	}
-	instanceAttribute := user.Attributes["instance_id"]
-	if instanceAttribute == nil {
-		return errors.New("user does not have a registered instance")
-	}
-	instanceID := instanceAttribute[0]
-	resources, err := makeCodeK8sResources(instanceID, m.env)
-	if err != nil {
-		return err
-	}
-	err = m.k8s.RemoveService(resources.service)
-	if err != nil {
-		// TODO - Make this part of a honeycomb event
-		fmt.Println(fmt.Sprintf("error occured while removing service - %s", err.Error()))
-	}
-	// remove ingress rule
-	err = m.k8s.RemoveIngressRule(ingressName, resources.ingressRule)
-	if err != nil {
-		return err
-	}
-	err = m.k8s.RemoveDeployment(resources.deployment)
-	if err != nil {
-		return err
-	}
-	// health check?
-	return nil
-}
-
-func (m *manager) RemoveInstance(token string) error {
-	// check to ensure the user has an instance associated with them
-	user, err := m.auth.GetUser(token)
-	if err != nil {
-		return errors.New("could not retrieve user for the provided token")
-	}
-	instanceAttribute := user.Attributes["instance_id"]
-	if instanceAttribute == nil {
-		return errors.New("user does not have a registered instance")
-	}
-	instanceID := instanceAttribute[0]
-	resources, err := makeCodeK8sResources(instanceID, m.env)
-	if err != nil {
-		return err
-	}
-	// remove persistent volume claim
-	err = m.k8s.RemovePersistentVolumeClaim(resources.projectPVC)
-	if err != nil {
-		return err
-	}
-	// remove ingress rule
-	err = m.k8s.RemoveIngressRule(ingressName, resources.ingressRule)
-	if err != nil {
-		return err
-	}
-	// remove service
-	err = m.k8s.RemoveService(resources.service)
-	if err != nil {
-		// TODO - Make this part of a honeycomb event
-		fmt.Println(fmt.Sprintf("error occured while removing service - %s", err.Error()))
-	}
-	// remove deployment
-	err = m.k8s.RemoveDeployment(resources.deployment)
-	if err != nil {
-		// TODO - Make this part of a honeycomb event
-		fmt.Println(fmt.Sprintf("error occured while removing deployment - %s", err.Error()))
-	}
-	// remove CNAME record
-	err = m.dns.DeleteCNAMERecord(resources.cname)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 type coderK8sResources struct {
 	projectPVC  *apiv1.PersistentVolumeClaim
 	deployment  *appsv1.Deployment
@@ -255,35 +168,28 @@ type coderK8sResources struct {
 	url            string
 }
 
-func makeCodeK8sResources(id string, env string) (*coderK8sResources, error) {
-	cname := fmt.Sprintf(cnameFormatter, id)
+func makeCodeK8sResources(username, env, pvcName, subPath string) (*coderK8sResources, error) {
+	cname := fmt.Sprintf(cnameFormatter, username)
 	var url string
 	if env == reviewEnv {
-		url = fmt.Sprintf(reviewURLFormatter, id)
+		url = fmt.Sprintf(reviewURLFormatter, username)
 	} else {
-		url = fmt.Sprintf(productionURLFormatter, id)
+		url = fmt.Sprintf(productionURLFormatter, username)
 	}
-	pvcName := fmt.Sprintf("coder-%s-project-data", id)
-	svcName := fmt.Sprintf("coder-%s-service", id)
-	deploymentName := fmt.Sprintf("coder-%s", id)
-	projectPVC, err := makeProjectPVC(pvcName)
-	if err != nil {
-		return nil, err
-	}
+	svcName := fmt.Sprintf("code-%s-service", username)
+	deploymentName := fmt.Sprintf("code-%s", username)
 	svc := makeCoderService(svcName, deploymentName)
 	var ingressRule v1beta1.IngressRule
 	if env == reviewEnv {
-		ingressRule = makeCoderIngressRule(reviewHostName, svcName, id)
+		ingressRule = makeCodeIngressRule(reviewHostName, svcName, username)
 	} else {
-		ingressRule = makeCoderIngressRule(productionHostName, svcName, id)
+		ingressRule = makeCodeIngressRule(productionHostName, svcName, username)
 	}
-	deployment := makeCodeDeployment(deploymentName, pvcName)
+	deployment := makeCodeDeployment(deploymentName, pvcName, subPath)
 	return &coderK8sResources{
-		projectPVC:     projectPVC,
 		deployment:     deployment,
 		service:        svc,
 		ingressRule:    ingressRule,
-		projectPVCName: pvcName,
 		serviceName:    svcName,
 		deploymentName: deploymentName,
 		cname:          cname,
@@ -291,12 +197,12 @@ func makeCodeK8sResources(id string, env string) (*coderK8sResources, error) {
 	}, nil
 }
 
-func makeProjectPVC(name string) (*apiv1.PersistentVolumeClaim, error) {
-	quantity, err := resource.ParseQuantity("1Gi")
+func getPVC(name, size string) (*apiv1.PersistentVolumeClaim, error) {
+	quantity, err := resource.ParseQuantity(size)
 	if err != nil {
 		return nil, err
 	}
-	projectPVC := &apiv1.PersistentVolumeClaim{
+	pvc := &apiv1.PersistentVolumeClaim{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: name,
 		},
@@ -312,7 +218,7 @@ func makeProjectPVC(name string) (*apiv1.PersistentVolumeClaim, error) {
 		},
 		Status: apiv1.PersistentVolumeClaimStatus{},
 	}
-	return projectPVC, nil
+	return pvc, nil
 }
 
 func makeCoderService(svcName, deploymentName string) *apiv1.Service {
@@ -339,14 +245,14 @@ func pathTypePtr(pathType v1beta1.PathType) *v1beta1.PathType {
 	return &p
 }
 
-func makeCoderIngressRule(hostName, serviceName, id string) v1beta1.IngressRule {
+func makeCodeIngressRule(hostName, serviceName, username string) v1beta1.IngressRule {
 	rule := v1beta1.IngressRule{
 		Host: hostName,
 		IngressRuleValue: v1beta1.IngressRuleValue{
 			HTTP: &v1beta1.HTTPIngressRuleValue{
 				Paths: []v1beta1.HTTPIngressPath{
 					{
-						Path:     fmt.Sprintf(pathFormatter, id),
+						Path:     fmt.Sprintf(pathFormatter, username),
 						PathType: pathTypePtr(v1beta1.PathTypePrefix),
 						Backend: v1beta1.IngressBackend{
 							ServiceName: serviceName,

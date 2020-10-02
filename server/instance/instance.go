@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gitlab.com/medhir/blog/server/auth"
-	"gitlab.com/medhir/blog/server/storage/gcs"
-	"gitlab.com/medhir/blog/server/storage/sql"
+	"gitlab.com/medhir/blog/server/controllers/auth"
+	"gitlab.com/medhir/blog/server/controllers/storage/gcs"
+	"gitlab.com/medhir/blog/server/controllers/storage/sql"
 	"net/http"
 	"os"
 	"time"
@@ -98,7 +98,7 @@ func NewInstance() (*Instance, error) {
 	}
 	db, err := sql.NewPostgres(
 		fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, databaseName),
-		"storage/sql/migrations",
+		"controllers/storage/sql/migrations",
 	)
 	if err != nil {
 		return nil, err

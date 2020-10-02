@@ -19,10 +19,11 @@ type Course struct {
 
 func (t *tutorials) CreateCourse(authorID, title, description string) (id string, _ error) {
 	bucketName := fmt.Sprintf("medhir-com-course-%s", uuid2.New().String())
-	err := t.gcs.CreateBucket(bucketName)
-	if err != nil {
-		return "", err
-	}
+	//err := t.gcs.CreateBucket(bucketName)
+	//if err != nil {
+	//	return "", err
+	//}
+	err := t.code.CreatePVC(bucketName, "15Gi")
 	id, err = t.db.CreateCourse(authorID, title, description, bucketName)
 	if err != nil {
 		return "", err
@@ -58,7 +59,15 @@ func (t *tutorials) UpdateCourse(id, title, description string) error {
 }
 
 func (t *tutorials) DeleteCourse(id string) error {
-	err := t.db.DeleteCourse(id)
+	course, err := t.db.GetCourse(id)
+	if err != nil {
+		return err
+	}
+	err = t.db.DeleteCourse(id)
+	if err != nil {
+		return err
+	}
+	err = t.code.DeletePVC(course.BucketName)
 	if err != nil {
 		return err
 	}
