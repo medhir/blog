@@ -23,12 +23,10 @@ type Handlers interface {
 	RefreshForNext() http.HandlerFunc
 	Authorize(role auth.Role, handler http.HandlerFunc) http.HandlerFunc
 	RegisterNewUser() http.HandlerFunc
-
 	// Database
 	MigrateUp() http.HandlerFunc
 	MigrateDown() http.HandlerFunc
 	MigrateBlog() http.HandlerFunc
-
 	// Blog
 	HandleDraft() http.HandlerFunc
 	HandlePost() http.HandlerFunc
@@ -36,19 +34,18 @@ type Handlers interface {
 	GetPosts() http.HandlerFunc
 	HandleAsset() http.HandlerFunc
 	HandleAssets() http.HandlerFunc
-
 	// Photos
 	GetPhotos() http.HandlerFunc
 	PostPhoto() http.HandlerFunc
 	DeletePhoto() http.HandlerFunc
 	HandlePhotos() http.HandlerFunc
-
 	// Courses
 	HandleCourse() http.HandlerFunc
 	HandleCourses() http.HandlerFunc
-
 	// Lessons
 	HandleLesson() http.HandlerFunc
+	// Code Instances
+	HandleCodeInstance() http.HandlerFunc
 }
 
 // handlers describes dependencies needed to serve http requests
