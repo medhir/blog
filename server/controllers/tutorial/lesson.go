@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// Lesson describes the metadata for a lesson
 type Lesson struct {
 	ID          string    `json:"id"`
 	CourseID    string    `json:"course_id"`

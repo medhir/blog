@@ -6,6 +6,7 @@ import (
 	"gitlab.com/medhir/blog/server/controllers/storage/sql"
 )
 
+// Tutorials is the API description for how to interact with the tutorials controller
 type Tutorials interface {
 	// Course API
 	CreateCourse(authorID, title, description string) (id string, _ error)

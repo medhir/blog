@@ -18,8 +18,8 @@ type Course struct {
 	UpdatedAt   sql.NullTime `json:"updated_at"`
 }
 
-func courseValid(author_id, title string) error {
-	if author_id == "" {
+func courseValid(authorID, title string) error {
+	if authorID == "" {
 		return errors.New("course author id cannot be empty")
 	}
 	if title == "" {

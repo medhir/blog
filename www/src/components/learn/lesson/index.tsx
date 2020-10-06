@@ -9,12 +9,12 @@ import { AxiosError } from 'axios'
 
 export interface LessonMetadata {
   id: string
-  courseID: string
+  course_id: string
   title: string
   description: string
   mdx?: string
-  createdAt: number
-  updatedAt: number
+  created_at: number
+  updated_at: number
   instance_url: string
 }
 
@@ -25,7 +25,6 @@ interface AlertState {
 
 interface LessonProps {
   lesson: LessonMetadata
-  courseID: string
 }
 
 interface LessonState {
