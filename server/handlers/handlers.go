@@ -27,6 +27,7 @@ type Handlers interface {
 	MigrateUp() http.HandlerFunc
 	MigrateDown() http.HandlerFunc
 	MigrateBlog() http.HandlerFunc
+	DatabaseVersion() http.HandlerFunc
 	// Blog
 	HandleDraft() http.HandlerFunc
 	HandlePost() http.HandlerFunc

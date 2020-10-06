@@ -19,6 +19,7 @@ type Postgres interface {
 	MigrateUp() error
 	MigrateDown() error
 	MigrateUpAll() error
+	Version() (uint, bool, error)
 	Close() error
 
 	// Course API
@@ -140,6 +141,12 @@ func (p *postgres) MigrateUpAll() error {
 		return fmt.Errorf("could not migrate the database - %s", err.Error())
 	}
 	return nil
+}
+
+// Version returns the current version of the postgres instance
+func (p *postgres) Version() (uint, bool, error) {
+	version, dirty, err := p.migrator.Version()
+	return version, dirty, err
 }
 
 func (p *postgres) Close() error {
