@@ -7,7 +7,6 @@ DROP TABLE IF EXISTS courses;
 --   email TEXT NOT NULL,
 --   first_name TEXT,
 --   last_name TEXT,
---   settings_bucket_name TEXT UNIQUE
 -- );
 
 CREATE TABLE IF NOT EXISTS Course(

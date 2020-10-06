@@ -32,7 +32,7 @@ const (
 
 // Manager describes the methods for managing coder instances, given a user token
 type Manager interface {
-	SetInstance(user *gocloak.User, pvcName, subPath string) (*Instance, error)
+	SetInstance(user *gocloak.User, pvcName string) (*Instance, error)
 	RemoveInstance(user *gocloak.User) error
 
 	CreatePVC(name, size string) error
@@ -75,12 +75,12 @@ type Instance struct {
 	URL string `json:"url"`
 }
 
-func (m *manager) SetInstance(user *gocloak.User, pvcName, subPath string) (*Instance, error) {
-	resources, err := makeCodeK8sResources(*user.Username, m.env, pvcName, subPath)
+func (m *manager) SetInstance(user *gocloak.User, pvcName string) (*Instance, error) {
+	resources, err := makeCodeK8sResources(*user.Username, m.env, pvcName)
 	if err != nil {
 		return nil, err
 	}
-	_, err = m.k8s.GetDeployment(resources.deploymentName)
+	deployment, err := m.k8s.GetDeployment(resources.deploymentName)
 	if err != nil {
 		// deployment doesn't exist
 		err := m.k8s.AddDeployment(resources.deployment)
@@ -96,7 +96,14 @@ func (m *manager) SetInstance(user *gocloak.User, pvcName, subPath string) (*Ins
 			return nil, err
 		}
 	} else {
-		// deployment does exist, so just update it
+		// deployment does exist, so check to see if pvc is already bound
+		if deployment.Spec.Template.Spec.Volumes[0].Name != pvcName {
+			// if the pvc is already bound, do nothing
+			return &Instance{
+				URL: resources.url,
+			}, nil
+		}
+		// otherwise, update the deployment with the new pvc
 		err := m.k8s.UpdateDeployment(resources.deployment)
 		if err != nil {
 			return nil, err
@@ -178,7 +185,7 @@ type coderK8sResources struct {
 	url            string
 }
 
-func makeCodeK8sResources(username, env, pvcName, subPath string) (*coderK8sResources, error) {
+func makeCodeK8sResources(username, env, pvcName string) (*coderK8sResources, error) {
 	cname := fmt.Sprintf(cnameFormatter, username)
 	var url string
 	if env == reviewEnv {
@@ -195,7 +202,7 @@ func makeCodeK8sResources(username, env, pvcName, subPath string) (*coderK8sReso
 	} else {
 		ingressRule = makeCodeIngressRule(productionHostName, svcName, username)
 	}
-	deployment := makeCodeDeployment(deploymentName, pvcName, subPath)
+	deployment := makeCodeDeployment(deploymentName, pvcName)
 	return &coderK8sResources{
 		deployment:     deployment,
 		service:        svc,
@@ -278,7 +285,7 @@ func makeCodeIngressRule(hostName, serviceName, username string) v1beta1.Ingress
 	return rule
 }
 
-func makeCodeDeployment(deploymentName, projectPVCName, subPath string) *appsv1.Deployment {
+func makeCodeDeployment(deploymentName, pvcName string) *appsv1.Deployment {
 	return &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: deploymentName,
@@ -325,19 +332,24 @@ func makeCodeDeployment(deploymentName, projectPVCName, subPath string) *appsv1.
 							},
 							VolumeMounts: []apiv1.VolumeMount{
 								{
-									Name:      projectPVCName,
-									SubPath:   subPath,
+									Name:      pvcName,
+									SubPath:   "project",
 									MountPath: "/home/coder/project",
+								},
+								{
+									Name:      pvcName,
+									SubPath:   "settings",
+									MountPath: "/home/coder/.local/share/code-server",
 								},
 							},
 						},
 					},
 					Volumes: []apiv1.Volume{
 						{
-							Name: projectPVCName,
+							Name: pvcName,
 							VolumeSource: apiv1.VolumeSource{
 								PersistentVolumeClaim: &apiv1.PersistentVolumeClaimVolumeSource{
-									ClaimName: projectPVCName,
+									ClaimName: pvcName,
 								},
 							},
 						},

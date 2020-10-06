@@ -30,7 +30,7 @@ func (h *handlers) getLesson() http.HandlerFunc {
 			http.Error(w, errors.New("unauthorized to view this lesson").Error(), http.StatusUnauthorized)
 			return
 		}
-		instance, err := h.code.SetInstance(user, course.BucketName, lessonID)
+		instance, err := h.code.SetInstance(user, course.BucketName)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
