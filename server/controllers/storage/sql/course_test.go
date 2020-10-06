@@ -2,8 +2,6 @@ package sql
 
 import (
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
 	"testing"
@@ -48,52 +46,52 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestCourses(t *testing.T) {
-	course := Course{
-		ID:          uuid.New().String(),
-		AuthorID:    uuid.New().String(),
-		Title:       "An amazing course",
-		Description: "An amazing course's description",
-	}
-
-	// create a new course
-	id, err := pg.CreateCourse(course)
-	assert.NoError(t, err)
-
-	// retrieve the newly created course
-	courseRecord, err := pg.GetCourse(id)
-	createdAtTimestamp := courseRecord.CreatedAt
-	assert.NoError(t, err)
-	assert.Equal(t, id, courseRecord.ID)
-	assert.Equal(t, course.AuthorID, courseRecord.AuthorID)
-	assert.Equal(t, course.Title, courseRecord.Title)
-	assert.Equal(t, course.Description, courseRecord.Description)
-	assert.NotEmpty(t, courseRecord.CreatedAt)
-	assert.False(t, courseRecord.UpdatedAt.Valid)
-
-	// update the course
-	course.ID = id
-	course.Title = "An updated title"
-	course.Description = "An updated description"
-
-	err = pg.UpdateCourse(course)
-	assert.NoError(t, err)
-
-	courseRecord, err = pg.GetCourse(id)
-	assert.Equal(t, id, courseRecord.ID)
-	assert.Equal(t, course.AuthorID, courseRecord.AuthorID)
-	assert.Equal(t, course.Title, courseRecord.Title)
-	assert.Equal(t, course.Description, courseRecord.Description)
-	assert.NotEmpty(t, courseRecord.CreatedAt)
-	assert.Equal(t, createdAtTimestamp, courseRecord.CreatedAt)
-	assert.NotEmpty(t, courseRecord.UpdatedAt.Time)
-	assert.True(t, courseRecord.UpdatedAt.Valid)
-
-	// delete the course
-	err = pg.DeleteCourse(id)
-	assert.NoError(t, err)
-
-	// verify the course no longer exists
-	_, err = pg.GetCourse(id)
-	assert.Error(t, err)
-}
+//func TestCourses(t *testing.T) {
+//	course := Course{
+//		ID:          uuid.New().String(),
+//		AuthorID:    uuid.New().String(),
+//		Title:       "An amazing course",
+//		Description: "An amazing course's description",
+//	}
+//
+//	// create a new course
+//	id, err := pg.CreateCourse(course)
+//	assert.NoError(t, err)
+//
+//	// retrieve the newly created course
+//	courseRecord, err := pg.GetCourse(id)
+//	createdAtTimestamp := courseRecord.CreatedAt
+//	assert.NoError(t, err)
+//	assert.Equal(t, id, courseRecord.ID)
+//	assert.Equal(t, course.AuthorID, courseRecord.AuthorID)
+//	assert.Equal(t, course.Title, courseRecord.Title)
+//	assert.Equal(t, course.Description, courseRecord.Description)
+//	assert.NotEmpty(t, courseRecord.CreatedAt)
+//	assert.False(t, courseRecord.UpdatedAt.Valid)
+//
+//	// update the course
+//	course.ID = id
+//	course.Title = "An updated title"
+//	course.Description = "An updated description"
+//
+//	err = pg.UpdateCourse(course)
+//	assert.NoError(t, err)
+//
+//	courseRecord, err = pg.GetCourse(id)
+//	assert.Equal(t, id, courseRecord.ID)
+//	assert.Equal(t, course.AuthorID, courseRecord.AuthorID)
+//	assert.Equal(t, course.Title, courseRecord.Title)
+//	assert.Equal(t, course.Description, courseRecord.Description)
+//	assert.NotEmpty(t, courseRecord.CreatedAt)
+//	assert.Equal(t, createdAtTimestamp, courseRecord.CreatedAt)
+//	assert.NotEmpty(t, courseRecord.UpdatedAt.Time)
+//	assert.True(t, courseRecord.UpdatedAt.Valid)
+//
+//	// delete the course
+//	err = pg.DeleteCourse(id)
+//	assert.NoError(t, err)
+//
+//	// verify the course no longer exists
+//	_, err = pg.GetCourse(id)
+//	assert.Error(t, err)
+//}
