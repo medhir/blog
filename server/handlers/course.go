@@ -8,8 +8,6 @@ import (
 	"path"
 )
 
-const coursesBase = "courses"
-
 // GetCourseResponse describes the fields associated with a GET course request
 type GetCourseResponse struct {
 	Metadata *tutorial.Course   `json:"metadata"`

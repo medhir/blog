@@ -131,20 +131,15 @@ class Lesson extends Component<LessonProps, LessonState> {
     return (
       <section className={styles.lesson}>
         <div className={styles.lesson_content}>
-          {mdx && (
-            <Notebook
-              splitPane={false}
-              scroll={true}
-              mdx={mdx}
-              className={styles.notebook}
-              handleTextareaChange={this.handleTextareaChange}
-            />
-          )}
+          <Notebook
+            splitPane={false}
+            scroll={true}
+            mdx={mdx}
+            className={styles.notebook}
+            handleTextareaChange={this.handleTextareaChange}
+          />
         </div>
-        <IDE
-          url={`${lesson.instance_url}?folder=/home/coder/project`}
-          className={styles.ide}
-        />
+        <IDE url={lesson.instance_url} className={styles.ide} />
         {errorAlert.open && (
           <ErrorAlert
             open={errorAlert.open}

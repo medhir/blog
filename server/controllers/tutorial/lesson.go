@@ -9,15 +9,14 @@ type Lesson struct {
 	ID          string    `json:"id"`
 	CourseID    string    `json:"course_id"`
 	Title       string    `json:"title"`
-	Description string    `json:"description"`
 	MDX         string    `json:"mdx"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at,omitempty"`
 	InstanceURL string    `json:"instance_url"`
 }
 
-func (t *tutorials) CreateLesson(courseID, title, description, mdx string) (string, error) {
-	id, err := t.db.CreateLesson(courseID, title, description, mdx)
+func (t *tutorials) CreateLesson(courseID, title, mdx string) (string, error) {
+	id, err := t.db.CreateLesson(courseID, title, mdx)
 	if err != nil {
 		return "", err
 	}
@@ -30,20 +29,19 @@ func (t *tutorials) GetLesson(lessonID string) (*Lesson, error) {
 		return nil, err
 	}
 	lesson := &Lesson{
-		ID:          row.ID,
-		CourseID:    row.CourseID,
-		Title:       row.Title,
-		Description: row.Description,
-		MDX:         row.MDX,
-		CreatedAt:   row.CreatedAt,
+		ID:        row.ID,
+		CourseID:  row.CourseID,
+		Title:     row.Title,
+		MDX:       row.MDX,
+		CreatedAt: row.CreatedAt,
 	}
 	if row.UpdatedAt.Valid == true {
 		lesson.UpdatedAt = row.UpdatedAt.Time
 	}
 	return lesson, nil
 }
-func (t *tutorials) UpdateLesson(lessonID, title, description, mdx string) error {
-	err := t.db.UpdateLesson(lessonID, title, description, mdx)
+func (t *tutorials) UpdateLesson(lessonID, title, mdx string) error {
+	err := t.db.UpdateLesson(lessonID, title, mdx)
 	if err != nil {
 		return err
 	}
@@ -64,12 +62,11 @@ func (t *tutorials) GetLessons(courseID string) ([]*Lesson, error) {
 	var lessons []*Lesson
 	for _, row := range rows {
 		lesson := &Lesson{
-			ID:          row.ID,
-			CourseID:    row.CourseID,
-			Title:       row.Title,
-			Description: row.Description,
-			MDX:         row.MDX,
-			CreatedAt:   row.CreatedAt,
+			ID:        row.ID,
+			CourseID:  row.CourseID,
+			Title:     row.Title,
+			MDX:       row.MDX,
+			CreatedAt: row.CreatedAt,
 		}
 		if row.UpdatedAt.Valid == true {
 			lesson.UpdatedAt = row.UpdatedAt.Time

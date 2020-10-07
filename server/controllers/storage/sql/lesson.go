@@ -9,26 +9,24 @@ import (
 
 // Lesson describes the metadata for a course lesson
 type Lesson struct {
-	ID          string       `json:"id"`
-	CourseID    string       `json:"course_id"`
-	Title       string       `json:"title"`
-	Description string       `json:"description"`
-	MDX         string       `json:"mdx"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedAt   sql.NullTime `json:"updated_at"`
+	ID        string       `json:"id"`
+	CourseID  string       `json:"course_id"`
+	Title     string       `json:"title"`
+	MDX       string       `json:"mdx"`
+	CreatedAt time.Time    `json:"created_at"`
+	UpdatedAt sql.NullTime `json:"updated_at"`
 }
 
 func (p *postgres) CreateLesson(
 	courseID string,
 	title string,
-	description string,
 	mdx string,
 ) (string, error) {
 	id := uuid2.New().String()
 	query := `
-INSERT INTO lesson (id, course_id, title, description, mdx, created_at)
-VALUES ($1, $2, $3, $4, $5, $6);`
-	_, err := p.db.Exec(query, id, courseID, title, description, mdx, time.Now())
+INSERT INTO lesson (id, course_id, title, mdx, created_at)
+VALUES ($1, $2, $3, $4, $5);`
+	_, err := p.db.Exec(query, id, courseID, title, mdx, time.Now())
 	if err != nil {
 		return "", err
 	}
@@ -38,14 +36,13 @@ VALUES ($1, $2, $3, $4, $5, $6);`
 func (p *postgres) GetLesson(id string) (*Lesson, error) {
 	lesson := &Lesson{}
 	query := `
-SELECT id, course_id, title, description, mdx, created_at, updated_at
+SELECT id, course_id, title, mdx, created_at, updated_at
 FROM lesson
 WHERE id = $1;`
 	err := p.db.QueryRow(query, id).Scan(
 		&lesson.ID,
 		&lesson.CourseID,
 		&lesson.Title,
-		&lesson.Description,
 		&lesson.MDX,
 		&lesson.CreatedAt,
 		&lesson.UpdatedAt,
@@ -59,14 +56,13 @@ WHERE id = $1;`
 func (p *postgres) UpdateLesson(
 	id string,
 	title string,
-	description string,
 	mdx string,
 ) error {
 	query := `
 UPDATE lesson
-SET title = $2, description = $3, mdx = $4, updated_at = $5
+SET title = $2, mdx = $4, updated_at = $5
 WHERE id = $1;`
-	_, err := p.db.Exec(query, id, title, description, mdx, time.Now())
+	_, err := p.db.Exec(query, id, title, mdx, time.Now())
 	if err != nil {
 		return err
 	}
@@ -93,7 +89,7 @@ WHERE id = $1`
 
 func (p *postgres) GetLessons(courseID string) ([]*Lesson, error) {
 	query := `
-SELECT id, course_id, title, description, created_at, updated_at
+SELECT id, course_id, title, created_at, updated_at
 FROM lesson
 WHERE course_id = $1
 ORDER BY created_at ASC;`
@@ -110,7 +106,6 @@ ORDER BY created_at ASC;`
 			&lesson.ID,
 			&lesson.CourseID,
 			&lesson.Title,
-			&lesson.Description,
 			&lesson.CreatedAt,
 			&lesson.UpdatedAt,
 		)

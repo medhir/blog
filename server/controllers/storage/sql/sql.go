@@ -23,7 +23,7 @@ type Postgres interface {
 	Close() error
 
 	// Course API
-	CreateCourse(authorID, title, description, bucketName string) (string, error)
+	CreateCourse(authorID, title, description, pvcName string) (string, error)
 	GetCourse(courseID string) (*Course, error)
 	UpdateCourse(id, title, description string) error
 	DeleteCourse(courseID string) error
@@ -33,14 +33,12 @@ type Postgres interface {
 	CreateLesson(
 		courseID string,
 		title string,
-		description string,
 		mdx string,
 	) (string, error)
 	GetLesson(id string) (*Lesson, error)
 	UpdateLesson(
 		id string,
 		title string,
-		description string,
 		mdx string,
 	) error
 	DeleteLesson(id string) error

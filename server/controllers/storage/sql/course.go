@@ -9,13 +9,13 @@ import (
 
 // Course describes the metadata for a course
 type Course struct {
-	ID          string       `json:"id"`
-	AuthorID    string       `json:"author_id"`
-	Title       string       `json:"title"`
-	Description string       `json:"description"`
-	BucketName  string       `json:"bucket_name"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedAt   sql.NullTime `json:"updated_at"`
+	ID            string       `json:"id"`
+	AuthorID      string       `json:"author_id"`
+	Title         string       `json:"title"`
+	Description   string       `json:"description"`
+	MasterPVCName string       `json:"master_pvc_name"`
+	CreatedAt     time.Time    `json:"created_at"`
+	UpdatedAt     sql.NullTime `json:"updated_at"`
 }
 
 func courseValid(authorID, title string) error {
@@ -28,18 +28,18 @@ func courseValid(authorID, title string) error {
 	return nil
 }
 
-func (p *postgres) CreateCourse(authorID, title, description, bucketName string) (string, error) {
+func (p *postgres) CreateCourse(authorID, title, description, pvcName string) (string, error) {
 	err := courseValid(authorID, title)
 	if err != nil {
 		return "", err
 	}
 	uuid := uuid2.New().String()
 	query := `
-INSERT INTO course (id, author_id, title, description, master_bucket_name, created_at)
+INSERT INTO course (id, author_id, title, description, master_pvc_name, created_at)
 VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING id;`
 	var id string
-	err = p.db.QueryRow(query, uuid, authorID, title, description, bucketName, time.Now()).Scan(&id)
+	err = p.db.QueryRow(query, uuid, authorID, title, description, pvcName, time.Now()).Scan(&id)
 	if err != nil {
 		return "", err
 	}
@@ -49,7 +49,7 @@ RETURNING id;`
 func (p *postgres) GetCourse(courseID string) (*Course, error) {
 	course := &Course{}
 	query := `
-SELECT id, author_id, title, description, master_bucket_name, created_at, updated_at
+SELECT id, author_id, title, description, master_pvc_name, created_at, updated_at
 FROM course
 WHERE id = $1;`
 	err := p.db.QueryRow(query, courseID).Scan(
@@ -57,7 +57,7 @@ WHERE id = $1;`
 		&course.AuthorID,
 		&course.Title,
 		&course.Description,
-		&course.BucketName,
+		&course.MasterPVCName,
 		&course.CreatedAt,
 		&course.UpdatedAt,
 	)
@@ -102,7 +102,7 @@ WHERE id = $1;`
 
 func (p *postgres) GetCourses(authorID string) ([]*Course, error) {
 	query := `
-SELECT id, author_id, title, description, master_bucket_name, created_at, updated_at 
+SELECT id, author_id, title, description, master_pvc_name, created_at, updated_at 
 FROM course
 WHERE author_id = $1;`
 	rows, err := p.db.Query(query, authorID)
@@ -119,7 +119,7 @@ WHERE author_id = $1;`
 			&course.AuthorID,
 			&course.Title,
 			&course.Description,
-			&course.BucketName,
+			&course.MasterPVCName,
 			&course.CreatedAt,
 			&course.UpdatedAt,
 		)

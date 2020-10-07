@@ -30,7 +30,7 @@ func (h *handlers) getLesson() http.HandlerFunc {
 			http.Error(w, errors.New("unauthorized to view this lesson").Error(), http.StatusUnauthorized)
 			return
 		}
-		instance, err := h.code.SetInstance(user, course.BucketName)
+		instance, err := h.code.SetInstance(user, course.MasterPVCName)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -46,10 +46,9 @@ func (h *handlers) getLesson() http.HandlerFunc {
 
 func (h *handlers) postLesson() http.HandlerFunc {
 	type postLessonRequest struct {
-		CourseID    string `json:"course_id"`
-		Title       string `json:"title"`
-		Description string `json:"description"`
-		MDX         string `json:"mdx"`
+		CourseID string `json:"course_id"`
+		Title    string `json:"title"`
+		MDX      string `json:"mdx"`
 	}
 	type postLessonResponse struct {
 		LessonID string `json:"lesson_id"`
@@ -77,7 +76,7 @@ func (h *handlers) postLesson() http.HandlerFunc {
 			http.Error(w, errors.New("unauthorized to create this lesson").Error(), http.StatusUnauthorized)
 			return
 		}
-		id, err := h.tutorials.CreateLesson(request.CourseID, request.Title, request.Description, request.MDX)
+		id, err := h.tutorials.CreateLesson(request.CourseID, request.Title, request.MDX)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -94,10 +93,9 @@ func (h *handlers) postLesson() http.HandlerFunc {
 
 func (h *handlers) patchLesson() http.HandlerFunc {
 	type patchLessonRequest struct {
-		LessonID    string `json:"lesson_id"`
-		Title       string `json:"title"`
-		Description string `json:"description"`
-		MDX         string `json:"mdx"`
+		LessonID string `json:"lesson_id"`
+		Title    string `json:"title"`
+		MDX      string `json:"mdx"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
@@ -125,7 +123,7 @@ func (h *handlers) patchLesson() http.HandlerFunc {
 		if *user.ID != course.ID {
 			http.Error(w, errors.New("unauthorized to create this lesson").Error(), http.StatusUnauthorized)
 		}
-		err = h.tutorials.UpdateLesson(request.LessonID, request.Title, request.Description, request.MDX)
+		err = h.tutorials.UpdateLesson(request.LessonID, request.Title, request.MDX)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
