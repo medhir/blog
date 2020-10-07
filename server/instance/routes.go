@@ -1,7 +1,7 @@
 package instance
 
 import (
-	"gitlab.com/medhir/blog/server/auth"
+	"gitlab.com/medhir/blog/server/controllers/auth"
 	"gitlab.com/medhir/blog/server/handlers"
 )
 
@@ -22,20 +22,22 @@ func (i *Instance) AddRoutes() error {
 	i.router.HandleFunc("/migrate/up", h.Authorize(auth.BlogOwner, h.MigrateUp()))
 	i.router.HandleFunc("/migrate/down", h.Authorize(auth.BlogOwner, h.MigrateDown()))
 	i.router.HandleFunc("/migrate/blog", h.Authorize(auth.BlogOwner, h.MigrateBlog()))
+	i.router.HandleFunc("/migrate/version", h.Authorize(auth.BlogOwner, h.DatabaseVersion()))
 	// 	blog
-	i.router.HandleFunc("/blog/asset/", h.Authorize(auth.BlogOwner, h.HandleAsset()))
-	i.router.HandleFunc("/blog/assets/", h.Authorize(auth.BlogOwner, h.HandleAssets()))
 	i.router.HandleFunc("/blog/draft/", h.Authorize(auth.BlogOwner, h.HandleDraft()))
 	i.router.HandleFunc("/blog/drafts", h.Authorize(auth.BlogOwner, h.GetDrafts()))
 	i.router.HandleFunc("/blog/post/", h.HandlePost())
 	i.router.HandleFunc("/blog/posts", h.GetPosts())
+	i.router.HandleFunc("/blog/asset/", h.Authorize(auth.BlogOwner, h.HandleAsset()))
+	i.router.HandleFunc("/blog/assets/", h.Authorize(auth.BlogOwner, h.HandleAssets()))
 	// 	photos
 	i.router.HandleFunc("/photos/", h.HandlePhotos())
-	//	code
-	i.router.HandleFunc("/code/", h.Authorize(auth.BlogOwner, h.HandleCodeDeployment()))
 	//  course
+	i.router.HandleFunc("/course/", h.Authorize(auth.BlogOwner, h.HandleCourse()))
 	i.router.HandleFunc("/courses/", h.Authorize(auth.BlogOwner, h.HandleCourses()))
 	// lesson
-	i.router.HandleFunc("/lessons/", h.Authorize(auth.BlogOwner, h.HandleLessons()))
+	i.router.HandleFunc("/lesson/", h.Authorize(auth.BlogOwner, h.HandleLesson()))
+	// code instance
+	i.router.HandleFunc("/code/", h.Authorize(auth.BlogOwner, h.HandleCodeInstance()))
 	return nil
 }

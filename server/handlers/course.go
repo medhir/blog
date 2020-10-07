@@ -3,125 +3,109 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
-	"gitlab.com/medhir/blog/server/storage/sql"
+	"gitlab.com/medhir/blog/server/controllers/tutorial"
 	"net/http"
 	"path"
 )
 
-const coursesBase = "courses"
-
 // GetCourseResponse describes the fields associated with a GET course request
 type GetCourseResponse struct {
-	Metadata *sql.Course   `json:"metadata"`
-	Lessons  []*sql.Lesson `json:"lessons"`
+	Metadata *tutorial.Course   `json:"metadata"`
+	Lessons  []*tutorial.Lesson `json:"lessons"`
 }
 
 func (h *handlers) getCourse() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		courseID := path.Base(r.URL.Path)
-		// if no ID is provided, return all courses
-		if courseID == coursesBase {
-			jwt, err := h.getJWTCookie(r)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-			}
-			user, err := h.auth.GetUser(jwt)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-			}
-			fmt.Println(user)
-			courses, err := h.db.GetCourses(*user.ID)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			err = writeJSON(w, courses)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-		} else {
-			course, err := h.db.GetCourse(courseID)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			lessons, err := h.db.GetLessons(courseID)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			err = writeJSON(w, GetCourseResponse{
-				Metadata: course,
-				Lessons:  lessons,
-			})
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+		user, err := h.getUser(r)
+		course, err := h.tutorials.GetCourse(courseID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if *user.ID != course.AuthorID {
+			http.Error(w, fmt.Sprintf("insufficient permissions to update course %s", course.ID), http.StatusUnauthorized)
+			return
+		}
+		lessons, err := h.tutorials.GetLessons(courseID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = writeJSON(w, GetCourseResponse{
+			Metadata: course,
+			Lessons:  lessons,
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 	}
 }
 
 // postCourse handles a POST request to the /courses/ endpoint.
 func (h *handlers) postCourse() http.HandlerFunc {
+	type postCourseRequest struct {
+		Title       string `json:"title"`
+		Description string `json:"description"`
+	}
+	type postCourseResponse struct {
+		ID string `json:"id"`
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		// read course from the request
-		var course sql.Course
-		err := json.NewDecoder(r.Body).Decode(&course)
+		var data postCourseRequest
+		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Unable to decode data in request body - %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
-		// add new UUID to course
-		course.ID = uuid.New().String()
-		// get author ID and add to course
-		jwt, err := h.getJWTCookie(r)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		user, err := h.auth.GetUser(jwt)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		course.AuthorID = *user.ID
-		id, err := h.db.CreateCourse(course)
+		// get author's ID and add to course
+		user, err := h.getUser(r)
+		id, err := h.tutorials.CreateCourse(*user.ID, data.Title, data.Description)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Write([]byte(id))
+		writeJSON(w, postCourseResponse{
+			ID: id,
+		})
 		w.WriteHeader(http.StatusOK)
 	}
 }
 
 func (h *handlers) patchCourse() http.HandlerFunc {
+	type patchCourseRequest struct {
+		AuthorID    string `json:"author_id"`
+		ID          string `json:"id"`
+		Title       string `json:"title"`
+		Description string `json:"description"`
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		// read course from the request
-		var course sql.Course
-		err := json.NewDecoder(r.Body).Decode(&course)
+		var request patchCourseRequest
+		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Unable to decode data in request body - %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
-
 		// verify user can update this course
-		jwt, err := h.getJWTCookie(r)
+		user, err := h.getUser(r)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
-		user, err := h.auth.GetUser(jwt)
+		course, err := h.tutorials.GetCourse(request.ID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 		if course.AuthorID != *user.ID {
 			http.Error(w, fmt.Sprintf("insufficient permissions to update course %s", course.ID), http.StatusUnauthorized)
 			return
 		}
-
-		err = h.db.UpdateCourse(course)
+		err = h.db.UpdateCourse(request.ID, request.Title, request.Description)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -133,26 +117,22 @@ func (h *handlers) patchCourse() http.HandlerFunc {
 func (h *handlers) deleteCourse() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		courseID := path.Base(r.URL.Path)
-		course, err := h.db.GetCourse(courseID)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-
 		// verify user can delete this course
-		jwt, err := h.getJWTCookie(r)
+		user, err := h.getUser(r)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
-		user, err := h.auth.GetUser(jwt)
+		course, err := h.tutorials.GetCourse(courseID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 		if course.AuthorID != *user.ID {
 			http.Error(w, fmt.Sprintf("insufficient permissions to update course %s", course.ID), http.StatusUnauthorized)
 			return
 		}
-
-		err = h.db.DeleteCourse(courseID)
+		err = h.tutorials.DeleteCourse(courseID)
 		if err != nil {
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -163,7 +143,7 @@ func (h *handlers) deleteCourse() http.HandlerFunc {
 	}
 }
 
-func (h *handlers) HandleCourses() http.HandlerFunc {
+func (h *handlers) HandleCourse() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
@@ -174,6 +154,37 @@ func (h *handlers) HandleCourses() http.HandlerFunc {
 			h.patchCourse()(w, r)
 		case http.MethodDelete:
 			h.deleteCourse()(w, r)
+		default:
+			http.Error(w, fmt.Sprintf("unimplemented method %s", r.Method), http.StatusNotImplemented)
+			return
+		}
+	}
+}
+
+func (h *handlers) getCourses() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, err := h.getUser(r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		courses, err := h.db.GetCourses(*user.ID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = writeJSON(w, courses)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func (h *handlers) HandleCourses() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			h.getCourses()(w, r)
 		default:
 			http.Error(w, fmt.Sprintf("unimplemented method %s", r.Method), http.StatusNotImplemented)
 			return

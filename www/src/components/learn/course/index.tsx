@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import http, { Protected } from '../../../utility/http'
+import { Protected } from '../../../utility/http'
 import styles from './course.module.scss'
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt'
 import { Button } from '@material-ui/core'
@@ -8,7 +8,7 @@ import SaveIcon from '@material-ui/icons/Save'
 import Router from 'next/router'
 import { ErrorAlert, SuccessAlert } from '../../alert'
 import { AxiosError } from 'axios'
-import { LessonMetadata } from '../lesson'
+import Lesson, { LessonMetadata } from '../lesson'
 import Editable from '../../editable'
 
 interface AlertState {
@@ -26,18 +26,13 @@ export interface CourseMetadata {
 }
 
 interface CourseProps {
-  id?: string
-  author_id?: string
+  metadata: CourseMetadata
+  lessons: Array<LessonMetadata>
 }
 
 interface CourseState {
-  id?: string
-  author_id: string
   title: string
   description?: string
-  created_at?: number
-  updated_at?: number
-  lessons: Array<LessonMetadata>
   errorAlert: AlertState
   successAlert: AlertState
 }
@@ -49,11 +44,8 @@ class Course extends Component<CourseProps, CourseState> {
   constructor(props: CourseProps) {
     super(props)
     this.state = {
-      id: props.id || '',
-      author_id: '',
-      title: 'New Course',
-      description: 'Write a description for your course.',
-      lessons: [],
+      title: props.metadata.title,
+      description: props.metadata.description,
       errorAlert: {
         open: false,
         message: '',
@@ -72,38 +64,6 @@ class Course extends Component<CourseProps, CourseState> {
     this.handleSuccessAlertClose = this.handleSuccessAlertClose.bind(this)
     this.handleTitleInput = this.handleTitleInput.bind(this)
     this.saveCourse = this.saveCourse.bind(this)
-  }
-
-  componentDidMount() {
-    const { id } = this.state
-    if (id !== '') {
-      Protected.Client.Get(`/courses/${id}`)
-        .then((response) => {
-          const {
-            author_id,
-            title,
-            description,
-            created_at,
-            updated_at,
-          } = response.data.metadata
-          this.setState({
-            author_id,
-            title,
-            description,
-            created_at,
-            updated_at,
-            lessons: response.data.lessons,
-          })
-        })
-        .catch((error) => {
-          this.setState({
-            errorAlert: {
-              open: true,
-              message: error.response.data,
-            },
-          })
-        })
-    }
   }
 
   handleDescriptionInput(e) {
@@ -143,60 +103,37 @@ class Course extends Component<CourseProps, CourseState> {
   }
 
   saveCourse() {
-    const { author_id, id, title, description } = this.state
-    if (id === '') {
-      // create a new course
-      Protected.Client.Post('/courses/', {
-        title,
-        description,
-      })
-        .then((response) => {
-          Router.push(`/teach/courses/${response.data}`)
-        })
-        .catch((error: AxiosError) => {
-          this.setState({
-            errorAlert: {
-              open: true,
-              message: error.response.data,
-            },
-          })
-        })
-    } else {
-      // update the course
-      Protected.Client.Patch('/courses/', {
-        author_id,
-        id,
-        title,
-        description,
-      })
-        .then(() => {
-          this.setState({
-            successAlert: {
-              open: true,
-              message: 'Course saved successfully!',
-            },
-          })
-        })
-        .catch((error: AxiosError) => {
-          this.setState({
-            errorAlert: {
-              open: true,
-              message: error.response.data,
-            },
-          })
-        })
-    }
-  }
+    const { id, author_id } = this.props.metadata
+    const { title, description } = this.state
 
-  render() {
-    const {
+    Protected.Client.Patch('/course/', {
+      author_id,
       id,
       title,
       description,
-      lessons,
-      errorAlert,
-      successAlert,
-    } = this.state
+    })
+      .then(() => {
+        this.setState({
+          successAlert: {
+            open: true,
+            message: 'Course saved successfully!',
+          },
+        })
+      })
+      .catch((error: AxiosError) => {
+        this.setState({
+          errorAlert: {
+            open: true,
+            message: error.response.data,
+          },
+        })
+      })
+  }
+
+  render() {
+    const { id } = this.props.metadata
+    const { lessons } = this.props
+    const { title, description, errorAlert, successAlert } = this.state
     return (
       <section className={styles.course}>
         <div className={styles.course_image}>
@@ -236,7 +173,26 @@ class Course extends Component<CourseProps, CourseState> {
                 color="secondary"
                 size="small"
                 startIcon={<AddCircleIcon />}
-                onClick={() => Router.push(`/teach/courses/${id}/lesson/new`)}
+                onClick={() => {
+                  Protected.Client.Post('/lesson/', {
+                    course_id: id,
+                    title: 'New Lesson',
+                    mdx: '# New Lesson',
+                  })
+                    .then((response) => {
+                      Router.push(
+                        `/teach/courses/${id}/lesson/${response.data.lesson_id}`
+                      )
+                    })
+                    .catch((error: AxiosError) => {
+                      this.setState({
+                        errorAlert: {
+                          open: true,
+                          message: error.response!!.data,
+                        },
+                      })
+                    })
+                }}
               >
                 New Lesson
               </Button>

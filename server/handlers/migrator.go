@@ -37,6 +37,24 @@ func (h *handlers) MigrateDown() http.HandlerFunc {
 	}
 }
 
+func (h *handlers) DatabaseVersion() http.HandlerFunc {
+	type databaseVersionResponse struct {
+		Version uint `json:"version"`
+		Dirty   bool `json:"dirty"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		version, dirty, err := h.db.Version()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		writeJSON(w, databaseVersionResponse{
+			Version: version,
+			Dirty:   dirty,
+		})
+	}
+}
+
 func (h *handlers) MigrateBlog() http.HandlerFunc {
 	type blogPost struct {
 		ID        string `json:"id"`

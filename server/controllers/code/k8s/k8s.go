@@ -29,13 +29,14 @@ type Manager interface {
 
 	GetDeployment(name string) (*v1.Deployment, error)
 	AddDeployment(deployment *v1.Deployment) error
-	RemoveDeployment(deployment *v1.Deployment) error
+	UpdateDeployment(deployment *v1.Deployment) error
+	RemoveDeployment(deploymentName string) error
 
 	AddPersistentVolumeClaim(pvc *v1core.PersistentVolumeClaim) error
-	RemovePersistentVolumeClaim(pvc *v1core.PersistentVolumeClaim) error
+	RemovePersistentVolumeClaim(pvcName string) error
 
 	AddService(svc *v1core.Service) error
-	RemoveService(svc *v1core.Service) error
+	RemoveService(svcName string) error
 }
 
 type manager struct {
@@ -134,8 +135,16 @@ func (m *manager) AddDeployment(deployment *v1.Deployment) error {
 	return nil
 }
 
-func (m *manager) RemoveDeployment(deployment *v1.Deployment) error {
-	err := m.clientset.AppsV1().Deployments(defaultNamespace).Delete(m.ctx, deployment.Name, v1meta.DeleteOptions{})
+func (m *manager) UpdateDeployment(deployment *v1.Deployment) error {
+	_, err := m.clientset.AppsV1().Deployments(defaultNamespace).Update(m.ctx, deployment, v1meta.UpdateOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *manager) RemoveDeployment(deploymentName string) error {
+	err := m.clientset.AppsV1().Deployments(defaultNamespace).Delete(m.ctx, deploymentName, v1meta.DeleteOptions{})
 	if err != nil {
 		return err
 	}
@@ -150,8 +159,8 @@ func (m *manager) AddPersistentVolumeClaim(pvc *v1core.PersistentVolumeClaim) er
 	return nil
 }
 
-func (m *manager) RemovePersistentVolumeClaim(pvc *v1core.PersistentVolumeClaim) error {
-	err := m.clientset.CoreV1().PersistentVolumeClaims(defaultNamespace).Delete(m.ctx, pvc.Name, v1meta.DeleteOptions{})
+func (m *manager) RemovePersistentVolumeClaim(pvcName string) error {
+	err := m.clientset.CoreV1().PersistentVolumeClaims(defaultNamespace).Delete(m.ctx, pvcName, v1meta.DeleteOptions{})
 	if err != nil {
 		return err
 	}
@@ -166,8 +175,8 @@ func (m *manager) AddService(svc *v1core.Service) error {
 	return nil
 }
 
-func (m *manager) RemoveService(svc *v1core.Service) error {
-	err := m.clientset.CoreV1().Services(defaultNamespace).Delete(m.ctx, svc.Name, v1meta.DeleteOptions{})
+func (m *manager) RemoveService(svcName string) error {
+	err := m.clientset.CoreV1().Services(defaultNamespace).Delete(m.ctx, svcName, v1meta.DeleteOptions{})
 	if err != nil {
 		return err
 	}

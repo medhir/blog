@@ -39,6 +39,11 @@ module "gke_cluster" {
           # This block is for allowing gitlab servers to reach the cluster api endpoint.
           cidr_block = "34.74.90.64/28"
           display_name = "gitlab"
+        },
+        {
+          # This block is for internet access from 11235 Bridge House Road Windermere, FL
+          cidr_block   = "71.214.0.0/16"
+          display_name = "personal"
         }
       ]
     },

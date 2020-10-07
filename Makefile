@@ -52,4 +52,4 @@ migration:
 
 .PHONY: migrate-up-local
 migrate-up-local:
-	migrate -source file://server/storage/sql/migrations -database postgres://postgres:docker@localhost:5432/medhir-com?sslmode=disable up
+	migrate -source file://server/controllers/storage/sql/migrations -database postgres://postgres:docker@localhost:5432/medhir-com?sslmode=disable up

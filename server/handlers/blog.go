@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"gitlab.com/medhir/blog/server/auth"
+	"gitlab.com/medhir/blog/server/controllers/auth"
 	"io"
 	"net/http"
 	"path"

@@ -3,24 +3,36 @@ import Lesson from '../../../../../components/learn/lesson'
 import { GetServerSideProps } from 'next'
 import { Authenticated } from '../../../../../utility/auth'
 import Login from '../../../../../components/auth/login'
+import http from '../../../../../utility/http'
 
-const NewLesson = ({ auth, id, courseID }) => {
+const LessonByID = ({ auth, lesson }) => {
   if (auth) {
-    return <Lesson id={id} courseID={courseID} />
+    return <Lesson lesson={lesson} />
   } else {
     return <Login role={Roles.BlogOwner} />
   }
 }
 
-export default NewLesson
+export default LessonByID
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const auth = await Authenticated(ctx, Roles.BlogOwner)
+  const authResponse = await Authenticated(ctx, Roles.BlogOwner)
+  if (authResponse.auth) {
+    const lessonResponse = await http.Get(`/lesson/${ctx.params.lesson_id}`, {
+      headers: {
+        cookie: authResponse.cookies,
+      },
+    })
+    return {
+      props: {
+        auth: true,
+        lesson: lessonResponse.data,
+      },
+    }
+  }
   return {
     props: {
-      auth,
-      id: ctx.params.lesson_id,
-      courseID: ctx.params.id,
+      auth: false,
     },
   }
 }

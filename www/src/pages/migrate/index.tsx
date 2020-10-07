@@ -38,6 +38,7 @@ class Migrate extends Component<MigrateProps, MigrateState> {
 
     this.closeSuccessAlert = this.closeSuccessAlert.bind(this)
     this.closeErrorAlert = this.closeErrorAlert.bind(this)
+    this.getVersion = this.getVersion.bind(this)
     this.migrateUp = this.migrateUp.bind(this)
     this.migrateDown = this.migrateDown.bind(this)
     this.migrateBlog = this.migrateBlog.bind(this)
@@ -124,12 +125,36 @@ class Migrate extends Component<MigrateProps, MigrateState> {
       })
   }
 
+  getVersion() {
+    Protected.Client.Get('/migrate/version')
+      .then((response) => {
+        console.dir(response)
+        this.setState({
+          successAlert: {
+            open: true,
+            message: `The database version is ${response.data.version} ${
+              response.data.dirty ? 'and it is dirty' : 'and it is not dirty'
+            }.`,
+          },
+        })
+      })
+      .catch((error: AxiosError) => {
+        this.setState({
+          errorAlert: {
+            open: true,
+            message: error.response.data,
+          },
+        })
+      })
+  }
+
   render() {
     const { auth } = this.props
     const { errorAlert, successAlert } = this.state
     const {
       closeErrorAlert,
       closeSuccessAlert,
+      getVersion,
       migrateUp,
       migrateDown,
       migrateBlog,
@@ -168,6 +193,17 @@ class Migrate extends Component<MigrateProps, MigrateState> {
               onClick={migrateBlog}
             >
               Migrate Blog
+            </Button>
+          </div>
+          <div>
+            <Button
+              variant="contained"
+              color="secondary"
+              size="small"
+              startIcon={<LibraryBooksIcon />}
+              onClick={getVersion}
+            >
+              Get DB Version
             </Button>
           </div>
           {errorAlert.open && (

@@ -19,28 +19,26 @@ type Postgres interface {
 	MigrateUp() error
 	MigrateDown() error
 	MigrateUpAll() error
+	Version() (uint, bool, error)
 	Close() error
 
 	// Course API
-	CreateCourse(course Course) (string, error)
+	CreateCourse(authorID, title, description, pvcName string) (string, error)
 	GetCourse(courseID string) (*Course, error)
-	UpdateCourse(course Course) error
+	UpdateCourse(id, title, description string) error
 	DeleteCourse(courseID string) error
 	GetCourses(authorID string) ([]*Course, error)
 
 	// Lessons API
 	CreateLesson(
-		id string,
 		courseID string,
 		title string,
-		description string,
 		mdx string,
-	) error
+	) (string, error)
 	GetLesson(id string) (*Lesson, error)
 	UpdateLesson(
 		id string,
 		title string,
-		description string,
 		mdx string,
 	) error
 	DeleteLesson(id string) error
@@ -141,6 +139,12 @@ func (p *postgres) MigrateUpAll() error {
 		return fmt.Errorf("could not migrate the database - %s", err.Error())
 	}
 	return nil
+}
+
+// Version returns the current version of the postgres instance
+func (p *postgres) Version() (uint, bool, error) {
+	version, dirty, err := p.migrator.Version()
+	return version, dirty, err
 }
 
 func (p *postgres) Close() error {
