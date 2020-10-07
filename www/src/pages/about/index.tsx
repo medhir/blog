@@ -14,12 +14,7 @@ const About = () => (
       <p>
         My interests span many domains, including web application development,
         biology, electrochemistry, graphic design, and computer science
-        education.
-      </p>
-      <p>
-        I currently work on cyber-security things at{' '}
-        <a href="https://defensestorm.com">DefenseStorm</a>. I am also a member
-        of the University of Washington's{' '}
+        education. I am currently a member of the University of Washington's{' '}
         <a href="https://comotion.uw.edu">CoMotion</a> program, working on
         developing textile-based electrochemcial sensors towards healthcare
         monitoring applications.
@@ -29,6 +24,13 @@ const About = () => (
         <a href="https://github.com/medhir">GitHub</a>, connect with me on{' '}
         <a href="https://linkedin.com/in/medhir">LinkedIn</a>, or send me an{' '}
         email via mail AT medhir.com.
+      </p>
+      <p>
+        P.S. – Due to macroeconomic conditions presented by COVID-19, I am out
+        of a job and have decided to focus on personal projects for a while.
+        That being said, if you are interested in hiring me I am open to a
+        conversation. Please feel free to send me a message on LinkedIn or
+        through email.
       </p>
     </section>
   </>
