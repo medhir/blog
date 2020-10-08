@@ -58,7 +58,6 @@ class Lesson extends Component<LessonProps, LessonState> {
     this.handleTextareaChange = this.handleTextareaChange.bind(this)
     this.handleErrorAlertClose = this.handleErrorAlertClose.bind(this)
     this.handleSuccessAlertClose = this.handleSuccessAlertClose.bind(this)
-    this.handleTitleChange = this.handleTitleChange.bind(this)
     this.saveLesson = this.saveLesson.bind(this)
   }
 
@@ -77,12 +76,6 @@ class Lesson extends Component<LessonProps, LessonState> {
   handleTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
     this.setState({
       mdx: e.target.value,
-    })
-  }
-
-  handleTitleChange(e: ChangeEvent<HTMLInputElement>) {
-    this.setState({
-      title: e.target.value,
     })
   }
 
