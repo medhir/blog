@@ -42,6 +42,7 @@ interface BlogEditorState {
 
 class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
   articleRef: React.RefObject<HTMLElement>
+
   constructor(props: BlogEditorProps) {
     super(props)
     this.state = {
