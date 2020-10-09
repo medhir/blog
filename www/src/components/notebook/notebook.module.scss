@@ -7,6 +7,7 @@
     position: absolute;
     right: 0;
     margin: 8px;
+    z-index: 2;
   }
 
   .textarea {
@@ -54,5 +55,8 @@
   .scroll {
     max-height: 85vh;
     overflow-y: auto;
+  }
+  .hidden {
+    display: none;
   }
 }

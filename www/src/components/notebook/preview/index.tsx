@@ -4,13 +4,20 @@ import articleStyles from '../../blog/modules/Post/article.module.scss'
 
 interface PreviewProps {
   articleRef?: React.RefObject<HTMLElement>
+  hidden?: boolean
   source: string
   scroll: boolean
 }
 
-const Preview = ({ articleRef, scroll, source }: PreviewProps) => {
+const Preview = ({ articleRef, hidden, scroll, source }: PreviewProps) => {
   return (
-    <div className={`${styles.preview} ${scroll ? styles.scroll : null}`}>
+    <div
+      className={`
+      ${styles.preview} 
+      ${scroll ? styles.scroll : null} 
+      ${hidden ? styles.hidden : null}
+      `}
+    >
       <article
         ref={articleRef}
         className={`${styles.article} ${articleStyles.article}`}

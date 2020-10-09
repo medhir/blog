@@ -132,30 +132,27 @@ class Notebook extends Component<NotebookProps, NotebookState> {
     }
     return (
       <div className={`${styles.notebook} ${className}`}>
-        {!preview && (
-          <div className={styles.controls}>
-            <IconButton size="medium" color="primary" onClick={togglePreview}>
-              <VisibilityIcon />
-            </IconButton>
-          </div>
-        )}
-        {preview && (
-          <div className={styles.controls}>
-            <IconButton size="medium" color="primary" onClick={togglePreview}>
-              <EditIcon />
-            </IconButton>
-          </div>
-        )}
-        {!preview && (
-          <textarea
-            className={`${styles.textarea}`}
-            onChange={onTextareaChange}
-            value={iMDX}
-          ></textarea>
-        )}
-        {preview && (
-          <Preview articleRef={articleRef} scroll={scroll} source={parsedMDX} />
-        )}
+        <div className={`${styles.controls} ${preview ? styles.hidden : null}`}>
+          <IconButton size="medium" color="primary" onClick={togglePreview}>
+            <VisibilityIcon />
+          </IconButton>
+        </div>
+        <textarea
+          className={`${styles.textarea} ${preview ? styles.hidden : null}`}
+          onChange={onTextareaChange}
+          value={iMDX}
+        ></textarea>
+        <div className={`${styles.controls} ${preview ? null : styles.hidden}`}>
+          <IconButton size="medium" color="primary" onClick={togglePreview}>
+            <EditIcon />
+          </IconButton>
+        </div>
+        <Preview
+          articleRef={articleRef}
+          scroll={scroll}
+          source={parsedMDX}
+          hidden={!preview}
+        />
       </div>
     )
   }

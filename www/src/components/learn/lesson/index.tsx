@@ -2,19 +2,20 @@ import Notebook from '../../notebook'
 import IDE from '../ide'
 
 import styles from './lesson.module.scss'
-import { Component, ChangeEvent } from 'react'
+import React, { Component, ChangeEvent } from 'react'
 import { Protected } from '../../../utility/http'
 import { ErrorAlert, SuccessAlert } from '../../alert'
 import { AxiosError } from 'axios'
+import { Button } from '@material-ui/core'
+import SaveIcon from '@material-ui/icons/Save'
 
 export interface LessonMetadata {
   id: string
   course_id: string
   title: string
-  description: string
-  mdx?: string
+  mdx: string
   created_at: number
-  updated_at: number
+  updated_at?: number
   instance_url: string
 }
 
@@ -28,17 +29,15 @@ interface LessonProps {
 }
 
 interface LessonState {
-  title?: string
-  description?: string
-  mdx?: string
-  createdAt?: number
-  updatedAt?: number
+  mdx: string
   errorAlert: AlertState
   successAlert: AlertState
   loading: boolean
 }
 
 class Lesson extends Component<LessonProps, LessonState> {
+  articleRef: React.RefObject<HTMLElement>
+
   constructor(props: LessonProps) {
     super(props)
     this.state = {
@@ -54,11 +53,24 @@ class Lesson extends Component<LessonProps, LessonState> {
       },
     }
 
+    this.articleRef = React.createRef()
+    this.getTitle = this.getTitle.bind(this)
     this.handleTextareaChange = this.handleTextareaChange.bind(this)
     this.handleErrorAlertClose = this.handleErrorAlertClose.bind(this)
     this.handleSuccessAlertClose = this.handleSuccessAlertClose.bind(this)
-    this.handleTitleChange = this.handleTitleChange.bind(this)
     this.saveLesson = this.saveLesson.bind(this)
+  }
+
+  getTitle(): string {
+    const { articleRef } = this
+    const heading1 = articleRef.current.querySelector('h1')
+    let title: string
+    if (heading1) {
+      title = heading1.innerText
+    } else {
+      title = `Untitled ${Math.random()}`
+    }
+    return title
   }
 
   handleTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
@@ -67,13 +79,7 @@ class Lesson extends Component<LessonProps, LessonState> {
     })
   }
 
-  handleTitleChange(e: ChangeEvent<HTMLInputElement>) {
-    this.setState({
-      title: e.target.value,
-    })
-  }
-
-  handleErrorAlertClose(event?: React.SyntheticEvent, reason?: string) {
+  handleErrorAlertClose(_event?: React.SyntheticEvent, reason?: string) {
     if (reason === 'clickaway') {
       return
     }
@@ -85,7 +91,7 @@ class Lesson extends Component<LessonProps, LessonState> {
     })
   }
 
-  handleSuccessAlertClose(event?: React.SyntheticEvent, reason?: string) {
+  handleSuccessAlertClose(_event?: React.SyntheticEvent, reason?: string) {
     if (reason === 'clickaway') {
       return
     }
@@ -99,12 +105,13 @@ class Lesson extends Component<LessonProps, LessonState> {
 
   saveLesson() {
     const { id } = this.props.lesson
-    const { title, description, mdx } = this.state
+    const { mdx } = this.state
+    const { getTitle } = this
 
-    Protected.Client.Patch('/lessons/', {
-      id,
+    const title = getTitle()
+    Protected.Client.Patch('/lesson/', {
+      lesson_id: id,
       title,
-      description,
       mdx,
     })
       .then(() => {
@@ -128,30 +135,46 @@ class Lesson extends Component<LessonProps, LessonState> {
   render() {
     const { mdx, errorAlert, successAlert } = this.state
     const { lesson } = this.props
+    const {
+      articleRef,
+      handleTextareaChange,
+      handleErrorAlertClose,
+      handleSuccessAlertClose,
+      saveLesson,
+    } = this
     return (
       <section className={styles.lesson}>
         <div className={styles.lesson_content}>
           <Notebook
+            articleRef={articleRef}
             splitPane={false}
             scroll={true}
             mdx={mdx}
             className={styles.notebook}
-            handleTextareaChange={this.handleTextareaChange}
+            handleTextareaChange={handleTextareaChange}
           />
+          <div className={styles.lesson_controls}>
+            <Button
+              variant="contained"
+              color="secondary"
+              size="small"
+              startIcon={<SaveIcon />}
+              onClick={saveLesson}
+            >
+              Save
+            </Button>
+          </div>
         </div>
         <IDE url={lesson.instance_url} className={styles.ide} />
         {errorAlert.open && (
-          <ErrorAlert
-            open={errorAlert.open}
-            onClose={this.handleErrorAlertClose}
-          >
+          <ErrorAlert open={errorAlert.open} onClose={handleErrorAlertClose}>
             {errorAlert.message}
           </ErrorAlert>
         )}
         {successAlert.open && (
           <SuccessAlert
             open={successAlert.open}
-            onClose={this.handleSuccessAlertClose}
+            onClose={handleSuccessAlertClose}
           >
             {successAlert.message}
           </SuccessAlert>

@@ -120,8 +120,8 @@ func (h *handlers) patchLesson() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if *user.ID != course.ID {
-			http.Error(w, errors.New("unauthorized to create this lesson").Error(), http.StatusUnauthorized)
+		if *user.ID != course.AuthorID {
+			http.Error(w, errors.New("unauthorized to update this lesson").Error(), http.StatusUnauthorized)
 		}
 		err = h.tutorials.UpdateLesson(request.LessonID, request.Title, request.MDX)
 		if err != nil {

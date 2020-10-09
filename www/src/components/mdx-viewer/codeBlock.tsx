@@ -1,19 +1,20 @@
 import React from 'react'
-import Highlight, { defaultProps } from 'prism-react-renderer'
-import VSDark from 'prism-react-renderer/themes/vsDark'
+import Highlight from 'prism-react-renderer'
+import nightOwl from 'prism-react-renderer/themes/nightOwl'
+import Prism from 'prism-react-renderer/prism'
 
 export default ({ children, className }) => {
   const language = className.replace(/language-/, '')
   return (
     <Highlight
-      theme={VSDark}
-      {...defaultProps}
+      Prism={Prism}
+      theme={nightOwl}
       code={children}
       language={language}
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <code>
-          <pre className={className} style={{ ...style, padding: '20px' }}>
+          <pre className={className} style={{ ...style, padding: '10px' }}>
             {tokens.map((line, i) => (
               <div key={i} {...getLineProps({ line, key: i })}>
                 {line.map((token, key) => (
@@ -27,3 +28,22 @@ export default ({ children, className }) => {
     </Highlight>
   )
 }
+
+// export default ({ children, className }) => {
+//   const language = className.replace(/language-/, '')
+//   return (
+//     <Highlight {...defaultProps} code={children} language={language}>
+//       {({ className, style, tokens, getLineProps, getTokenProps }) => (
+//         <pre className={className} style={{ ...style, padding: '10px' }}>
+//           {tokens.map((line, i) => (
+//             <div {...getLineProps({ line, key: i })}>
+//               {line.map((token, key) => (
+//                 <span {...getTokenProps({ token, key })} />
+//               ))}
+//             </div>
+//           ))}
+//         </pre>
+//       )}
+//     </Highlight>
+//   )
+// }

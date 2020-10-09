@@ -9,6 +9,11 @@
     flex-direction: column;
   }
 
+  &_controls {
+    border-top: 1px solid black;
+    padding: 5px;
+  }
+
   &_title {
     font-weight: 700;
     font-size: 2rem;
@@ -17,6 +22,6 @@
   }
 
   .ide {
-    flex: 1.75;
+    flex: 2;
   }
 }
