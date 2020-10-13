@@ -119,3 +119,16 @@ ORDER BY position;`
 	}
 	return lessons, nil
 }
+
+func (p *postgres) CountLessons(courseID string) (count int64, _ error) {
+	query := `
+SELECT COUNT(*) AS count 
+FROM lesson
+WHERE course_id = $1;
+`
+	err := p.db.QueryRow(query, courseID).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}

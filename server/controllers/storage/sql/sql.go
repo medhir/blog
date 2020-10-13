@@ -44,6 +44,7 @@ type Postgres interface {
 	) error
 	DeleteLesson(id string) error
 	GetLessons(courseID string) ([]*Lesson, error)
+	CountLessons(courseID string) (count int64, _ error)
 
 	// Blog API
 	AddDraftOrPost(
