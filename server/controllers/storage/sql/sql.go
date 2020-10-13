@@ -34,6 +34,7 @@ type Postgres interface {
 		courseID string,
 		title string,
 		mdx string,
+		position int64,
 	) (string, error)
 	GetLesson(id string) (*Lesson, error)
 	UpdateLesson(

@@ -10,13 +10,26 @@ type Lesson struct {
 	CourseID    string    `json:"course_id"`
 	Title       string    `json:"title"`
 	MDX         string    `json:"mdx"`
+	Position    int64     `json:"position"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at,omitempty"`
 	InstanceURL string    `json:"instance_url"`
 }
 
 func (t *tutorials) CreateLesson(courseID, title, mdx string) (string, error) {
-	id, err := t.db.CreateLesson(courseID, title, mdx)
+	// get lessons for course to determine the position for the next lesson
+	lessons, err := t.db.GetLessons(courseID)
+	if err != nil {
+		return "", err
+	}
+	var position int64
+	if len(lessons) == 0 {
+		position = 0
+	} else {
+		position = lessons[len(lessons)-1].Position + 1
+	}
+	// create lesson at the latest position
+	id, err := t.db.CreateLesson(courseID, title, mdx, position)
 	if err != nil {
 		return "", err
 	}

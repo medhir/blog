@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS LessonAsset(
+      lesson_id UUID NOT NULL REFERENCES Lesson (id),
+      name TEXT NOT NULL,
+      url TEXT NOT NULL
+);
+
+ALTER TABLE Lesson
+ADD COLUMN position SMALLINT NOT NULL DEFAULT 0;

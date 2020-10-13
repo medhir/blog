@@ -13,6 +13,7 @@ type Lesson struct {
 	CourseID  string       `json:"course_id"`
 	Title     string       `json:"title"`
 	MDX       string       `json:"mdx"`
+	Position  int64        `json:"position"`
 	CreatedAt time.Time    `json:"created_at"`
 	UpdatedAt sql.NullTime `json:"updated_at"`
 }
@@ -21,12 +22,13 @@ func (p *postgres) CreateLesson(
 	courseID string,
 	title string,
 	mdx string,
+	position int64,
 ) (string, error) {
 	id := uuid2.New().String()
 	query := `
-INSERT INTO lesson (id, course_id, title, mdx, created_at)
-VALUES ($1, $2, $3, $4, $5);`
-	_, err := p.db.Exec(query, id, courseID, title, mdx, time.Now())
+INSERT INTO lesson (id, course_id, title, mdx, position, created_at)
+VALUES ($1, $2, $3, $4, $5, $6);`
+	_, err := p.db.Exec(query, id, courseID, title, mdx, position, time.Now())
 	if err != nil {
 		return "", err
 	}
@@ -89,10 +91,10 @@ WHERE id = $1`
 
 func (p *postgres) GetLessons(courseID string) ([]*Lesson, error) {
 	query := `
-SELECT id, course_id, title, created_at, updated_at
+SELECT id, course_id, title, position, created_at, updated_at
 FROM lesson
 WHERE course_id = $1
-ORDER BY created_at ASC;`
+ORDER BY position;`
 	rows, err := p.db.Query(query, courseID)
 	if err != nil {
 		return nil, err
@@ -106,6 +108,7 @@ ORDER BY created_at ASC;`
 			&lesson.ID,
 			&lesson.CourseID,
 			&lesson.Title,
+			&lesson.Position,
 			&lesson.CreatedAt,
 			&lesson.UpdatedAt,
 		)
