@@ -17,7 +17,7 @@ type Tutorials interface {
 	// Lesson API
 	CreateLesson(courseID, title, mdx string) (string, error)
 	GetLesson(lessonID string) (*Lesson, error)
-	UpdateLesson(lessonID, title, mdx string) error
+	UpdateLesson(lessonID, title, mdx, folderName string) error
 	DeleteLesson(lessonID string) error
 	GetLessons(courseID string) ([]*Lesson, error)
 }

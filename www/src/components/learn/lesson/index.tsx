@@ -7,9 +7,20 @@ import { Protected } from '../../../utility/http'
 import { ErrorAlert, SuccessAlert } from '../../alert'
 import { AxiosError } from 'axios'
 import Router from 'next/router'
-import { Button, IconButton, Tooltip } from '@material-ui/core'
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  TextField,
+  Tooltip,
+} from '@material-ui/core'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
+import FolderIcon from '@material-ui/icons/Folder'
 import SaveIcon from '@material-ui/icons/Save'
 
 export interface LessonMetadata {
@@ -22,6 +33,7 @@ interface LessonData {
   course_id: string
   title: string
   mdx: string
+  folder_name?: string
   position: number
   created_at: number
   updated_at?: number
@@ -40,6 +52,8 @@ interface LessonProps {
 
 interface LessonState {
   mdx: string
+  folderDialogOpen: boolean
+  folderInput: string
   errorAlert: AlertState
   successAlert: AlertState
   loading: boolean
@@ -52,6 +66,8 @@ class Lesson extends Component<LessonProps, LessonState> {
     super(props)
     this.state = {
       mdx: props.lesson.mdx,
+      folderDialogOpen: false,
+      folderInput: props.lesson.folder_name || '/home/coder/project/',
       loading: true,
       errorAlert: {
         open: false,
@@ -65,10 +81,12 @@ class Lesson extends Component<LessonProps, LessonState> {
 
     this.articleRef = React.createRef()
     this.getTitle = this.getTitle.bind(this)
+    this.handleFolderInputChange = this.handleFolderInputChange.bind(this)
     this.handleTextareaChange = this.handleTextareaChange.bind(this)
     this.handleErrorAlertClose = this.handleErrorAlertClose.bind(this)
     this.handleSuccessAlertClose = this.handleSuccessAlertClose.bind(this)
     this.saveLesson = this.saveLesson.bind(this)
+    this.saveFolderName = this.saveFolderName.bind(this)
   }
 
   getTitle(): string {
@@ -86,6 +104,12 @@ class Lesson extends Component<LessonProps, LessonState> {
   handleTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
     this.setState({
       mdx: e.target.value,
+    })
+  }
+
+  handleFolderInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    this.setState({
+      folderInput: e.target.value,
     })
   }
 
@@ -113,8 +137,37 @@ class Lesson extends Component<LessonProps, LessonState> {
     })
   }
 
-  saveLesson() {
+  saveFolderName() {
     const { id } = this.props.lesson
+    const { mdx, folderInput } = this.state
+    const { getTitle } = this
+    const title = getTitle()
+
+    this.setState({
+      folderDialogOpen: false,
+    })
+    Protected.Client.Patch('/lesson/', {
+      lesson_id: id,
+      title,
+      mdx,
+      folder_name: folderInput,
+    }).then(() => {
+      this.setState(
+        {
+          successAlert: {
+            open: true,
+            message: 'Lesson folder updated successfully',
+          },
+        },
+        () => {
+          location.reload()
+        }
+      )
+    })
+  }
+
+  saveLesson() {
+    const { id, folder_name } = this.props.lesson
     const { mdx } = this.state
     const { getTitle } = this
 
@@ -123,6 +176,7 @@ class Lesson extends Component<LessonProps, LessonState> {
       lesson_id: id,
       title,
       mdx,
+      folder_name,
     })
       .then(() => {
         this.setState({
@@ -143,14 +197,22 @@ class Lesson extends Component<LessonProps, LessonState> {
   }
 
   render() {
-    const { mdx, errorAlert, successAlert } = this.state
+    const {
+      mdx,
+      folderDialogOpen,
+      folderInput,
+      errorAlert,
+      successAlert,
+    } = this.state
     const { lesson } = this.props
     const {
       articleRef,
+      handleFolderInputChange,
       handleTextareaChange,
       handleErrorAlertClose,
       handleSuccessAlertClose,
       saveLesson,
+      saveFolderName,
     } = this
     return (
       <section className={styles.lesson}>
@@ -179,15 +241,18 @@ class Lesson extends Component<LessonProps, LessonState> {
                 </IconButton>
               </Tooltip>
             )}
-            <Button
-              variant="contained"
-              color="secondary"
-              size="small"
-              startIcon={<SaveIcon />}
-              onClick={saveLesson}
-            >
-              Save
-            </Button>
+            <Tooltip title="Save Lesson">
+              <IconButton onClick={saveLesson}>
+                <SaveIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Update Folder to Open in IDE">
+              <IconButton
+                onClick={() => this.setState({ folderDialogOpen: true })}
+              >
+                <FolderIcon />
+              </IconButton>
+            </Tooltip>
             {lesson.position !== lesson.lessons_metadata.length - 1 && (
               <Tooltip title="Next Lesson">
                 <IconButton
@@ -203,9 +268,40 @@ class Lesson extends Component<LessonProps, LessonState> {
                 </IconButton>
               </Tooltip>
             )}
+            <Dialog
+              open={folderDialogOpen}
+              onClose={() => this.setState({ folderDialogOpen: false })}
+            >
+              <DialogTitle>Folder To Open</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Choose the folder that is loaded within the IDE when the
+                  lesson opens. This must be a valid path within the IDE
+                  context.
+                </DialogContentText>
+                <TextField
+                  autoFocus
+                  required
+                  fullWidth
+                  label="folder path"
+                  value={folderInput}
+                  onChange={handleFolderInputChange}
+                ></TextField>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={saveFolderName}>Update Folder Path</Button>
+              </DialogActions>
+            </Dialog>
           </div>
         </div>
-        <IDE url={lesson.instance_url} className={styles.ide} />
+        <IDE
+          url={
+            lesson.folder_name
+              ? `${lesson.instance_url}?folder=${lesson.folder_name}`
+              : lesson.instance_url
+          }
+          className={styles.ide}
+        />
         {errorAlert.open && (
           <ErrorAlert open={errorAlert.open} onClose={handleErrorAlertClose}>
             {errorAlert.message}

@@ -1,21 +1,23 @@
 package tutorial
 
 import (
-	"gitlab.com/medhir/blog/server/controllers/storage/sql"
+	"database/sql"
+	db "gitlab.com/medhir/blog/server/controllers/storage/sql"
 	"time"
 )
 
-// Lesson describes the metadata for a lesson
+// Lesson describes the data for a lesson
 type Lesson struct {
-	ID              string                `json:"id"`
-	CourseID        string                `json:"course_id"`
-	Title           string                `json:"title"`
-	MDX             string                `json:"mdx"`
-	Position        int64                 `json:"position"`
-	CreatedAt       time.Time             `json:"created_at"`
-	UpdatedAt       time.Time             `json:"updated_at,omitempty"`
-	InstanceURL     string                `json:"instance_url"`
-	LessonsMetadata []*sql.LessonMetadata `json:"lessons_metadata"`
+	ID              string               `json:"id"`
+	CourseID        string               `json:"course_id"`
+	Title           string               `json:"title"`
+	MDX             string               `json:"mdx"`
+	Position        int64                `json:"position"`
+	FolderName      string               `json:"folder_name,omitempty"`
+	CreatedAt       time.Time            `json:"created_at"`
+	UpdatedAt       time.Time            `json:"updated_at,omitempty"`
+	InstanceURL     string               `json:"instance_url"`
+	LessonsMetadata []*db.LessonMetadata `json:"lessons_metadata"`
 }
 
 func (t *tutorials) CreateLesson(courseID, title, mdx string) (string, error) {
@@ -47,9 +49,6 @@ func (t *tutorials) GetLesson(lessonID string) (*Lesson, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
 	lesson := &Lesson{
 		ID:              row.ID,
 		CourseID:        row.CourseID,
@@ -59,13 +58,27 @@ func (t *tutorials) GetLesson(lessonID string) (*Lesson, error) {
 		CreatedAt:       row.CreatedAt,
 		LessonsMetadata: lessonsMetadata,
 	}
+	if row.FolderName.Valid == true {
+		lesson.FolderName = row.FolderName.String
+	}
 	if row.UpdatedAt.Valid == true {
 		lesson.UpdatedAt = row.UpdatedAt.Time
 	}
 	return lesson, nil
 }
-func (t *tutorials) UpdateLesson(lessonID, title, mdx string) error {
-	err := t.db.UpdateLesson(lessonID, title, mdx)
+func (t *tutorials) UpdateLesson(lessonID, title, mdx, folderName string) error {
+	var err error
+	if folderName == "" {
+		err = t.db.UpdateLesson(lessonID, title, mdx, sql.NullString{
+			Valid:  false,
+			String: "",
+		})
+	} else {
+		err = t.db.UpdateLesson(lessonID, title, mdx, sql.NullString{
+			Valid:  true,
+			String: folderName,
+		})
+	}
 	if err != nil {
 		return err
 	}

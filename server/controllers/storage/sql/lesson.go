@@ -9,13 +9,14 @@ import (
 
 // Lesson describes the data associated with a course lesson
 type Lesson struct {
-	ID        string       `json:"id"`
-	CourseID  string       `json:"course_id"`
-	Title     string       `json:"title"`
-	MDX       string       `json:"mdx"`
-	Position  int64        `json:"position"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt sql.NullTime `json:"updated_at"`
+	ID         string         `json:"id"`
+	CourseID   string         `json:"course_id"`
+	Title      string         `json:"title"`
+	MDX        string         `json:"mdx"`
+	FolderName sql.NullString `json:"folder_name"`
+	Position   int64          `json:"position"`
+	CreatedAt  time.Time      `json:"created_at"`
+	UpdatedAt  sql.NullTime   `json:"updated_at"`
 }
 
 func (p *postgres) CreateLesson(
@@ -38,7 +39,7 @@ VALUES ($1, $2, $3, $4, $5, $6);`
 func (p *postgres) GetLesson(id string) (*Lesson, error) {
 	lesson := &Lesson{}
 	query := `
-SELECT id, course_id, title, mdx, position, created_at, updated_at
+SELECT id, course_id, title, mdx, folder_name, position, created_at, updated_at
 FROM lesson
 WHERE id = $1;`
 	err := p.db.QueryRow(query, id).Scan(
@@ -46,6 +47,7 @@ WHERE id = $1;`
 		&lesson.CourseID,
 		&lesson.Title,
 		&lesson.MDX,
+		&lesson.FolderName,
 		&lesson.Position,
 		&lesson.CreatedAt,
 		&lesson.UpdatedAt,
@@ -60,12 +62,13 @@ func (p *postgres) UpdateLesson(
 	id string,
 	title string,
 	mdx string,
+	folderName sql.NullString,
 ) error {
 	query := `
 UPDATE lesson
-SET title = $2, mdx = $3, updated_at = $4
+SET title = $2, mdx = $3, folder_name = $4, updated_at = $5
 WHERE id = $1;`
-	_, err := p.db.Exec(query, id, title, mdx, time.Now())
+	_, err := p.db.Exec(query, id, title, mdx, folderName, time.Now())
 	if err != nil {
 		return err
 	}

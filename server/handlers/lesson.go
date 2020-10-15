@@ -93,9 +93,10 @@ func (h *handlers) postLesson() http.HandlerFunc {
 
 func (h *handlers) patchLesson() http.HandlerFunc {
 	type patchLessonRequest struct {
-		LessonID string `json:"lesson_id"`
-		Title    string `json:"title"`
-		MDX      string `json:"mdx"`
+		LessonID   string `json:"lesson_id"`
+		Title      string `json:"title"`
+		MDX        string `json:"mdx"`
+		FolderName string `json:"folder_name"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
@@ -123,7 +124,7 @@ func (h *handlers) patchLesson() http.HandlerFunc {
 		if *user.ID != course.AuthorID {
 			http.Error(w, errors.New("unauthorized to update this lesson").Error(), http.StatusUnauthorized)
 		}
-		err = h.tutorials.UpdateLesson(request.LessonID, request.Title, request.MDX)
+		err = h.tutorials.UpdateLesson(request.LessonID, request.Title, request.MDX, request.FolderName)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

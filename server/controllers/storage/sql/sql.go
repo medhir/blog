@@ -41,6 +41,7 @@ type Postgres interface {
 		id string,
 		title string,
 		mdx string,
+		folderName sql.NullString,
 	) error
 	DeleteLesson(id string) error
 	GetLessons(courseID string) ([]*Lesson, error)
