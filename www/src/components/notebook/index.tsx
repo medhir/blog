@@ -4,7 +4,7 @@ import Preview from './preview'
 import styles from './notebook.module.scss'
 import http from '../../utility/http'
 import { debounce } from 'lodash'
-import { IconButton } from '@material-ui/core'
+import { IconButton, Tooltip } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit'
 import VisibilityIcon from '@material-ui/icons/Visibility'
 
@@ -39,7 +39,7 @@ class Notebook extends Component<NotebookProps, NotebookState> {
     this.state = {
       iMDX: props.mdx,
       id: uuid(),
-      preview: false,
+      preview: true,
       parsedMDX: '',
     }
     this.onTextareaChange = this.onTextareaChange.bind(this)
@@ -133,9 +133,11 @@ class Notebook extends Component<NotebookProps, NotebookState> {
     return (
       <div className={`${styles.notebook} ${className}`}>
         <div className={`${styles.controls} ${preview ? styles.hidden : null}`}>
-          <IconButton size="medium" color="primary" onClick={togglePreview}>
-            <VisibilityIcon />
-          </IconButton>
+          <Tooltip title="Show Preview">
+            <IconButton size="medium" color="primary" onClick={togglePreview}>
+              <VisibilityIcon />
+            </IconButton>
+          </Tooltip>
         </div>
         <textarea
           className={`${styles.textarea} ${preview ? styles.hidden : null}`}
@@ -143,9 +145,11 @@ class Notebook extends Component<NotebookProps, NotebookState> {
           value={iMDX}
         ></textarea>
         <div className={`${styles.controls} ${preview ? null : styles.hidden}`}>
-          <IconButton size="medium" color="primary" onClick={togglePreview}>
-            <EditIcon />
-          </IconButton>
+          <Tooltip title="Show Editor">
+            <IconButton size="medium" color="primary" onClick={togglePreview}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
         </div>
         <Preview
           articleRef={articleRef}

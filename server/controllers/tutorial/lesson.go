@@ -1,20 +1,21 @@
 package tutorial
 
 import (
+	"gitlab.com/medhir/blog/server/controllers/storage/sql"
 	"time"
 )
 
 // Lesson describes the metadata for a lesson
 type Lesson struct {
-	ID           string    `json:"id"`
-	CourseID     string    `json:"course_id"`
-	Title        string    `json:"title"`
-	MDX          string    `json:"mdx"`
-	Position     int64     `json:"position"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at,omitempty"`
-	InstanceURL  string    `json:"instance_url"`
-	TotalLessons int64     `json:"total_lessons"`
+	ID              string                `json:"id"`
+	CourseID        string                `json:"course_id"`
+	Title           string                `json:"title"`
+	MDX             string                `json:"mdx"`
+	Position        int64                 `json:"position"`
+	CreatedAt       time.Time             `json:"created_at"`
+	UpdatedAt       time.Time             `json:"updated_at,omitempty"`
+	InstanceURL     string                `json:"instance_url"`
+	LessonsMetadata []*sql.LessonMetadata `json:"lessons_metadata"`
 }
 
 func (t *tutorials) CreateLesson(courseID, title, mdx string) (string, error) {
@@ -42,17 +43,21 @@ func (t *tutorials) GetLesson(lessonID string) (*Lesson, error) {
 	if err != nil {
 		return nil, err
 	}
-	lessonCount, err := t.db.CountLessons(row.CourseID)
+	lessonsMetadata, err := t.db.GetLessonsMetadata(row.CourseID)
+	if err != nil {
+		return nil, err
+	}
 	if err != nil {
 		return nil, err
 	}
 	lesson := &Lesson{
-		ID:           row.ID,
-		CourseID:     row.CourseID,
-		Title:        row.Title,
-		MDX:          row.MDX,
-		CreatedAt:    row.CreatedAt,
-		TotalLessons: lessonCount,
+		ID:              row.ID,
+		CourseID:        row.CourseID,
+		Title:           row.Title,
+		MDX:             row.MDX,
+		Position:        row.Position,
+		CreatedAt:       row.CreatedAt,
+		LessonsMetadata: lessonsMetadata,
 	}
 	if row.UpdatedAt.Valid == true {
 		lesson.UpdatedAt = row.UpdatedAt.Time

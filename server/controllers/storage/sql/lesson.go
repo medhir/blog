@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// Lesson describes the metadata for a course lesson
+// Lesson describes the data associated with a course lesson
 type Lesson struct {
 	ID        string       `json:"id"`
 	CourseID  string       `json:"course_id"`
@@ -38,7 +38,7 @@ VALUES ($1, $2, $3, $4, $5, $6);`
 func (p *postgres) GetLesson(id string) (*Lesson, error) {
 	lesson := &Lesson{}
 	query := `
-SELECT id, course_id, title, mdx, created_at, updated_at
+SELECT id, course_id, title, mdx, position, created_at, updated_at
 FROM lesson
 WHERE id = $1;`
 	err := p.db.QueryRow(query, id).Scan(
@@ -46,6 +46,7 @@ WHERE id = $1;`
 		&lesson.CourseID,
 		&lesson.Title,
 		&lesson.MDX,
+		&lesson.Position,
 		&lesson.CreatedAt,
 		&lesson.UpdatedAt,
 	)
@@ -111,6 +112,40 @@ ORDER BY position;`
 			&lesson.Position,
 			&lesson.CreatedAt,
 			&lesson.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		lessons = append(lessons, lesson)
+	}
+	return lessons, nil
+}
+
+// LessonMetadata describes metadata for a lesson
+type LessonMetadata struct {
+	ID    string `json:"id"`
+	Title string `json:"title"`
+}
+
+func (p *postgres) GetLessonsMetadata(courseID string) ([]*LessonMetadata, error) {
+	query := `
+SELECT id, title
+FROM lesson
+WHERE course_id = $1
+ORDER BY position;`
+
+	rows, err := p.db.Query(query, courseID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var lessons []*LessonMetadata
+	for rows.Next() {
+		lesson := &LessonMetadata{}
+		err := rows.Scan(
+			&lesson.ID,
+			&lesson.Title,
 		)
 		if err != nil {
 			return nil, err

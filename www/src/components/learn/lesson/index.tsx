@@ -6,17 +6,27 @@ import React, { Component, ChangeEvent } from 'react'
 import { Protected } from '../../../utility/http'
 import { ErrorAlert, SuccessAlert } from '../../alert'
 import { AxiosError } from 'axios'
-import { Button } from '@material-ui/core'
+import Router from 'next/router'
+import { Button, IconButton, Tooltip } from '@material-ui/core'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import SaveIcon from '@material-ui/icons/Save'
 
 export interface LessonMetadata {
   id: string
+  title: string
+}
+
+interface LessonData {
+  id: string
   course_id: string
   title: string
   mdx: string
+  position: number
   created_at: number
   updated_at?: number
   instance_url: string
+  lessons_metadata: Array<LessonMetadata>
 }
 
 interface AlertState {
@@ -25,7 +35,7 @@ interface AlertState {
 }
 
 interface LessonProps {
-  lesson: LessonMetadata
+  lesson: LessonData
 }
 
 interface LessonState {
@@ -154,6 +164,21 @@ class Lesson extends Component<LessonProps, LessonState> {
             handleTextareaChange={handleTextareaChange}
           />
           <div className={styles.lesson_controls}>
+            {lesson.position !== 0 && (
+              <Tooltip title="Previous Lesson">
+                <IconButton
+                  onClick={() =>
+                    Router.push(
+                      `/teach/courses/${lesson.course_id}/lesson/${
+                        lesson.lessons_metadata[lesson.position - 1].id
+                      }`
+                    )
+                  }
+                >
+                  <ArrowBackIcon />
+                </IconButton>
+              </Tooltip>
+            )}
             <Button
               variant="contained"
               color="secondary"
@@ -163,6 +188,21 @@ class Lesson extends Component<LessonProps, LessonState> {
             >
               Save
             </Button>
+            {lesson.position !== lesson.lessons_metadata.length - 1 && (
+              <Tooltip title="Next Lesson">
+                <IconButton
+                  onClick={() =>
+                    Router.push(
+                      `/teach/courses/${lesson.course_id}/lesson/${
+                        lesson.lessons_metadata[lesson.position + 1].id
+                      }`
+                    )
+                  }
+                >
+                  <ArrowForwardIcon />
+                </IconButton>
+              </Tooltip>
+            )}
           </div>
         </div>
         <IDE url={lesson.instance_url} className={styles.ide} />

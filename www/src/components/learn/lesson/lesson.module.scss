@@ -4,6 +4,8 @@
   overflow: auto;
 
   &_content {
+    min-width: 0;
+    overflow: auto;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -12,6 +14,9 @@
   &_controls {
     border-top: 1px solid black;
     padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   &_title {

@@ -3,18 +3,20 @@ package tutorial
 import (
 	"fmt"
 	uuid2 "github.com/google/uuid"
+	"gitlab.com/medhir/blog/server/controllers/storage/sql"
 	"time"
 )
 
 // Course describes the metadata for a course
 type Course struct {
-	ID            string    `json:"id"`
-	AuthorID      string    `json:"author_id"`
-	Title         string    `json:"title"`
-	Description   string    `json:"description"`
-	MasterPVCName string    `json:"master_pvc_name"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at,omitempty"`
+	ID              string                `json:"id"`
+	AuthorID        string                `json:"author_id"`
+	Title           string                `json:"title"`
+	Description     string                `json:"description"`
+	MasterPVCName   string                `json:"master_pvc_name"`
+	CreatedAt       time.Time             `json:"created_at"`
+	UpdatedAt       time.Time             `json:"updated_at,omitempty"`
+	LessonsMetadata []*sql.LessonMetadata `json:"lessons_metadata"`
 }
 
 func (t *tutorials) CreateCourse(authorID, title, description string) (id string, _ error) {
@@ -32,13 +34,18 @@ func (t *tutorials) GetCourse(courseID string) (*Course, error) {
 	if err != nil {
 		return nil, err
 	}
+	lessonsMetadata, err := t.db.GetLessonsMetadata(courseID)
+	if err != nil {
+		return nil, err
+	}
 	course := &Course{
-		ID:            row.ID,
-		AuthorID:      row.AuthorID,
-		Title:         row.Title,
-		Description:   row.Description,
-		MasterPVCName: row.MasterPVCName,
-		CreatedAt:     row.CreatedAt,
+		ID:              row.ID,
+		AuthorID:        row.AuthorID,
+		Title:           row.Title,
+		Description:     row.Description,
+		MasterPVCName:   row.MasterPVCName,
+		CreatedAt:       row.CreatedAt,
+		LessonsMetadata: lessonsMetadata,
 	}
 	if row.UpdatedAt.Valid == true {
 		course.UpdatedAt = row.UpdatedAt.Time

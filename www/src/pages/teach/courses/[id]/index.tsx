@@ -5,9 +5,9 @@ import { Authenticated } from '../../../../utility/auth'
 import Login from '../../../../components/auth/login'
 import http from '../../../../utility/http'
 
-const CourseByID = ({ auth, metadata, lessons }) => {
+const CourseByID = ({ auth, course }) => {
   if (auth) {
-    return <Course metadata={metadata} lessons={lessons} />
+    return <Course course={course} />
   } else {
     return <Login role={Roles.BlogOwner} />
   }
@@ -26,8 +26,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     return {
       props: {
         auth: true,
-        metadata: courseResponse.data.metadata,
-        lessons: courseResponse.data.lessons,
+        course: courseResponse.data,
       },
     }
   }
