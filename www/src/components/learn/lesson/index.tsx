@@ -309,12 +309,12 @@ class Lesson extends Component<LessonProps, LessonState> {
               open={folderDialogOpen}
               onClose={() => this.setState({ folderDialogOpen: false })}
             >
-              <DialogTitle>Folder To Open</DialogTitle>
+              <DialogTitle>Open the IDE at a Specific Directory</DialogTitle>
               <DialogContent>
                 <DialogContentText>
-                  Choose the folder that is loaded within the IDE when the
-                  lesson opens. This must be a valid path within the IDE
-                  context.
+                  Choose the folder that the IDE is opened to when the lesson
+                  loads. This must be a valid directory path, otherwise the IDE
+                  will return a 500 error on lesson load.
                 </DialogContentText>
                 <TextField
                   autoFocus
@@ -326,7 +326,7 @@ class Lesson extends Component<LessonProps, LessonState> {
                 ></TextField>
               </DialogContent>
               <DialogActions>
-                <Button onClick={saveFolderName}>Update Folder Path</Button>
+                <Button onClick={saveFolderName}>Set Directory</Button>
               </DialogActions>
             </Dialog>
           </div>
