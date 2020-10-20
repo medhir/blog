@@ -24,6 +24,7 @@ type Tutorials interface {
 	GetLessons(courseID string) ([]*Lesson, error)
 	AddLessonAsset(lessonID string, data []byte) (url string, _ error)
 	DeleteLessonAsset(lessonID, name string) error
+	GetLessonAssets(lessonID string) ([]*sql.LessonAsset, error)
 }
 
 type tutorials struct {

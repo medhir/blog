@@ -142,6 +142,8 @@ class Notebook extends Component<NotebookProps, NotebookState> {
         <textarea
           className={`${styles.textarea} ${preview ? styles.hidden : null}`}
           onChange={onTextareaChange}
+          onDrop={handleDrop}
+          onPaste={handlePaste}
           value={iMDX}
         ></textarea>
         <div className={`${styles.controls} ${preview ? null : styles.hidden}`}>

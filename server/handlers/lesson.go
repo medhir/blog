@@ -283,3 +283,31 @@ func (h *handlers) HandleLessonAsset() http.HandlerFunc {
 		}
 	}
 }
+
+func (h *handlers) getLessonAssets() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		lessonID := path.Base(r.URL.Path)
+		assets, err := h.tutorials.GetLessonAssets(lessonID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = writeJSON(w, assets)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func (h *handlers) HandleLessonAssets() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			h.getLessonAssets()(w, r)
+		default:
+			http.Error(w, fmt.Sprintf("unimplemented http handler for method %s", r.Method), http.StatusMethodNotAllowed)
+			return
+		}
+	}
+}

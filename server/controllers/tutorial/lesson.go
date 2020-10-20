@@ -154,3 +154,11 @@ func (t *tutorials) DeleteLessonAsset(lessonID, name string) error {
 	}
 	return nil
 }
+
+func (t *tutorials) GetLessonAssets(lessonID string) ([]*db.LessonAsset, error) {
+	assets, err := t.db.GetLessonAssets(lessonID)
+	if err != nil {
+		return nil, err
+	}
+	return assets, nil
+}
