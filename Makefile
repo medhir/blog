@@ -40,7 +40,7 @@ init-db:
 	- mkdir -p ${HOME}/docker/volumes/postgres
 	- docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v ${HOME}/docker/volumes/postgres:/var/lib/postgresql/data postgres
 	sleep 8
-	psql -h localhost -U postgres -d postgres < ${PWD}/server/storage/sql/init/schema.sql
+	psql -h localhost -U postgres -d postgres < ${PWD}/server/controllers/storage/sql/init/schema.sql
 
 .PHONY: start-db
 start-db:
@@ -48,7 +48,7 @@ start-db:
 
 .PHONY: migration
 migration:
-	migrate create -ext sql -dir server/storage/sql/migrations -seq $(name)
+	migrate create -ext sql -dir server/controllers/storage/sql/migrations -seq $(name)
 
 .PHONY: migrate-up-local
 migrate-up-local:

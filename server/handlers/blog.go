@@ -263,7 +263,7 @@ func (h *handlers) postAsset() http.HandlerFunc {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			writeJSON(w, postAssetResponse{
+			err = writeJSON(w, postAssetResponse{
 				URL: url,
 			})
 			return

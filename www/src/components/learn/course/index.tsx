@@ -8,7 +8,7 @@ import SaveIcon from '@material-ui/icons/Save'
 import Router from 'next/router'
 import { ErrorAlert, SuccessAlert } from '../../alert'
 import { AxiosError } from 'axios'
-import Lesson, { LessonMetadata } from '../lesson'
+import { LessonMetadata } from '../lesson'
 import Editable from '../../editable'
 
 interface AlertState {
@@ -23,11 +23,11 @@ export interface CourseMetadata {
   description?: string
   created_at: number
   updated_at?: number
+  lessons_metadata: Array<LessonMetadata>
 }
 
 interface CourseProps {
-  metadata: CourseMetadata
-  lessons: Array<LessonMetadata>
+  course: CourseMetadata
 }
 
 interface CourseState {
@@ -44,8 +44,8 @@ class Course extends Component<CourseProps, CourseState> {
   constructor(props: CourseProps) {
     super(props)
     this.state = {
-      title: props.metadata.title,
-      description: props.metadata.description,
+      title: props.course.title,
+      description: props.course.description,
       errorAlert: {
         open: false,
         message: '',
@@ -103,7 +103,7 @@ class Course extends Component<CourseProps, CourseState> {
   }
 
   saveCourse() {
-    const { id, author_id } = this.props.metadata
+    const { id, author_id } = this.props.course
     const { title, description } = this.state
 
     Protected.Client.Patch('/course/', {
@@ -131,8 +131,7 @@ class Course extends Component<CourseProps, CourseState> {
   }
 
   render() {
-    const { id } = this.props.metadata
-    const { lessons } = this.props
+    const { id, lessons_metadata } = this.props.course
     const { title, description, errorAlert, successAlert } = this.state
     return (
       <section className={styles.course}>
@@ -198,8 +197,8 @@ class Course extends Component<CourseProps, CourseState> {
               </Button>
             </div>
             <ul>
-              {lessons &&
-                lessons.map((lesson) => (
+              {lessons_metadata &&
+                lessons_metadata.map((lesson) => (
                   <li
                     key={lesson.id}
                     onClick={() =>

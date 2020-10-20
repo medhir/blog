@@ -37,6 +37,8 @@ func (i *Instance) AddRoutes() error {
 	i.router.HandleFunc("/courses/", h.Authorize(auth.BlogOwner, h.HandleCourses()))
 	// lesson
 	i.router.HandleFunc("/lesson/", h.Authorize(auth.BlogOwner, h.HandleLesson()))
+	i.router.HandleFunc("/lesson_asset/", h.Authorize(auth.BlogOwner, h.HandleLessonAsset()))
+	i.router.HandleFunc("/lesson_assets/", h.Authorize(auth.BlogOwner, h.HandleLessonAssets()))
 	// code instance
 	i.router.HandleFunc("/code/", h.Authorize(auth.BlogOwner, h.HandleCodeInstance()))
 	return nil

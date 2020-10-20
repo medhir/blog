@@ -4,14 +4,19 @@
   overflow: auto;
 
   &_content {
-    flex: 1;
+    min-width: 0;
+    overflow: auto;
     display: flex;
+    flex: 1;
     flex-direction: column;
   }
 
   &_controls {
     border-top: 1px solid black;
     padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   &_title {
@@ -23,5 +28,36 @@
 
   .ide {
     flex: 2;
+  }
+
+  .assets {
+    transition: all 300ms ease-out;
+    display: flex;
+    align-items: center;
+    overflow-x: scroll;
+    &_hidden {
+      height: 0;
+      border: 1px solid rgba(0, 0, 0, 0);
+    }
+    &_show {
+      height: 140px;
+      background-color: rgb(231, 255, 247);
+      border-top: 1px solid black;
+    }
+    &_preview {
+      cursor: pointer;
+      position: relative;
+      margin: 10px;
+      height: 100px;
+      img {
+        height: 100px;
+      }
+    }
+    &_delete {
+      position: absolute;
+      top: 0;
+      right: 0;
+      color: rgba(255, 0, 0, 0.6);
+    }
   }
 }

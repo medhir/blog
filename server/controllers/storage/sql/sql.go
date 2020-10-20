@@ -34,15 +34,21 @@ type Postgres interface {
 		courseID string,
 		title string,
 		mdx string,
+		position int64,
 	) (string, error)
 	GetLesson(id string) (*Lesson, error)
 	UpdateLesson(
 		id string,
 		title string,
 		mdx string,
+		folderName sql.NullString,
 	) error
 	DeleteLesson(id string) error
 	GetLessons(courseID string) ([]*Lesson, error)
+	GetLessonsMetadata(courseID string) ([]*LessonMetadata, error)
+	AddLessonAsset(lessonID, name, url string) error
+	DeleteLessonAsset(lessonID, name string) error
+	GetLessonAssets(lessonID string) ([]*LessonAsset, error)
 
 	// Blog API
 	AddDraftOrPost(
