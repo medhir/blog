@@ -2,6 +2,8 @@ package tutorial
 
 import (
 	"database/sql"
+	"fmt"
+	uuid2 "github.com/google/uuid"
 	db "gitlab.com/medhir/blog/server/controllers/storage/sql"
 	"time"
 )
@@ -17,6 +19,7 @@ type Lesson struct {
 	CreatedAt       time.Time            `json:"created_at"`
 	UpdatedAt       time.Time            `json:"updated_at,omitempty"`
 	InstanceURL     string               `json:"instance_url"`
+	Assets          []*db.LessonAsset    `json:"assets"`
 	LessonsMetadata []*db.LessonMetadata `json:"lessons_metadata"`
 }
 
@@ -49,6 +52,10 @@ func (t *tutorials) GetLesson(lessonID string) (*Lesson, error) {
 	if err != nil {
 		return nil, err
 	}
+	assets, err := t.db.GetLessonAssets(lessonID)
+	if err != nil {
+		return nil, err
+	}
 	lesson := &Lesson{
 		ID:              row.ID,
 		CourseID:        row.CourseID,
@@ -56,6 +63,7 @@ func (t *tutorials) GetLesson(lessonID string) (*Lesson, error) {
 		MDX:             row.MDX,
 		Position:        row.Position,
 		CreatedAt:       row.CreatedAt,
+		Assets:          assets,
 		LessonsMetadata: lessonsMetadata,
 	}
 	if row.FolderName.Valid == true {
@@ -111,4 +119,38 @@ func (t *tutorials) GetLessons(courseID string) ([]*Lesson, error) {
 		lessons = append(lessons, lesson)
 	}
 	return lessons, nil
+}
+
+func (t *tutorials) AddLessonAsset(lessonID string, data []byte) (url string, _ error) {
+	lesson, err := t.db.GetLesson(lessonID)
+	if err != nil {
+		return "", err
+	}
+	objectName := fmt.Sprintf("tutorial/assets/%s/%s/%s.jpg", lesson.CourseID, lessonID, uuid2.New())
+	err = t.gcs.UploadObject(objectName, bucket, data, true)
+	if err != nil {
+		return "", err
+	}
+	attrs, err := t.gcs.GetObjectMetadata(objectName, bucket)
+	if err != nil {
+		return "", err
+	}
+	url = attrs.MediaLink
+	err = t.db.AddLessonAsset(lessonID, objectName, url)
+	if err != nil {
+		return "", err
+	}
+	return url, nil
+}
+
+func (t *tutorials) DeleteLessonAsset(lessonID, name string) error {
+	err := t.gcs.DeleteObject(name, bucket)
+	if err != nil {
+		return err
+	}
+	err = t.db.DeleteLessonAsset(lessonID, name)
+	if err != nil {
+		return err
+	}
+	return nil
 }

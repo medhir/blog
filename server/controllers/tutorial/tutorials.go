@@ -6,6 +6,8 @@ import (
 	"gitlab.com/medhir/blog/server/controllers/storage/sql"
 )
 
+const bucket = "medhir-com"
+
 // Tutorials is the API description for how to interact with the tutorials controller
 type Tutorials interface {
 	// Course API
@@ -20,6 +22,8 @@ type Tutorials interface {
 	UpdateLesson(lessonID, title, mdx, folderName string) error
 	DeleteLesson(lessonID string) error
 	GetLessons(courseID string) ([]*Lesson, error)
+	AddLessonAsset(lessonID string, data []byte) (url string, _ error)
+	DeleteLessonAsset(lessonID, name string) error
 }
 
 type tutorials struct {

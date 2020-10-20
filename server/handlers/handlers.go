@@ -45,6 +45,7 @@ type Handlers interface {
 	HandleCourses() http.HandlerFunc
 	// Lessons
 	HandleLesson() http.HandlerFunc
+	HandleLessonAsset() http.HandlerFunc
 	// Code Instances
 	HandleCodeInstance() http.HandlerFunc
 }

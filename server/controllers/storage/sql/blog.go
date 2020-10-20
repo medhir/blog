@@ -269,7 +269,7 @@ WHERE post_id = $1 AND name = $2;
 		return err
 	}
 	if count == 0 {
-		return errors.New("lesson was not deleted, zero rows affected by delete query")
+		return errors.New("blog asset was not deleted, zero rows affected by delete query")
 	}
 	return nil
 }

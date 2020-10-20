@@ -19,6 +19,13 @@ type Lesson struct {
 	UpdatedAt  sql.NullTime   `json:"updated_at"`
 }
 
+// LessonAsset describes the metadata for a lesson image asset
+type LessonAsset struct {
+	LessonID string `json:"lesson_id"`
+	Name     string `json:"name"`
+	URL      string `json:"url"`
+}
+
 func (p *postgres) CreateLesson(
 	courseID string,
 	title string,
@@ -158,15 +165,61 @@ ORDER BY position;`
 	return lessons, nil
 }
 
-func (p *postgres) CountLessons(courseID string) (count int64, _ error) {
+func (p *postgres) AddLessonAsset(lessonID, name, url string) error {
 	query := `
-SELECT COUNT(*) AS count 
-FROM lesson
-WHERE course_id = $1;
+INSERT INTO LessonAsset (lesson_id, name, url)
+VALUES ($1, $2, $3);
 `
-	err := p.db.QueryRow(query, courseID).Scan(&count)
+	_, err := p.db.Exec(query, lessonID, name, url)
 	if err != nil {
-		return 0, err
+		return err
 	}
-	return count, nil
+	return nil
+}
+
+func (p *postgres) DeleteLessonAsset(lessonID, name string) error {
+	query := `
+DELETE FROM LessonAsset
+WHERE lesson_id = $1 AND name = $2;
+`
+	res, err := p.db.Exec(query, lessonID, name)
+	if err != nil {
+		return err
+	}
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return errors.New("lesson asset was not deleted, zero rows affected by delete query")
+	}
+	return nil
+}
+
+func (p *postgres) GetLessonAssets(lessonID string) ([]*LessonAsset, error) {
+	query := `
+SELECT lesson_id, name, url
+FROM LessonAsset
+WHERE lesson_id = $1;
+`
+	rows, err := p.db.Query(query, lessonID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var assets []*LessonAsset
+	for rows.Next() {
+		asset := &LessonAsset{}
+		err := rows.Scan(
+			&asset.LessonID,
+			&asset.Name,
+			&asset.URL,
+		)
+		if err != nil {
+			return nil, err
+		}
+		assets = append(assets, asset)
+	}
+	return assets, nil
 }
