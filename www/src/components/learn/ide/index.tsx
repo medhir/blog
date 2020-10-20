@@ -1,14 +1,10 @@
 import React, { Component } from 'react'
-import http, { Protected } from '../../../utility/http'
+import http from '../../../utility/http'
 import Loading from '../../loading'
-import { AxiosError } from 'axios'
 
 import styles from './ide.module.scss'
-import { IconButton } from '@material-ui/core'
-import StopIcon from '@material-ui/icons/Stop'
 
 interface IDEState {
-  error: string
   loading: boolean
 }
 
@@ -22,11 +18,9 @@ class IDE extends Component<IDEProps, IDEState> {
     super(props)
     this.state = {
       loading: false,
-      error: null,
     }
 
     this.startEnvironment = this.startEnvironment.bind(this)
-    this.stopEnvironment = this.stopEnvironment.bind(this)
   }
 
   componentDidMount() {
@@ -64,37 +58,12 @@ class IDE extends Component<IDEProps, IDEState> {
     )
   }
 
-  stopEnvironment() {
-    Protected.Client.Delete(`/code/`).catch((error: AxiosError) => {
-      if (error.response) {
-        this.setState({
-          error: error.response.data,
-        })
-      } else {
-        this.setState({
-          error: error.message,
-        })
-      }
-    })
-  }
-
   render() {
     const { className, url } = this.props
-    const { error, loading } = this.state
+    const { loading } = this.state
     return (
       <section className={`${styles.ide} ${className}`}>
         <div className={styles.ide_environment}>
-          <div className={styles.ide_controls}>
-            <IconButton
-              className={styles.button}
-              onClick={this.stopEnvironment}
-            >
-              <StopIcon />
-            </IconButton>
-            {error && (
-              <p>There was an error getting the environment set up: {error}</p>
-            )}
-          </div>
           {loading && <Loading />}
           {url && !loading && <iframe src={url} />}
         </div>

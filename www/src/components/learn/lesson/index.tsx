@@ -22,6 +22,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import FolderIcon from '@material-ui/icons/Folder'
 import SaveIcon from '@material-ui/icons/Save'
+import StopIcon from '@material-ui/icons/Stop'
 
 export interface LessonMetadata {
   id: string
@@ -87,6 +88,7 @@ class Lesson extends Component<LessonProps, LessonState> {
     this.handleSuccessAlertClose = this.handleSuccessAlertClose.bind(this)
     this.saveLesson = this.saveLesson.bind(this)
     this.saveFolderName = this.saveFolderName.bind(this)
+    this.stopEnvironment = this.stopEnvironment.bind(this)
   }
 
   getTitle(): string {
@@ -196,6 +198,35 @@ class Lesson extends Component<LessonProps, LessonState> {
       })
   }
 
+  stopEnvironment() {
+    Protected.Client.Delete(`/code/`)
+      .then(() => {
+        this.setState({
+          successAlert: {
+            open: true,
+            message: 'IDE Stopped',
+          },
+        })
+      })
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          this.setState({
+            errorAlert: {
+              open: true,
+              message: error.response.data,
+            },
+          })
+        } else {
+          this.setState({
+            errorAlert: {
+              open: true,
+              message: error.message,
+            },
+          })
+        }
+      })
+  }
+
   render() {
     const {
       mdx,
@@ -213,6 +244,7 @@ class Lesson extends Component<LessonProps, LessonState> {
       handleSuccessAlertClose,
       saveLesson,
       saveFolderName,
+      stopEnvironment,
     } = this
     return (
       <section className={styles.lesson}>
@@ -244,6 +276,11 @@ class Lesson extends Component<LessonProps, LessonState> {
             <Tooltip title="Save Lesson">
               <IconButton onClick={saveLesson}>
                 <SaveIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Stop IDE">
+              <IconButton onClick={stopEnvironment}>
+                <StopIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Update Folder to Open in IDE">
