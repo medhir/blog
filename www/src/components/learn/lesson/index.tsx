@@ -23,6 +23,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import DeleteIcon from '@material-ui/icons/Delete'
 import FolderIcon from '@material-ui/icons/Folder'
+import LaunchIcon from '@material-ui/icons/Launch'
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary'
 import SaveIcon from '@material-ui/icons/Save'
 import StopIcon from '@material-ui/icons/Stop'
@@ -70,6 +71,8 @@ interface LessonState {
   mdx: string
   folderDialogOpen: boolean
   folderInput: string
+  launchPortDialogOpen: boolean
+  portInput: string
   key: number
   errorAlert: AlertState
   successAlert: AlertState
@@ -88,6 +91,8 @@ class Lesson extends Component<LessonProps, LessonState> {
       key: new Date().getTime(),
       folderDialogOpen: false,
       folderInput: props.lesson.folder_name || '/home/coder/project/',
+      launchPortDialogOpen: false,
+      portInput: '9000',
       loading: true,
       errorAlert: {
         open: false,
@@ -102,11 +107,13 @@ class Lesson extends Component<LessonProps, LessonState> {
     this.articleRef = React.createRef()
     this.copyToClipboard = this.copyToClipboard.bind(this)
     this.deleteAsset = this.deleteAsset.bind(this)
+    this.getPortLink = this.getPortLink.bind(this)
     this.getTitle = this.getTitle.bind(this)
     this.handleDrop = this.handleDrop.bind(this)
     this.handlePaste = this.handlePaste.bind(this)
     this.handleImageUpload = this.handleImageUpload.bind(this)
     this.handleFolderInputChange = this.handleFolderInputChange.bind(this)
+    this.handlePortInputChange = this.handlePortInputChange.bind(this)
     this.handleTextareaChange = this.handleTextareaChange.bind(this)
     this.handleErrorAlertClose = this.handleErrorAlertClose.bind(this)
     this.handleSuccessAlertClose = this.handleSuccessAlertClose.bind(this)
@@ -138,7 +145,7 @@ class Lesson extends Component<LessonProps, LessonState> {
         this.setState({
           successAlert: {
             open: true,
-            message: 'asset URL copied to clipboard',
+            message: `URL (${url}) copied to clipboard`,
           },
         })
       })
@@ -198,6 +205,17 @@ class Lesson extends Component<LessonProps, LessonState> {
           },
         })
       })
+  }
+
+  getPortLink() {
+    const { instance_url } = this.props.lesson
+    const { portInput } = this.state
+    const { copyToClipboard } = this
+    const portLink = `${instance_url}proxy/${portInput}/`
+    copyToClipboard(portLink)
+    this.setState({
+      launchPortDialogOpen: false,
+    })
   }
 
   getTitle(): string {
@@ -305,6 +323,12 @@ class Lesson extends Component<LessonProps, LessonState> {
   handleFolderInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({
       folderInput: e.target.value,
+    })
+  }
+
+  handlePortInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    this.setState({
+      portInput: e.target.value,
     })
   }
 
@@ -453,6 +477,8 @@ class Lesson extends Component<LessonProps, LessonState> {
       key,
       folderDialogOpen,
       folderInput,
+      launchPortDialogOpen,
+      portInput,
       errorAlert,
       successAlert,
       showAssets,
@@ -462,9 +488,11 @@ class Lesson extends Component<LessonProps, LessonState> {
       articleRef,
       copyToClipboard,
       deleteAsset,
+      getPortLink,
       handleDrop,
       handlePaste,
       handleFolderInputChange,
+      handlePortInputChange,
       handleTextareaChange,
       handleErrorAlertClose,
       handleSuccessAlertClose,
@@ -550,6 +578,13 @@ class Lesson extends Component<LessonProps, LessonState> {
                 <FolderIcon />
               </IconButton>
             </Tooltip>
+            <Tooltip title="Access Localhost Port">
+              <IconButton
+                onClick={() => this.setState({ launchPortDialogOpen: true })}
+              >
+                <LaunchIcon />
+              </IconButton>
+            </Tooltip>
             {lesson.position !== lesson.lessons_metadata.length - 1 && (
               <Tooltip title="Next Lesson">
                 <IconButton
@@ -587,6 +622,29 @@ class Lesson extends Component<LessonProps, LessonState> {
               </DialogContent>
               <DialogActions>
                 <Button onClick={saveFolderName}>Set Directory</Button>
+              </DialogActions>
+            </Dialog>
+            <Dialog
+              open={launchPortDialogOpen}
+              onClose={() => this.setState({ launchPortDialogOpen: false })}
+            >
+              <DialogTitle>Access Localhost Port</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Enter the local port you would like to access from the IDE,
+                  and a link will be copied to the clipboard.
+                </DialogContentText>
+                <TextField
+                  autoFocus
+                  required
+                  fullWidth
+                  label="port number"
+                  value={portInput}
+                  onChange={handlePortInputChange}
+                ></TextField>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={getPortLink}>Get Link</Button>
               </DialogActions>
             </Dialog>
           </div>
