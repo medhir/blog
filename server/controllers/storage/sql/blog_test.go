@@ -128,6 +128,7 @@ func TestAsset(t *testing.T) {
 
 	// Delete asset
 	err = pg.DeleteAsset(id, assetName)
+	assert.NoError(t, err)
 	assets, err = pg.GetAssets(id)
 	assert.NoError(t, err)
 	assert.Equal(t, 0, len(assets))
