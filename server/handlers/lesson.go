@@ -5,12 +5,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"gitlab.com/medhir/blog/server/controllers/code"
+	"gitlab.com/medhir/blog/server/controllers/tutorial"
 	"io"
 	"net/http"
 	"path"
 )
 
 func (h *handlers) getLesson() http.HandlerFunc {
+	type getLessonResponse struct {
+		Lesson   *tutorial.Lesson `json:"lesson"`
+		Instance *code.Instance   `json:"instance"`
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		lessonID := path.Base(r.URL.Path)
 		user, err := h.getUser(r)
@@ -37,8 +43,10 @@ func (h *handlers) getLesson() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		lesson.InstanceURL = instance.URL
-		err = writeJSON(w, lesson)
+		err = writeJSON(w, getLessonResponse{
+			Lesson:   lesson,
+			Instance: instance,
+		})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

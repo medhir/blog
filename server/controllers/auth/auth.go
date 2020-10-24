@@ -25,7 +25,9 @@ const (
 type Auth interface {
 	GetUser(jwt string) (*gocloak.User, error)
 	CreateUser(req *CreateUserRequest) (*CreateUserResponse, error)
-	AddAttributeToUser(userID, key string, values []string) error
+	AddUserAttribute(user *gocloak.User, key, value string) error
+	GetUserAttribute(user *gocloak.User, key string) (string, error)
+	RemoveUserAttribute(user *gocloak.User, key string) error
 	Login(request *LoginRequest) (*LoginResponse, error)
 
 	ValidateJWT(jwt string) error
@@ -141,33 +143,41 @@ func (a *auth) GetUser(jwt string) (*gocloak.User, error) {
 	return user, nil
 }
 
-func (a *auth) AddAttributeToUser(jwt, key string, values []string) error {
-	_, claims, err := a.client.DecodeAccessToken(jwt, realm)
-	if err != nil {
-		return err
-	}
-	mapClaims := *claims
-	userID, ok := mapClaims["sub"].(string)
-	if !ok {
-		return errors.New("validation error - could not read jwt subject")
-	}
+func (a *auth) AddUserAttribute(user *gocloak.User, key string, value string) error {
 	adminToken, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
 	if err != nil {
 		return err
 	}
-	user, err := a.client.GetUserByID(adminToken.AccessToken, realm, userID)
-	fmt.Printf("User: %+v\n", user)
+	if user.Attributes != nil {
+		user.Attributes[key] = []string{value}
+	} else {
+		user.Attributes = map[string][]string{
+			key: {value},
+		}
+	}
+	err = a.client.UpdateUser(adminToken.AccessToken, realm, *user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *auth) GetUserAttribute(user *gocloak.User, key string) (string, error) {
+	attribute := user.Attributes[key]
+	if len(attribute) == 0 {
+		return "", errors.New(fmt.Sprintf("no user attribute found for key %s", key))
+	}
+	return attribute[0], nil
+}
+
+func (a *auth) RemoveUserAttribute(user *gocloak.User, key string) error {
+	adminToken, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
 	if err != nil {
 		return err
 	}
 	if user.Attributes != nil {
-		user.Attributes[key] = values
-	} else {
-		user.Attributes = map[string][]string{
-			key: values,
-		}
+		user.Attributes[key] = []string{}
 	}
-	fmt.Printf("User w attributes: %+v\n", user)
 	err = a.client.UpdateUser(adminToken.AccessToken, realm, *user)
 	if err != nil {
 		return err

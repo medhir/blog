@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Nerzal/gocloak/v5"
+	"github.com/sethvargo/go-password/password"
 	"gitlab.com/medhir/blog/server/controllers/auth"
 	"gitlab.com/medhir/blog/server/controllers/code/dns"
 	"gitlab.com/medhir/blog/server/controllers/code/k8s"
@@ -29,6 +30,8 @@ const (
 	reviewEnv              = "review"
 	productionEnv          = "production"
 )
+
+const InstanceAttributeKey = "instance_password"
 
 // Manager describes the methods for managing coder instances, given a user token
 type Manager interface {
@@ -70,13 +73,27 @@ func NewManager(ctx context.Context, auth auth.Auth, env string) (Manager, error
 	}, nil
 }
 
-// Instance describes properties of a coder instance
+// Instance describes properties of a code instance
 type Instance struct {
-	URL string `json:"url"`
+	URL      string `json:"url"`
+	Password string `json:"password"`
 }
 
 func (m *manager) SetInstance(user *gocloak.User, pvcName string) (*Instance, error) {
-	resources, err := makeCodeK8sResources(*user.Username, m.env, pvcName)
+	// attempt to get password
+	idePassword, err := m.auth.GetUserAttribute(user, InstanceAttributeKey)
+	if err != nil {
+		// if no instance password is attached to the user, generate a new one
+		idePassword, err = password.Generate(24, 9, 8, false, false)
+		if err != nil {
+			return nil, err
+		}
+		err = m.auth.AddUserAttribute(user, InstanceAttributeKey, idePassword)
+		if err != nil {
+			return nil, err
+		}
+	}
+	resources, err := makeCodeK8sResources(*user.Username, m.env, pvcName, idePassword)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +127,8 @@ func (m *manager) SetInstance(user *gocloak.User, pvcName string) (*Instance, er
 		}
 	}
 	return &Instance{
-		URL: resources.url,
+		URL:      resources.url,
+		Password: idePassword,
 	}, nil
 }
 
@@ -133,6 +151,10 @@ func (m *manager) RemoveInstance(user *gocloak.User) error {
 		return err
 	}
 	err = m.k8s.RemoveDeployment(deploymentName)
+	if err != nil {
+		return err
+	}
+	err = m.auth.RemoveUserAttribute(user, InstanceAttributeKey)
 	if err != nil {
 		return err
 	}
@@ -185,7 +207,7 @@ type coderK8sResources struct {
 	url            string
 }
 
-func makeCodeK8sResources(username, env, pvcName string) (*coderK8sResources, error) {
+func makeCodeK8sResources(username, env, pvcName, password string) (*coderK8sResources, error) {
 	cname := fmt.Sprintf(cnameFormatter, username)
 	var url string
 	if env == reviewEnv {
@@ -202,7 +224,7 @@ func makeCodeK8sResources(username, env, pvcName string) (*coderK8sResources, er
 	} else {
 		ingressRule = makeCodeIngressRule(productionHostName, svcName, username)
 	}
-	deployment := makeCodeDeployment(deploymentName, pvcName)
+	deployment := makeCodeDeployment(deploymentName, pvcName, password)
 	return &coderK8sResources{
 		deployment:     deployment,
 		service:        svc,
@@ -285,7 +307,7 @@ func makeCodeIngressRule(hostName, serviceName, username string) v1beta1.Ingress
 	return rule
 }
 
-func makeCodeDeployment(deploymentName, pvcName string) *appsv1.Deployment {
+func makeCodeDeployment(deploymentName, pvcName, password string) *appsv1.Deployment {
 	return &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: deploymentName,
@@ -322,12 +344,18 @@ func makeCodeDeployment(deploymentName, pvcName string) *appsv1.Deployment {
 						{
 							Name:  deploymentName,
 							Image: containerImageName,
-							Args:  []string{"--auth", "none"},
+							Args:  []string{"--auth", "password"},
 							Ports: []apiv1.ContainerPort{
 								{
 									Name:          "http",
 									Protocol:      apiv1.ProtocolTCP,
 									ContainerPort: servicePort,
+								},
+							},
+							Env: []apiv1.EnvVar{
+								{
+									Name:  "PASSWORD",
+									Value: password,
 								},
 							},
 							VolumeMounts: []apiv1.VolumeMount{

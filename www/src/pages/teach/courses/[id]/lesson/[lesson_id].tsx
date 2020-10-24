@@ -5,9 +5,9 @@ import { Authenticated } from '../../../../../utility/auth'
 import Login from '../../../../../components/auth/login'
 import http from '../../../../../utility/http'
 
-const LessonByID = ({ auth, lesson }) => {
+const LessonByID = ({ auth, lesson, instance }) => {
   if (auth) {
-    return <Lesson lesson={lesson} />
+    return <Lesson lesson={lesson} instance={instance} />
   } else {
     return <Login role={Roles.BlogOwner} />
   }
@@ -26,7 +26,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     return {
       props: {
         auth: true,
-        lesson: lessonResponse.data,
+        lesson: lessonResponse.data.lesson,
+        instance: lessonResponse.data.instance,
       },
     }
   }

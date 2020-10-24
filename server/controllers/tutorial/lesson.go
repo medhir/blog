@@ -18,7 +18,6 @@ type Lesson struct {
 	FolderName      string               `json:"folder_name,omitempty"`
 	CreatedAt       time.Time            `json:"created_at"`
 	UpdatedAt       time.Time            `json:"updated_at,omitempty"`
-	InstanceURL     string               `json:"instance_url"`
 	Assets          []*db.LessonAsset    `json:"assets"`
 	LessonsMetadata []*db.LessonMetadata `json:"lessons_metadata"`
 }

@@ -31,6 +31,11 @@ import StopIcon from '@material-ui/icons/Stop'
 const ImageMIMERegex = /^image\/(p?jpeg|gif|png)$/i
 const LoadingText = '![](Uploading...)'
 
+interface Instance {
+  url: string
+  password: string
+}
+
 interface LessonAsset {
   lesson_id: string
   name: string
@@ -63,6 +68,7 @@ interface AlertState {
 
 interface LessonProps {
   lesson: LessonData
+  instance: Instance
 }
 
 interface LessonState {
@@ -208,10 +214,10 @@ class Lesson extends Component<LessonProps, LessonState> {
   }
 
   getPortLink() {
-    const { instance_url } = this.props.lesson
+    const { url } = this.props.instance
     const { portInput } = this.state
     const { copyToClipboard } = this
-    const portLink = `${instance_url}proxy/${portInput}/`
+    const portLink = `${url}proxy/${portInput}/`
     copyToClipboard(portLink)
     this.setState({
       launchPortDialogOpen: false,
@@ -483,7 +489,7 @@ class Lesson extends Component<LessonProps, LessonState> {
       successAlert,
       showAssets,
     } = this.state
-    const { lesson } = this.props
+    const { lesson, instance } = this.props
     const {
       articleRef,
       copyToClipboard,
@@ -652,8 +658,8 @@ class Lesson extends Component<LessonProps, LessonState> {
         <IDE
           url={
             lesson.folder_name
-              ? `${lesson.instance_url}?folder=${lesson.folder_name}`
-              : lesson.instance_url
+              ? `${instance.url}?folder=${lesson.folder_name}`
+              : instance.url
           }
           className={styles.ide}
         />
