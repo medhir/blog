@@ -31,6 +31,7 @@ const (
 	productionEnv          = "production"
 )
 
+// InstanceAttributeKey is the key that stores a user's password for an IDE deployment
 const InstanceAttributeKey = "instance_password"
 
 // Manager describes the methods for managing coder instances, given a user token

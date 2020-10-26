@@ -165,7 +165,7 @@ func (a *auth) AddUserAttribute(user *gocloak.User, key string, value string) er
 func (a *auth) GetUserAttribute(user *gocloak.User, key string) (string, error) {
 	attribute := user.Attributes[key]
 	if len(attribute) == 0 {
-		return "", errors.New(fmt.Sprintf("no user attribute found for key %s", key))
+		return "", fmt.Errorf("no user attribute found for key %s", key)
 	}
 	return attribute[0], nil
 }
