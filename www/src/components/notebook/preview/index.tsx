@@ -18,7 +18,10 @@ const Preview = ({ articleRef, hidden, scroll, source }: PreviewProps) => {
       ${hidden ? styles.hidden : null}
       `}
     >
-      <article ref={articleRef} className={articleStyles.article}>
+      <article
+        ref={articleRef}
+        className={`${articleStyles.article} ${styles.article}`}
+      >
         {source && <MDXViewer source={source} />}
       </article>
     </div>
