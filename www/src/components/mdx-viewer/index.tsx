@@ -1,5 +1,6 @@
 import hydrate from 'next-mdx-remote/hydrate'
 import CodeBlock from './codeBlock'
+import styles from '../blog/modules/Post/article.module.scss'
 
 interface MDXViewerProps {
   source: string // source is the source code associated with the MDX component generated from the raw markdown
@@ -8,11 +9,6 @@ interface MDXViewerProps {
 /* MDX Components - These are the set of components that can be used in the markup */
 export const Components = {
   pre: (props) => <div {...props} />,
-  Button: ({ children, style }) => (
-    <button style={{ border: '2px red solid', borderRadius: '10px', ...style }}>
-      {children}
-    </button>
-  ),
   code: (props) => <CodeBlock {...props} />,
 }
 
