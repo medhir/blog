@@ -16,17 +16,21 @@ import {
   DialogTitle,
   IconButton,
   Paper,
+  Snackbar,
   TextField,
   Tooltip,
 } from '@material-ui/core'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
+import CloseIcon from '@material-ui/icons/Close'
 import DeleteIcon from '@material-ui/icons/Delete'
 import FolderIcon from '@material-ui/icons/Folder'
 import LaunchIcon from '@material-ui/icons/Launch'
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary'
 import SaveIcon from '@material-ui/icons/Save'
 import StopIcon from '@material-ui/icons/Stop'
+import VpnKeyIcon from '@material-ui/icons/VpnKey'
+import { Alert } from '@material-ui/lab'
 
 const ImageMIMERegex = /^image\/(p?jpeg|gif|png)$/i
 const LoadingText = '![](Uploading...)'
@@ -82,6 +86,7 @@ interface LessonState {
   key: number
   errorAlert: AlertState
   successAlert: AlertState
+  snackBarOpen: boolean
   loading: boolean
 }
 
@@ -108,6 +113,7 @@ class Lesson extends Component<LessonProps, LessonState> {
         open: false,
         message: '',
       },
+      snackBarOpen: true,
     }
 
     this.articleRef = React.createRef()
@@ -123,6 +129,7 @@ class Lesson extends Component<LessonProps, LessonState> {
     this.handleTextareaChange = this.handleTextareaChange.bind(this)
     this.handleErrorAlertClose = this.handleErrorAlertClose.bind(this)
     this.handleSuccessAlertClose = this.handleSuccessAlertClose.bind(this)
+    this.handleSnackbarClose = this.handleSnackbarClose.bind(this)
     this.insertAtCursor = this.insertAtCursor.bind(this)
     this.saveLesson = this.saveLesson.bind(this)
     this.saveFolderName = this.saveFolderName.bind(this)
@@ -141,17 +148,17 @@ class Lesson extends Component<LessonProps, LessonState> {
     return containsImage
   }
 
-  copyToClipboard(url: string) {
+  copyToClipboard(text: string) {
     if (!navigator.clipboard) {
       return
     }
     navigator.clipboard
-      .writeText(url)
+      .writeText(text)
       .then(() => {
         this.setState({
           successAlert: {
             open: true,
-            message: `URL (${url}) copied to clipboard`,
+            message: `"${text}" copied to clipboard`,
           },
         })
       })
@@ -362,6 +369,12 @@ class Lesson extends Component<LessonProps, LessonState> {
     })
   }
 
+  handleSnackbarClose() {
+    this.setState({
+      snackBarOpen: false,
+    })
+  }
+
   insertAtCursor(start, end, textToInsert, input, lastInsert = false) {
     // get current text of the input
     const value = input.value
@@ -488,6 +501,7 @@ class Lesson extends Component<LessonProps, LessonState> {
       errorAlert,
       successAlert,
       showAssets,
+      snackBarOpen,
     } = this.state
     const { lesson, instance } = this.props
     const {
@@ -502,6 +516,7 @@ class Lesson extends Component<LessonProps, LessonState> {
       handleTextareaChange,
       handleErrorAlertClose,
       handleSuccessAlertClose,
+      handleSnackbarClose,
       saveLesson,
       saveFolderName,
       stopEnvironment,
@@ -570,6 +585,11 @@ class Lesson extends Component<LessonProps, LessonState> {
             <Tooltip title="Show Assets">
               <IconButton onClick={toggleAssets}>
                 <PhotoLibraryIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Get IDE Password">
+              <IconButton onClick={() => this.setState({ snackBarOpen: true })}>
+                <VpnKeyIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Stop IDE">
@@ -676,6 +696,44 @@ class Lesson extends Component<LessonProps, LessonState> {
             {successAlert.message}
           </SuccessAlert>
         )}
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          open={snackBarOpen}
+          autoHideDuration={10000}
+          onClose={handleSnackbarClose}
+        >
+          <Alert
+            onClose={handleSnackbarClose}
+            severity="info"
+            action={
+              <>
+                <Button
+                  color="secondary"
+                  size="small"
+                  onClick={() => {
+                    copyToClipboard(instance.password)
+                    handleSnackbarClose()
+                  }}
+                >
+                  COPY
+                </Button>
+                <IconButton
+                  size="small"
+                  aria-label="close"
+                  color="inherit"
+                  onClick={handleSnackbarClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </>
+            }
+          >
+            {`Your IDE Password is ${instance.password}`}
+          </Alert>
+        </Snackbar>
       </section>
     )
   }
