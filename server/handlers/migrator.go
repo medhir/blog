@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -90,7 +89,6 @@ func (h *handlers) MigrateBlog() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		fmt.Printf("%+v\n", postsMetadata)
 		var posts []blogPost
 		for _, post := range postsMetadata {
 			postData, err := h.gcs.GetObject(post.Name, bucket)
@@ -108,7 +106,6 @@ func (h *handlers) MigrateBlog() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		fmt.Printf("%+v\n", draftsMetadata)
 		var drafts []blogDraft
 		for _, post := range draftsMetadata {
 			draftData, err := h.gcs.GetObject(post.Name, bucket)

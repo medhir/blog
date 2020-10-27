@@ -15,6 +15,7 @@ require (
 	github.com/jetstack/cert-manager v0.15.0
 	github.com/lib/pq v1.3.0
 	github.com/rs/cors v1.7.0
+	github.com/sethvargo/go-password v0.2.0
 	github.com/stretchr/testify v1.5.1
 	golang.org/x/sys v0.0.0-20200515095857-1151b9dac4a9 // indirect
 	google.golang.org/api v0.22.0
