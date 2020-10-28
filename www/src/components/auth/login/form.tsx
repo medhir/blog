@@ -9,7 +9,7 @@ interface InputHandlers {
 }
 
 interface LoginProps {
-  login: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+  login: (event: React.FormEvent<HTMLFormElement>) => void
   username: string
   password: string
   inputHandlers: InputHandlers
@@ -24,7 +24,7 @@ const LoginForm = ({
   return (
     <>
       <Head title="log in" />
-      <section className={styles.login} onSubmit={login}>
+      <form className={styles.login} onSubmit={login}>
         <Container maxWidth="sm">
           <div>
             <h2>log in.</h2>
@@ -49,15 +49,15 @@ const LoginForm = ({
             />
             <Button
               className={styles.button}
+              type="submit"
               variant="contained"
               color="primary"
-              onClick={login}
             >
               Log In
             </Button>
           </div>
         </Container>
-      </section>
+      </form>
     </>
   )
 }

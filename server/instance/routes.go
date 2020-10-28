@@ -18,6 +18,7 @@ func (i *Instance) AddRoutes() error {
 	i.router.HandleFunc("/jwt/refresh", h.RefreshJWT())
 	i.router.HandleFunc("/jwt/next/refresh", h.RefreshForNext())
 	i.router.HandleFunc("/register", h.RegisterNewUser())
+	i.router.HandleFunc("/realm", h.HandleRealmRepresentation())
 	//	database
 	i.router.HandleFunc("/migrate/up", h.Authorize(auth.BlogOwner, h.MigrateUp()))
 	i.router.HandleFunc("/migrate/down", h.Authorize(auth.BlogOwner, h.MigrateDown()))

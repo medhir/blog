@@ -23,6 +23,7 @@ type Handlers interface {
 	RefreshForNext() http.HandlerFunc
 	Authorize(role auth.Role, handler http.HandlerFunc) http.HandlerFunc
 	RegisterNewUser() http.HandlerFunc
+	HandleRealmRepresentation() http.HandlerFunc
 	// Database
 	MigrateUp() http.HandlerFunc
 	MigrateDown() http.HandlerFunc

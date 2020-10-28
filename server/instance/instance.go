@@ -52,11 +52,6 @@ func NewInstance() (*Instance, error) {
 		return nil, err
 	}
 
-	auth, err := auth.NewAuth()
-	if err != nil {
-		return nil, err
-	}
-
 	// get environment
 	var environment string
 	environment, ok := os.LookupEnv("ENVIRONMENT")
@@ -100,6 +95,11 @@ func NewInstance() (*Instance, error) {
 		fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, databaseName),
 		"controllers/storage/sql/migrations",
 	)
+	if err != nil {
+		return nil, err
+	}
+
+	auth, err := auth.NewAuth(db)
 	if err != nil {
 		return nil, err
 	}

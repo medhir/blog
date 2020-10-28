@@ -9,7 +9,7 @@ export interface PhotoData {
 }
 
 export interface PhotosProps {
-  auth: boolean
+  auth?: boolean
   photos: PhotoData[]
 }
 

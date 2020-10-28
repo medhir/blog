@@ -22,6 +22,9 @@ type Postgres interface {
 	Version() (uint, bool, error)
 	Close() error
 
+	// User API
+	CreateUser(id, username, email string) error
+
 	// Course API
 	CreateCourse(authorID, title, description, pvcName string) (string, error)
 	GetCourse(courseID string) (*Course, error)
