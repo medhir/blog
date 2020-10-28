@@ -17,6 +17,19 @@ const theme = createMuiTheme({
       default: '#fff',
     },
   },
+  typography: {
+    fontFamily: [
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+    button: {
+      textTransform: 'none'
+    },
+  },
 })
 
 export default theme

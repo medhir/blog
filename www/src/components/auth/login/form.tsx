@@ -1,7 +1,8 @@
 import React, { FormEvent } from 'react'
 import styles from './login.module.scss'
-import { Container, TextField, Button } from '@material-ui/core'
+import { Container, TextField, Button, Grid, Link } from '@material-ui/core'
 import Head from '../../head'
+import Router from 'next/router'
 
 interface InputHandlers {
   handleUsernameChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -56,6 +57,32 @@ const LoginForm = ({
               Log In
             </Button>
           </div>
+          <Grid container>
+            <Grid item xs>
+              <Link
+                href="#"
+                variant="body2"
+                onClick={(e) => {
+                  e.preventDefault()
+                  // initiate password reset flow
+                }}
+              >
+                Forgot password?
+              </Link>
+            </Grid>
+            <Grid item>
+              <Link
+                href="#"
+                variant="body2"
+                onClick={(e) => {
+                  e.preventDefault()
+                  Router.push('/signup')
+                }}
+              >
+                {"Don't have an account? Sign Up"}
+              </Link>
+            </Grid>
+          </Grid>
         </Container>
       </form>
     </>

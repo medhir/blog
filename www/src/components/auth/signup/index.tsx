@@ -184,7 +184,8 @@ const SignUpForm = () => {
                     I have agreed to the{' '}
                     <a
                       href="#"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault()
                         setTermsOfServiceDialogOpen(true)
                       }}
                     >
