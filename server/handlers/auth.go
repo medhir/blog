@@ -160,6 +160,28 @@ func (h *handlers) RegisterNewUser() http.HandlerFunc {
 	}
 }
 
+func (h *handlers) HandleResetPassword() http.HandlerFunc {
+	type resetPasswordRequest struct {
+		UsernameOrEmail string `json:"username_or_email"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			defer r.Body.Close()
+			var request resetPasswordRequest
+			err := json.NewDecoder(r.Body).Decode(&request)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			err = h.auth.ResetUserPassword(request.UsernameOrEmail)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+			}
+		}
+	}
+}
+
 func (h *handlers) setAuthCookies(w http.ResponseWriter, jwt, refresh string) {
 	// set authentication tokens as http-only cookies
 	if jwt != "" {
@@ -191,21 +213,6 @@ func (h *handlers) setAuthCookies(w http.ResponseWriter, jwt, refresh string) {
 			refreshCookie.Secure = true
 		}
 		http.SetCookie(w, refreshCookie)
-	}
-}
-
-func (h *handlers) HandleRealmRepresentation() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		realm, err := h.auth.RealmRepresentation()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		err = writeJSON(w, realm)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
 	}
 }
 

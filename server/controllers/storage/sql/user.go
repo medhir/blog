@@ -6,6 +6,7 @@ import "database/sql"
 type User struct {
 	ID                  string         `json:"id"`
 	Username            string         `json:"username"`
+	Email               string         `json:"email"`
 	FirstName           sql.NullString `json:"first_name"`
 	LastName            sql.NullString `json:"last_name"`
 	StripeCustomerToken sql.NullString `json:"stripe_customer_token"`
@@ -21,4 +22,25 @@ VALUES ($1, $2, $3);`
 		return err
 	}
 	return nil
+}
+
+func (p *postgres) GetUserByUsernameOrEmail(usernameOrEmail string) (*User, error) {
+	user := &User{}
+	query := `
+SELECT id, username, email, first_name, last_name, stripe_customer_token, instance_password
+FROM "user"
+WHERE username = $1 OR email = $1;`
+	err := p.db.QueryRow(query, usernameOrEmail).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&user.FirstName,
+		&user.LastName,
+		&user.StripeCustomerToken,
+		&user.InstancePassword,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

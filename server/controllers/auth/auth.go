@@ -30,12 +30,11 @@ type Auth interface {
 	GetUserAttribute(user *gocloak.User, key string) (string, error)
 	RemoveUserAttribute(user *gocloak.User, key string) error
 	Login(request *LoginRequest) (*LoginResponse, error)
+	ResetUserPassword(usernameOrEmail string) error
 
 	ValidateJWT(jwt string) error
 	ValidateRole(jwt string, role Role) error
 	RefreshJWT(refreshToken string) (string, error)
-
-	RealmRepresentation() (*gocloak.RealmRepresentation, error)
 }
 
 type auth struct {
@@ -209,6 +208,51 @@ func (a *auth) Login(request *LoginRequest) (*LoginResponse, error) {
 	}, nil
 }
 
+// RefreshJWT uses a refresh token to retrieve a new valid jwt
+func (a *auth) RefreshJWT(refreshToken string) (string, error) {
+	jwt, err := a.client.RefreshToken(refreshToken, a.clientID, a.clientSecret, realm)
+	if err != nil {
+		return "", err
+	}
+	return jwt.AccessToken, nil
+}
+
+func (a *auth) ResetUserPassword(usernameOrEmail string) error {
+	token, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
+	if err != nil {
+		return err
+	}
+	user, err := a.db.GetUserByUsernameOrEmail(usernameOrEmail)
+	if err != nil {
+		return err
+	}
+	// send password reset email
+	err = a.client.ExecuteActionsEmail(
+		token.AccessToken,
+		realm, gocloak.ExecuteActionsEmail{
+			UserID:      stringPtr(user.ID),
+			ClientID:    stringPtr(a.clientID),
+			RedirectURI: stringPtr("https://medhir.com/blog/edit"),
+			Actions: []string{
+				"UPDATE_PASSWORD",
+			},
+		},
+	)
+	return nil
+}
+
+func (a *auth) RealmRepresentation() (*gocloak.RealmRepresentation, error) {
+	adminToken, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
+	if err != nil {
+		return nil, err
+	}
+	representation, err := a.client.GetRealm(adminToken.AccessToken, realm)
+	if err != nil {
+		return nil, err
+	}
+	return representation, nil
+}
+
 // ValidateJWT determines if a jwt is still a valid authentication token
 func (a *auth) ValidateJWT(jwt string) error {
 	rptResult, err := a.client.RetrospectToken(jwt, a.clientID, a.clientSecret, realm)
@@ -255,27 +299,6 @@ func (a *auth) ValidateRole(jwt string, role Role) error {
 		return errors.New("user is not authorized to access this resource")
 	}
 	return nil
-}
-
-// RefreshJWT uses a refresh token to retrieve a new valid jwt
-func (a *auth) RefreshJWT(refreshToken string) (string, error) {
-	jwt, err := a.client.RefreshToken(refreshToken, a.clientID, a.clientSecret, realm)
-	if err != nil {
-		return "", err
-	}
-	return jwt.AccessToken, nil
-}
-
-func (a *auth) RealmRepresentation() (*gocloak.RealmRepresentation, error) {
-	adminToken, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
-	if err != nil {
-		return nil, err
-	}
-	representation, err := a.client.GetRealm(adminToken.AccessToken, realm)
-	if err != nil {
-		return nil, err
-	}
-	return representation, nil
 }
 
 func stringPtr(str string) *string {
