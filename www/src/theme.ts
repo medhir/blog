@@ -5,10 +5,14 @@ import { red } from '@material-ui/core/colors'
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: '#556cd6',
+      light: '#5e92f3',
+      main: '#1565c0',
+      dark: '#5e92f3',
     },
     secondary: {
-      main: '#19857b',
+      light: '#ffe54c',
+      main: '#ffb300',
+      dark: '#c68400',
     },
     error: {
       main: red.A400,
@@ -26,9 +30,6 @@ const theme = createMuiTheme({
       '"Segoe UI Emoji"',
       '"Segoe UI Symbol"',
     ].join(','),
-    button: {
-      textTransform: 'none'
-    },
   },
 })
 

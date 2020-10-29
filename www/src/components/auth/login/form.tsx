@@ -65,6 +65,7 @@ const LoginForm = ({
                 onClick={(e) => {
                   e.preventDefault()
                   // initiate password reset flow
+                  Router.push('/password_reset')
                 }}
               >
                 Forgot password?
