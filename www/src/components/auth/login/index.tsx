@@ -62,7 +62,9 @@ class Login extends Component<LoginProps, LoginState> {
     })
   }
 
-  login(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+  login(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+
     const { role } = this.props
     const { username, password } = this.state
 

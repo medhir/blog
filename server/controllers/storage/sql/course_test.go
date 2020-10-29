@@ -12,6 +12,9 @@ func TestCourses(t *testing.T) {
 	title := "An amazing course"
 	description := "An amazing course's description"
 
+	// create user
+	err := pg.CreateUser(authorID, "bob", "bob@gmail.com")
+
 	// create a new course
 	id, err := pg.CreateCourse(authorID, title, description, masterPVCName)
 	assert.NotEmpty(t, id)
@@ -51,4 +54,8 @@ func TestCourses(t *testing.T) {
 	// verify the course no longer exists
 	_, err = pg.GetCourse(id)
 	assert.Error(t, err)
+
+	// delete user
+	err = pg.DeleteUser(authorID)
+	assert.NoError(t, err)
 }

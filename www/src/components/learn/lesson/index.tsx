@@ -4,7 +4,12 @@ import IDE from '../ide'
 import styles from './lesson.module.scss'
 import React, { Component, ChangeEvent, ClipboardEvent, DragEvent } from 'react'
 import { Protected } from '../../../utility/http'
-import { ErrorAlert, SuccessAlert } from '../../alert'
+import {
+  ErrorAlert,
+  Notification,
+  NotificationData,
+  SuccessAlert,
+} from '../../alert'
 import { AxiosError } from 'axios'
 import Router from 'next/router'
 import {
@@ -16,7 +21,6 @@ import {
   DialogTitle,
   IconButton,
   Paper,
-  Snackbar,
   TextField,
   Tooltip,
 } from '@material-ui/core'
@@ -30,7 +34,6 @@ import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary'
 import SaveIcon from '@material-ui/icons/Save'
 import StopIcon from '@material-ui/icons/Stop'
 import VpnKeyIcon from '@material-ui/icons/VpnKey'
-import { Alert } from '@material-ui/lab'
 
 const ImageMIMERegex = /^image\/(p?jpeg|gif|png)$/i
 const LoadingText = '![](Uploading...)'
@@ -86,9 +89,11 @@ interface LessonState {
   key: number
   errorAlert: AlertState
   successAlert: AlertState
-  snackBarOpen: boolean
+  notification: NotificationData
   loading: boolean
 }
+
+const PasswordCopyAction = () => {}
 
 class Lesson extends Component<LessonProps, LessonState> {
   articleRef: React.RefObject<HTMLElement>
@@ -105,6 +110,8 @@ class Lesson extends Component<LessonProps, LessonState> {
       launchPortDialogOpen: false,
       portInput: '9000',
       loading: true,
+      // open notification displaying instance password
+      notification: this.getPasswordNotification(),
       errorAlert: {
         open: false,
         message: '',
@@ -113,12 +120,12 @@ class Lesson extends Component<LessonProps, LessonState> {
         open: false,
         message: '',
       },
-      snackBarOpen: true,
     }
 
     this.articleRef = React.createRef()
     this.copyToClipboard = this.copyToClipboard.bind(this)
     this.deleteAsset = this.deleteAsset.bind(this)
+    this.getPasswordNotification = this.getPasswordNotification.bind(this)
     this.getPortLink = this.getPortLink.bind(this)
     this.getTitle = this.getTitle.bind(this)
     this.handleDrop = this.handleDrop.bind(this)
@@ -129,7 +136,7 @@ class Lesson extends Component<LessonProps, LessonState> {
     this.handleTextareaChange = this.handleTextareaChange.bind(this)
     this.handleErrorAlertClose = this.handleErrorAlertClose.bind(this)
     this.handleSuccessAlertClose = this.handleSuccessAlertClose.bind(this)
-    this.handleSnackbarClose = this.handleSnackbarClose.bind(this)
+    this.handleNotificationClose = this.handleNotificationClose.bind(this)
     this.insertAtCursor = this.insertAtCursor.bind(this)
     this.saveLesson = this.saveLesson.bind(this)
     this.saveFolderName = this.saveFolderName.bind(this)
@@ -170,6 +177,32 @@ class Lesson extends Component<LessonProps, LessonState> {
           },
         })
       })
+  }
+
+  copyPasswordAction() {
+    const { instance } = this.props
+    const { copyToClipboard, handleNotificationClose } = this
+    return (
+      <>
+        <Button
+          size="small"
+          onClick={() => {
+            copyToClipboard(instance.password)
+            handleNotificationClose()
+          }}
+        >
+          COPY
+        </Button>
+        <IconButton
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={handleNotificationClose}
+        >
+          <CloseIcon />
+        </IconButton>
+      </>
+    )
   }
 
   deleteAsset(name: string) {
@@ -218,6 +251,38 @@ class Lesson extends Component<LessonProps, LessonState> {
           },
         })
       })
+  }
+
+  getPasswordNotification(): NotificationData {
+    const { instance } = this.props
+    const { copyToClipboard, handleNotificationClose } = this
+    const passwordAction = () => (
+      <>
+        <Button
+          size="small"
+          onClick={() => {
+            copyToClipboard(instance.password)
+            handleNotificationClose()
+          }}
+        >
+          COPY
+        </Button>
+        <IconButton
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={handleNotificationClose}
+        >
+          <CloseIcon />
+        </IconButton>
+      </>
+    )
+    return {
+      action: passwordAction(),
+      open: true,
+      message: `Your IDE Password is ${instance.password}`,
+      severity: 'info',
+    }
   }
 
   getPortLink() {
@@ -369,9 +434,12 @@ class Lesson extends Component<LessonProps, LessonState> {
     })
   }
 
-  handleSnackbarClose() {
+  handleNotificationClose() {
     this.setState({
-      snackBarOpen: false,
+      notification: {
+        open: false,
+        message: '',
+      },
     })
   }
 
@@ -499,15 +567,16 @@ class Lesson extends Component<LessonProps, LessonState> {
       launchPortDialogOpen,
       portInput,
       errorAlert,
+      notification,
       successAlert,
       showAssets,
-      snackBarOpen,
     } = this.state
     const { lesson, instance } = this.props
     const {
       articleRef,
       copyToClipboard,
       deleteAsset,
+      getPasswordNotification,
       getPortLink,
       handleDrop,
       handlePaste,
@@ -516,7 +585,7 @@ class Lesson extends Component<LessonProps, LessonState> {
       handleTextareaChange,
       handleErrorAlertClose,
       handleSuccessAlertClose,
-      handleSnackbarClose,
+      handleNotificationClose,
       saveLesson,
       saveFolderName,
       stopEnvironment,
@@ -588,7 +657,13 @@ class Lesson extends Component<LessonProps, LessonState> {
               </IconButton>
             </Tooltip>
             <Tooltip title="Get IDE Password">
-              <IconButton onClick={() => this.setState({ snackBarOpen: true })}>
+              <IconButton
+                onClick={() =>
+                  this.setState({
+                    notification: getPasswordNotification(),
+                  })
+                }
+              >
                 <VpnKeyIcon />
               </IconButton>
             </Tooltip>
@@ -696,44 +771,15 @@ class Lesson extends Component<LessonProps, LessonState> {
             {successAlert.message}
           </SuccessAlert>
         )}
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          open={snackBarOpen}
+        <Notification
+          action={notification.action}
+          open={notification.open}
           autoHideDuration={10000}
-          onClose={handleSnackbarClose}
+          onClose={handleNotificationClose}
+          severity={notification.severity}
         >
-          <Alert
-            onClose={handleSnackbarClose}
-            severity="info"
-            action={
-              <>
-                <Button
-                  color="secondary"
-                  size="small"
-                  onClick={() => {
-                    copyToClipboard(instance.password)
-                    handleSnackbarClose()
-                  }}
-                >
-                  COPY
-                </Button>
-                <IconButton
-                  size="small"
-                  aria-label="close"
-                  color="inherit"
-                  onClick={handleSnackbarClose}
-                >
-                  <CloseIcon />
-                </IconButton>
-              </>
-            }
-          >
-            {`Your IDE Password is ${instance.password}`}
-          </Alert>
-        </Snackbar>
+          {notification.message}
+        </Notification>
       </section>
     )
   }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Nerzal/gocloak/v5"
+	"gitlab.com/medhir/blog/server/controllers/storage/sql"
 	"os"
 )
 
@@ -24,11 +25,12 @@ const (
 // that can be taken within the application context
 type Auth interface {
 	GetUser(jwt string) (*gocloak.User, error)
-	CreateUser(req *CreateUserRequest) (*CreateUserResponse, error)
+	CreateUser(username, email, password string) error
 	AddUserAttribute(user *gocloak.User, key, value string) error
 	GetUserAttribute(user *gocloak.User, key string) (string, error)
 	RemoveUserAttribute(user *gocloak.User, key string) error
 	Login(request *LoginRequest) (*LoginResponse, error)
+	ResetUserPassword(usernameOrEmail string) error
 
 	ValidateJWT(jwt string) error
 	ValidateRole(jwt string, role Role) error
@@ -36,15 +38,16 @@ type Auth interface {
 }
 
 type auth struct {
+	adminUsername string
+	adminPassword string
 	client        gocloak.GoCloak
 	clientID      string
 	clientSecret  string
-	adminUsername string
-	adminPassword string
+	db            sql.Postgres
 }
 
 // NewAuth instantiates a new authentication controller for the application
-func NewAuth() (Auth, error) {
+func NewAuth(db sql.Postgres) (Auth, error) {
 	clientID, ok := os.LookupEnv("KEYCLOAK_CLIENT_ID")
 	if !ok {
 		return nil, errors.New("KEYCLOAK_CLIENT_ID environment variable must be provided")
@@ -63,63 +66,59 @@ func NewAuth() (Auth, error) {
 	}
 
 	auth := &auth{
+		adminUsername: adminUsername,
+		adminPassword: adminPassword,
 		client:        gocloak.NewClient(baseURL),
 		clientID:      clientID,
 		clientSecret:  clientSecret,
-		adminUsername: adminUsername,
-		adminPassword: adminPassword,
+		db:            db,
 	}
 	return auth, nil
 }
 
-// CreateUserRequest describes the request for creating a new user
-type CreateUserRequest struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Username  string `json:"username"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-}
-
-// CreateUserResponse is the response for a call to CreateUser
-type CreateUserResponse struct {
-	Token        string `json:"token"`
-	RefreshToken string `json:"refresh_token"`
-}
-
-func (a *auth) CreateUser(req *CreateUserRequest) (*CreateUserResponse, error) {
+func (a *auth) CreateUser(username, email, password string) error {
 	token, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	// Create new user in the realm
 	userID, err := a.client.CreateUser(
 		token.AccessToken,
 		realm,
 		gocloak.User{
-			FirstName: stringPtr(req.FirstName),
-			LastName:  stringPtr(req.LastName),
-			Username:  stringPtr(req.Username),
-			Email:     stringPtr(req.Email),
-			Enabled:   boolPtr(true),
+			Username: stringPtr(username),
+			Email:    stringPtr(email),
+			Enabled:  boolPtr(true),
 		})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	// set the user's password
-	err = a.client.SetPassword(token.AccessToken, userID, realm, req.Password, false)
+	err = a.client.SetPassword(token.AccessToken, userID, realm, password, false)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	token, err = a.client.Login(a.clientID, a.clientSecret, realm, req.Username, req.Password)
+	// send verification email
+	err = a.client.ExecuteActionsEmail(
+		token.AccessToken,
+		realm, gocloak.ExecuteActionsEmail{
+			UserID:      stringPtr(userID),
+			ClientID:    stringPtr(a.clientID),
+			RedirectURI: stringPtr("https://medhir.com/verified"),
+			Actions: []string{
+				"VERIFY_EMAIL",
+			},
+		},
+	)
 	if err != nil {
-		return nil, err
+		return err
 	}
-
-	return &CreateUserResponse{
-		Token:        token.AccessToken,
-		RefreshToken: token.RefreshToken,
-	}, nil
+	// add user to database
+	err = a.db.CreateUser(userID, username, email)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (a *auth) GetUser(jwt string) (*gocloak.User, error) {
@@ -209,6 +208,51 @@ func (a *auth) Login(request *LoginRequest) (*LoginResponse, error) {
 	}, nil
 }
 
+// RefreshJWT uses a refresh token to retrieve a new valid jwt
+func (a *auth) RefreshJWT(refreshToken string) (string, error) {
+	jwt, err := a.client.RefreshToken(refreshToken, a.clientID, a.clientSecret, realm)
+	if err != nil {
+		return "", err
+	}
+	return jwt.AccessToken, nil
+}
+
+func (a *auth) ResetUserPassword(usernameOrEmail string) error {
+	token, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
+	if err != nil {
+		return err
+	}
+	user, err := a.db.GetUserByUsernameOrEmail(usernameOrEmail)
+	if err != nil {
+		return err
+	}
+	// send password reset email
+	err = a.client.ExecuteActionsEmail(
+		token.AccessToken,
+		realm, gocloak.ExecuteActionsEmail{
+			UserID:      stringPtr(user.ID),
+			ClientID:    stringPtr(a.clientID),
+			RedirectURI: stringPtr("https://medhir.com/blog/edit"),
+			Actions: []string{
+				"UPDATE_PASSWORD",
+			},
+		},
+	)
+	return nil
+}
+
+func (a *auth) RealmRepresentation() (*gocloak.RealmRepresentation, error) {
+	adminToken, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
+	if err != nil {
+		return nil, err
+	}
+	representation, err := a.client.GetRealm(adminToken.AccessToken, realm)
+	if err != nil {
+		return nil, err
+	}
+	return representation, nil
+}
+
 // ValidateJWT determines if a jwt is still a valid authentication token
 func (a *auth) ValidateJWT(jwt string) error {
 	rptResult, err := a.client.RetrospectToken(jwt, a.clientID, a.clientSecret, realm)
@@ -255,15 +299,6 @@ func (a *auth) ValidateRole(jwt string, role Role) error {
 		return errors.New("user is not authorized to access this resource")
 	}
 	return nil
-}
-
-// RefreshJWT uses a refresh token to retrieve a new valid jwt
-func (a *auth) RefreshJWT(refreshToken string) (string, error) {
-	jwt, err := a.client.RefreshToken(refreshToken, a.clientID, a.clientSecret, realm)
-	if err != nil {
-		return "", err
-	}
-	return jwt.AccessToken, nil
 }
 
 func stringPtr(str string) *string {

@@ -139,20 +139,46 @@ func (h *handlers) RefreshForNext() http.HandlerFunc {
 }
 
 func (h *handlers) RegisterNewUser() http.HandlerFunc {
+	type createUserRequest struct {
+		Username string `json:"username"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		var newUser auth.CreateUserRequest
-		err := json.NewDecoder(r.Body).Decode(&newUser)
+		var user createUserRequest
+		err := json.NewDecoder(r.Body).Decode(&user)
 		if err != nil {
 			http.Error(w, "Unable to decode data in request body", http.StatusInternalServerError)
 			return
 		}
-		resp, err := h.auth.CreateUser(&newUser)
+		err = h.auth.CreateUser(user.Username, user.Email, user.Password)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Unable to create new user - %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
-		h.setAuthCookies(w, resp.Token, resp.RefreshToken)
+	}
+}
+
+func (h *handlers) HandleResetPassword() http.HandlerFunc {
+	type resetPasswordRequest struct {
+		UsernameOrEmail string `json:"username_or_email"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			defer r.Body.Close()
+			var request resetPasswordRequest
+			err := json.NewDecoder(r.Body).Decode(&request)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			err = h.auth.ResetUserPassword(request.UsernameOrEmail)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+			}
+		}
 	}
 }
 

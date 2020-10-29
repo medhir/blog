@@ -66,7 +66,7 @@
   }
 
   .codeBlock {
-    font-family: 'Menlo', monospace;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
     font-size: 0.8rem;
     line-height: 1.15rem;
     overflow: auto;
@@ -74,7 +74,7 @@
   }
 
   code {
-    font-family: 'Menlo', monospace;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
     font-size: 0.8rem;
     background-color: rgba(213, 0, 233, 0.158);
     margin: 0px 3px;

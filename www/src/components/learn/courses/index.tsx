@@ -2,7 +2,7 @@ import { Component } from 'react'
 import Router from 'next/router'
 
 import styles from './courses.module.scss'
-import { Card, CardActionArea, CardContent } from '@material-ui/core'
+import { Container, Card, CardActionArea, CardContent } from '@material-ui/core'
 import LibraryAddIcon from '@material-ui/icons/LibraryAdd'
 import { CourseMetadata } from '../course'
 import { Protected } from '../../../utility/http'
@@ -24,7 +24,7 @@ export default class Courses extends Component<CoursesProps, CoursesState> {
   render() {
     const { courses } = this.props
     return (
-      <section className={styles.courses}>
+      <Container className={styles.courses}>
         <h2>Your Courses</h2>
         <div className={styles.courses_cards}>
           {courses.map((course) => (
@@ -69,7 +69,7 @@ export default class Courses extends Component<CoursesProps, CoursesState> {
             </CardActionArea>
           </Card>
         </div>
-      </section>
+      </Container>
     )
   }
 }

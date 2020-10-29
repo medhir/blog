@@ -5,10 +5,14 @@ import { red } from '@material-ui/core/colors'
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: '#556cd6',
+      light: '#5e92f3',
+      main: '#1565c0',
+      dark: '#5e92f3',
     },
     secondary: {
-      main: '#19857b',
+      light: '#ffe54c',
+      main: '#ffb300',
+      dark: '#c68400',
     },
     error: {
       main: red.A400,
@@ -16,6 +20,16 @@ const theme = createMuiTheme({
     background: {
       default: '#fff',
     },
+  },
+  typography: {
+    fontFamily: [
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
   },
 })
 
