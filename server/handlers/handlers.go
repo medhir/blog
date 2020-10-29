@@ -89,13 +89,6 @@ func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, db sql.Postgr
 	}, nil
 }
 
-// sendJSON writes an encoded json byte slice to an http response
-func sendJSON(w http.ResponseWriter, data []byte) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
-}
-
 // writeJSON encodes an interface as JSON and writes the data as part of an http response
 func writeJSON(w http.ResponseWriter, v interface{}) error {
 	data, err := json.Marshal(v)
