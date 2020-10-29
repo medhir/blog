@@ -4,8 +4,8 @@ DROP TABLE IF EXISTS course;
 
 CREATE TABLE IF NOT EXISTS "user"(
     id UUID PRIMARY KEY,
-    username TEXT NOT NULL,
-    email TEXT NOT NULL,
+    username TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
     first_name TEXT,
     last_name TEXT,
     stripe_customer_token TEXT,

@@ -1,6 +1,9 @@
 package sql
 
-import "database/sql"
+import (
+	"database/sql"
+	"errors"
+)
 
 // User describes the metadata for a site user
 type User struct {
@@ -20,6 +23,24 @@ VALUES ($1, $2, $3);`
 	_, err := p.db.Exec(query, id, username, email)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (p *postgres) DeleteUser(id string) error {
+	query := `
+DELETE FROM "user"
+WHERE id = $1`
+	res, err := p.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return errors.New("lesson was not deleted, zero rows affected by delete query")
 	}
 	return nil
 }

@@ -24,6 +24,7 @@ type Postgres interface {
 
 	// User API
 	CreateUser(id, username, email string) error
+	DeleteUser(id string) error
 	GetUserByUsernameOrEmail(usernameOrEmail string) (*User, error)
 
 	// Course API

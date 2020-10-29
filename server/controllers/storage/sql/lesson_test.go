@@ -13,6 +13,9 @@ func TestLesson(t *testing.T) {
 	courseTitle := "An amazing course"
 	courseDescription := "An amazing course's description"
 
+	// create user
+	err := pg.CreateUser(authorID, "bob", "bob@gmail.com")
+
 	// Create course
 	courseID, err := pg.CreateCourse(authorID, courseTitle, courseDescription, masterPVCName)
 	assert.NoError(t, err)
@@ -69,6 +72,10 @@ func TestLesson(t *testing.T) {
 	// deleting a course with no lessons should not return an error
 	err = pg.DeleteCourse(courseID)
 	assert.NoError(t, err)
+
+	// delete user
+	err = pg.DeleteUser(authorID)
+	assert.NoError(t, err)
 }
 
 func TestLessonAsset(t *testing.T) {
@@ -76,6 +83,9 @@ func TestLessonAsset(t *testing.T) {
 	masterPVCName := "pvc_name"
 	courseTitle := "An amazing course"
 	courseDescription := "An amazing course's description"
+
+	// create user
+	err := pg.CreateUser(authorID, "bob", "bob@gmail.com")
 
 	// Create course
 	courseID, err := pg.CreateCourse(authorID, courseTitle, courseDescription, masterPVCName)
@@ -115,5 +125,13 @@ func TestLessonAsset(t *testing.T) {
 
 	// lesson should be able to be deleted once assets are deleted
 	err = pg.DeleteLesson(lessonID)
+	assert.NoError(t, err)
+
+	// deleting a course with no lessons should not return an error
+	err = pg.DeleteCourse(courseID)
+	assert.NoError(t, err)
+
+	// delete user
+	err = pg.DeleteUser(authorID)
 	assert.NoError(t, err)
 }
