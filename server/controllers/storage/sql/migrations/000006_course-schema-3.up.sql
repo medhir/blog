@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS "user"(
 
 CREATE TABLE IF NOT EXISTS course(
     id UUID PRIMARY KEY,
-    author_id UUID NOT NULL,
+    author_id UUID NOT NULL REFERENCES "user" (id),
     title TEXT NOT NULL,
     description TEXT,
     master_pvc_name TEXT NOT NULL UNIQUE,
