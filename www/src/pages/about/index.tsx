@@ -15,9 +15,9 @@ const About = () => (
         My interests span many domains, including web application development,
         biology, electrochemistry, graphic design, and computer science
         education. I am currently a member of the University of Washington's{' '}
-        <a href="https://comotion.uw.edu">CoMotion</a> program, working on
-        developing textile-based electrochemcial sensors towards healthcare
-        monitoring applications.
+        <a href="https://comotion.uw.edu">CoMotion</a> program, developing
+        electrochemcial sensors on textiles towards health monitoring
+        applications.
       </p>
       <p>
         You can view some of my work through this site and{' '}
@@ -26,11 +26,10 @@ const About = () => (
         email via mail AT medhir.com.
       </p>
       <p>
-        P.S. – Due to macroeconomic conditions presented by COVID-19, I am out
-        of a job and have decided to focus on personal projects for a while.
-        That being said, if you are interested in hiring me I am open to a
-        conversation. Please feel free to send me a message on LinkedIn or
-        through email.
+        I am currently on the job market after being laid off mid-2020 due to
+        the impacts of COVID. If you are interested having a discussion about
+        working together, please feel free to shoot over a message through email
+        or LinkedIn.
       </p>
     </section>
   </>
