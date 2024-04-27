@@ -1,9 +1,10 @@
 package blog
 
 import (
-	"gitlab.com/medhir/blog/server/controllers/storage/gcs"
-	"gitlab.com/medhir/blog/server/controllers/storage/sql"
 	"time"
+
+	"github.com/medhir/blog/server/controllers/storage/gcs"
+	"github.com/medhir/blog/server/controllers/storage/sql"
 )
 
 const (

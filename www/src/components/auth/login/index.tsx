@@ -1,76 +1,76 @@
-import React, { Component } from 'react'
-import http from '../../../utility/http'
-import { AxiosError } from 'axios'
-import LoginForm from './form'
-import { ErrorAlert } from '../../alert'
+import React, { Component } from "react";
+import http from "../../../utility/http";
+import { AxiosError } from "axios";
+import LoginForm from "./form";
+import { ErrorAlert } from "../../alert";
 
 interface LoginErrorAlert {
-  open: boolean
-  message: string
+  open: boolean;
+  message: string;
 }
 
 interface LoginProps {
-  role: string
+  role: string;
 }
 
 interface LoginState {
-  username: string
-  password: string
-  loginErrorAlert: LoginErrorAlert
+  username: string;
+  password: string;
+  loginErrorAlert: LoginErrorAlert;
 }
 
 class Login extends Component<LoginProps, LoginState> {
-  constructor(props) {
-    super(props)
+  constructor(props: LoginProps) {
+    super(props);
     this.state = {
-      username: '',
-      password: '',
+      username: "",
+      password: "",
       loginErrorAlert: {
         open: false,
-        message: '',
+        message: "",
       },
-    }
+    };
 
-    this.closeLoginErrorAlert = this.closeLoginErrorAlert.bind(this)
-    this.handleUsernameChange = this.handleUsernameChange.bind(this)
-    this.handlePasswordChange = this.handlePasswordChange.bind(this)
-    this.login = this.login.bind(this)
+    this.closeLoginErrorAlert = this.closeLoginErrorAlert.bind(this);
+    this.handleUsernameChange = this.handleUsernameChange.bind(this);
+    this.handlePasswordChange = this.handlePasswordChange.bind(this);
+    this.login = this.login.bind(this);
   }
 
   closeLoginErrorAlert(event?: React.SyntheticEvent, reason?: string) {
-    if (reason === 'clickaway') {
-      return
+    if (reason === "clickaway") {
+      return;
     }
 
     this.setState({
       loginErrorAlert: {
         open: false,
-        message: '',
+        message: "",
       },
-    })
+    });
   }
 
   handleUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({
       username: e.target.value,
-    })
+    });
   }
 
   handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({
       password: e.target.value,
-    })
+    });
   }
 
   login(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+    e.preventDefault();
 
-    const { role } = this.props
-    const { username, password } = this.state
+    const { role } = this.props;
+    const { username, password } = this.state;
 
     http
       .Post(
-        '/login',
+        "/login",
         {
           loginID: username,
           password,
@@ -81,16 +81,16 @@ class Login extends Component<LoginProps, LoginState> {
         }
       )
       .then(() => {
-        location.reload()
+        location.reload();
       })
       .catch((error: AxiosError) => {
         this.setState({
           loginErrorAlert: {
             open: true,
-            message: error.response.data,
+            message: error.response?.data ?? "An error occurred.",
           },
-        })
-      })
+        });
+      });
   }
 
   render() {
@@ -99,8 +99,8 @@ class Login extends Component<LoginProps, LoginState> {
       login,
       handleUsernameChange,
       handlePasswordChange,
-    } = this
-    const { username, password, loginErrorAlert } = this.state
+    } = this;
+    const { username, password, loginErrorAlert } = this.state;
     return (
       <>
         <LoginForm
@@ -121,8 +121,8 @@ class Login extends Component<LoginProps, LoginState> {
           </ErrorAlert>
         )}
       </>
-    )
+    );
   }
 }
 
-export default Login
+export default Login;

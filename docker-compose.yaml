@@ -1,0 +1,60 @@
+version: '3'
+services:
+  www:
+    container_name: www
+    build: 
+      context: ./www
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./www:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    ports:
+      - "9000:9000"
+    volumes:
+      - /Users/medhirbhargava/.config/gcloud/application_default_credentials.json:/gcp_credentials.json
+    depends_on:
+      - db
+      - keycloak
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/gcp_credentials.json
+      - KEYCLOAK_URL=http://keycloak:8080
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=docker
+      - KEYCLOAK_CLIENT_SECRET=AvqdfSKNUt9MbldvmMR2M2DM9z7M7tzB
+      - KEYCLOAK_CLIENT_ID=blog-server
+      - KEYCLOAK_ADMIN_USERNAME=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+  keycloak:
+    image: keycloak/keycloak
+    command: ["start-dev"]
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - DB_VENDOR=POSTGRES
+      - DB_ADDR=db
+      - DB_DATABASE=keycloak
+      - DB_USER=postgres
+      - DB_PASSWORD=docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+  db:
+    image: postgres
+    volumes:
+      - ./server/controllers/storage/sql/init:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=keycloak

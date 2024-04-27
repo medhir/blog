@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"gitlab.com/medhir/blog/server/controllers/auth"
 	"io"
 	"net/http"
 	"path"
 	"strings"
+
+	"github.com/medhir/blog/server/controllers/auth"
 )
 
 type postData struct {

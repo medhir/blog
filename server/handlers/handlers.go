@@ -4,14 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gitlab.com/medhir/blog/server/controllers/auth"
-	"gitlab.com/medhir/blog/server/controllers/blog"
-	"gitlab.com/medhir/blog/server/controllers/code"
-	"gitlab.com/medhir/blog/server/controllers/imageprocessor"
-	"gitlab.com/medhir/blog/server/controllers/storage/gcs"
-	"gitlab.com/medhir/blog/server/controllers/storage/sql"
-	"gitlab.com/medhir/blog/server/controllers/tutorial"
 	"net/http"
+
+	"github.com/medhir/blog/server/controllers/auth"
+	"github.com/medhir/blog/server/controllers/blog"
+	"github.com/medhir/blog/server/controllers/imageprocessor"
+	"github.com/medhir/blog/server/controllers/storage/gcs"
+	"github.com/medhir/blog/server/controllers/storage/sql"
 )
 
 // Handlers describes all the http handlers available within the package
@@ -41,15 +40,6 @@ type Handlers interface {
 	PostPhoto() http.HandlerFunc
 	DeletePhoto() http.HandlerFunc
 	HandlePhotos() http.HandlerFunc
-	// Courses
-	HandleCourse() http.HandlerFunc
-	HandleCourses() http.HandlerFunc
-	// Lessons
-	HandleLesson() http.HandlerFunc
-	HandleLessonAsset() http.HandlerFunc
-	HandleLessonAssets() http.HandlerFunc
-	// Code Instances
-	HandleCodeInstance() http.HandlerFunc
 }
 
 // handlers describes dependencies needed to serve http requests
@@ -60,30 +50,18 @@ type handlers struct {
 	gcs          gcs.GCS
 	blog         blog.Blog
 	imgProcessor imageprocessor.ImageProcessor
-	code         code.Manager
-	tutorials    tutorial.Tutorials
 	db           sql.Postgres
 	env          string
 }
 
 // NewHandlers instantiates a new set of handlers
 func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, db sql.Postgres, env string) (Handlers, error) {
-	codeManager, err := code.NewManager(ctx, auth, env)
-	if err != nil {
-		return nil, err
-	}
-	tutorials, err := tutorial.NewTutorials(db, gcs, codeManager)
-	if err != nil {
-		return nil, err
-	}
 	return &handlers{
 		ctx:          ctx,
 		auth:         auth,
 		gcs:          gcs,
 		blog:         blog.NewBlog(db, gcs),
 		imgProcessor: imageprocessor.NewImageProcessor(),
-		code:         codeManager,
-		tutorials:    tutorials,
 		db:           db,
 		env:          env,
 	}, nil

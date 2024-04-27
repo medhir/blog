@@ -6,14 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gitlab.com/medhir/blog/server/controllers/auth"
-	"gitlab.com/medhir/blog/server/controllers/storage/gcs"
-	"gitlab.com/medhir/blog/server/controllers/storage/sql"
 	"net/http"
 	"os"
 	"time"
 
-	"github.com/honeycombio/beeline-go"
+	"github.com/medhir/blog/server/controllers/auth"
+	"github.com/medhir/blog/server/controllers/storage/gcs"
+	"github.com/medhir/blog/server/controllers/storage/sql"
+
 	"github.com/honeycombio/beeline-go/wrappers/hnynethttp"
 	"github.com/rs/cors"
 
@@ -25,7 +25,6 @@ const (
 	// TODO - Move to config
 	serverPort   = ":9000"
 	local        = "local"
-	serviceName  = "go-server"
 	databaseName = "medhir-com"
 )
 
@@ -58,21 +57,6 @@ func NewInstance() (*Instance, error) {
 	if !ok {
 		environment = local
 	}
-
-	// send data to honeycomb
-	apiKey, ok := os.LookupEnv("HONEYCOMB_API_KEY")
-	if !ok {
-		return nil, errors.New("HONEYCOMB_API_KEY must be provided")
-	}
-	dataset, ok := os.LookupEnv("HONEYCOMB_DATASET")
-	if !ok {
-		return nil, errors.New("HONEYCOMB_DATASET must be provided")
-	}
-	beeline.Init(beeline.Config{
-		WriteKey:    apiKey,
-		Dataset:     dataset,
-		ServiceName: serviceName,
-	})
 
 	// init database connection
 	host, ok := os.LookupEnv("POSTGRES_HOST")

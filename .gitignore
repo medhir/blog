@@ -35,3 +35,9 @@ app
 
 # TLS Local Development
 .tls/
+
+# secrets 
+certs 
+
+# deployment
+cloudrun

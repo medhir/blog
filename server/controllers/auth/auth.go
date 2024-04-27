@@ -3,9 +3,10 @@ package auth
 import (
 	"errors"
 	"fmt"
-	"github.com/Nerzal/gocloak/v5"
-	"gitlab.com/medhir/blog/server/controllers/storage/sql"
 	"os"
+
+	"github.com/Nerzal/gocloak/v5"
+	"github.com/medhir/blog/server/controllers/storage/sql"
 )
 
 const (

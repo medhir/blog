@@ -1,54 +1,54 @@
-import { Button, Container, TextField } from '@material-ui/core'
-import { AxiosError } from 'axios'
-import { ChangeEvent, Component, FormEvent } from 'react'
-import http from '../../../utility/http'
-import { Notification, NotificationData } from '../../alert'
-import Head from '../../head'
-import styles from './password_reset.module.scss'
+import { Button, Container, TextField } from "@material-ui/core";
+import { AxiosError } from "axios";
+import { ChangeEvent, Component, FormEvent } from "react";
+import http from "../../../utility/http";
+import { Notification, NotificationData } from "../../alert";
+import Head from "../../head";
+import styles from "./password_reset.module.scss";
 
 interface PasswordResetState {
-  usernameOrEmail: string
-  notification: NotificationData
+  usernameOrEmail: string;
+  notification: NotificationData;
 }
 
 class PasswordReset extends Component<{}, PasswordResetState> {
-  constructor(props) {
-    super(props)
+  constructor(props: {}) {
+    super(props);
     this.state = {
-      usernameOrEmail: '',
+      usernameOrEmail: "",
       notification: {
         open: false,
-        message: '',
+        message: "",
       },
-    }
+    };
 
-    this.handleNotificationClose = this.handleNotificationClose.bind(this)
-    this.handleUsernameOrEmailChange = this.handleUsernameOrEmailChange.bind(
-      this
-    )
-    this.submitPasswordResetRequest = this.submitPasswordResetRequest.bind(this)
+    this.handleNotificationClose = this.handleNotificationClose.bind(this);
+    this.handleUsernameOrEmailChange =
+      this.handleUsernameOrEmailChange.bind(this);
+    this.submitPasswordResetRequest =
+      this.submitPasswordResetRequest.bind(this);
   }
 
   handleNotificationClose() {
     this.setState({
       notification: {
         open: false,
-        message: '',
+        message: "",
       },
-    })
+    });
   }
 
   handleUsernameOrEmailChange(e: ChangeEvent<HTMLInputElement>) {
     this.setState({
       usernameOrEmail: e.target.value,
-    })
+    });
   }
 
   submitPasswordResetRequest(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const { usernameOrEmail } = this.state
+    e.preventDefault();
+    const { usernameOrEmail } = this.state;
     http
-      .Post('/password_reset', {
+      .Post("/password_reset", {
         username_or_email: usernameOrEmail,
       })
       .then(() => {
@@ -56,39 +56,39 @@ class PasswordReset extends Component<{}, PasswordResetState> {
           notification: {
             open: true,
             message:
-              'password reset request sent. please check the email associated with your account to continue.',
-            severity: 'info',
+              "password reset request sent. please check the email associated with your account to continue.",
+            severity: "info",
           },
-        })
+        });
       })
       .catch((error: AxiosError) => {
-        switch (error.response.status) {
+        switch (error.response?.status) {
           case 400:
             this.setState({
               notification: {
                 open: true,
                 message: `We couldn't find a matching email or username in our system. Please try entering a different username or email.`,
-                severity: 'error',
+                severity: "error",
               },
-            })
-            break
+            });
+            break;
           default:
             this.setState({
               notification: {
                 open: true,
                 message:
-                  'Something went wrong on our end. Please try submitting your request again.',
-                severity: 'error',
+                  "Something went wrong on our end. Please try submitting your request again.",
+                severity: "error",
               },
-            })
-            break
+            });
+            break;
         }
-      })
+      });
   }
 
   render() {
-    const { notification, usernameOrEmail } = this.state
-    const { handleUsernameOrEmailChange, submitPasswordResetRequest } = this
+    const { notification, usernameOrEmail } = this.state;
+    const { handleUsernameOrEmailChange, submitPasswordResetRequest } = this;
     return (
       <>
         <Head title="reset password" />
@@ -122,8 +122,8 @@ class PasswordReset extends Component<{}, PasswordResetState> {
           {notification.message}
         </Notification>
       </>
-    )
+    );
   }
 }
 
-export default PasswordReset
+export default PasswordReset;

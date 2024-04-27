@@ -3,11 +3,12 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Nerzal/gocloak/v5"
-	"gitlab.com/medhir/blog/server/controllers/auth"
 	"net/http"
 	"path"
 	"time"
+
+	"github.com/Nerzal/gocloak/v5"
+	"github.com/medhir/blog/server/controllers/auth"
 )
 
 const (

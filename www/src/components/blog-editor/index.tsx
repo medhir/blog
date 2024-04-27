@@ -1,50 +1,55 @@
-import { Button, Paper, IconButton } from '@material-ui/core'
-import { AxiosError } from 'axios'
-import Router from 'next/router'
-import React, { Component, ChangeEvent, ClipboardEvent, DragEvent } from 'react'
-import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary'
-import SaveIcon from '@material-ui/icons/Save'
-import PublishIcon from '@material-ui/icons/Publish'
-import DeleteIcon from '@material-ui/icons/Delete'
+import { Button, Paper, IconButton } from "@material-ui/core";
+import { AxiosError } from "axios";
+import Router from "next/router";
+import React, {
+  Component,
+  ChangeEvent,
+  ClipboardEvent,
+  DragEvent,
+} from "react";
+import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
+import SaveIcon from "@material-ui/icons/Save";
+import PublishIcon from "@material-ui/icons/Publish";
+import DeleteIcon from "@material-ui/icons/Delete";
 
-import { Protected } from '../../utility/http'
-import { AlertData, ErrorAlert, SuccessAlert } from '../alert'
-import { Roles } from '../auth'
-import Login from '../auth/login'
-import Notebook from '../notebook'
-import styles from './editor.module.scss'
+import { Protected } from "../../utility/http";
+import { AlertData, ErrorAlert, SuccessAlert } from "../alert";
+import { Roles } from "../auth";
+import Login from "../auth/login";
+import Notebook from "../notebook";
+import styles from "./editor.module.scss";
 
-const ImageMIMERegex = /^image\/(p?jpeg|gif|png)$/i
-const LoadingText = '![](Uploading...)'
+const ImageMIMERegex = /^image\/(p?jpeg|gif|png)$/i;
+const LoadingText = "![](Uploading...)";
 
 interface Asset {
-  post_id: string
-  name: string
-  url: string
+  post_id: string;
+  name: string;
+  url: string;
 }
 
 interface BlogEditorProps {
-  auth: boolean
-  id: string
-  draft: boolean
-  mdx: string
+  auth: boolean;
+  id: string;
+  draft: boolean;
+  mdx: string;
 }
 
 interface BlogEditorState {
-  assets: Array<Asset>
-  key: number
-  mdx: string
-  mobile: boolean
-  showAssets: boolean
-  errorAlert: AlertData
-  successAlert: AlertData
+  assets: Array<Asset>;
+  key: number;
+  mdx: string;
+  mobile: boolean;
+  showAssets: boolean;
+  errorAlert: AlertData;
+  successAlert: AlertData;
 }
 
 class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
-  articleRef: React.RefObject<HTMLElement>
+  articleRef: React.RefObject<HTMLElement>;
 
   constructor(props: BlogEditorProps) {
-    super(props)
+    super(props);
     this.state = {
       assets: [],
       key: new Date().getTime(),
@@ -53,53 +58,53 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
       showAssets: false,
       errorAlert: {
         open: false,
-        message: '',
+        message: "",
       },
       successAlert: {
         open: false,
-        message: '',
+        message: "",
       },
-    }
+    };
 
-    this.articleRef = React.createRef()
-    this.checkIfMobile = this.checkIfMobile.bind(this)
-    this.closeErrorAlert = this.closeErrorAlert.bind(this)
-    this.closeSuccessAlert = this.closeSuccessAlert.bind(this)
-    this.copyToClipboard = this.copyToClipboard.bind(this)
-    this.getAssets = this.getAssets.bind(this)
-    this.getTitle = this.getTitle.bind(this)
-    this.handleDrop = this.handleDrop.bind(this)
-    this.handlePaste = this.handlePaste.bind(this)
-    this.handleImageUpload = this.handleImageUpload.bind(this)
-    this.handleTextareaChange = this.handleTextareaChange.bind(this)
-    this.deleteAsset = this.deleteAsset.bind(this)
-    this.deleteDraft = this.deleteDraft.bind(this)
-    this.saveDraft = this.saveDraft.bind(this)
-    this.publishDraft = this.publishDraft.bind(this)
-    this.revisePost = this.revisePost.bind(this)
-    this.deletePost = this.deletePost.bind(this)
-    this.toggleAssets = this.toggleAssets.bind(this)
+    this.articleRef = React.createRef();
+    this.checkIfMobile = this.checkIfMobile.bind(this);
+    this.closeErrorAlert = this.closeErrorAlert.bind(this);
+    this.closeSuccessAlert = this.closeSuccessAlert.bind(this);
+    this.copyToClipboard = this.copyToClipboard.bind(this);
+    this.getAssets = this.getAssets.bind(this);
+    this.getTitle = this.getTitle.bind(this);
+    this.handleDrop = this.handleDrop.bind(this);
+    this.handlePaste = this.handlePaste.bind(this);
+    this.handleImageUpload = this.handleImageUpload.bind(this);
+    this.handleTextareaChange = this.handleTextareaChange.bind(this);
+    this.deleteAsset = this.deleteAsset.bind(this);
+    this.deleteDraft = this.deleteDraft.bind(this);
+    this.saveDraft = this.saveDraft.bind(this);
+    this.publishDraft = this.publishDraft.bind(this);
+    this.revisePost = this.revisePost.bind(this);
+    this.deletePost = this.deletePost.bind(this);
+    this.toggleAssets = this.toggleAssets.bind(this);
   }
 
   componentDidMount() {
-    this.checkIfMobile()
-    window.addEventListener('resize', this.checkIfMobile)
-    this.getAssets()
+    this.checkIfMobile();
+    window.addEventListener("resize", this.checkIfMobile);
+    this.getAssets();
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.checkIfMobile)
+    window.removeEventListener("resize", this.checkIfMobile);
   }
 
   checkIfMobile() {
     if (window.innerWidth < 600) {
       this.setState({
         mobile: true,
-      })
+      });
     } else {
       this.setState({
         mobile: false,
-      })
+      });
     }
   }
 
@@ -107,34 +112,34 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
     this.setState({
       successAlert: {
         open: false,
-        message: '',
+        message: "",
       },
-    })
+    });
   }
 
   closeErrorAlert() {
     this.setState({
       errorAlert: {
         open: false,
-        message: '',
+        message: "",
       },
-    })
+    });
   }
 
   containsImage(dtItems: DataTransferItemList) {
-    let containsImage = false
+    let containsImage = false;
     for (let i = 0; i < dtItems.length; i++) {
       if (ImageMIMERegex.test(dtItems[i].type)) {
-        containsImage = true
-        break
+        containsImage = true;
+        break;
       }
     }
-    return containsImage
+    return containsImage;
   }
 
   copyToClipboard(url: string) {
     if (!navigator.clipboard) {
-      return
+      return;
     }
     navigator.clipboard
       .writeText(url)
@@ -142,9 +147,9 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
         this.setState({
           successAlert: {
             open: true,
-            message: 'asset URL copied to clipboard',
+            message: "asset URL copied to clipboard",
           },
-        })
+        });
       })
       .catch((err) => {
         this.setState({
@@ -152,81 +157,89 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
             open: true,
             message: `could not copy asset URL to clipboard: ${err}`,
           },
-        })
-      })
+        });
+      });
   }
 
   getAssets() {
-    const { id } = this.props
+    const { id } = this.props;
     Protected.Client.Get(`/blog/assets/${id}`)
       .then((response) => {
         this.setState({
           assets: response.data || [],
-        })
+        });
       })
       .catch((error: AxiosError) => {
         this.setState({
           errorAlert: {
             open: true,
-            message: `Could not get assets: ${error.response.data}`,
+            message: `Could not get assets: ${error.response?.data}`,
           },
-        })
-      })
+        });
+      });
   }
 
   getTitle(): string {
-    const { articleRef } = this
-    const heading1 = articleRef.current.querySelector('h1')
-    let title: string
+    const { articleRef } = this;
+    const heading1 = articleRef.current?.querySelector("h1");
+    let title: string;
     if (heading1) {
-      title = heading1.innerText
+      title = heading1.innerText;
     } else {
-      title = `Untitled ${Math.random()}`
+      title = `Untitled ${Math.random()}`;
     }
-    return title
+    return title;
   }
 
   handleDrop(e: DragEvent<HTMLTextAreaElement>) {
-    const items = e.dataTransfer.items
-    this.handleImageUpload(e, items)
+    const items = e.dataTransfer.items;
+    this.handleImageUpload(e, items);
   }
 
   handlePaste(e: ClipboardEvent<HTMLTextAreaElement>) {
-    const items = e.clipboardData.items
-    this.handleImageUpload(e, items)
+    const items = e.clipboardData.items;
+    this.handleImageUpload(e, items);
   }
 
   handleImageUpload(
     e: DragEvent<HTMLTextAreaElement> | ClipboardEvent<HTMLTextAreaElement>,
     items: DataTransferItemList
   ) {
-    const { id } = this.props
-    e.persist()
+    const { id } = this.props;
+    e.persist();
     // store selection start/end positions, original value
     // @ts-ignore
-    const start = e.target.selectionStart
+    const start = e.target.selectionStart;
     // @ts-ignore
-    const end = e.target.selectionEnd
+    const end = e.target.selectionEnd;
     // @ts-ignore
-    const originalValue = e.target.value
+    const originalValue = e.target.value;
 
-    let blob
+    let blob;
     if (this.containsImage(items)) {
-      e.preventDefault()
+      e.preventDefault();
       for (let i = 0; i < items.length; i++) {
         if (ImageMIMERegex.test(items[i].type)) {
-          blob = items[i].getAsFile()
-          break
+          blob = items[i].getAsFile();
+          break;
         }
       }
       // Set uploading message in textarea
-      this.insertAtCursor(start, end, LoadingText, e.target)
+      this.insertAtCursor(start, end, LoadingText, e.target);
       // upload file
-      const data = new FormData()
-      data.append('photo', blob)
+      // upload file
+      const data = new FormData();
+      if (blob instanceof Blob) {
+        // Check if blob is a Blob instance
+        data.append("photo", blob);
+      } else {
+        // Handle the case where blob is undefined or null
+        console.error("No valid blob found");
+        return;
+      }
       Protected.Client.Post(`/blog/asset/${id}`, data, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       })
         .then((response) => {
@@ -243,11 +256,11 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
                 `![write descriptor here](${response.data.url})`,
                 e.target,
                 true
-              )
+              );
               // update asset drawer
-              this.getAssets()
+              this.getAssets();
             }
-          )
+          );
         })
         .catch((error: AxiosError) => {
           this.setState(
@@ -258,18 +271,18 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
               this.insertAtCursor(
                 start,
                 end,
-                `Failed to upload image: ${error.response.data}`,
+                `Failed to upload image: ${error.response?.data}`,
                 e.target,
                 true
-              )
+              );
             }
-          )
-        })
+          );
+        });
     }
   }
 
   deleteAsset(name: string) {
-    const { id } = this.props
+    const { id } = this.props;
     Protected.Client.Delete(`/blog/asset/${id}`, {
       params: {
         name,
@@ -284,29 +297,35 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
             },
           },
           () => {
-            this.getAssets()
+            this.getAssets();
           }
-        )
+        );
       })
       .catch((error: AxiosError) => {
         this.setState({
           errorAlert: {
             open: true,
-            message: `asset delete failure: ${error.response.data}`,
+            message: `asset delete failure: ${error.response?.data}`,
           },
-        })
-      })
+        });
+      });
   }
 
   handleTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
     this.setState({
       mdx: e.target.value,
-    })
+    });
   }
 
-  insertAtCursor(start, end, textToInsert, input, lastInsert = false) {
+  insertAtCursor(
+    start: any,
+    end: any,
+    textToInsert: string | any[],
+    input: EventTarget,
+    lastInsert = false
+  ) {
     // get current text of the input
-    const value = input.value
+    const value = (input as HTMLInputElement).value;
     // update the value with new text
     this.setState(
       {
@@ -316,45 +335,46 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
       () => {
         if (lastInsert) {
           // Update cursor position
-          input.selectionStart = input.selectionEnd =
-            start + textToInsert.length
+          (input as HTMLInputElement).selectionStart = (
+            input as HTMLInputElement
+          ).selectionEnd = start + textToInsert.length;
         }
       }
-    )
+    );
   }
 
   deleteDraft() {
-    const { id } = this.props
+    const { id } = this.props;
     Protected.Client.Delete(`/blog/draft/${id}`)
       .then(() => {
         this.setState(
           {
             successAlert: {
               open: true,
-              message: 'draft successfully deleted',
+              message: "draft successfully deleted",
             },
           },
           () => {
-            Router.push('/blog/edit')
+            Router.push("/blog/edit");
           }
-        )
+        );
       })
       .catch((error: AxiosError) => {
         this.setState({
           errorAlert: {
             open: true,
-            message: error.response.data,
+            message: error.response?.data,
           },
-        })
-      })
+        });
+      });
   }
 
   async saveDraft() {
-    const { id } = this.props
-    const { mdx } = this.state
-    const { getTitle } = this
+    const { id } = this.props;
+    const { mdx } = this.state;
+    const { getTitle } = this;
 
-    const title = getTitle()
+    const title = getTitle();
     Protected.Client.Patch(`/blog/draft/${id}`, {
       title: title,
       markdown: mdx,
@@ -363,26 +383,26 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
         this.setState({
           successAlert: {
             open: true,
-            message: 'draft successfully saved',
+            message: "draft successfully saved",
           },
-        })
+        });
       })
       .catch((error: AxiosError) => {
         this.setState({
           errorAlert: {
             open: true,
-            message: error.response.data,
+            message: error.response?.data,
           },
-        })
-      })
+        });
+      });
   }
 
   publishDraft() {
-    const { id } = this.props
-    const { mdx } = this.state
-    const { getTitle } = this
+    const { id } = this.props;
+    const { mdx } = this.state;
+    const { getTitle } = this;
 
-    const title = getTitle()
+    const title = getTitle();
     Protected.Client.Post(`/blog/post/${id}`, {
       title,
       markdown: mdx,
@@ -392,13 +412,13 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
           {
             successAlert: {
               open: true,
-              message: 'post successfully published',
+              message: "post successfully published",
             },
           },
           () => {
-            Router.push(`/blog/edit/post/${response.data.slug}`)
+            Router.push(`/blog/edit/post/${response.data.slug}`);
           }
-        )
+        );
       })
       .catch((error: AxiosError) => {
         this.setState({
@@ -406,25 +426,25 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
             open: true,
             message: `unable to publish post: ${error.response!!.data}`,
           },
-        })
-      })
+        });
+      });
   }
 
   deletePost() {
-    const { id } = this.props
+    const { id } = this.props;
     Protected.Client.Delete(`/blog/post/${id}`)
       .then(() => {
         this.setState(
           {
             successAlert: {
               open: true,
-              message: 'post successfully deleted',
+              message: "post successfully deleted",
             },
           },
           () => {
-            Router.push('/blog/edit')
+            Router.push("/blog/edit");
           }
-        )
+        );
       })
       .catch((error: AxiosError) => {
         this.setState({
@@ -432,16 +452,16 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
             open: true,
             message: `unable to delete post: ${error.response!!.data}`,
           },
-        })
-      })
+        });
+      });
   }
 
   revisePost() {
-    const { id } = this.props
-    const { mdx } = this.state
-    const { getTitle } = this
+    const { id } = this.props;
+    const { mdx } = this.state;
+    const { getTitle } = this;
 
-    const title = getTitle()
+    const title = getTitle();
     Protected.Client.Patch(`/blog/post/${id}`, {
       title,
       markdown: mdx,
@@ -450,9 +470,9 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
         this.setState({
           successAlert: {
             open: true,
-            message: 'post successfully revised',
+            message: "post successfully revised",
           },
-        })
+        });
       })
       .catch((error: AxiosError) => {
         this.setState({
@@ -460,28 +480,21 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
             open: true,
             message: `unable to revise post: ${error.response!!.data}`,
           },
-        })
-      })
+        });
+      });
   }
 
   toggleAssets() {
-    const { showAssets } = this.state
+    const { showAssets } = this.state;
     this.setState({
       showAssets: !showAssets,
-    })
+    });
   }
 
   render() {
-    const { auth, draft } = this.props
-    const {
-      assets,
-      key,
-      mdx,
-      mobile,
-      showAssets,
-      errorAlert,
-      successAlert,
-    } = this.state
+    const { auth, draft } = this.props;
+    const { assets, key, mdx, mobile, showAssets, errorAlert, successAlert } =
+      this.state;
     const {
       articleRef,
       closeErrorAlert,
@@ -496,7 +509,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
       deleteDraft,
       deletePost,
       revisePost,
-    } = this
+    } = this;
     if (auth) {
       return (
         <div className={styles.draft}>
@@ -508,7 +521,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
               startIcon={<PhotoLibraryIcon />}
               onClick={this.toggleAssets}
             >
-              {showAssets ? 'Hide Assets' : 'Show Assets'}
+              {showAssets ? "Hide Assets" : "Show Assets"}
             </Button>
             {draft && (
               <Button
@@ -528,7 +541,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
               startIcon={<DeleteIcon />}
               onClick={draft ? deleteDraft : deletePost}
             >
-              {draft ? 'Delete Draft' : 'Delete Post'}
+              {draft ? "Delete Draft" : "Delete Post"}
             </Button>
             <Button
               variant="contained"
@@ -537,7 +550,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
               startIcon={<PublishIcon />}
               onClick={draft ? publishDraft : revisePost}
             >
-              {draft ? 'Publish' : 'Revise'}
+              {draft ? "Publish" : "Revise"}
             </Button>
           </div>
           <div
@@ -562,7 +575,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
                     <DeleteIcon />
                   </IconButton>
                 </Paper>
-              )
+              );
             })}
           </div>
           <Notebook
@@ -586,11 +599,11 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
             </SuccessAlert>
           )}
         </div>
-      )
+      );
     } else {
-      return <Login role={Roles.BlogOwner} />
+      return <Login role={Roles.BlogOwner} />;
     }
   }
 }
 
-export default BlogEditor
+export default BlogEditor;

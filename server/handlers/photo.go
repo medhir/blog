@@ -3,11 +3,12 @@ package handlers
 import (
 	"bytes"
 	"fmt"
-	"github.com/google/uuid"
-	"gitlab.com/medhir/blog/server/controllers/storage/gcs"
 	"io"
 	"net/http"
 	"path"
+
+	"github.com/google/uuid"
+	"github.com/medhir/blog/server/controllers/storage/gcs"
 )
 
 const (

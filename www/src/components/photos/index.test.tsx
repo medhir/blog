@@ -1,19 +1,32 @@
-import React from 'react'
-import Photos from './index'
-import { shallow } from 'enzyme'
+import React from "react";
+import Photos from "./index";
+import { shallow } from "enzyme";
 
-describe('Photos', () => {
+describe("Photos", () => {
   const photos = [
-    'https://photo.com/1',
-    'https://photo.com/2',
-    'https://photo.com/3',
-    'https://photo.com/4',
-    'https://photo.com/5',
-    'https://photo.com/6',
-    'https://photo.com/7',
-  ]
-  it('renders photos', () => {
-    const wrapper = shallow(<Photos photos={photos} />)
-    expect(wrapper.find('img').length).toEqual(5)
-  })
-})
+    {
+      name: "photo1",
+      url: "https://photo.com/1",
+    },
+    {
+      name: "photo2",
+      url: "https://photo.com/2",
+    },
+    {
+      name: "photo3",
+      url: "https://photo.com/3",
+    },
+    {
+      name: "photo4",
+      url: "https://photo.com/4",
+    },
+    {
+      name: "photo5",
+      url: "https://photo.com/5",
+    },
+  ];
+  it("renders photos", () => {
+    const wrapper = shallow(<Photos photos={photos} />);
+    expect(wrapper.find("img").length).toEqual(5);
+  });
+});

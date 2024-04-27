@@ -1,4 +1,6 @@
-import React from 'react'
-import PasswordReset from '../../components/auth/password_reset'
+import React from "react";
+import PasswordReset from "../../components/auth/password_reset";
 
-export default () => <PasswordReset />
+export default function PWReset() {
+  return <PasswordReset />;
+}
