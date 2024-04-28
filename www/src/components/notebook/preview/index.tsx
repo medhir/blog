@@ -1,12 +1,12 @@
-import MDXViewer from '../../mdx-viewer'
-import styles from '../notebook.module.scss'
-import articleStyles from '../../blog/modules/Post/article.module.scss'
+// import MDXViewer from "../../mdx-viewer";
+import styles from "../notebook.module.scss";
+import articleStyles from "../../blog/modules/Post/article.module.scss";
 
 interface PreviewProps {
-  articleRef?: React.RefObject<HTMLElement>
-  hidden?: boolean
-  source: string
-  scroll: boolean
+  articleRef?: React.RefObject<HTMLElement>;
+  hidden?: boolean;
+  source: string;
+  scroll: boolean;
 }
 
 const Preview = ({ articleRef, hidden, scroll, source }: PreviewProps) => {
@@ -22,10 +22,10 @@ const Preview = ({ articleRef, hidden, scroll, source }: PreviewProps) => {
         ref={articleRef}
         className={`${articleStyles.article} ${styles.article}`}
       >
-        {source && <MDXViewer source={source} />}
+        {/* {source && <MDXViewer source={source} />} */}
       </article>
     </div>
-  )
-}
+  );
+};
 
-export default Preview
+export default Preview;

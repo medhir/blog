@@ -7,9 +7,5 @@ RUN yarn install
 COPY . .
 ARG ENV=production
 RUN yarn build:$ENV
-
-FROM node:current-alpine3.18
-WORKDIR /www
-COPY --from=builder /www .
 EXPOSE 3000
 ENTRYPOINT NODE_ENV=production ./node_modules/.bin/next start

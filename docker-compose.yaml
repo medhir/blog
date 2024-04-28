@@ -4,7 +4,7 @@ services:
     container_name: www
     build: 
       context: ./www
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     volumes:
       - ./www:/app
     ports:
