@@ -20,16 +20,11 @@ const About = () => (
         resources through strong, phish-resistant authentication.{" "}
       </p>
       <p>
-        You can view some of my work through this site and{" "}
+        you can view some of my work through this site and{" "}
         <a href="https://github.com/medhir">GitHub</a>,
-        <a href="https://linkedin.com/in/medhir">LinkedIn</a>, or send me an{" "}
-        email via mail AT medhir.com.
-      </p>
-      <p>
-        I am currently on the job market after being laid off mid-2020 due to
-        the impacts of COVID. If you are interested having a discussion about
-        working together, please feel free to shoot over a message through email
-        or LinkedIn.
+        <a href="https://linkedin.com/in/medhir">LinkedIn</a>,{" "}
+        <a href="https://instagram.com/medhir">Instagram</a> or send me an email
+        via mail AT medhir.com. thanks for stopping by.
       </p>
     </section>
   </>
