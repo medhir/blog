@@ -21,7 +21,7 @@ const About = () => (
       </p>
       <p>
         you can view some of my work through this site and{" "}
-        <a href="https://github.com/medhir">GitHub</a>,
+        <a href="https://github.com/medhir">GitHub</a>,{" "}
         <a href="https://linkedin.com/in/medhir">LinkedIn</a>,{" "}
         <a href="https://instagram.com/medhir">Instagram</a> or send me an email
         via mail AT medhir.com. thanks for stopping by.
