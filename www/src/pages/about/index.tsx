@@ -7,21 +7,21 @@ const About = () => (
   <>
     <Head title="about.medhir" />
     <section className={styles.about}>
+      <p>hello, and welcome to my tiny internet outpost. I&apos;m Medhir.</p>
       <p>
-        Hello, and welcome to my tiny internet outpost. I&apos;m Medhir, a
-        Seattle-based software engineer, among other creative endeavors.
+        this website is both a labor of love and a rite of passage amongst
+        computer people as a complete blogging platform I coded myself. this
+        domain has been the basis to learn and build lots of software skills
+        that turned into an entire career.
       </p>
       <p>
-        My interests span many domains, including web application development,
-        biology, electrochemistry, graphic design, and computer science
-        education. I am currently a member of the University of
-        Washington&apos;s <a href="https://comotion.uw.edu">CoMotion</a>{" "}
-        program, developing electrochemcial sensors on textiles towards health
-        monitoring applications.
+        currently, I work as a Senior Product Manager at Microsoft and focus on
+        building SDKs that make it easier for enterprises to protect their
+        resources through strong, phish-resistant authentication.{" "}
       </p>
       <p>
         You can view some of my work through this site and{" "}
-        <a href="https://github.com/medhir">GitHub</a>, connect with me on{" "}
+        <a href="https://github.com/medhir">GitHub</a>,
         <a href="https://linkedin.com/in/medhir">LinkedIn</a>, or send me an{" "}
         email via mail AT medhir.com.
       </p>
