@@ -44,8 +44,12 @@
     margin: 0;
     background-color: black;
 
+    .photo:first-child {
+      margin-top: 0px;
+    }
+
     .photo {
-      margin: 4px auto;
+      margin: 10px auto;
       width: 100%;
 
       img {

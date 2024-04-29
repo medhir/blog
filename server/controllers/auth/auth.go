@@ -11,7 +11,7 @@ import (
 
 const (
 	baseURL = "https://auth.medhir.com"
-	realm   = "medhir.com"
+	realm   = "blog"
 )
 
 // Role represents a user role required to authenticate users selectively to application resources
@@ -197,7 +197,7 @@ type LoginResponse struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-// Login attempts to login a user
+// Login attempts to log in a user
 func (a *auth) Login(request *LoginRequest) (*LoginResponse, error) {
 	token, err := a.client.Login(a.clientID, a.clientSecret, realm, request.UserID, request.Password)
 	if err != nil {

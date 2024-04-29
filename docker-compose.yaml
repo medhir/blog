@@ -1,38 +1,38 @@
 version: '3'
 services:
-  www:
-    container_name: www
-    build: 
-      context: ./www
-      dockerfile: Dockerfile
-    volumes:
-      - ./www:/app
-    ports:
-      - "3000:3000"
-    depends_on:
-      - server
-  server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile.dev
-    ports:
-      - "9000:9000"
-    volumes:
-      - /Users/medhirbhargava/.config/gcloud/application_default_credentials.json:/gcp_credentials.json
-    depends_on:
-      - db
-      - keycloak
-    environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/gcp_credentials.json
-      - KEYCLOAK_URL=http://keycloak:8080
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=docker
-      - KEYCLOAK_CLIENT_SECRET=AvqdfSKNUt9MbldvmMR2M2DM9z7M7tzB
-      - KEYCLOAK_CLIENT_ID=blog-server
-      - KEYCLOAK_ADMIN_USERNAME=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
+  # www:
+  #   container_name: www
+  #   build: 
+  #     context: ./www
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./www:/app
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - server
+  # server:
+  #   build:
+  #     context: ./server
+  #     dockerfile: Dockerfile.dev
+  #   ports:
+  #     - "9000:9000"
+  #   volumes:
+  #     - /Users/medhirbhargava/.config/gcloud/application_default_credentials.json:/gcp_credentials.json
+  #   depends_on:
+  #     - db
+  #     - keycloak
+  #   environment:
+  #     - GOOGLE_APPLICATION_CREDENTIALS=/gcp_credentials.json
+  #     - KEYCLOAK_URL=http://keycloak:8080
+  #     - POSTGRES_HOST=db
+  #     - POSTGRES_PORT=5432
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=docker
+  #     - KEYCLOAK_CLIENT_SECRET=eN421ojk9hXXc8ka45X4Jrg3UicH3CAK
+  #     - KEYCLOAK_CLIENT_ID=blog
+  #     - KEYCLOAK_ADMIN_USERNAME=admin
+  #     - KEYCLOAK_ADMIN_PASSWORD=admin
   keycloak:
     image: keycloak/keycloak
     command: ["start-dev"]
