@@ -16,8 +16,11 @@ const About = () => (
       <p>
         my interests span many domains. the past couple years have been focused
         on things like cybersecurity, weightlifting, woodworking, and computer
-        graphics. previous explorations include developing web apps, monitoring
-        large-scale distributed systems, computer science education, and
+        graphics.
+      </p>
+      <p>
+        previous explorations include developing web apps, building large-scale
+        distributed systems, making educational computer science content, and
         prototyping electrochemical sensors.
       </p>
       <p>
