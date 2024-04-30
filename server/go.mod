@@ -13,7 +13,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/honeycombio/beeline-go v0.5.1
 	github.com/lib/pq v1.3.0
-	github.com/rs/cors v1.7.0
+	github.com/rs/cors v1.11.0
 	github.com/stretchr/testify v1.9.0
 	google.golang.org/api v0.170.0
 )
