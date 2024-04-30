@@ -7,7 +7,7 @@ import (
 	"path"
 	"time"
 
-	"github.com/Nerzal/gocloak/v5"
+	"github.com/Nerzal/gocloak/v13"
 	"github.com/medhir/blog/server/controllers/auth"
 )
 

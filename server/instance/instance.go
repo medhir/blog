@@ -58,7 +58,7 @@ func NewInstance() (*Instance, error) {
 		environment = local
 	}
 
-	// init database connection
+	// environment config
 	host, ok := os.LookupEnv("POSTGRES_HOST")
 	if !ok {
 		return nil, errors.New("POSTGRES_HOST must be provided")
@@ -75,6 +75,28 @@ func NewInstance() (*Instance, error) {
 	if !ok {
 		return nil, errors.New("POSTGRES_PASSWORD must be provided")
 	}
+	keycloakBaseURL, ok := os.LookupEnv("KEYCLOAK_BASE_URL")
+	if !ok {
+		return nil, errors.New("KEYCLOAK_BASE_URL must be provided")
+	}
+	keycloakClientID, ok := os.LookupEnv("KEYCLOAK_CLIENT_ID")
+	if !ok {
+		return nil, errors.New("KEYCLOAK_CLIENT_ID environment variable must be provided")
+	}
+	keycloakClientSecret, ok := os.LookupEnv("KEYCLOAK_CLIENT_SECRET")
+	if !ok {
+		return nil, errors.New("KEYCLOAK_CLIENT_SECRET environment variable must be provided")
+	}
+	keycloakAdminUsername, ok := os.LookupEnv("KEYCLOAK_ADMIN_USERNAME")
+	if !ok {
+		return nil, errors.New("KEYCLOAK_ADMIN_USERNAME environment variable must be provided")
+	}
+	keycloakAdminPassword, ok := os.LookupEnv("KEYCLOAK_ADMIN_PASSWORD")
+	if !ok {
+		return nil, errors.New("KEYCLOAK_ADMIN_PASSWORD environment variable must be provided")
+	}
+
+	// init DB connection
 	db, err := sql.NewPostgres(
 		fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, databaseName),
 		"controllers/storage/sql/migrations",
@@ -83,7 +105,16 @@ func NewInstance() (*Instance, error) {
 		return nil, err
 	}
 
-	auth, err := auth.NewAuth(db)
+	// init Keycloak client
+	keycloakCfg := &auth.KeycloakConfig{
+		BaseURL:       keycloakBaseURL,
+		ClientID:      keycloakClientID,
+		ClientSecret:  keycloakClientSecret,
+		AdminUsername: keycloakAdminUsername,
+		AdminPassword: keycloakAdminPassword,
+	}
+	auth, err := auth.NewAuth(ctx, keycloakCfg, db)
+
 	if err != nil {
 		return nil, err
 	}
