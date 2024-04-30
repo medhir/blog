@@ -147,7 +147,7 @@ func NewInstance() (*Instance, error) {
 		instance.server.Handler = hnynethttp.WrapHandler(c.Handler(instance.router))
 	} else {
 		c := cors.New(cors.Options{
-			AllowedOrigins:   []string{"https://review.medhir.com", "https://medhir.com"},
+			AllowedOrigins:   []string{"https://review.medhir.com", "https://medhir.com", "https://test.medhir.com"},
 			Debug:            true,
 			AllowCredentials: true,
 			AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
