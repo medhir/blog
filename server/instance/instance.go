@@ -23,9 +23,9 @@ import (
 
 const (
 	// TODO - Move to config
-	serverPort   = ":9000"
-	local        = "local"
-	databaseName = "medhir-com"
+	serverPort       = ":9000"
+	local            = "local"
+	databaseNameProd = "medhir-com"
 )
 
 // Instance represents an instance of the server
@@ -74,6 +74,11 @@ func NewInstance() (*Instance, error) {
 	password, ok := os.LookupEnv("POSTGRES_PASSWORD")
 	if !ok {
 		return nil, errors.New("POSTGRES_PASSWORD must be provided")
+	}
+	var databaseName string
+	databaseName, ok = os.LookupEnv("POSTGRES_DATABASE")
+	if !ok {
+		databaseName = databaseNameProd
 	}
 	keycloakBaseURL, ok := os.LookupEnv("KEYCLOAK_BASE_URL")
 	if !ok {
