@@ -14,10 +14,8 @@ const DraftListItem = ({ draft }: DraftListItemProps) => {
   return (
     <li className={styles.draft}>
       <Link href={`/blog/edit/draft/${draft.id}`}>
-        <a>
-          <h3>{draft.title}</h3>
-          <p>{`Last saved at: ${saved}`}</p>
-        </a>
+        <h3>{draft.title}</h3>
+        <p>{`Last saved at: ${saved}`}</p>
       </Link>
     </li>
   );

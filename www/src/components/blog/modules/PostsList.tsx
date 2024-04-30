@@ -20,10 +20,8 @@ const PostListItem = ({ edit, post }: PostListItemProps) => {
         href={edit ? `/blog/edit/post/${post.slug}` : `/blog/${post.slug}`}
         key={post.id}
       >
-        <a>
-          <h3>{post.title}</h3>
-          <p>{publishedDate}</p>
-        </a>
+        <h3>{post.title}</h3>
+        <p>{publishedDate}</p>
       </Link>
     </li>
   );
