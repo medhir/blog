@@ -1,16 +1,4 @@
-version: '3'
 services:
-  # www:
-  #   container_name: www
-  #   build: 
-  #     context: ./www
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./www:/app
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - server
   db:
     image: postgres
     volumes:
@@ -38,17 +26,28 @@ services:
     depends_on:
       - db
   server:
-     build:
-       context: ./server
-       dockerfile: Dockerfile.dev
-     ports:
-       - "9000:9000"
-     volumes:
-       - ./server:/server
-     depends_on:
-       - db
-       - keycloak
-     env_file:
-       - ./server/.env
+   build:
+     context: ./server
+     dockerfile: Dockerfile.dev
+   ports:
+     - "9000:9000"
+   volumes:
+     - ./server:/server
+   depends_on:
+     - db
+     - keycloak
+   env_file:
+     - ./server/.env
+  www:
+   container_name: www
+   build:
+     context: ./www
+     dockerfile: Dockerfile.dev
+   volumes:
+     - ./www:/www
+   ports:
+     - "3000:3000"
+   depends_on:
+     - server
 volumes:
   pgdata:
