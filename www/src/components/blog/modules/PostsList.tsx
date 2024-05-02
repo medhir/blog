@@ -21,7 +21,7 @@ const PostListItem = ({ edit, post }: PostListItemProps) => {
         key={post.id}
       >
         <h3>{post.title}</h3>
-        <p>{publishedDate}</p>
+        <p suppressHydrationWarning>{publishedDate}</p>
       </Link>
     </li>
   );
