@@ -7,6 +7,7 @@ import { debounce } from "lodash";
 import { IconButton, Tooltip } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import VisibilityIcon from "@material-ui/icons/Visibility";
+import { MDXRemoteSerializeResult } from "next-mdx-remote";
 
 interface NotebookProps {
   articleRef?: React.RefObject<HTMLElement>;
@@ -21,7 +22,7 @@ interface NotebookProps {
 
 interface NotebookState {
   iMDX: string;
-  parsedMDX: string;
+  parsedMDX: MDXRemoteSerializeResult;
   preview: boolean;
   id: string;
   error?: any;
@@ -40,7 +41,8 @@ class Notebook extends Component<NotebookProps, NotebookState> {
       iMDX: props.mdx,
       id: uuid(),
       preview: true,
-      parsedMDX: "",
+      // @ts-ignore - not sure how to set an null version of MDXRemoteSerializeResult but this initialization seems to work.
+      parsedMDX: '',
     };
     this.onTextareaChange = this.onTextareaChange.bind(this);
     this.renderMDXToSource = this.renderMDXToSource.bind(this);
