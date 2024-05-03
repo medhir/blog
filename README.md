@@ -28,7 +28,7 @@ then add the following lines to the bottom of the file:
 
 ```shell
 # Local Blog Development
-127.0.0.1 server
+127.0.0.1 medhir
 ```
 
 close out of the text editor and then run the following command to clear the local DNS cache: 
@@ -43,14 +43,12 @@ docker-compose up
 ```
 once the images are completely built, they will run and be accessible at the following: 
 
-- front-end: `http://localhost:3000`
-- server: `http://server:9000`
-- keycloak: `http://localhost:8080`
-- postgres: `http://localhost:5423`
+- front-end: `http://medhir:3000`
+- server: `http://medhir:9000`
+- keycloak: `http://medhir:8080`
+- postgres: `http://medhir:5423`
 
 the `www` and `server` containers are both set up to **hot reload** whenever changes are made under their respective directories. 
-
-**Note**: while somewhat of a hack, in order to not run into Set-Cookie issues locally, the site should be accessed through the browser at `http://server:3000` so the origin domain matches the server endpoint. 
 
 ## database migrations
 Changes to the database should be managed through .sql migrations. To create a new migration, run the following command at the 

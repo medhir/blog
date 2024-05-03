@@ -6,7 +6,7 @@ if (process.env.NODE_ENV === 'production') {
 } else if (process.env.NODE_ENV === 'test') {
   BaseURL = 'https://api-review.medhir.com'
 } else {
-  BaseURL = 'http://server:9000'
+  BaseURL = 'http://medhir:9000'
 }
 
 const a = axios.create({

@@ -144,7 +144,7 @@ func NewInstance() (*Instance, error) {
 	if environment == local {
 		// dev mode
 		c := cors.New(cors.Options{
-			AllowedOrigins:   []string{"http://localhost:3000", "http://127.0.0.1:3000", "http://server:3000"},
+			AllowedOrigins:   []string{"http://localhost:3000", "http://127.0.0.1:3000", "http://medhir:3000"},
 			Debug:            true,
 			AllowCredentials: true,
 			AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
