@@ -4,6 +4,8 @@
   width: 50%;
   margin: 0 auto !important;
   box-sizing: border-box;
+  padding-top: 12px;
+  padding-bottom: 48px;
 
   h1 {
     font-size: 1.7rem;
@@ -55,9 +57,9 @@
 
     img {
       display: block;
-      width: 100%;
+      width: 90%;
       border: 1px solid black;
-      margin: auto;
+      margin: 32px auto;
     }
 
     img + em {
@@ -100,7 +102,6 @@
 @media only screen and (max-width: 1200px) {
   .article {
     width: 60%;
-    padding: 0px 15px;
   }
 }
 
@@ -119,5 +120,8 @@
 @media only screen and (max-width: 600px) {
   .article {
     width: 96%;
+    img {
+      width: 98%;
+    }
   }
 }
