@@ -1,38 +1,42 @@
-import React from 'react'
+import React from "react";
 
-import styles from './about.module.scss'
-import Head from '../../components/head'
+import styles from "./about.module.scss";
+import Head from "../../components/head";
 
 const About = () => (
   <>
     <Head title="about.medhir" />
     <section className={styles.about}>
+      <p>hello, and welcome to my tiny internet outpost.</p>
       <p>
-        Hello, and welcome to my tiny internet outpost. I&apos;m Medhir, a
-        Seattle-based software engineer, among other creative endeavors.
+        this website is both a labor of love and a rite of passage amongst
+        certain computer people as an overly complex blogging platform I wrote
+        myself.
       </p>
       <p>
-        My interests span many domains, including web application development,
-        biology, electrochemistry, graphic design, and computer science
-        education. I am currently a member of the University of Washington's{' '}
-        <a href="https://comotion.uw.edu">CoMotion</a> program, developing
-        electrochemcial sensors on textiles towards health monitoring
-        applications.
+        my interests span many domains. the past couple years have been focused
+        on things like cybersecurity, weightlifting, woodworking, and computer
+        graphics.
       </p>
       <p>
-        You can view some of my work through this site and{' '}
-        <a href="https://github.com/medhir">GitHub</a>, connect with me on{' '}
-        <a href="https://linkedin.com/in/medhir">LinkedIn</a>, or send me an{' '}
-        email via mail AT medhir.com.
+        previous explorations include developing web apps, building large-scale
+        distributed systems, making educational computer science content, and
+        prototyping electrochemical sensors.
       </p>
       <p>
-        I am currently on the job market after being laid off mid-2020 due to
-        the impacts of COVID. If you are interested having a discussion about
-        working together, please feel free to shoot over a message through email
-        or LinkedIn.
+        currently, I work as a senior product manager at Microsoft and focus on
+        building software libraries that make it easier for enterprises to
+        protect their resources through strong, phish-resistant authentication.{" "}
+      </p>
+      <p>
+        you can view some of my work through this site,{" "}
+        <a href="https://github.com/medhir">github</a>,{" "}
+        <a href="https://linkedin.com/in/medhir">linkedin</a>, and{" "}
+        <a href="https://www.instagram.com/m.edhir/">instagram</a>. you can
+        email via mail AT medhir.com. thanks for stopping by.
       </p>
     </section>
   </>
-)
+);
 
-export default About
+export default About;

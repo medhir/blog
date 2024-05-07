@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gitlab.com/medhir/blog/server/instance"
+	"github.com/medhir/blog/server/instance"
 	"log"
 )
 

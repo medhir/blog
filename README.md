@@ -2,71 +2,55 @@
 
 Personal blogging engine (among other things) written in Go and Typescript.
 
-## Architecture
+## architecture
 
-The application is hosted as a set of loosely coupled microservices running on containers managed by Google's Kubernetes engine.
+The application is hosted as a set of containers deployed on Google Cloud Run.
 
 - `server` contains the logic that drives the back-end API layer (`api.medhir.com`)
     - `auth` authenticates / authorizes access to API resources
     - `blog` contains code that drives my personal blog
     - `handlers` contains the "glue" for exposing the API over HTTP
-    - `code` provisions & manages kubernetes-hosted IDEs 
     - `instance` contains logic for starting an instance of the server
     - `storage` contains interfaces for interacting with application data stores
 - `www` contains front-end application views and serves HTML driven by server-rendered React components (`medhir.com`)
+- `keycloak` is the authentication / authorization server (`auth.medhir.com`)
 
-## Set up / Installation
+## local development 
+the project uses Docker Compose to run containers for the front-end, api server, keycloak, and postgres locally.  
 
-The Go server connects to a postgres database for certain application operations. 
-For local development, there are some utility scripts to run a local postgres instance in a Docker container.
- 
-You can initialize the database by running:
+### initial setup
+make the docker containers accessible through a named host by running the following commands in your shell: 
 
-```shell script
-make init-db
+```shell
+sudo nano /etc/hosts
+```
+then add the following lines to the bottom of the file: 
+
+```shell
+# Local Blog Development
+127.0.0.1 medhir
 ```
 
-You will be prompted to enter a password for the `postgres` user, to which you should enter `docker`.
-
-To restart the database container, use the command: 
-
-```shell script
-make start-db
+close out of the text editor and then run the following command to clear the local DNS cache: 
+```shell
+sudo killall -HUP mDNSResponder
 ```
 
-The local database can be accessed using the following command: 
-```shell script
-psql -h localhost -U postgres -d postgres
+### spinning up containers
+once the host setup is complete, spinning up the project is done like so: 
+```shell
+docker-compose up 
 ```
+once the images are completely built, they will run and be accessible at the following: 
 
-## Running Locally
+- front-end: `http://medhir:3000`
+- server: `http://medhir:9000`
+- keycloak: `http://medhir:8080`
+- postgres: `http://medhir:5423`
 
-At the repository root, run the following command to start the Go server in your terminal:
+the `www` and `server` containers are both set up to **hot reload** whenever changes are made under their respective directories. 
 
-```shell script
-make server
-```
-
-The front-end is a Node server that uses the Next.js framework. To start it, run  
-
-```shell script
-make www
-```
-
-## Connecting to the GKE Cluster
-
-[Write some things here about how to connect to GKE]
-
-
-### Useful Kubernetes commands: 
-
-Provide a shell into a pod
-```sh
-kubectl exec -it <pod-name> -- sh
-```
-
-## Database Migrations
-
+## database migrations
 Changes to the database should be managed through .sql migrations. To create a new migration, run the following command at the 
 directory root:
  

@@ -1,44 +1,44 @@
-import React from 'react'
+import React from "react";
 
-import Link from 'next/link'
+import Link from "next/link";
 
-import styles from '../blog.module.scss'
-import { PostMetadata } from '..'
+import styles from "../blog.module.scss";
+import { PostMetadata } from "..";
 
 interface PostListItemProps {
-  post: PostMetadata
-  edit?: boolean
+  post: PostMetadata;
+  edit?: boolean;
 }
 
 const PostListItem = ({ edit, post }: PostListItemProps) => {
-  const publishedDate = new Date(post.published_on).toDateString()
+  const publishedDate = post.published_on
+    ? new Date(post.published_on).toDateString()
+    : "";
   return (
     <li className={styles.post}>
       <Link
         href={edit ? `/blog/edit/post/${post.slug}` : `/blog/${post.slug}`}
         key={post.id}
       >
-        <a>
-          <h3>{post.title}</h3>
-          <p>{publishedDate}</p>
-        </a>
+        <h3>{post.title}</h3>
+        <p suppressHydrationWarning>{publishedDate}</p>
       </Link>
     </li>
-  )
-}
+  );
+};
 
 interface PostsListProps {
-  edit?: boolean
-  posts: Array<PostMetadata>
+  edit?: boolean;
+  posts: Array<PostMetadata>;
 }
 
 const PostsList = ({ edit, posts }: PostsListProps) => {
-  if (posts === null) return null
+  if (posts === null) return null;
   const postListItems = posts.map((post) => {
-    return <PostListItem edit={edit} post={post} key={post.id} />
-  })
+    return <PostListItem edit={edit} post={post} key={post.id} />;
+  });
 
-  return <ul className={styles.posts}>{postListItems}</ul>
-}
+  return <ul className={styles.posts}>{postListItems}</ul>;
+};
 
-export default PostsList
+export default PostsList;

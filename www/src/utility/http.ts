@@ -1,12 +1,12 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
 
 let BaseURL: string
-if (process.env.ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
   BaseURL = 'https://api.medhir.com'
-} else if (process.env.ENV === 'review') {
+} else if (process.env.NODE_ENV === 'test') {
   BaseURL = 'https://api-review.medhir.com'
 } else {
-  BaseURL = 'http://localhost:9000'
+  BaseURL = 'http://medhir:9000'
 }
 
 const a = axios.create({

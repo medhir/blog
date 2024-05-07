@@ -1,12 +1,15 @@
 .article {
-  line-height: 1.35rem;
+  font-size: 0.95rem;
+  line-height: 1.15rem;
   width: 50%;
   margin: 0 auto !important;
   box-sizing: border-box;
+  padding-top: 12px;
+  padding-bottom: 48px;
 
   h1 {
-    font-size: 2.5rem;
-    line-height: 2.7rem;
+    font-size: 1.7rem;
+    line-height: 2rem;
     margin-top: 20px;
     margin-bottom: 20px;
     position: relative;
@@ -25,8 +28,8 @@
   }
 
   h2 {
-    font-size: 2rem;
-    line-height: 2.5rem;
+    font-size: 1.5rem;
+    line-height: 2rem;
   }
 
   h3 {
@@ -40,8 +43,9 @@
   }
 
   p {
-    font-size: 1rem;
-    margin: 25px 0px;
+    margin: 15px 0px;
+    line-height: 1.15rem;
+    text-align: justify;
 
     em {
       font-style: italic;
@@ -53,15 +57,27 @@
 
     img {
       display: block;
-      width: 100%;
+      width: 90%;
       border: 1px solid black;
-      margin: auto;
+      margin: 32px auto;
     }
 
     img + em {
       display: block;
       margin-top: 10px;
       text-align: center;
+    }
+  }
+  
+  ul {
+    padding: 0px 10px 0px 10px;
+
+    li:before {
+      content: "";
+      margin-left: -0.25rem;
+    }
+    li {
+      padding: 1px 0px 1px 0px;
     }
   }
 
@@ -86,7 +102,6 @@
 @media only screen and (max-width: 1200px) {
   .article {
     width: 60%;
-    padding: 10px;
   }
 }
 
@@ -105,5 +120,8 @@
 @media only screen and (max-width: 600px) {
   .article {
     width: 96%;
+    img {
+      width: 98%;
+    }
   }
 }

@@ -8,6 +8,8 @@
 
 # server
 server/tmp
+server/application_default_credentials.json
+server/.env
 
 # infrastructure (terraform)
 terraform/account.json
@@ -35,3 +37,9 @@ app
 
 # TLS Local Development
 .tls/
+
+# secrets 
+certs 
+
+# deployment
+cloudrun

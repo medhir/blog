@@ -1,18 +1,17 @@
-import React from 'react'
-
-import styles from './article.module.scss'
-import MDXViewer from '../../../mdx-viewer'
+import React from "react";
+import styles from "./article.module.scss";
+import {MDXRemote, MDXRemoteSerializeResult} from "next-mdx-remote";
 
 interface PostProps {
-  source: any
+  source: MDXRemoteSerializeResult;
 }
 
 const Post = ({ source }: PostProps) => (
   <section>
     <article className={styles.article}>
-      <MDXViewer source={source} />
+      <MDXRemote {...source} />
     </article>
   </section>
-)
+);
 
-export default Post
+export default Post;

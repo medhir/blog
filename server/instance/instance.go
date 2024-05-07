@@ -6,14 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gitlab.com/medhir/blog/server/controllers/auth"
-	"gitlab.com/medhir/blog/server/controllers/storage/gcs"
-	"gitlab.com/medhir/blog/server/controllers/storage/sql"
 	"net/http"
 	"os"
 	"time"
 
-	"github.com/honeycombio/beeline-go"
+	"github.com/medhir/blog/server/controllers/auth"
+	"github.com/medhir/blog/server/controllers/storage/gcs"
+	"github.com/medhir/blog/server/controllers/storage/sql"
+
 	"github.com/honeycombio/beeline-go/wrappers/hnynethttp"
 	"github.com/rs/cors"
 
@@ -23,10 +23,9 @@ import (
 
 const (
 	// TODO - Move to config
-	serverPort   = ":9000"
-	local        = "local"
-	serviceName  = "go-server"
-	databaseName = "medhir-com"
+	serverPort       = ":9000"
+	local            = "local"
+	databaseNameProd = "medhir-com"
 )
 
 // Instance represents an instance of the server
@@ -59,22 +58,7 @@ func NewInstance() (*Instance, error) {
 		environment = local
 	}
 
-	// send data to honeycomb
-	apiKey, ok := os.LookupEnv("HONEYCOMB_API_KEY")
-	if !ok {
-		return nil, errors.New("HONEYCOMB_API_KEY must be provided")
-	}
-	dataset, ok := os.LookupEnv("HONEYCOMB_DATASET")
-	if !ok {
-		return nil, errors.New("HONEYCOMB_DATASET must be provided")
-	}
-	beeline.Init(beeline.Config{
-		WriteKey:    apiKey,
-		Dataset:     dataset,
-		ServiceName: serviceName,
-	})
-
-	// init database connection
+	// environment config
 	host, ok := os.LookupEnv("POSTGRES_HOST")
 	if !ok {
 		return nil, errors.New("POSTGRES_HOST must be provided")
@@ -91,6 +75,33 @@ func NewInstance() (*Instance, error) {
 	if !ok {
 		return nil, errors.New("POSTGRES_PASSWORD must be provided")
 	}
+	var databaseName string
+	databaseName, ok = os.LookupEnv("POSTGRES_DATABASE")
+	if !ok {
+		databaseName = databaseNameProd
+	}
+	keycloakBaseURL, ok := os.LookupEnv("KEYCLOAK_BASE_URL")
+	if !ok {
+		return nil, errors.New("KEYCLOAK_BASE_URL must be provided")
+	}
+	keycloakClientID, ok := os.LookupEnv("KEYCLOAK_CLIENT_ID")
+	if !ok {
+		return nil, errors.New("KEYCLOAK_CLIENT_ID environment variable must be provided")
+	}
+	keycloakClientSecret, ok := os.LookupEnv("KEYCLOAK_CLIENT_SECRET")
+	if !ok {
+		return nil, errors.New("KEYCLOAK_CLIENT_SECRET environment variable must be provided")
+	}
+	keycloakAdminUsername, ok := os.LookupEnv("KEYCLOAK_ADMIN_USERNAME")
+	if !ok {
+		return nil, errors.New("KEYCLOAK_ADMIN_USERNAME environment variable must be provided")
+	}
+	keycloakAdminPassword, ok := os.LookupEnv("KEYCLOAK_ADMIN_PASSWORD")
+	if !ok {
+		return nil, errors.New("KEYCLOAK_ADMIN_PASSWORD environment variable must be provided")
+	}
+
+	// init DB connection
 	db, err := sql.NewPostgres(
 		fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, databaseName),
 		"controllers/storage/sql/migrations",
@@ -99,7 +110,16 @@ func NewInstance() (*Instance, error) {
 		return nil, err
 	}
 
-	auth, err := auth.NewAuth(db)
+	// init Keycloak client
+	keycloakCfg := &auth.KeycloakConfig{
+		BaseURL:       keycloakBaseURL,
+		ClientID:      keycloakClientID,
+		ClientSecret:  keycloakClientSecret,
+		AdminUsername: keycloakAdminUsername,
+		AdminPassword: keycloakAdminPassword,
+	}
+	auth, err := auth.NewAuth(ctx, keycloakCfg, db)
+
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +144,7 @@ func NewInstance() (*Instance, error) {
 	if environment == local {
 		// dev mode
 		c := cors.New(cors.Options{
-			AllowedOrigins:   []string{"http://localhost:3000", "http://127.0.0.1:3000"},
+			AllowedOrigins:   []string{"http://localhost:3000", "http://127.0.0.1:3000", "http://medhir:3000"},
 			Debug:            true,
 			AllowCredentials: true,
 			AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
@@ -132,7 +152,7 @@ func NewInstance() (*Instance, error) {
 		instance.server.Handler = hnynethttp.WrapHandler(c.Handler(instance.router))
 	} else {
 		c := cors.New(cors.Options{
-			AllowedOrigins:   []string{"https://review.medhir.com", "https://medhir.com"},
+			AllowedOrigins:   []string{"https://review.medhir.com", "https://test.medhir.com", "https://medhir.com"},
 			Debug:            true,
 			AllowCredentials: true,
 			AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},

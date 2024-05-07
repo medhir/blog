@@ -1,0 +1,10 @@
+FROM node:current-alpine3.18
+WORKDIR /www
+COPY package.json yarn.lock ./
+RUN apk update && apk upgrade && \
+    apk add --no-cache bash git openssh
+
+COPY . . 
+RUN yarn install
+ENTRYPOINT yarn dev
+

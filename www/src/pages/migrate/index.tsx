@@ -1,156 +1,156 @@
-import { Button } from '@material-ui/core'
-import { GetServerSideProps } from 'next'
-import { Component } from 'react'
-import { AlertData, ErrorAlert, SuccessAlert } from '../../components/alert'
-import { Roles } from '../../components/auth'
-import Login from '../../components/auth/login'
-import { Authenticated } from '../../utility/auth'
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
-import LibraryBooksIcon from '@material-ui/icons/LibraryBooks'
+import { Button } from "@material-ui/core";
+import { GetServerSideProps } from "next";
+import { Component } from "react";
+import { AlertData, ErrorAlert, SuccessAlert } from "../../components/alert";
+import { Roles } from "../../components/auth";
+import Login from "../../components/auth/login";
+import { Authenticated } from "../../utility/auth";
+import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
+import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
+import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
 
-import styles from './migrate.module.scss'
-import { Protected } from '../../utility/http'
-import { AxiosError } from 'axios'
+import styles from "./migrate.module.scss";
+import { Protected } from "../../utility/http";
+import { AxiosError } from "axios";
 
 interface MigrateProps {
-  auth: boolean
+  auth: boolean;
 }
 
 interface MigrateState {
-  errorAlert: AlertData
-  successAlert: AlertData
+  errorAlert: AlertData;
+  successAlert: AlertData;
 }
 
 class Migrate extends Component<MigrateProps, MigrateState> {
   constructor(props: MigrateProps) {
-    super(props)
+    super(props);
     this.state = {
       errorAlert: {
         open: false,
-        message: '',
+        message: "",
       },
       successAlert: {
         open: false,
-        message: '',
+        message: "",
       },
-    }
+    };
 
-    this.closeSuccessAlert = this.closeSuccessAlert.bind(this)
-    this.closeErrorAlert = this.closeErrorAlert.bind(this)
-    this.getVersion = this.getVersion.bind(this)
-    this.migrateUp = this.migrateUp.bind(this)
-    this.migrateDown = this.migrateDown.bind(this)
-    this.migrateBlog = this.migrateBlog.bind(this)
+    this.closeSuccessAlert = this.closeSuccessAlert.bind(this);
+    this.closeErrorAlert = this.closeErrorAlert.bind(this);
+    this.getVersion = this.getVersion.bind(this);
+    this.migrateUp = this.migrateUp.bind(this);
+    this.migrateDown = this.migrateDown.bind(this);
+    this.migrateBlog = this.migrateBlog.bind(this);
   }
 
   closeSuccessAlert() {
     this.setState({
       successAlert: {
         open: false,
-        message: '',
+        message: "",
       },
-    })
+    });
   }
 
   closeErrorAlert() {
     this.setState({
       errorAlert: {
         open: false,
-        message: '',
+        message: "",
       },
-    })
+    });
   }
 
   migrateUp() {
-    Protected.Client.Get('/migrate/up')
+    Protected.Client.Get("/migrate/up")
       .then((response) => {
-        console.dir(response)
+        console.dir(response);
         this.setState({
           successAlert: {
             open: true,
-            message: 'Migrated up one step successfully',
+            message: "Migrated up one step successfully",
           },
-        })
+        });
       })
       .catch((error: AxiosError) => {
         this.setState({
           errorAlert: {
             open: true,
-            message: error.response.data,
+            message: error.response?.data,
           },
-        })
-      })
+        });
+      });
   }
 
   migrateDown() {
-    Protected.Client.Get('/migrate/down')
+    Protected.Client.Get("/migrate/down")
       .then((response) => {
-        console.dir(response)
+        console.dir(response);
         this.setState({
           successAlert: {
             open: true,
-            message: 'Migrated down one step successfully',
+            message: "Migrated down one step successfully",
           },
-        })
+        });
       })
       .catch((error: AxiosError) => {
         this.setState({
           errorAlert: {
             open: true,
-            message: error.response.data,
+            message: error.response?.data,
           },
-        })
-      })
+        });
+      });
   }
 
   migrateBlog() {
-    Protected.Client.Get('/migrate/blog')
+    Protected.Client.Get("/migrate/blog")
       .then((response) => {
-        console.dir(response)
+        console.dir(response);
         this.setState({
           successAlert: {
             open: true,
-            message: 'Migrated blog successfully',
+            message: "Migrated blog successfully",
           },
-        })
+        });
       })
       .catch((error: AxiosError) => {
         this.setState({
           errorAlert: {
             open: true,
-            message: error.response.data,
+            message: error.response?.data,
           },
-        })
-      })
+        });
+      });
   }
 
   getVersion() {
-    Protected.Client.Get('/migrate/version')
+    Protected.Client.Get("/migrate/version")
       .then((response) => {
-        console.dir(response)
+        console.dir(response);
         this.setState({
           successAlert: {
             open: true,
             message: `The database version is ${response.data.version} ${
-              response.data.dirty ? 'and it is dirty' : 'and it is not dirty'
+              response.data.dirty ? "and it is dirty" : "and it is not dirty"
             }.`,
           },
-        })
+        });
       })
       .catch((error: AxiosError) => {
         this.setState({
           errorAlert: {
             open: true,
-            message: error.response.data,
+            message: error.response?.data,
           },
-        })
-      })
+        });
+      });
   }
 
   render() {
-    const { auth } = this.props
-    const { errorAlert, successAlert } = this.state
+    const { auth } = this.props;
+    const { errorAlert, successAlert } = this.state;
     const {
       closeErrorAlert,
       closeSuccessAlert,
@@ -158,7 +158,7 @@ class Migrate extends Component<MigrateProps, MigrateState> {
       migrateUp,
       migrateDown,
       migrateBlog,
-    } = this
+    } = this;
     if (auth) {
       return (
         <section className={styles.migrate}>
@@ -217,18 +217,18 @@ class Migrate extends Component<MigrateProps, MigrateState> {
             </SuccessAlert>
           )}
         </section>
-      )
+      );
     } else {
-      return <Login role={Roles.BlogOwner} />
+      return <Login role={Roles.BlogOwner} />;
     }
   }
 }
 
-export default Migrate
+export default Migrate;
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const response = await Authenticated(ctx, Roles.BlogOwner)
+  const response = await Authenticated(ctx, Roles.BlogOwner);
   return {
     props: { auth: response.auth },
-  }
-}
+  };
+};

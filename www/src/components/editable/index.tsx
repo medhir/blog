@@ -1,11 +1,11 @@
-import styles from './editable.module.scss'
-import { TextareaAutosize } from '@material-ui/core'
+import styles from "./editable.module.scss";
+import { TextareaAutosize } from "@material-ui/core";
 
 interface EditableProps {
-  value: string
-  className?: string
-  multiline?: boolean
-  onChange: (e) => void
+  value: string;
+  className?: string;
+  multiline?: boolean;
+  onChange: (e: any) => void;
 }
 
 const Editable = ({ value, className, multiline, onChange }: EditableProps) => {
@@ -16,7 +16,7 @@ const Editable = ({ value, className, multiline, onChange }: EditableProps) => {
         onChange={onChange}
         value={value}
       />
-    )
+    );
   } else {
     return (
       <input
@@ -25,8 +25,8 @@ const Editable = ({ value, className, multiline, onChange }: EditableProps) => {
         onChange={onChange}
         value={value}
       />
-    )
+    );
   }
-}
+};
 
-export default Editable
+export default Editable;

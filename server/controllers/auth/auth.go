@@ -1,16 +1,15 @@
 package auth
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"github.com/Nerzal/gocloak/v5"
-	"gitlab.com/medhir/blog/server/controllers/storage/sql"
-	"os"
+	"github.com/Nerzal/gocloak/v13"
+	"github.com/medhir/blog/server/controllers/storage/sql"
 )
 
 const (
-	baseURL = "https://auth.medhir.com"
-	realm   = "medhir.com"
+	realm = "blog"
 )
 
 // Role represents a user role required to authenticate users selectively to application resources
@@ -37,52 +36,46 @@ type Auth interface {
 	RefreshJWT(refreshToken string) (string, error)
 }
 
+type KeycloakConfig struct {
+	BaseURL       string `json:"base_url"`
+	ClientID      string `json:"client_id"`
+	ClientSecret  string `json:"client_secret"`
+	AdminUsername string `json:"admin_username"`
+	AdminPassword string `json:"admin_password"`
+}
+
 type auth struct {
+	ctx           context.Context
 	adminUsername string
 	adminPassword string
-	client        gocloak.GoCloak
+	client        *gocloak.GoCloak
 	clientID      string
 	clientSecret  string
 	db            sql.Postgres
 }
 
 // NewAuth instantiates a new authentication controller for the application
-func NewAuth(db sql.Postgres) (Auth, error) {
-	clientID, ok := os.LookupEnv("KEYCLOAK_CLIENT_ID")
-	if !ok {
-		return nil, errors.New("KEYCLOAK_CLIENT_ID environment variable must be provided")
-	}
-	clientSecret, ok := os.LookupEnv("KEYCLOAK_CLIENT_SECRET")
-	if !ok {
-		return nil, errors.New("KEYCLOAK_CLIENT_SECRET environment variable must be provided")
-	}
-	adminUsername, ok := os.LookupEnv("KEYCLOAK_ADMIN_USERNAME")
-	if !ok {
-		return nil, errors.New("KEYCLOAK_ADMIN_USERNAME environment variable must be provided")
-	}
-	adminPassword, ok := os.LookupEnv("KEYCLOAK_ADMIN_PASSWORD")
-	if !ok {
-		return nil, errors.New("KEYCLOAK_ADMIN_PASSWORD environment variable must be provided")
-	}
-
+func NewAuth(ctx context.Context, cfg *KeycloakConfig, db sql.Postgres) (Auth, error) {
 	auth := &auth{
-		adminUsername: adminUsername,
-		adminPassword: adminPassword,
-		client:        gocloak.NewClient(baseURL),
-		clientID:      clientID,
-		clientSecret:  clientSecret,
+		ctx:           ctx,
+		adminUsername: cfg.AdminUsername,
+		adminPassword: cfg.AdminPassword,
+		client:        gocloak.NewClient(cfg.BaseURL),
+		clientID:      cfg.ClientID,
+		clientSecret:  cfg.ClientSecret,
 		db:            db,
 	}
 	return auth, nil
 }
 
 func (a *auth) CreateUser(username, email, password string) error {
-	token, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
+	token, err := a.client.LoginAdmin(a.ctx, a.adminUsername, a.adminPassword, realm)
 	if err != nil {
 		return err
 	}
 	// Create new user in the realm
 	userID, err := a.client.CreateUser(
+		a.ctx,
 		token.AccessToken,
 		realm,
 		gocloak.User{
@@ -94,18 +87,19 @@ func (a *auth) CreateUser(username, email, password string) error {
 		return err
 	}
 	// set the user's password
-	err = a.client.SetPassword(token.AccessToken, userID, realm, password, false)
+	err = a.client.SetPassword(a.ctx, token.AccessToken, userID, realm, password, false)
 	if err != nil {
 		return err
 	}
 	// send verification email
 	err = a.client.ExecuteActionsEmail(
+		a.ctx,
 		token.AccessToken,
 		realm, gocloak.ExecuteActionsEmail{
 			UserID:      stringPtr(userID),
 			ClientID:    stringPtr(a.clientID),
 			RedirectURI: stringPtr("https://medhir.com/verified"),
-			Actions: []string{
+			Actions: &[]string{
 				"VERIFY_EMAIL",
 			},
 		},
@@ -122,7 +116,7 @@ func (a *auth) CreateUser(username, email, password string) error {
 }
 
 func (a *auth) GetUser(jwt string) (*gocloak.User, error) {
-	_, claims, err := a.client.DecodeAccessToken(jwt, realm)
+	_, claims, err := a.client.DecodeAccessToken(a.ctx, jwt, realm)
 	if err != nil {
 		return nil, err
 	}
@@ -131,11 +125,11 @@ func (a *auth) GetUser(jwt string) (*gocloak.User, error) {
 	if !ok {
 		return nil, errors.New("validation error - could not read jwt subject")
 	}
-	adminToken, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
+	adminToken, err := a.client.LoginAdmin(a.ctx, a.adminUsername, a.adminPassword, realm)
 	if err != nil {
 		return nil, err
 	}
-	user, err := a.client.GetUserByID(adminToken.AccessToken, realm, userID)
+	user, err := a.client.GetUserByID(a.ctx, adminToken.AccessToken, realm, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -143,26 +137,27 @@ func (a *auth) GetUser(jwt string) (*gocloak.User, error) {
 }
 
 func (a *auth) AddUserAttribute(user *gocloak.User, key string, value string) error {
-	adminToken, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
-	if err != nil {
-		return err
-	}
-	if user.Attributes != nil {
-		user.Attributes[key] = []string{value}
-	} else {
-		user.Attributes = map[string][]string{
-			key: {value},
-		}
-	}
-	err = a.client.UpdateUser(adminToken.AccessToken, realm, *user)
-	if err != nil {
-		return err
-	}
+	//adminToken, err := a.client.LoginAdmin(a.ctx, a.adminUsername, a.adminPassword, realm)
+	//if err != nil {
+	//	return err
+	//}
+	//if user.Attributes != nil {
+	//	user.Attributes[key] = []string{value}
+	//} else {
+	//	user.Attributes = map[string][]string{
+	//		key: {value},
+	//	}
+	//}
+	//err = a.client.UpdateUser(a.ctx, adminToken.AccessToken, realm, *user)
+	//if err != nil {
+	//	return err
+	//}
 	return nil
 }
 
 func (a *auth) GetUserAttribute(user *gocloak.User, key string) (string, error) {
-	attribute := user.Attributes[key]
+	//attribute := user.Attributes[key]
+	attribute := []string{}
 	if len(attribute) == 0 {
 		return "", fmt.Errorf("no user attribute found for key %s", key)
 	}
@@ -170,14 +165,14 @@ func (a *auth) GetUserAttribute(user *gocloak.User, key string) (string, error) 
 }
 
 func (a *auth) RemoveUserAttribute(user *gocloak.User, key string) error {
-	adminToken, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
-	if err != nil {
-		return err
-	}
-	if user.Attributes != nil {
-		user.Attributes[key] = []string{}
-	}
-	err = a.client.UpdateUser(adminToken.AccessToken, realm, *user)
+	adminToken, err := a.client.LoginAdmin(a.ctx, a.adminUsername, a.adminPassword, realm)
+	//if err != nil {
+	//	return err
+	//}
+	//if user.Attributes != nil {
+	//	user.Attributes[key] = []string{}
+	//}
+	err = a.client.UpdateUser(a.ctx, adminToken.AccessToken, realm, *user)
 	if err != nil {
 		return err
 	}
@@ -196,9 +191,9 @@ type LoginResponse struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-// Login attempts to login a user
+// Login attempts to log in a user
 func (a *auth) Login(request *LoginRequest) (*LoginResponse, error) {
-	token, err := a.client.Login(a.clientID, a.clientSecret, realm, request.UserID, request.Password)
+	token, err := a.client.Login(a.ctx, a.clientID, a.clientSecret, realm, request.UserID, request.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +205,7 @@ func (a *auth) Login(request *LoginRequest) (*LoginResponse, error) {
 
 // RefreshJWT uses a refresh token to retrieve a new valid jwt
 func (a *auth) RefreshJWT(refreshToken string) (string, error) {
-	jwt, err := a.client.RefreshToken(refreshToken, a.clientID, a.clientSecret, realm)
+	jwt, err := a.client.RefreshToken(a.ctx, refreshToken, a.clientID, a.clientSecret, realm)
 	if err != nil {
 		return "", err
 	}
@@ -218,7 +213,7 @@ func (a *auth) RefreshJWT(refreshToken string) (string, error) {
 }
 
 func (a *auth) ResetUserPassword(usernameOrEmail string) error {
-	token, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
+	token, err := a.client.LoginAdmin(a.ctx, a.adminUsername, a.adminPassword, realm)
 	if err != nil {
 		return err
 	}
@@ -228,12 +223,13 @@ func (a *auth) ResetUserPassword(usernameOrEmail string) error {
 	}
 	// send password reset email
 	err = a.client.ExecuteActionsEmail(
+		a.ctx,
 		token.AccessToken,
 		realm, gocloak.ExecuteActionsEmail{
 			UserID:      stringPtr(user.ID),
 			ClientID:    stringPtr(a.clientID),
 			RedirectURI: stringPtr("https://medhir.com/blog/edit"),
-			Actions: []string{
+			Actions: &[]string{
 				"UPDATE_PASSWORD",
 			},
 		},
@@ -242,11 +238,11 @@ func (a *auth) ResetUserPassword(usernameOrEmail string) error {
 }
 
 func (a *auth) RealmRepresentation() (*gocloak.RealmRepresentation, error) {
-	adminToken, err := a.client.LoginAdmin(a.adminUsername, a.adminPassword, realm)
+	adminToken, err := a.client.LoginAdmin(a.ctx, a.adminUsername, a.adminPassword, realm)
 	if err != nil {
 		return nil, err
 	}
-	representation, err := a.client.GetRealm(adminToken.AccessToken, realm)
+	representation, err := a.client.GetRealm(a.ctx, adminToken.AccessToken, realm)
 	if err != nil {
 		return nil, err
 	}
@@ -255,7 +251,7 @@ func (a *auth) RealmRepresentation() (*gocloak.RealmRepresentation, error) {
 
 // ValidateJWT determines if a jwt is still a valid authentication token
 func (a *auth) ValidateJWT(jwt string) error {
-	rptResult, err := a.client.RetrospectToken(jwt, a.clientID, a.clientSecret, realm)
+	rptResult, err := a.client.RetrospectToken(a.ctx, jwt, a.clientID, a.clientSecret, realm)
 	if err != nil {
 		return err
 	}
@@ -267,20 +263,16 @@ func (a *auth) ValidateJWT(jwt string) error {
 
 // ValidateRole checks if a jwt has the proper claims for the specified role
 func (a *auth) ValidateRole(jwt string, role Role) error {
-	_, claims, err := a.client.DecodeAccessToken(jwt, realm)
+	_, claims, err := a.client.DecodeAccessToken(a.ctx, jwt, realm)
 	if err != nil {
 		return err
 	}
 	mapClaims := *claims
-	resourceAccess, ok := mapClaims["resource_access"].(map[string]interface{})
+	realmAccess, ok := mapClaims["realm_access"].(map[string]interface{})
 	if !ok {
-		return errors.New("validation error - could not read resource_access")
+		return errors.New("validation error - could not read realm_access")
 	}
-	goServer, ok := resourceAccess["go-server"].(map[string]interface{})
-	if !ok {
-		return errors.New("validation error - could not read go-server")
-	}
-	roles, ok := goServer["roles"].([]interface{})
+	roles, ok := realmAccess["roles"].([]interface{})
 	if !ok {
 		return errors.New("validation error - could not read roles")
 	}

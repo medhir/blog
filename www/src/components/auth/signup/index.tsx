@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import Router from 'next/router'
+import React, { useState } from "react";
+import Router from "next/router";
 import {
   TextField,
   Button,
@@ -12,113 +12,113 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-} from '@material-ui/core'
-import styles from './signup.module.scss'
-import Head from '../../head'
-import http from '../../../utility/http'
-import { AxiosError } from 'axios'
-import { ErrorAlert, SuccessAlert } from '../../alert'
+} from "@material-ui/core";
+import styles from "./signup.module.scss";
+import Head from "../../head";
+import http from "../../../utility/http";
+import { AxiosError } from "axios";
+import { ErrorAlert, SuccessAlert } from "../../alert";
 
 interface SubmitErrorAlert {
-  open: boolean
-  message: string
+  open: boolean;
+  message: string;
 }
 
 const SignUpForm = () => {
-  const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [termsOfServiceChecked, setTermsOfServiceChecked] = useState(false)
-  const [termsOfServiceDialogOpen, setTermsOfServiceDialogOpen] = useState(
-    false
-  )
-  const [confirmPasswordError, setConfirmPasswordError] = useState(false)
-  const [confirmPasswordHelperText, setConfirmPasswordHelperText] = useState('')
-  const [submitSuccessAlert, setSubmitSuccessAlert] = useState(false)
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [termsOfServiceChecked, setTermsOfServiceChecked] = useState(false);
+  const [termsOfServiceDialogOpen, setTermsOfServiceDialogOpen] =
+    useState(false);
+  const [confirmPasswordError, setConfirmPasswordError] = useState(false);
+  const [confirmPasswordHelperText, setConfirmPasswordHelperText] =
+    useState("");
+  const [submitSuccessAlert, setSubmitSuccessAlert] = useState(false);
   const [submitErrorAlert, setSubmitErrorAlert] = useState({
     open: false,
-    message: '',
-  })
+    message: "",
+  });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     if (password != confirmPassword) {
-      setConfirmPasswordError(true)
-      setConfirmPasswordHelperText('the passwords entered do not match!')
-      return
+      setConfirmPasswordError(true);
+      setConfirmPasswordHelperText("the passwords entered do not match!");
+      return;
     }
     if (!termsOfServiceChecked) {
       setSubmitErrorAlert({
         open: true,
-        message: 'you must agree to the Terms of Service to register.',
-      })
-      return
+        message: "you must agree to the Terms of Service to register.",
+      });
+      return;
     }
     http
-      .Post('/register', {
+      .Post("/register", {
         username: username,
         email: email,
         password: password,
       })
       .then(() => {
-        setSubmitSuccessAlert(true)
+        setSubmitSuccessAlert(true);
         setTimeout(() => {
-          Router.push('/courses')
-        }, 2000)
+          Router.push("/courses");
+        }, 2000);
       })
       .catch((error: AxiosError) => {
         setSubmitErrorAlert({
           open: true,
-          message: String(error.response.data),
-        })
-      })
-  }
+          message: error.response?.data as string,
+        });
+      });
+  };
 
   const updateUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setUsername(value)
-  }
+    const value = e.target.value;
+    setUsername(value);
+  };
 
   const updateEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setEmail(value)
-  }
+    const value = e.target.value;
+    setEmail(value);
+  };
 
   const updatePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setPassword(value)
-  }
+    const value = e.target.value;
+    setPassword(value);
+  };
 
   const updateConfirmPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setConfirmPassword(value)
-  }
+    const value = e.target.value;
+    setConfirmPassword(value);
+  };
 
   const handleSubmitErrorAlertClose = (
     event?: React.SyntheticEvent,
     reason?: string
   ) => {
-    if (reason === 'clickaway') {
-      return
+    if (reason === "clickaway") {
+      return;
     }
 
     setSubmitErrorAlert({
       open: false,
-      message: '',
-    })
-  }
+      message: "",
+    });
+  };
 
   const handleSubmitSuccessAlertClose = (
     event?: React.SyntheticEvent,
     reason?: string
   ) => {
-    if (reason === 'clickaway') {
-      return
+    if (reason === "clickaway") {
+      return;
     }
 
-    setSubmitSuccessAlert(false)
-  }
+    setSubmitSuccessAlert(false);
+  };
 
   return (
     <>
@@ -174,19 +174,19 @@ const SignUpForm = () => {
                   <Checkbox
                     checked={termsOfServiceChecked}
                     onChange={() => {
-                      setTermsOfServiceDialogOpen(true)
+                      setTermsOfServiceDialogOpen(true);
                     }}
                     name="termsOfService"
                   />
                 }
                 label={
                   <p>
-                    I have agreed to the{' '}
+                    I have agreed to the{" "}
                     <a
                       href="#"
                       onClick={(e) => {
-                        e.preventDefault()
-                        setTermsOfServiceDialogOpen(true)
+                        e.preventDefault();
+                        setTermsOfServiceDialogOpen(true);
                       }}
                     >
                       Terms of Service
@@ -206,7 +206,7 @@ const SignUpForm = () => {
             <Dialog
               open={termsOfServiceDialogOpen}
               onClose={() => {
-                setTermsOfServiceDialogOpen(false)
+                setTermsOfServiceDialogOpen(false);
               }}
               scroll="paper"
               aria-labelledby="terms-of-service-dialog-title"
@@ -223,15 +223,15 @@ Cras justo odio, dapibus ac facilisis in, egestas eget quam.
 Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
 Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`
                     )
-                    .join('\n')}
+                    .join("\n")}
                 </DialogContentText>
               </DialogContent>
               <DialogActions>
                 <Button
                   color="secondary"
                   onClick={() => {
-                    setTermsOfServiceDialogOpen(false)
-                    setTermsOfServiceChecked(false)
+                    setTermsOfServiceDialogOpen(false);
+                    setTermsOfServiceChecked(false);
                   }}
                 >
                   I Do Not Agree
@@ -239,8 +239,8 @@ Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`
                 <Button
                   color="primary"
                   onClick={() => {
-                    setTermsOfServiceDialogOpen(false)
-                    setTermsOfServiceChecked(true)
+                    setTermsOfServiceDialogOpen(false);
+                    setTermsOfServiceChecked(true);
                   }}
                 >
                   I Agree
@@ -268,7 +268,7 @@ Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`
         </Container>
       </section>
     </>
-  )
-}
+  );
+};
 
-export default SignUpForm
+export default SignUpForm;
