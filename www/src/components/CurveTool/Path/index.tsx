@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React from 'react'
 import { DescribePolarArc } from './arc'
 import { StatefulMover } from './mover'

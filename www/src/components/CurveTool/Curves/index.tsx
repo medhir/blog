@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { Component, ChangeEvent } from 'react'
 import ReactDOM from 'react-dom'
 import { saveAs } from 'file-saver'

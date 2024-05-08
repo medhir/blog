@@ -67,7 +67,7 @@ const CurveSelector = ({
   return (
     <div className={styles.Curves__selector}>
       {curveDescriptors.map((descriptor, i) => (
-        <button
+        <button key={`curve${i}`}
           className={
             i === currentCurveIndex
               ? `${styles.Curves__controls__button} ${styles.Curves__selector__buttonActive}`
