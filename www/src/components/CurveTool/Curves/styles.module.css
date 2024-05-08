@@ -5,7 +5,6 @@
 .Curves .Curves__controls {
   flex: 2 2 25%;
   margin-right: 30px;
-  transition: all 100ms ease-in-out;
 }
 
 .Curves svg {
