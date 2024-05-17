@@ -1,6 +1,6 @@
 # blog 
 
-Personal blogging engine (among other things) written in Go and Typescript.
+Personal blogging engine written in Go and Typescript.
 
 ## architecture
 
