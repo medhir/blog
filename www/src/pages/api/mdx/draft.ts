@@ -6,6 +6,7 @@ import rehypeSlug from "rehype-slug";
 
 /** @type {import('rehype-pretty-code').Options} */
 const rehypeOptions = {
+  keepBackground: false,
   theme: "one-light"
 }
 

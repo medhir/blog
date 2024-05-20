@@ -12,7 +12,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import PublishIcon from "@material-ui/icons/Publish";
 import DeleteIcon from "@material-ui/icons/Delete";
 
-import { Protected } from "../../utility/http";
+import { Protected } from "@/utility/http";
 import { AlertData, ErrorAlert, SuccessAlert } from "../alert";
 import { Roles } from "../auth";
 import Login from "../auth/login";

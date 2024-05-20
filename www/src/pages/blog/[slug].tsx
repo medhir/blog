@@ -27,6 +27,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const response = await http.Get(`/blog/post/${params?.slug}`);
   /** @type {import('rehype-pretty-code').Options} */
   const rehypeOptions = {
+    keepBackground: false,
     theme: "one-light"
   }
   const post: PostMetadata = response.data;
