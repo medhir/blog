@@ -13,7 +13,7 @@ The application is hosted as a set of containers deployed on Google Cloud Run.
     - `instance` contains logic for starting an instance of the server
     - `storage` contains interfaces for interacting with application data stores
 - `www` contains front-end application views and serves HTML driven by server-rendered React components (`medhir.com`)
-- `keycloak` is the authentication / authorization server
+- `keycloak` is the authentication / authorization server.
 
 ## local development 
 the project uses Docker Compose to run containers for the front-end, api server, keycloak, and postgres locally.  
