@@ -48,7 +48,24 @@ once the images are completely built, they will run and be accessible at the fol
 - keycloak: `http://medhir:8080`
 - postgres: `http://medhir:5423`
 
-the `www` and `server` containers are both set up to **hot reload** whenever changes are made under their respective directories. 
+the `www` and `server` containers are both set up to **hot reload** whenever changes are made under their respective directories.
+
+## review deployments
+Cloud Run is configured to trigger builds whenever a pull request is submitted to Github, as long as the pull request is named with the `review-`
+prefix. 
+
+Assuming the builds for the front-end and server are successful, the code changes in a PR will be available at the following links:
+
+- `www`: `review.medhir.com` 
+- `server`: `api-review.medhir.com`
+
+## production deployments 
+Cloud Run will also trigger builds whenever a pull request is merged into the `main` branch. Pull requests should only be merged after validating they build successfully. 
+
+Production deployments are available at the following links:
+
+- `www`: `medhir.com`
+- `server`: `api.medhir.com`
 
 ## database migrations
 Changes to the database should be managed through .sql migrations. To create a new migration, run the following command at the 
