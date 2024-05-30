@@ -6,6 +6,9 @@ Personal blogging engine (among other things) written in Go and Typescript.
 
 The application is hosted as a set of containers deployed on Google Cloud Run.
 
+<img width="1080" alt="architecture diagram for medhir.com" src="https://github.com/medhir/blog/assets/5160860/7a59bce0-93ce-4998-bba6-32a28481cb95">
+
+
 - `server` contains the logic that drives the back-end API layer (`api.medhir.com`)
     - `auth` authenticates / authorizes access to API resources
     - `blog` contains code that drives my personal blog
