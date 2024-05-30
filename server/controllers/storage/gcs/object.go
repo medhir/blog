@@ -70,12 +70,13 @@ func (gcs *gcs) DeleteObject(name, bucket string) error {
 
 // Object describes the metadata associated with an object in gcs
 type Object struct {
-	Name    string
-	URL     string
-	Bucket  string
-	Created time.Time
-	Updated time.Time
-	ACL     []storage.ACLRule
+	Name     string
+	URL      string
+	Bucket   string
+	Created  time.Time
+	Updated  time.Time
+	ACL      []storage.ACLRule
+	Metadata map[string]string
 }
 
 // Objects describes metadata for multiple gcs objects
@@ -104,12 +105,13 @@ func (gcs *gcs) ListObjects(bucket, prefix string) (Objects, error) {
 		}
 
 		objects = append(objects, &Object{
-			Name:    attrs.Name,
-			URL:     attrs.MediaLink,
-			Bucket:  attrs.Bucket,
-			Created: attrs.Created,
-			Updated: attrs.Updated,
-			ACL:     attrs.ACL,
+			Name:     attrs.Name,
+			URL:      attrs.MediaLink,
+			Bucket:   attrs.Bucket,
+			Created:  attrs.Created,
+			Updated:  attrs.Updated,
+			ACL:      attrs.ACL,
+			Metadata: attrs.Metadata,
 		})
 	}
 	return objects, nil

@@ -10,6 +10,16 @@ const nextConfig = {
   // Configure `pageExtensions` to include markdown and MDX files
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "imagedelivery.net",
+        port: "",
+        pathname: "/aqtNOU--A2nlEvmj2b63lw/**"
+      }
+    ]
+  }
 }
 
 /** @type {import('rehype-pretty-code').Options} */
