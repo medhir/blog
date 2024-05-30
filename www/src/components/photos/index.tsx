@@ -66,6 +66,7 @@ const Photos = ({ auth, photos }: PhotosProps) => {
                 width={photo.width}
                 height={photo.height}
                 // loader={cloudflareLoader}
+                unoptimized
                 style={{
                   width: "100%",
                   height: "auto"
