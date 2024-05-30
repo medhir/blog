@@ -4,7 +4,7 @@ Personal blogging engine (among other things) written in Go and Typescript.
 
 ## architecture
 
-The application is hosted as a set of containers deployed on Google Cloud Run.
+The application is hosted as a set of containers running on Google Cloud Run.
 
 <img width="1080" alt="architecture diagram for medhir.com" src="https://github.com/medhir/blog/assets/5160860/7a59bce0-93ce-4998-bba6-32a28481cb95">
 
