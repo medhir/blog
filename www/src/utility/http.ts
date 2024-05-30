@@ -1,10 +1,8 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
 
 let BaseURL: string
-if (process.env.NODE_ENV === 'production') {
-  BaseURL = 'https://api.medhir.com'
-} else if (process.env.NODE_ENV === 'test') {
-  BaseURL = 'https://api-review.medhir.com'
+if (process.env.NEXT_PUBLIC_APP_URL) {
+  BaseURL = process.env.NEXT_PUBLIC_APP_URL
 } else {
   BaseURL = 'http://medhir:9000'
 }

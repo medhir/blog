@@ -7,9 +7,7 @@
     "build": "next build",
     "build:dev": "next dev",
     "build:production": "APP_ENV=production next build",
-    "build:test": "APP_ENV=test next build",
     "start": "NODE_ENV=production next start",
-    "test": "NODE_ENV=test next start",
     "lint": "next lint"
   },
   "dependencies": {
