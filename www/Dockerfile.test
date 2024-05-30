@@ -8,4 +8,4 @@ COPY . .
 ARG ENV=test
 RUN yarn build:$ENV
 EXPOSE 3000
-ENTRYPOINT NODE_ENV=test ./node_modules/.bin/next start
+ENTRYPOINT NODE_ENV=test ./node_modules/.bin/next test
