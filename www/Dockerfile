@@ -5,7 +5,7 @@ RUN apk update && apk upgrade && \
     apk add --no-cache bash git openssh
 RUN yarn install
 COPY . .
-ARG ENV=production
+ARG ENV=test
 RUN yarn build:$ENV
 EXPOSE 3000
-ENTRYPOINT NODE_ENV=production ./node_modules/.bin/next start
+ENTRYPOINT NODE_ENV=test ./node_modules/.bin/next start
