@@ -57,15 +57,18 @@ const Photos = ({ auth, photos }: PhotosProps) => {
         {photos.map((photo, i) => (
           <div className={styles.photo} key={photo.name}>
             <Image
-                src={photo.url}
+                src={`${photo.url.split('/public')[0]}/w=${photo.width/4}`}
                 alt=""
-                width={photo.width/2}
-                height={photo.height/2}
-                loader={cloudflareLoader}
+                width={photo.width/4}
+                height={photo.height/4}
+                // loader={cloudflareLoader}
                 style={{
                   width: "100%",
                   height: "auto"
                 }}
+                unoptimized
+                // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                priority={ i < 4 }
                 placeholder={"blur"}
                 blurDataURL={photo.blurDataURL}
             />
