@@ -12,34 +12,36 @@ jobs:
   review_www_app:
     runs-on: ubuntu-latest
     outputs:
-      url: ${{ steps.deploy.outputs.url }}
+      url: ${{ steps.deploywww.outputs.url }}
     concurrency:
       group: pr-${{ github.event.number }}
     environment:
       name: review-www
-      url: ${{ steps.deploy.outputs.url }}
+      url: ${{ steps.deploywww.outputs.url }}
     steps:
     - name: Get code
       uses: actions/checkout@v4
     - name: Deploy review www to Fly.io
-      id: deploy-review-www
+      id: deploywww
       uses: superfly/fly-pr-review-apps@1.2.1
       with:
+        name: pr-${{ github.event.number }}-review-www
         path: www/
   review_server_app:
     runs-on: ubuntu-latest
     outputs:
-      url: ${{ steps.deploy.outputs.url }}
+      url: ${{ steps.deployserver.outputs.url }}
     concurrency:
       group: pr-${{ github.event.number }}
     environment:
       name: review-server
-      url: ${{ steps.deploy.outputs.url }}
+      url: ${{ steps.deployserver.outputs.url }}
     steps:
       - name: Get code
         uses: actions/checkout@v4
       - name: Deploy review www to Fly.io
-        id: deploy-review-server
+        id: deployserver
         uses: superfly/fly-pr-review-apps@1.2.1
         with:
+          name: pr-${{ github.event.number }}-review-server
           path: server/
