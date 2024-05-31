@@ -25,7 +25,7 @@ jobs:
       id: deploy-review-www
       uses: superfly/fly-pr-review-apps@1.2.0
       with:
-        config: www/fly.toml
+        path: www/
   review_server_app:
     runs-on: ubuntu-latest
     outputs:
@@ -42,4 +42,4 @@ jobs:
         id: deploy-review-server
         uses: superfly/fly-pr-review-apps@1.2.0
         with:
-          config: server/fly.toml
+          path: server/
