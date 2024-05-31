@@ -4,7 +4,10 @@ Personal blogging engine written in Go and Typescript.
 
 ## architecture
 
-The application is hosted as a set of containers deployed on Google Cloud Run.
+The application is hosted as a set of containers running on Google Cloud Run.
+
+<img width="1080" alt="architecture diagram for medhir.com" src="https://github.com/medhir/blog/assets/5160860/7a59bce0-93ce-4998-bba6-32a28481cb95">
+
 
 - `server` contains the logic that drives the back-end API layer (`api.medhir.com`)
     - `auth` authenticates / authorizes access to API resources
@@ -13,7 +16,7 @@ The application is hosted as a set of containers deployed on Google Cloud Run.
     - `instance` contains logic for starting an instance of the server
     - `storage` contains interfaces for interacting with application data stores
 - `www` contains front-end application views and serves HTML driven by server-rendered React components (`medhir.com`)
-- `keycloak` is the authentication / authorization server (`auth.medhir.com`)
+- `keycloak` is the authentication / authorization server.
 
 ## local development 
 the project uses Docker Compose to run containers for the front-end, api server, keycloak, and postgres locally.  
@@ -48,7 +51,24 @@ once the images are completely built, they will run and be accessible at the fol
 - keycloak: `http://medhir:8080`
 - postgres: `http://medhir:5423`
 
-the `www` and `server` containers are both set up to **hot reload** whenever changes are made under their respective directories. 
+the `www` and `server` containers are both set up to **hot reload** whenever changes are made under their respective directories.
+
+## review deployments
+Cloud Run is configured to trigger builds whenever a pull request is submitted to Github, as long as the pull request is named with the `review-`
+prefix. 
+
+Assuming the builds for the front-end and server are successful, the code changes in a PR will be available at the following links:
+
+- `www`: `review.medhir.com` 
+- `server`: `api-review.medhir.com`
+
+## production deployments 
+Cloud Run will also trigger builds whenever a pull request is merged into the `main` branch. Pull requests should only be merged after validating they build successfully. 
+
+Production deployments are available at the following links:
+
+- `www`: `medhir.com`
+- `server`: `api.medhir.com`
 
 ## database migrations
 Changes to the database should be managed through .sql migrations. To create a new migration, run the following command at the 

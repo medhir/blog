@@ -1,0 +1,67 @@
+.Curves {
+  display: flex;
+}
+
+.Curves .Curves__controls {
+  flex: 2 2 25%;
+  margin-right: 30px;
+}
+
+.Curves svg {
+  flex: 4 4 75%;
+  overflow: scroll;
+}
+
+.Curves__controls {
+  display: flex;
+  flex-direction: column;
+}
+
+.Curves__controls__button {
+  font-family: inherit;
+  border-radius: 0;
+  padding: 8px 16px;
+  margin: 8px 0;
+  transition: all 200ms ease-in-out;
+}
+
+.Curves__controls__addCurveButton {
+  border: 1px solid black;
+  margin-bottom: 16px;
+}
+
+.Curves__controls__button:hover {
+  background-color: rgba(50, 205, 50, 0.75);
+  cursor: pointer;
+}
+
+.Curves__input {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  margin-bottom: 8px;
+  padding: 8px 16px;
+}
+
+.Curves__input input[type='range'] {
+  cursor: pointer;
+}
+
+.Curves__selector {
+  display: flex;
+  flex-direction: column;
+}
+
+.Curves__selector__button {
+  border: 1px solid black;
+  margin: 1px 0;
+}
+
+.Curves__selector__button_active {
+  border: 1px solid rgb(50, 205, 50);
+}
+
+.FullHeight {
+  width: 100%;
+  height: 100vh;
+}

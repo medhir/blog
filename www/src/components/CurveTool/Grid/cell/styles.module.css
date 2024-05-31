@@ -1,0 +1,24 @@
+.gridCell {
+  fill: white;
+  stroke: black;
+  stroke-width: 1;
+  stroke-dasharray: 1, 1;
+  transition: fill 150ms ease-in-out;
+}
+
+.gridCellInvisible {
+  stroke: none;
+}
+
+.gridCellValid:hover {
+  cursor: pointer;
+  fill: rgb(50, 205, 50);
+}
+
+.gridCellFilled {
+  fill: rgba(50, 205, 50, 0.3);
+}
+
+.gridCellInvalid:hover {
+  fill: red;
+}

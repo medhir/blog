@@ -33,13 +33,13 @@
   }
 
   h3 {
-    font-size: 1.75rem;
+    font-size: 1.25rem;
     line-height: 2rem;
   }
 
   h5,
   h6 {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
   }
 
   p {
@@ -91,11 +91,20 @@
 
   code {
     font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-    font-size: 0.8rem;
-    background-color: rgba(213, 0, 233, 0.158);
-    margin: 0px 3px;
-    border-radius: 3px;
-    padding: 2px 3px;
+    font-size: 0.85rem;
+    background-color: rgba(117, 117, 117, 0.1);
+    padding: 1px 4px;
+    border-radius: 6px;
+  }
+
+  code[data-language] {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 0.85rem;
+    background-color: rgba(117, 117, 117, 0.1);
+    margin: 5px;
+    padding: 10px;
+    border-radius: 6px;
+    overflow: auto;
   }
 }
 

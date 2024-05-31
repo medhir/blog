@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"path"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/medhir/blog/server/controllers/storage/gcs"
@@ -18,8 +19,11 @@ const (
 
 func (h *handlers) GetPhotos() http.HandlerFunc {
 	type photoData struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
+		Name        string `json:"name"`
+		URL         string `json:"url"`
+		Width       int    `json:"width"`
+		Height      int    `json:"height"`
+		BlurDataURL string `json:"blurDataURL"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -31,9 +35,22 @@ func (h *handlers) GetPhotos() http.HandlerFunc {
 		objects.Sort(gcs.ByDateDescending)
 		imageData := make([]photoData, 0, len(objects))
 		for _, object := range objects {
+			width, err := strconv.Atoi(object.Metadata["width"])
+			if err != nil {
+				http.Error(w, fmt.Sprintf("could not convert width to int"), http.StatusInternalServerError)
+				return
+			}
+			height, err := strconv.Atoi(object.Metadata["height"])
+			if err != nil {
+				http.Error(w, fmt.Sprintf("could not convert height to int"), http.StatusInternalServerError)
+				return
+			}
 			data := photoData{
-				Name: path.Base(object.Name),
-				URL:  object.URL,
+				Name:        path.Base(object.Name),
+				URL:         object.Metadata["cdnURL"],
+				Width:       width,
+				Height:      height,
+				BlurDataURL: object.Metadata["blurDataURL"],
 			}
 			imageData = append(imageData, data)
 		}

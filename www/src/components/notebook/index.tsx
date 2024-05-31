@@ -41,7 +41,7 @@ class Notebook extends Component<NotebookProps, NotebookState> {
       iMDX: props.mdx,
       id: uuid(),
       preview: true,
-      // @ts-ignore - not sure how to set an null version of MDXRemoteSerializeResult but this initialization seems to work.
+      // @ts-ignore - not sure how to set a null version of MDXRemoteSerializeResult but this initialization seems to work.
       parsedMDX: '',
     };
     this.onTextareaChange = this.onTextareaChange.bind(this);
@@ -120,7 +120,7 @@ class Notebook extends Component<NotebookProps, NotebookState> {
     const { onTextareaChange, togglePreview } = this;
     if (splitPane) {
       return (
-        <div className={`${styles.notebook} ${className}`}>
+        <div className={`${styles.notebook}`}>
           <textarea
             className={`${styles.textarea} ${styles.textarea_splitpane}`}
             onChange={onTextareaChange}
