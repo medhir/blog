@@ -23,7 +23,7 @@ jobs:
       uses: actions/checkout@v4
     - name: Deploy review www to Fly.io
       id: deploy-review-www
-      uses: superfly/fly-pr-review-apps@1.2.0
+      uses: superfly/fly-pr-review-apps@1.2.1
       with:
         path: www/
   review_server_app:
@@ -40,6 +40,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Deploy review www to Fly.io
         id: deploy-review-server
-        uses: superfly/fly-pr-review-apps@1.2.0
+        uses: superfly/fly-pr-review-apps@1.2.1
         with:
           path: server/
