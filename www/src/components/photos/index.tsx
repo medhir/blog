@@ -45,14 +45,9 @@ const Photos = ({ auth, photos }: PhotosProps) => {
   //       return src.startsWith('/') ? src.slice(1) : src;
   //   };
 
-    // const cloudflareLoader = ({ src, width, quality }: ImageLoaderProps) => {
-    //     const params = [`width=${width}`];
-    //     if (quality) {
-    //         params.push(`quality=${quality}`);
-    //     }
-    //     const paramsString = params.join(',');
-    //     return `/cdn-cgi/image/${paramsString}/${normalizeSrc(src)}`;
-    // };
+    const cloudflareLoader = ({ src, width, quality }: ImageLoaderProps) => {
+        return `${src.split('/public')[0]}/w=${width},q=${quality}`;
+    };
 
         return (
     <>
@@ -65,12 +60,12 @@ const Photos = ({ auth, photos }: PhotosProps) => {
                 alt=""
                 width={photo.width}
                 height={photo.height}
-                // loader={cloudflareLoader}
-                unoptimized
+                loader={cloudflareLoader}
                 style={{
                   width: "100%",
                   height: "auto"
                 }}
+                quality={55}
                 // placeholder={"blur"}
             />
             {auth && (
