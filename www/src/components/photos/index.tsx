@@ -47,7 +47,7 @@ const Photos = ({ auth, photos }: PhotosProps) => {
   //   };
 
     const cloudflareLoader = ({ src, width, quality }: ImageLoaderProps) => {
-        return `${src.split('/public')[0]}/w=${width}`;
+        return `${src.split('/public')[0]}/w=${width},q=${quality}`;
     };
 
         return (
@@ -66,6 +66,7 @@ const Photos = ({ auth, photos }: PhotosProps) => {
                   width: "100%",
                   height: "auto"
                 }}
+                quality={60}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw"
                 priority={ i < 4 }
                 placeholder={"blur"}
