@@ -18,13 +18,14 @@ jobs:
     environment:
       name: review
       url: ${{ steps.deploy.outputs.url }}
-        - name: Get code
-          uses: actions/checkout@v4
-        - name: Deploy review www to Fly.io
-          id: deploy-review-www
-          uses: superfly/fly-pr-review-apps@1.2.0
-          with:
-            config: www/fly.toml
+    steps:
+    - name: Get code
+      uses: actions/checkout@v4
+    - name: Deploy review www to Fly.io
+      id: deploy-review-www
+      uses: superfly/fly-pr-review-apps@1.2.0
+      with:
+        config: www/fly.toml
   review_server_app:
     runs-on: ubuntu-latest
     outputs:
@@ -34,10 +35,11 @@ jobs:
     environment:
       name: review
       url: ${{ steps.deploy.outputs.url }}
-        - name: Get code
-          uses: actions/checkout@v4
-        - name: Deploy review server to Fly.io
-          id: deploy-review-server
-          uses: superfly/fly-pr-review-apps@1.2.0
-          with:
-            config: server/fly.toml
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Deploy review www to Fly.io
+        id: deploy-review-server
+        uses: superfly/fly-pr-review-apps@1.2.0
+        with:
+          config: server/fly.toml
