@@ -1,0 +1,25 @@
+# fly.toml app configuration file generated for medhir-www on 2024-05-30T22:58:25-07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'medhir-www'
+primary_region = 'sea'
+
+[build]
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[env]
+  NEXT_PUBLIC_APP_URL = 'https://api.medhir.com'
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
