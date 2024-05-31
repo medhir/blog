@@ -35,6 +35,8 @@ services:
      - "9000:9000"
    volumes:
      - ./server:/server
+   secrets:
+     - github_token
    depends_on:
      - db
      - keycloak
@@ -60,3 +62,6 @@ volumes:
   keycloak:
 networks:
   default:
+secrets:
+  github_token:
+    file: ./secrets/github_token.txt
