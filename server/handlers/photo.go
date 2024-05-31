@@ -19,10 +19,11 @@ const (
 
 func (h *handlers) GetPhotos() http.HandlerFunc {
 	type photoData struct {
-		Name   string `json:"name"`
-		URL    string `json:"url"`
-		Width  int    `json:"width"`
-		Height int    `json:"height"`
+		Name        string `json:"name"`
+		URL         string `json:"url"`
+		Width       int    `json:"width"`
+		Height      int    `json:"height"`
+		BlurDataURL string `json:"blurDataURL"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -45,10 +46,11 @@ func (h *handlers) GetPhotos() http.HandlerFunc {
 				return
 			}
 			data := photoData{
-				Name:   path.Base(object.Name),
-				URL:    object.Metadata["cdnURL"],
-				Width:  width,
-				Height: height,
+				Name:        path.Base(object.Name),
+				URL:         object.Metadata["cdnURL"],
+				Width:       width,
+				Height:      height,
+				BlurDataURL: object.Metadata["blurDataURL"],
 			}
 			imageData = append(imageData, data)
 		}

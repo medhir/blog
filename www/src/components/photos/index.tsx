@@ -5,10 +5,11 @@ import DeleteButton from '../button/delete'
 import Image, {ImageLoaderProps} from "next/image";
 
 export interface PhotoData {
-  name: string
-  url: string
-  width: number
-  height: number
+    blurDataURL: string
+    height: number
+    name: string
+    url: string
+    width: number
 }
 
 export interface PhotosProps {
@@ -58,15 +59,16 @@ const Photos = ({ auth, photos }: PhotosProps) => {
             <Image
                 src={photo.url}
                 alt=""
-                width={photo.width}
-                height={photo.height}
+                width={photo.width/2}
+                height={photo.height/2}
                 loader={cloudflareLoader}
                 style={{
                   width: "100%",
                   height: "auto"
                 }}
                 quality={55}
-                // placeholder={"blur"}
+                placeholder={"blur"}
+                blurDataURL={photo.blurDataURL}
             />
             {auth && (
               <DeleteButton
