@@ -121,7 +121,17 @@ func (h *handlers) DeletePhoto() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		key := path.Base(r.URL.Path)
 		objectName := fmt.Sprintf("%s%s", prefix, key)
-		err := h.gcs.DeleteObject(objectName, bucket)
+		metadata, err := h.gcs.GetObjectMetadata(objectName, bucket)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Unable to get image metadata: %s", err.Error()), http.StatusInternalServerError)
+			return
+		}
+		err = h.cf.DeleteImage(metadata.Metadata["cdnURL"])
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Unable to delete cdn image: %s", err.Error()), http.StatusInternalServerError)
+			return
+		}
+		err = h.gcs.DeleteObject(objectName, bucket)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Unable to delete image: %s", err.Error()), http.StatusInternalServerError)
 			return

@@ -5,10 +5,13 @@ import (
 	"context"
 	"github.com/cloudflare/cloudflare-go"
 	"io"
+	"net/url"
+	"strings"
 )
 
 type CF interface {
 	AddImage(buf []byte) (*cloudflare.Image, error)
+	DeleteImage(cdnURL string) error
 }
 
 type cf struct {
@@ -39,4 +42,20 @@ func (cf *cf) AddImage(buf []byte) (*cloudflare.Image, error) {
 		return nil, err
 	}
 	return &imgUpload, nil
+}
+
+func (cf *cf) DeleteImage(cdnURL string) error {
+	parsedURL, err := url.Parse(cdnURL)
+	if err != nil {
+		return err
+	}
+	// Extract the id from the URL
+	urlPath := parsedURL.Path
+	segments := strings.Split(urlPath, "/")
+	println(segments)
+	err = cf.api.DeleteImage(cf.ctx, cloudflare.AccountIdentifier(cf.accountID), segments[len(segments)-2])
+	if err != nil {
+		return err
+	}
+	return nil
 }
