@@ -1,14 +1,14 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
 
-let BaseURL: string
-if (process.env.NEXT_PUBLIC_APP_URL) {
-  BaseURL = process.env.NEXT_PUBLIC_APP_URL
-} else {
-  BaseURL = 'http://medhir:9000'
-}
+// let BaseURL: string
+// if (process.env.NEXT_PUBLIC_APP_URL) {
+//   BaseURL = process.env.NEXT_PUBLIC_APP_URL
+// } else {
+//   BaseURL = 'http://medhir:9000'
+// }
 
 const a = axios.create({
-  baseURL: BaseURL,
+  baseURL: process.env.NEXT_PUBLIC_APP_URL || 'http://medhir:9000',
 })
 
 const http = {
