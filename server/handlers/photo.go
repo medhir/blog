@@ -84,6 +84,21 @@ func (h *handlers) PostPhoto() http.HandlerFunc {
 				http.Error(w, fmt.Sprintf("Unable to process image: %s", err.Error()), http.StatusInternalServerError)
 				return
 			}
+			imageBounds, err := h.imgProcessor.GetImageDimensions(processedImage)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Unable to get image dimensions: %s", err.Error()), http.StatusInternalServerError)
+				return
+			}
+			cfImage, err := h.cf.AddImage(processedImage)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Unable to add image to Cloudflare: %s", err.Error()), http.StatusInternalServerError)
+				return
+			}
+			blurDataURL, err := h.imgProcessor.GetBlurDataURL(processedImage)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Unable to blur image data: %s", err.Error()), http.StatusInternalServerError)
+				return
+			}
 			id := uuid.New().String()
 			objectName := fmt.Sprintf("%s%s.jpg", prefix, id)
 			err = h.gcs.UploadObject(objectName, bucket, processedImage, true)
@@ -91,6 +106,12 @@ func (h *handlers) PostPhoto() http.HandlerFunc {
 				http.Error(w, fmt.Sprintf("Unable to upload image: %s", err.Error()), http.StatusInternalServerError)
 				return
 			}
+			err = h.gcs.AddObjectMetadata(objectName, bucket, map[string]string{
+				"width":       fmt.Sprintf("%d", imageBounds.Width),
+				"height":      fmt.Sprintf("%d", imageBounds.Height),
+				"cdnURL":      cfImage.Variants[0],
+				"blurDataURL": blurDataURL,
+			})
 		}
 		w.WriteHeader(http.StatusOK)
 	}

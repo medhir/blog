@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/medhir/blog/server/controllers/storage/cf"
 	"net/http"
 
 	"github.com/medhir/blog/server/controllers/auth"
@@ -51,11 +52,12 @@ type handlers struct {
 	blog         blog.Blog
 	imgProcessor imageprocessor.ImageProcessor
 	db           sql.Postgres
+	cf           cf.CF
 	env          string
 }
 
 // NewHandlers instantiates a new set of handlers
-func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, db sql.Postgres, env string) (Handlers, error) {
+func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, cf cf.CF, db sql.Postgres, env string) (Handlers, error) {
 	return &handlers{
 		ctx:          ctx,
 		auth:         auth,
@@ -63,6 +65,7 @@ func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, db sql.Postgr
 		blog:         blog.NewBlog(db, gcs),
 		imgProcessor: imageprocessor.NewImageProcessor(),
 		db:           db,
+		cf:           cf,
 		env:          env,
 	}, nil
 }

@@ -7,7 +7,7 @@ import (
 
 // AddRoutes registers all the application handlers to their corresponding url prefixes
 func (i *Instance) AddRoutes() error {
-	h, err := handlers.NewHandlers(i.ctx, i.auth, i.gcs, i.db, i.env)
+	h, err := handlers.NewHandlers(i.ctx, i.auth, i.gcs, i.cf, i.db, i.env)
 	if err != nil {
 		return err
 	}
