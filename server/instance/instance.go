@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/medhir/blog/server/controllers/storage/cf"
 	"net/http"
 	"os"
 	"time"
@@ -35,6 +36,7 @@ type Instance struct {
 	server *http.Server
 	auth   auth.Auth
 	gcs    gcs.GCS
+	cf     cf.CF
 	db     sql.Postgres
 	env    string
 }
@@ -101,6 +103,25 @@ func NewInstance() (*Instance, error) {
 		return nil, errors.New("KEYCLOAK_ADMIN_PASSWORD environment variable must be provided")
 	}
 
+	// cloudflare config
+	cloudflareEmail, ok := os.LookupEnv("CLOUDFLARE_EMAIL")
+	if !ok {
+		return nil, errors.New("CLOUDFLARE_EMAIL must be provided")
+	}
+	cloudflareAccountID, ok := os.LookupEnv("CLOUDFLARE_ACCOUNT_ID")
+	if !ok {
+		return nil, errors.New("CLOUDFLARE_ACCOUNT_ID must be provided")
+	}
+	cloudflareApiKey, ok := os.LookupEnv("CLOUDFLARE_API_KEY")
+	if !ok {
+		return nil, errors.New("CLOUDFLARE_API_KEY must be provided")
+	}
+
+	cloudflare, err := cf.NewCF(ctx, cloudflareApiKey, cloudflareEmail, cloudflareAccountID)
+	if err != nil {
+		return nil, err
+	}
+
 	// init DB connection
 	db, err := sql.NewPostgres(
 		fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, databaseName),
@@ -130,6 +151,7 @@ func NewInstance() (*Instance, error) {
 		server: server,
 		auth:   auth,
 		gcs:    gcs,
+		cf:     cloudflare,
 		env:    environment,
 		db:     db,
 	}

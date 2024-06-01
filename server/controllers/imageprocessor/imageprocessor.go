@@ -2,6 +2,7 @@ package imageprocessor
 
 import (
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"image"
 	"image/color"
@@ -28,6 +29,13 @@ const (
 // ImageProcessor describes the interface provided by the imageprocessor package
 type ImageProcessor interface {
 	ProcessImage(buf []byte) ([]byte, error)
+	GetImageDimensions(buf []byte) (*ImageDimensions, error)
+	GetBlurDataURL(buf []byte) (string, error)
+}
+
+type ImageDimensions struct {
+	Width  int `json:"width"`
+	Height int `json:"height"`
 }
 
 type imageProcessor struct {
@@ -64,6 +72,42 @@ func (p *imageProcessor) ProcessImage(buf []byte) ([]byte, error) {
 	default:
 		return nil, fmt.Errorf("Could not process MIME type %s", contentType)
 	}
+}
+
+func (p *imageProcessor) GetImageDimensions(buf []byte) (*ImageDimensions, error) {
+	r := bytes.NewReader(buf)
+	img, err := imaging.Decode(r, imaging.AutoOrientation(true))
+	if err != nil {
+		return nil, err
+	}
+	return &ImageDimensions{
+		Width:  img.Bounds().Dx(),
+		Height: img.Bounds().Dy(),
+	}, nil
+}
+
+func (p *imageProcessor) GetBlurDataURL(buf []byte) (string, error) {
+	r := bytes.NewReader(buf)
+	img, err := imaging.Decode(r, imaging.AutoOrientation(true))
+	if err != nil {
+		return "", err
+	}
+	// Resize and blur the image
+	resized := imaging.Resize(img, 10, 10, imaging.Lanczos)
+	blurred := imaging.Blur(resized, 1.0)
+
+	// Encode the blurred image to JPEG
+	imgBuf := new(bytes.Buffer)
+	if err := jpeg.Encode(imgBuf, blurred, nil); err != nil {
+		return "", err
+	}
+
+	// Convert the JPEG bytes to a base64 string
+	base64Str := base64.StdEncoding.EncodeToString(imgBuf.Bytes())
+
+	// Create the data URL
+	blurDataURL := "data:image/jpeg;base64," + base64Str
+	return blurDataURL, nil
 }
 
 func (p *imageProcessor) processPngToJpg(buf []byte, opts *jpeg.Options) ([]byte, error) {
