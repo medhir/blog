@@ -6,6 +6,7 @@ RUN apk update && apk upgrade && \
 RUN yarn install
 COPY . .
 ARG ENV=production
+ARG NEXT_PUBLIC_APP_URL=https://api.medhir.com
 RUN yarn build:$ENV
 EXPOSE 3000
 ENTRYPOINT NODE_ENV=production ./node_modules/.bin/next start
