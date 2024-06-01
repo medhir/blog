@@ -11,6 +11,18 @@ import (
 	"time"
 )
 
+func (gcs *gcs) AddObjectMetadata(name, bucket string, metadata map[string]string) error {
+	ctx, cancel := context.WithTimeout(gcs.ctx, time.Second*60)
+	defer cancel()
+	object := gcs.client.Bucket(bucket).Object(name)
+	if _, err := object.Update(ctx, storage.ObjectAttrsToUpdate{
+		Metadata: metadata,
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (gcs *gcs) GetObjectMetadata(name, bucket string) (*storage.ObjectAttrs, error) {
 	ctx, cancel := context.WithTimeout(gcs.ctx, time.Second*60)
 	defer cancel()

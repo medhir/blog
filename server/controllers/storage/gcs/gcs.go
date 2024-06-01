@@ -10,6 +10,7 @@ type GCS interface {
 	CreateBucket(name string) error
 
 	GetObject(name, bucket string) ([]byte, error)
+	AddObjectMetadata(name, bucket string, metadata map[string]string) error
 	GetObjectMetadata(name, bucket string) (*storage.ObjectAttrs, error)
 	UploadObject(name, bucket string, obj []byte, public bool) error
 	DeleteObject(name, bucket string) error
