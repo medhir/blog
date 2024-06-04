@@ -554,7 +554,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
                   startIcon={<PhotoLibraryIcon />}
                   onClick={this.toggleAssets}
               >
-                {showAssets ? "Hide Assets" : "Show Assets"}
+                {showAssets ? "Hide" : "Show"}
               </Button>
               {draft && (
                   <Button
@@ -574,7 +574,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
                   startIcon={<DeleteIcon />}
                   onClick={draft ? deleteDraft : deletePost}
               >
-                {draft ? "Delete Draft" : "Delete Post"}
+                Delete
               </Button>
               <Button
                   variant="contained"
