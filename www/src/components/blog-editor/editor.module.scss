@@ -3,30 +3,32 @@
   display: flex;
   flex-direction: column;
 
-  .controls {
+  .toolbar {
     display: flex;
-    justify-content: space-between;
-    padding: 5px 20px;
-    border-left: 1px solid black;
     border-bottom: 1px solid black;
-    border-right: 1px solid black;
+    justify-content: space-between;
+
+    .controls {
+      display: flex;
+      justify-content: flex-start;
+      padding: 5px 20px;
+
+      button {
+        margin-right: 8px;
+      }
+    }
+
+    .savedMessage {
+      display: flex;
+      align-items: end;
+      p {
+        font-size: 0.9em;
+        font-style: italic;
+        margin-right: 6px;
+        margin-bottom: 6px;
+      }
+    }
   }
-
-  // @media only screen and (min-width: 500px) {
-  //   width: 100%;
-  // }
-
-  // @media only screen and (min-width: 800px) {
-  //   width: 80%;
-  // }
-
-  // @media only screen and (min-width: 1000px) {
-  //   width: 60%;
-  // }
-
-  // @media only screen and (min-width: 1500px) {
-  //   width: 50%;
-  // }
 
   .assets {
     transition: all 300ms ease-out;
