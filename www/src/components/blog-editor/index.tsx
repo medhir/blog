@@ -11,6 +11,7 @@ import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
 import SaveIcon from "@material-ui/icons/Save";
 import PublishIcon from "@material-ui/icons/Publish";
 import DeleteIcon from "@material-ui/icons/Delete";
+import {throttle, DebouncedFunc, debounce} from "lodash";
 
 import { Protected } from "@/utility/http";
 import { AlertData, ErrorAlert, SuccessAlert } from "../alert";
@@ -18,6 +19,7 @@ import { Roles } from "../auth";
 import Login from "../auth/login";
 import Notebook from "../notebook";
 import styles from "./editor.module.scss";
+
 
 const ImageMIMERegex = /^image\/(p?jpeg|gif|png)$/i;
 const LoadingText = "![](Uploading...)";
@@ -39,6 +41,7 @@ interface BlogEditorState {
   assets: Array<Asset>;
   key: number;
   mdx: string;
+  saved: Date | null;
   mobile: boolean;
   showAssets: boolean;
   errorAlert: AlertData;
@@ -47,6 +50,7 @@ interface BlogEditorState {
 
 class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
   articleRef: React.RefObject<HTMLElement>;
+  debouncedAutoSaveDraft:  DebouncedFunc<() => Promise<void>>
 
   constructor(props: BlogEditorProps) {
     super(props);
@@ -54,6 +58,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
       assets: [],
       key: new Date().getTime(),
       mdx: props.mdx,
+      saved: null,
       mobile: false,
       showAssets: false,
       errorAlert: {
@@ -67,6 +72,8 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
     };
 
     this.articleRef = React.createRef();
+    this.debouncedAutoSaveDraft = debounce(this.autoSaveDraft, 250);
+
     this.checkIfMobile = this.checkIfMobile.bind(this);
     this.closeErrorAlert = this.closeErrorAlert.bind(this);
     this.closeSuccessAlert = this.closeSuccessAlert.bind(this);
@@ -314,7 +321,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
   handleTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
     this.setState({
       mdx: e.target.value,
-    });
+    }, this.debouncedAutoSaveDraft);
   }
 
   insertAtCursor(
@@ -367,6 +374,31 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
           },
         });
       });
+  }
+
+  async autoSaveDraft() {
+    const { id } = this.props;
+    const { mdx } = this.state;
+    const { getTitle } = this;
+
+    const title = getTitle();
+    Protected.Client.Patch(`/blog/draft/${id}`, {
+      title: title,
+      markdown: mdx,
+    })
+        .then(() => {
+          this.setState({
+            saved: new Date()
+          });
+        })
+        .catch((error: AxiosError) => {
+          this.setState({
+            errorAlert: {
+              open: true,
+              message: error.response?.data,
+            }
+          });
+        });
   }
 
   async saveDraft() {
@@ -513,45 +545,48 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
     if (auth) {
       return (
         <div className={styles.draft}>
-          <div className={styles.controls}>
-            <Button
-              variant="contained"
-              color="secondary"
-              size="small"
-              startIcon={<PhotoLibraryIcon />}
-              onClick={this.toggleAssets}
-            >
-              {showAssets ? "Hide Assets" : "Show Assets"}
-            </Button>
-            {draft && (
+          <div className={styles.toolbar}>
+            <div className={styles.controls}>
               <Button
-                variant="contained"
-                color="secondary"
-                size="small"
-                startIcon={<SaveIcon />}
-                onClick={saveDraft}
+                  variant="contained"
+                  color="secondary"
+                  size="small"
+                  startIcon={<PhotoLibraryIcon />}
+                  onClick={this.toggleAssets}
               >
-                Save
+                {showAssets ? "Hide" : "Show"}
               </Button>
-            )}
-            <Button
-              variant="contained"
-              color="secondary"
-              size="small"
-              startIcon={<DeleteIcon />}
-              onClick={draft ? deleteDraft : deletePost}
-            >
-              {draft ? "Delete Draft" : "Delete Post"}
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              startIcon={<PublishIcon />}
-              onClick={draft ? publishDraft : revisePost}
-            >
-              {draft ? "Publish" : "Revise"}
-            </Button>
+              {draft && (
+                  <Button
+                      variant="contained"
+                      color="secondary"
+                      size="small"
+                      startIcon={<SaveIcon />}
+                      onClick={saveDraft}
+                  >
+                    Save
+                  </Button>
+              )}
+              <Button
+                  variant="contained"
+                  color="secondary"
+                  size="small"
+                  startIcon={<DeleteIcon />}
+                  onClick={draft ? deleteDraft : deletePost}
+              >
+                Delete
+              </Button>
+              <Button
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  startIcon={<PublishIcon />}
+                  onClick={draft ? publishDraft : revisePost}
+              >
+                {draft ? "Publish" : "Revise"}
+              </Button>
+            </div>
+            { this.state.saved && <div className={styles.savedMessage}><p>{`draft last saved at ${this.state.saved.toLocaleTimeString()}`}</p></div> }
           </div>
           <div
             className={`${styles.assets} ${
