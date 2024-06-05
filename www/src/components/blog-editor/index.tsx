@@ -541,6 +541,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
       deleteDraft,
       deletePost,
       revisePost,
+      toggleAssets
     } = this;
     if (auth) {
       return (
@@ -552,7 +553,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
                   color="secondary"
                   size="small"
                   startIcon={<PhotoLibraryIcon />}
-                  onClick={this.toggleAssets}
+                  onClick={toggleAssets}
               >
                 {showAssets ? "Hide" : "Show"}
               </Button>
