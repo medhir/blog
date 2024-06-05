@@ -1,7 +1,6 @@
 FROM golang:1.22 AS builder
 ENV GO111MODULE=on
 WORKDIR /server
-RUN git config --global url."https://${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}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 COPY go.mod .
 COPY go.sum .
 RUN go mod download
