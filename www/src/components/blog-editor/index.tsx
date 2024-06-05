@@ -104,15 +104,9 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
   }
 
   checkIfMobile() {
-    if (window.innerWidth < 600) {
-      this.setState({
-        mobile: true,
-      });
-    } else {
-      this.setState({
-        mobile: false,
-      });
-    }
+    this.setState({
+      mobile: window.innerWidth < 600,
+    })
   }
 
   closeSuccessAlert() {
