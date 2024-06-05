@@ -104,15 +104,9 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
   }
 
   checkIfMobile() {
-    if (window.innerWidth < 600) {
-      this.setState({
-        mobile: true,
-      });
-    } else {
-      this.setState({
-        mobile: false,
-      });
-    }
+    this.setState({
+      mobile: window.innerWidth < 600,
+    })
   }
 
   closeSuccessAlert() {
@@ -541,6 +535,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
       deleteDraft,
       deletePost,
       revisePost,
+      toggleAssets
     } = this;
     if (auth) {
       return (
@@ -552,7 +547,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
                   color="secondary"
                   size="small"
                   startIcon={<PhotoLibraryIcon />}
-                  onClick={this.toggleAssets}
+                  onClick={toggleAssets}
               >
                 {showAssets ? "Hide" : "Show"}
               </Button>
