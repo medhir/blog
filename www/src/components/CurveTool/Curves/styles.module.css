@@ -1,15 +1,13 @@
 .Curves {
   display: flex;
-}
 
-.Curves .Curves__controls {
-  flex: 2 2 25%;
-  margin-right: 30px;
-}
+  .controls {
 
-.Curves svg {
-  flex: 4 4 75%;
-  overflow: scroll;
+  }
+
+  .svgContainer {
+
+  }
 }
 
 .Curves__controls {
@@ -63,5 +61,5 @@
 
 .FullHeight {
   width: 100%;
-  height: 100vh;
+  height: 100%;
 }
