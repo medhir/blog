@@ -4,19 +4,21 @@ import {
   NextDiagonalDirection,
 } from '@/components/CurveTool/Direction'
 import { Rule, Point } from '@/components/CurveTool/Grid/types'
+import {GridDimensions} from "@/components/CurveTool/Curves";
 
 /**
  * Matrix generates a matrix for grid metadata
- * @param {number} size size of the grid
+ * @param dimensions
+ * @param initialValue
  */
 export const Matrix = (
-  size: number,
+  dimensions: GridDimensions,
   initialValue: boolean = true
 ): boolean[][] => {
   const grid: boolean[][] = []
-  for (let i = 0; i < size; i++) {
+  for (let i = 0; i < dimensions.width; i++) {
     const row: boolean[] = []
-    for (let j = 0; j < size; j++) {
+    for (let j = 0; j < dimensions.height; j++) {
       row.push(initialValue)
     }
     grid.push(row)
@@ -26,22 +28,24 @@ export const Matrix = (
 
 /**
  * ValidMatrix returns points on the grid that are valid to extend the curve
- * @param curveProps
- * @param curveState
+ * @param dimensions
+ * @param rules
+ * @param points
+ * @param fillMatrix
  */
 export const ValidMatrix = (
-  gridSize: number,
+  dimensions: GridDimensions,
   rules: Rule[],
   points: Point[],
   fillMatrix: boolean[][]
 ): boolean[][] => {
-  if (points.length < 1) return Matrix(gridSize, true)
+  if (points.length < 1) return Matrix(dimensions, true)
   const { x, y } = points[points.length - 1]
   let prevDiagonal
   if (rules.length > 1) {
     prevDiagonal = rules[rules.length - 1].diagonal
   }
-  const validMatrix = Matrix(gridSize, false)
+  const validMatrix = Matrix(dimensions, false)
   // check left
   if (
     x - 1 > -1 && // grid boundary
@@ -54,7 +58,7 @@ export const ValidMatrix = (
     }
   }
   // check right
-  if (x + 1 < gridSize && !fillMatrix[x + 1][y]) {
+  if (x + 1 < dimensions.width && !fillMatrix[x + 1][y]) {
     validMatrix[x + 1][y] = true
     if (
       prevDiagonal &&
@@ -71,7 +75,7 @@ export const ValidMatrix = (
     }
   }
   // check bottom
-  if (y + 1 < gridSize && !fillMatrix[x][y + 1]) {
+  if (y + 1 < dimensions.height && !fillMatrix[x][y + 1]) {
     validMatrix[x][y + 1] = true
     if (prevDiagonal && !NextDiagonalDirection[prevDiagonal][Directions.Down]) {
       validMatrix[x][y + 1] = false

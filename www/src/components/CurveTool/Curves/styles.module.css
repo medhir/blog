@@ -1,12 +1,14 @@
 .Curves {
   display: flex;
+  width: 100%;
 
   .controls {
-
+    flex: 1;
   }
 
   .svgContainer {
-
+    margin-left: 10px;
+    flex: 1;
   }
 }
 
