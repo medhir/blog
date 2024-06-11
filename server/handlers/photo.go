@@ -3,7 +3,9 @@ package handlers
 import (
 	"bytes"
 	"fmt"
+	"github.com/medhir/blog/server/controllers/imageprocessor"
 	"io"
+	"log"
 	"net/http"
 	"path"
 	"strconv"
@@ -79,31 +81,44 @@ func (h *handlers) PostPhoto() http.HandlerFunc {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			processedImage, err := h.imgProcessor.ProcessImage(buf.Bytes())
+			processedImage, mimeType, err := h.imgProcessor.ProcessImage(buf.Bytes())
+			log.Printf("%s processed", mimeType)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Unable to process image: %s", err.Error()), http.StatusInternalServerError)
 				return
 			}
 			imageBounds, err := h.imgProcessor.GetImageDimensions(processedImage)
+			log.Printf("image bounds - width: %d, height: %d", imageBounds.Width, imageBounds.Height)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Unable to get image dimensions: %s", err.Error()), http.StatusInternalServerError)
 				return
 			}
+
+			id := uuid.New().String()
+			var objectName string
+			switch mimeType {
+			case imageprocessor.MimeTypeJPG:
+				objectName = fmt.Sprintf("%s%s.jpg", prefix, id)
+			case imageprocessor.MimeTypeGIF:
+				objectName = fmt.Sprintf("%s%s.gif", prefix, id)
+			}
+			err = h.gcs.UploadObject(objectName, bucket, processedImage, true)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Unable to upload image: %s", err.Error()), http.StatusInternalServerError)
+				return
+			}
 			cfImage, err := h.cf.AddImage(processedImage)
 			if err != nil {
-				http.Error(w, fmt.Sprintf("Unable to add image to Cloudflare: %s", err.Error()), http.StatusInternalServerError)
+				s := fmt.Sprintf("Error: unable to add image to Cloudflare: %s", err.Error())
+				log.Println(s)
+				http.Error(w, s, http.StatusInternalServerError)
 				return
 			}
 			blurDataURL, err := h.imgProcessor.GetBlurDataURL(processedImage)
 			if err != nil {
-				http.Error(w, fmt.Sprintf("Unable to blur image data: %s", err.Error()), http.StatusInternalServerError)
-				return
-			}
-			id := uuid.New().String()
-			objectName := fmt.Sprintf("%s%s.jpg", prefix, id)
-			err = h.gcs.UploadObject(objectName, bucket, processedImage, true)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("Unable to upload image: %s", err.Error()), http.StatusInternalServerError)
+				s := fmt.Sprintf("unable to blur image data: %s", err.Error())
+				log.Println(s)
+				http.Error(w, s, http.StatusInternalServerError)
 				return
 			}
 			err = h.gcs.AddObjectMetadata(objectName, bucket, map[string]string{
@@ -112,6 +127,12 @@ func (h *handlers) PostPhoto() http.HandlerFunc {
 				"cdnURL":      cfImage.Variants[0],
 				"blurDataURL": blurDataURL,
 			})
+			if err != nil {
+				s := fmt.Sprintf("unable to upload photo: %s", err.Error())
+				log.Println(s)
+				http.Error(w, s, http.StatusInternalServerError)
+				return
+			}
 		}
 		w.WriteHeader(http.StatusOK)
 	}

@@ -254,7 +254,7 @@ func (h *handlers) postAsset() http.HandlerFunc {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			processedImage, err := h.imgProcessor.ProcessImage(buf.Bytes())
+			processedImage, _, err := h.imgProcessor.ProcessImage(buf.Bytes())
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Unable to process image: %s", err.Error()), http.StatusInternalServerError)
 				return

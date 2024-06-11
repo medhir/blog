@@ -7,7 +7,9 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+	"image/gif"
 	"image/jpeg"
+	"log"
 	"net/http"
 
 	"github.com/disintegration/imaging"
@@ -28,7 +30,7 @@ const (
 
 // ImageProcessor describes the interface provided by the imageprocessor package
 type ImageProcessor interface {
-	ProcessImage(buf []byte) ([]byte, error)
+	ProcessImage(buf []byte) ([]byte, string, error)
 	GetImageDimensions(buf []byte) (*ImageDimensions, error)
 	GetBlurDataURL(buf []byte) (string, error)
 }
@@ -48,35 +50,43 @@ func NewImageProcessor() ImageProcessor {
 }
 
 // ProcessImage determines the image file type, reduces quality if needed, converts to jpg
-func (p *imageProcessor) ProcessImage(buf []byte) ([]byte, error) {
+func (p *imageProcessor) ProcessImage(buf []byte) ([]byte, string, error) {
 	// determine file type
 	contentType := http.DetectContentType(buf)
 	opts, err := p.getJpgOptions(buf)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	switch contentType {
 	case MimeTypePNG:
 		processed, err := p.processPngToJpg(buf, opts)
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
-		return processed, nil
+		return processed, MimeTypeJPG, nil
 	case MimeTypeJPG:
 		processed, err := p.processJpg(buf, opts)
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
-		return processed, nil
+		return processed, MimeTypeJPG, nil
+	case MimeTypeGIF:
+		processed, err := p.processGif(buf)
+		if err != nil {
+			return nil, "", err
+		}
+		return processed, MimeTypeGIF, nil
 	default:
-		return nil, fmt.Errorf("Could not process MIME type %s", contentType)
+		return nil, "", fmt.Errorf("Could not process MIME type %s", contentType)
 	}
 }
 
 func (p *imageProcessor) GetImageDimensions(buf []byte) (*ImageDimensions, error) {
+	log.Println("get image dimensions")
 	r := bytes.NewReader(buf)
 	img, err := imaging.Decode(r, imaging.AutoOrientation(true))
+	log.Println("image decoded")
 	if err != nil {
 		return nil, err
 	}
@@ -137,6 +147,60 @@ func (p *imageProcessor) processJpg(buf []byte, opts *jpeg.Options) ([]byte, err
 	return jpgBuf, nil
 }
 
+func imageToPalleted(img image.Image, p color.Palette) *image.Paletted {
+	b := img.Bounds()
+	pm := image.NewPaletted(b, p)
+	draw.FloydSteinberg.Draw(pm, b, img, image.ZP)
+	return pm
+}
+
+func (p *imageProcessor) processGif(buf []byte) ([]byte, error) {
+	r := bytes.NewReader(buf)
+	im, err := gif.DecodeAll(r)
+	if err != nil {
+		return nil, err
+	}
+	log.Println("GIF encode start")
+	var opts jpeg.Options
+	opts.Quality = 70
+
+	// Create a new RGBA image to hold the incremental frames.
+	firstFrame := im.Image[0].Bounds()
+	b := image.Rect(0, 0, firstFrame.Dx(), firstFrame.Dy())
+	img := image.NewRGBA(b)
+
+	// Reduce the size of each frame in the GIF
+	for i, frame := range im.Image {
+		bounds := frame.Bounds()
+		previous := img
+		draw.Draw(img, bounds, frame, bounds.Min, draw.Over)
+
+		// compress frames
+		encoded, err := p.encodeJpg(frame, &opts)
+		r = bytes.NewReader(encoded)
+		if err != nil {
+			return nil, err
+		}
+		decoded, err := imaging.Decode(r, imaging.AutoOrientation(true))
+		im.Image[i] = imageToPalleted(decoded, frame.Palette)
+
+		switch im.Disposal[i] {
+		case gif.DisposalBackground:
+			img = image.NewRGBA(b)
+		case gif.DisposalPrevious:
+			img = previous
+		}
+	}
+
+	// Encode the GIF back to bytes.
+	var out bytes.Buffer
+	if err := gif.EncodeAll(&out, im); err != nil {
+		return nil, err
+	}
+	log.Println("GIF Encoded")
+	return out.Bytes(), nil
+}
+
 func (p *imageProcessor) addBlackBackgroundToTransparentPixels(img image.Image) image.Image {
 	// from https://www.socketloop.com/tutorials/golang-convert-png-transparent-background-image-to-jpg-or-jpeg-image
 
@@ -168,10 +232,10 @@ func (p *imageProcessor) getJpgOptions(buf []byte) (*jpeg.Options, error) {
 		opts.Quality = 80
 	} else if mb <= 10 {
 		opts.Quality = 60
-	} else if mb <= 20 {
+	} else if mb <= 30 {
 		opts.Quality = 40
 	} else {
-		return nil, fmt.Errorf("file size (%v MB) is larger than the 20MB maximum", mb)
+		return nil, fmt.Errorf("file size (%v MB) is larger than the 30MB maximum", mb)
 	}
 	return &opts, nil
 }
