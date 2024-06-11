@@ -11,7 +11,7 @@ interface PostProps {
 
 const Post = ({ source }: PostProps) => {
     const components = useMDXComponents()
-    return <section>
+    return <section style={{ padding: '0px 20px'}}>
         <article className={styles.article}>
             <MDXRemote {...source} components={components} lazy/>
         </article>
