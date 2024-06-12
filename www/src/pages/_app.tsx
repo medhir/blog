@@ -22,13 +22,13 @@ export default function MyApp(props: { Component: any; pageProps: any }) {
       <Head>
         <title>medhir.com</title>
         <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width"
+            name="viewport"
+            content="minimum-scale=1, initial-scale=1, width=device-width"
         />
-        {/* <link
-          href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,800"
-          rel="stylesheet"
-        /> */}
+        <meta
+            name="description"
+            content="medhir.com is the personal site and blog of Medhir Bhargava, a Seattle-based product manager and engineer. Stop by for thoughts on tech, art, and more."
+        />
       </Head>
       <Layout>
         <ThemeProvider theme={theme}>
