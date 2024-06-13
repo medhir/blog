@@ -15,7 +15,7 @@
   }
 
   h1:after {
-    content: '';
+    content: "";
     width: 100%;
     position: absolute;
     left: 0;
@@ -65,7 +65,7 @@
       text-align: center;
     }
   }
-  
+
   ul {
     padding: 0px 10px 0px 10px;
 
@@ -79,7 +79,7 @@
   }
 
   .codeBlock {
-    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
     font-size: 0.8rem;
     line-height: 1.15rem;
     overflow: auto;
@@ -87,7 +87,7 @@
   }
 
   code {
-    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
     font-size: 0.85rem;
     background-color: rgba(117, 117, 117, 0.1);
     padding: 1px 4px;
@@ -95,7 +95,7 @@
   }
 
   code[data-language] {
-    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
     font-size: 0.85rem;
     background-color: rgba(117, 117, 117, 0.1);
     margin: 5px;

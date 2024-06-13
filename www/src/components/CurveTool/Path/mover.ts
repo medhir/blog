@@ -1,5 +1,5 @@
-import { Directions } from '@/components/CurveTool/Direction'
-import { Point } from '@/components/CurveTool/Grid/types'
+import { Directions } from "@/components/CurveTool/Direction";
+import { Point } from "@/components/CurveTool/Grid/types";
 
 /**
  * StatefulMover holds the cursor position in memory. Calls to StatefulMover's methods return
@@ -9,66 +9,66 @@ import { Point } from '@/components/CurveTool/Grid/types'
  * @param {number} start.y
  */
 export const StatefulMover = (start: Point) => {
-  let cursor = start
+  let cursor = start;
   return {
     Cursor: () => cursor,
     Move: (distance: number, direction: string | undefined) => {
-      let newPosition
+      let newPosition;
       switch (direction) {
         case Directions.Up:
           newPosition = {
             x: cursor.x,
             y: cursor.y - distance,
-          }
-          break
+          };
+          break;
         case Directions.Down:
           newPosition = {
             x: cursor.x,
             y: cursor.y + distance,
-          }
-          break
+          };
+          break;
         case Directions.Right:
           newPosition = {
             x: cursor.x + distance,
             y: cursor.y,
-          }
-          break
+          };
+          break;
         case Directions.Left:
           newPosition = {
             x: cursor.x - distance,
             y: cursor.y,
-          }
-          break
+          };
+          break;
         case Directions.RightUp:
           newPosition = {
             x: cursor.x + distance,
             y: cursor.y - distance,
-          }
-          break
+          };
+          break;
         case Directions.RightDown:
           newPosition = {
             x: cursor.x + distance,
             y: cursor.y + distance,
-          }
-          break
+          };
+          break;
         case Directions.LeftUp:
           newPosition = {
             x: cursor.x - distance,
             y: cursor.y - distance,
-          }
-          break
+          };
+          break;
         case Directions.LeftDown:
           newPosition = {
             x: cursor.x - distance,
             y: cursor.y + distance,
-          }
-          break
+          };
+          break;
         default:
-          newPosition = { x: -1, y: -1 } // out of bounds point
-          break
+          newPosition = { x: -1, y: -1 }; // out of bounds point
+          break;
       }
-      cursor = newPosition
-      return newPosition
+      cursor = newPosition;
+      return newPosition;
     },
-  }
-}
+  };
+};

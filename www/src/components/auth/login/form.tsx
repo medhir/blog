@@ -1,19 +1,19 @@
-import React, { FormEvent } from 'react'
-import styles from './login.module.scss'
-import { Container, TextField, Button, Grid, Link } from '@material-ui/core'
-import Head from '../../head'
-import Router from 'next/router'
+import React, { FormEvent } from "react";
+import styles from "./login.module.scss";
+import { Container, TextField, Button, Grid, Link } from "@material-ui/core";
+import Head from "../../head";
+import Router from "next/router";
 
 interface InputHandlers {
-  handleUsernameChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  handlePasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleUsernameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handlePasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 interface LoginProps {
-  login: (event: React.FormEvent<HTMLFormElement>) => void
-  username: string
-  password: string
-  inputHandlers: InputHandlers
+  login: (event: React.FormEvent<HTMLFormElement>) => void;
+  username: string;
+  password: string;
+  inputHandlers: InputHandlers;
 }
 
 const LoginForm = ({
@@ -63,9 +63,9 @@ const LoginForm = ({
                 href="#"
                 variant="body2"
                 onClick={(e) => {
-                  e.preventDefault()
+                  e.preventDefault();
                   // initiate password reset flow
-                  Router.push('/password_reset')
+                  Router.push("/password_reset");
                 }}
               >
                 Forgot password?
@@ -76,8 +76,8 @@ const LoginForm = ({
                 href="#"
                 variant="body2"
                 onClick={(e) => {
-                  e.preventDefault()
-                  Router.push('/signup')
+                  e.preventDefault();
+                  Router.push("/signup");
                 }}
               >
                 {"Don't have an account? Sign Up"}
@@ -87,7 +87,7 @@ const LoginForm = ({
         </Container>
       </form>
     </>
-  )
-}
+  );
+};
 
-export default LoginForm
+export default LoginForm;

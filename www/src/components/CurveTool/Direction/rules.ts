@@ -1,38 +1,38 @@
-import { Directions } from './index'
+import { Directions } from "./index";
 
 export interface DirectionAndScaleRule {
-  direction: string
-  scale: number
+  direction: string;
+  scale: number;
 }
 
 export interface DirectionAndAngleRule {
-  angles?: [number, number]
-  direction?: string
+  angles?: [number, number];
+  direction?: string;
 }
 
 export interface Connector {
-  Up?: DirectionAndAngleRule[]
-  Down?: DirectionAndAngleRule[]
-  Left?: DirectionAndAngleRule[]
-  Right?: DirectionAndAngleRule[]
+  Up?: DirectionAndAngleRule[];
+  Down?: DirectionAndAngleRule[];
+  Left?: DirectionAndAngleRule[];
+  Right?: DirectionAndAngleRule[];
 }
 
 export interface HorizontalOrVerticalRule {
-  startPoint: DirectionAndScaleRule[]
-  common: DirectionAndAngleRule[]
-  connector: Connector
+  startPoint: DirectionAndScaleRule[];
+  common: DirectionAndAngleRule[];
+  connector: Connector;
 }
 
 export interface DiagonalRule {
-  Horizontal: HorizontalOrVerticalRule
-  Vertical: HorizontalOrVerticalRule
+  Horizontal: HorizontalOrVerticalRule;
+  Vertical: HorizontalOrVerticalRule;
 }
 
 export interface DiagonalRules {
-  RightUp: DiagonalRule
-  LeftUp: DiagonalRule
-  RightDown: DiagonalRule
-  LeftDown: DiagonalRule
+  RightUp: DiagonalRule;
+  LeftUp: DiagonalRule;
+  RightDown: DiagonalRule;
+  LeftDown: DiagonalRule;
 }
 /**
  * Rules stores rules that define the path for a particular Peano curve in a diagonal direction.
@@ -409,4 +409,4 @@ export const Rules: DiagonalRules = {
       },
     },
   },
-}
+};

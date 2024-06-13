@@ -1,27 +1,27 @@
-import React, { Component, ReactNode } from 'react'
-import { RedButton, GreenButton } from './index'
-import styles from './button.module.scss'
-import http from '../../utility/http'
-import { IconButton } from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Delete'
-import Paper from '@material-ui/core/Paper'
+import React, { Component, ReactNode } from "react";
+import { RedButton, GreenButton } from "./index";
+import styles from "./button.module.scss";
+import http from "../../utility/http";
+import { IconButton } from "@material-ui/core";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Paper from "@material-ui/core/Paper";
 
 interface ApiButtonProps {
-  children: ReactNode
-  className?: string
-  endpoint: string
-  callback: () => void
-  successMessage: string
-  occuringMessage: string
-  errorMessage: string
+  children: ReactNode;
+  className?: string;
+  endpoint: string;
+  callback: () => void;
+  successMessage: string;
+  occuringMessage: string;
+  errorMessage: string;
 }
 
 interface ApiButtonState {
-  initial: boolean
-  confirm: boolean
-  occuring: boolean
-  success: boolean
-  error: boolean
+  initial: boolean;
+  confirm: boolean;
+  occuring: boolean;
+  success: boolean;
+  error: boolean;
 }
 
 /*
@@ -31,32 +31,32 @@ interface ApiButtonState {
  */
 class DeleteButton extends Component<ApiButtonProps, ApiButtonState> {
   constructor(props: ApiButtonProps) {
-    super(props)
+    super(props);
     this.state = {
       initial: true,
       confirm: false,
       occuring: false,
       success: false,
       error: false,
-    }
+    };
   }
 
   setToConfirm() {
     this.setState({
       initial: false,
       confirm: true,
-    })
+    });
   }
 
   revert() {
     this.setState({
       initial: true,
       confirm: false,
-    })
+    });
   }
 
   setResource() {
-    const { endpoint, callback } = this.props
+    const { endpoint, callback } = this.props;
     this.setState(
       {
         confirm: false,
@@ -69,7 +69,7 @@ class DeleteButton extends Component<ApiButtonProps, ApiButtonState> {
               this.setState({
                 occuring: false,
                 error: true,
-              })
+              });
             } else {
               this.setState(
                 {
@@ -78,26 +78,26 @@ class DeleteButton extends Component<ApiButtonProps, ApiButtonState> {
                 },
                 () => {
                   if (callback) {
-                    callback()
+                    callback();
                   }
                 }
-              )
+              );
             }
           },
           (error) => {
             this.setState({
               occuring: false,
               error: error,
-            })
+            });
           }
-        )
+        );
       }
-    )
+    );
   }
 
   renderButton() {
-    const { initial, confirm, occuring, success, error } = this.state
-    const { successMessage, occuringMessage, errorMessage } = this.props
+    const { initial, confirm, occuring, success, error } = this.state;
+    const { successMessage, occuringMessage, errorMessage } = this.props;
     if (initial) {
       return (
         <IconButton
@@ -107,7 +107,7 @@ class DeleteButton extends Component<ApiButtonProps, ApiButtonState> {
         >
           <DeleteIcon />
         </IconButton>
-      )
+      );
     } else if (confirm) {
       return (
         <Paper className={styles.confirm}>
@@ -115,20 +115,20 @@ class DeleteButton extends Component<ApiButtonProps, ApiButtonState> {
           <RedButton onClick={this.setResource.bind(this)}>Yes</RedButton>
           <GreenButton onClick={this.revert.bind(this)}>No</GreenButton>
         </Paper>
-      )
+      );
     } else if (occuring) {
-      return <RedButton>{occuringMessage}</RedButton>
+      return <RedButton>{occuringMessage}</RedButton>;
     } else if (success) {
-      return <RedButton>{successMessage}</RedButton>
+      return <RedButton>{successMessage}</RedButton>;
     } else if (error) {
-      return <RedButton>{errorMessage}</RedButton>
+      return <RedButton>{errorMessage}</RedButton>;
     }
   }
 
   render() {
-    const { className } = this.props
-    return <div className={className}>{this.renderButton()}</div>
+    const { className } = this.props;
+    return <div className={className}>{this.renderButton()}</div>;
   }
 }
 
-export default DeleteButton
+export default DeleteButton;

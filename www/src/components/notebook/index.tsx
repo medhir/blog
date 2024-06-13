@@ -42,7 +42,7 @@ class Notebook extends Component<NotebookProps, NotebookState> {
       id: uuid(),
       preview: true,
       // @ts-ignore - not sure how to set a null version of MDXRemoteSerializeResult but this initialization seems to work.
-      parsedMDX: '',
+      parsedMDX: "",
     };
     this.onTextareaChange = this.onTextareaChange.bind(this);
     this.renderMDXToSource = this.renderMDXToSource.bind(this);

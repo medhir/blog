@@ -1,28 +1,23 @@
-import React, { PureComponent } from 'react'
-import Cell from './cell'
-import { Point, Rule } from './types'
+import React, { PureComponent } from "react";
+import Cell from "./cell";
+import { Point, Rule } from "./types";
 
 export interface GridProps {
-  cellSize: number
-  className?: string
-  fillMatrix: boolean[][]
-  validMatrix: boolean[][]
-  gridSize: number
-  markFilled: (point: Point) => void
-  points: Point[]
-  rules: Rule[]
-  visible: boolean
+  cellSize: number;
+  className?: string;
+  fillMatrix: boolean[][];
+  validMatrix: boolean[][];
+  gridSize: number;
+  markFilled: (point: Point) => void;
+  points: Point[];
+  rules: Rule[];
+  visible: boolean;
 }
 
 export default class Grid extends PureComponent<GridProps> {
   render() {
-    const {
-      cellSize,
-      fillMatrix,
-      validMatrix,
-      markFilled,
-      visible,
-    } = this.props
+    const { cellSize, fillMatrix, validMatrix, markFilled, visible } =
+      this.props;
     return (
       <g>
         {fillMatrix &&
@@ -41,13 +36,13 @@ export default class Grid extends PureComponent<GridProps> {
                   valid={validMatrix[x][y]}
                   visible={visible}
                   markFilled={() => {
-                    markFilled({ x, y })
+                    markFilled({ x, y });
                   }}
                 />
               ))}
             </g>
           ))}
       </g>
-    )
+    );
   }
 }

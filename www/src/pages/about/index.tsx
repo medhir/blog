@@ -10,8 +10,11 @@ const About = () => (
       <p>hello, and welcome to my tiny internet outpost.</p>
       <p>
         this website is both a labor of love and a rite of passage amongst
-        certain computer people as an <a href="https://github.com/medhir/blog">overly complex blogging platform</a> I wrote
-        myself.
+        certain computer people as an{" "}
+        <a href="https://github.com/medhir/blog">
+          overly complex blogging platform
+        </a>{" "}
+        I wrote myself.
       </p>
       <p>
         my interests span many domains. the past couple years have been focused

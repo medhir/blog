@@ -1,15 +1,15 @@
-import React, { ChangeEvent } from 'react'
-import styles from './styles.module.css'
+import React, { ChangeEvent } from "react";
+import styles from "./styles.module.css";
 import Curves from "./index";
 
 interface RangeProps {
-  children: React.ReactNode
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void
-  min: number
-  max: number
-  step: number
-  value: number
-  id: string
+  children: React.ReactNode;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  min: number;
+  max: number;
+  step: number;
+  value: number;
+  id: string;
 }
 const Range = ({
   children,
@@ -33,69 +33,70 @@ const Range = ({
       onChange={onChange}
     />
   </div>
-)
+);
 
 interface CheckboxProps {
-  children: React.ReactNode
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void
-  checked: boolean
-  id: string
+  children: React.ReactNode;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  checked: boolean;
+  id: string;
 }
 const Checkbox = ({ children, onChange, checked, id }: CheckboxProps) => (
   <div className={styles.Curves__input}>
     <label htmlFor={id}>{children}</label>
     <input type="checkbox" name={id} checked={checked} onChange={onChange} />
   </div>
-)
+);
 
 interface CurveSelectorProps {
-  curvesLength: number
-  changeCurve: (index: number) => void
-  currentCurveIndex: number
+  curvesLength: number;
+  changeCurve: (index: number) => void;
+  currentCurveIndex: number;
 }
 const CurveSelector = ({
   curvesLength,
   changeCurve,
   currentCurveIndex,
 }: CurveSelectorProps) => {
-  const curveDescriptors = []
+  const curveDescriptors = [];
   for (let i = 0; i < curvesLength; i++) {
     curveDescriptors.push({
       name: `Curve ${i + 1}`,
-    })
+    });
   }
   return (
     <div className={styles.Curves__selector}>
       {curveDescriptors.map((descriptor, i) => (
-        <button key={`curve${i}`}
+        <button
+          key={`curve${i}`}
           className={
             i === currentCurveIndex
               ? `${styles.Curves__controls__button} ${styles.Curves__selector__buttonActive}`
               : `${styles.Curves__controls__button} ${styles.Curves__selector__button}`
           }
           onClick={() => {
-            changeCurve(i)
+            changeCurve(i);
           }}
         >
           {descriptor.name}
         </button>
       ))}
     </div>
-  )
-}
+  );
+};
 
 interface ControlsProps {
-  addCurve: () => void
-  changeCurve: (index: number) => void
-  cellSize: number
-  curvesLength: number
-  currentCurveIndex: number
-  exportSVG: () => void
-  gridChecked: boolean
-  strokeWidth: number
-  toggleGrid: () => void
-  updateCellSize: (e: ChangeEvent<HTMLInputElement>) => void
-  updateStrokeWidth: (e: ChangeEvent<HTMLInputElement>) => void
+  addCurve: () => void;
+  changeCurve: (index: number) => void;
+  cellSize: number;
+  curvesLength: number;
+  currentCurveIndex: number;
+  exportSVG: () => void;
+  gridChecked: boolean;
+  strokeWidth: number;
+  toggleGrid: () => void;
+  updateCellSize: (e: ChangeEvent<HTMLInputElement>) => void;
+  updateStrokeWidth: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 const Controls = ({
@@ -112,12 +113,14 @@ const Controls = ({
   updateStrokeWidth,
 }: ControlsProps) => (
   <div className={styles.Curves__controls}>
-    <button className={`${styles.Curves__controls__button} ${styles.Curves__controls__addCurveButton}`}
+    <button
+      className={`${styles.Curves__controls__button} ${styles.Curves__controls__addCurveButton}`}
       onClick={addCurve}
     >
       Add Curve
     </button>
-    <button className={`${styles.Curves__controls__button} ${styles.Curves__controls__addCurveButton}`}
+    <button
+      className={`${styles.Curves__controls__button} ${styles.Curves__controls__addCurveButton}`}
       onClick={exportSVG}
     >
       Export SVG
@@ -151,6 +154,6 @@ const Controls = ({
       currentCurveIndex={currentCurveIndex}
     />
   </div>
-)
+);
 
-export default Controls
+export default Controls;

@@ -1,9 +1,9 @@
 export interface Point {
-  x: number
-  y: number
+  x: number;
+  y: number;
 }
 
 export interface Rule {
-  diagonal: string
-  direction: string
+  diagonal: string;
+  direction: string;
 }
