@@ -136,7 +136,7 @@ func (h *handlers) getPost() http.HandlerFunc {
 
 func (h *handlers) postPost() http.HandlerFunc {
 	type postResponse struct {
-		Slug string `slug`
+		Slug string `json:"slug"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := path.Base(r.URL.Path)

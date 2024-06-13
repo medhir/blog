@@ -444,7 +444,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
             },
           },
           () => {
-            Router.push(`/blog/edit/post/${response.data.slug}`);
+            Router.push(`/blog/${response.data.slug}`);
           }
         );
       })
