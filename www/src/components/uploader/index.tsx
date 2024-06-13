@@ -43,7 +43,7 @@ class Uploader extends Component<{}, UploaderState> {
   constructor(props: Readonly<{}>) {
     super(props);
     this.state = {
-       progress: null,
+      progress: null,
       success: null,
       files: null,
       error: null,

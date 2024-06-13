@@ -1,17 +1,17 @@
-import { Point } from '@/components/CurveTool/Grid/types'
+import { Point } from "@/components/CurveTool/Grid/types";
 
 export const PolarToCartesian = (
   center: Point,
   radius: number,
   angleInDegrees: number
 ) => {
-  const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0
+  const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
 
   return {
     x: center.x + radius * Math.cos(angleInRadians),
     y: center.y + radius * Math.sin(angleInRadians),
-  }
-}
+  };
+};
 
 export const DescribePolarArc = (
   center: Point,
@@ -19,16 +19,16 @@ export const DescribePolarArc = (
   startAngle: number,
   endAngle: number
 ) => {
-  const start = PolarToCartesian(center, radius, endAngle)
-  const end = PolarToCartesian(center, radius, startAngle)
+  const start = PolarToCartesian(center, radius, endAngle);
+  const end = PolarToCartesian(center, radius, startAngle);
 
-  const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1'
+  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
 
   const d = [
-    'M',
+    "M",
     start.x,
     start.y,
-    'A',
+    "A",
     radius,
     radius,
     0,
@@ -36,10 +36,10 @@ export const DescribePolarArc = (
     0,
     end.x,
     end.y,
-  ].join(' ')
+  ].join(" ");
 
-  return d + ' '
-}
+  return d + " ";
+};
 
 /**
  * GenerateArc creates an SVG path definition for the arc. The size of the arc is specified by the radius.
@@ -58,6 +58,6 @@ export const GenerateArc = (
   sweep: boolean
 ) => {
   return `M ${start.x} ${start.y} A ${radius} ${radius}, 0, ${
-    largeArc ? '1' : '0'
-  }, ${sweep ? '1' : '0'}, ${end.x} ${end.y} `
-}
+    largeArc ? "1" : "0"
+  }, ${sweep ? "1" : "0"}, ${end.x} ${end.y} `;
+};

@@ -2,17 +2,17 @@ import styles from "../notebook.module.scss";
 import articleStyles from "../../blog/modules/Post/article.module.scss";
 import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
 import CurveTool from "@/components/CurveTool";
-import {useMDXComponents} from "@/mdx_components";
+import { useMDXComponents } from "@/mdx_components";
 
 interface PreviewProps {
   articleRef?: React.RefObject<HTMLElement>;
   hidden?: boolean;
-  source: MDXRemoteSerializeResult
+  source: MDXRemoteSerializeResult;
   scroll: boolean;
 }
 
 const Preview = ({ articleRef, hidden, scroll, source }: PreviewProps) => {
-    const components = useMDXComponents()
+  const components = useMDXComponents();
   return (
     <div
       className={`
@@ -25,7 +25,7 @@ const Preview = ({ articleRef, hidden, scroll, source }: PreviewProps) => {
         ref={articleRef}
         className={`${articleStyles.article} ${styles.article}`}
       >
-        {source && <MDXRemote {...source} components={components}/> }
+        {source && <MDXRemote {...source} components={components} />}
       </article>
     </div>
   );

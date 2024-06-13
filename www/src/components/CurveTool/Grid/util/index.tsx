@@ -1,4 +1,4 @@
-import { Matrix, ValidMatrix } from './matrix'
-import { GenerateRules } from './rulegenerator'
+import { Matrix, ValidMatrix } from "./matrix";
+import { GenerateRules } from "./rulegenerator";
 
-export { GenerateRules, Matrix, ValidMatrix }
+export { GenerateRules, Matrix, ValidMatrix };

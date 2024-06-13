@@ -1,36 +1,36 @@
-import { createTheme } from '@material-ui/core/styles'
-import { red } from '@material-ui/core/colors'
+import { createTheme } from "@material-ui/core/styles";
+import { red } from "@material-ui/core/colors";
 
 // Create a theme instance.
 const theme = createTheme({
   palette: {
     primary: {
-      light: '#5e92f3',
-      main: '#1565c0',
-      dark: '#5e92f3',
+      light: "#5e92f3",
+      main: "#1565c0",
+      dark: "#5e92f3",
     },
     secondary: {
-      light: '#ffe54c',
-      main: '#ffb300',
-      dark: '#c68400',
+      light: "#ffe54c",
+      main: "#ffb300",
+      dark: "#c68400",
     },
     error: {
       main: red.A400,
     },
     background: {
-      default: '#fff',
+      default: "#fff",
     },
   },
   typography: {
     fontFamily: [
       '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
+      "Arial",
+      "sans-serif",
       '"Apple Color Emoji"',
       '"Segoe UI Emoji"',
       '"Segoe UI Symbol"',
-    ].join(','),
+    ].join(","),
   },
-})
+});
 
-export default theme
+export default theme;

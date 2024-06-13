@@ -1,26 +1,26 @@
-import Head from '../components/head'
-import { Fragment } from 'react'
-import { NextApiResponse } from 'next'
+import Head from "../components/head";
+import { Fragment } from "react";
+import { NextApiResponse } from "next";
 
 const Home = () => (
   <Fragment>
     <Head title="medhir.com" />
   </Fragment>
-)
+);
 
 interface getInitialPropsContext {
-  res: NextApiResponse
+  res: NextApiResponse;
 }
 
 Home.getInitialProps = async ({ res }: getInitialPropsContext) => {
   if (res) {
     res.writeHead(301, {
-      Location: '/photos',
-    })
-    res.end()
+      Location: "/photos",
+    });
+    res.end();
   }
 
-  return {}
-}
+  return {};
+};
 
-export default Home
+export default Home;

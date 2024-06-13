@@ -1,3 +1,3 @@
 export const Roles = {
-  BlogOwner: 'blog-owner',
-}
+  BlogOwner: "blog-owner",
+};

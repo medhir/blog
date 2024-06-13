@@ -43,7 +43,7 @@
   padding: 8px 16px;
 }
 
-.Curves__input input[type='range'] {
+.Curves__input input[type="range"] {
   cursor: pointer;
 }
 

@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import React from 'react'
+import Link from "next/link";
+import React from "react";
 
 const Header = () => (
   <header>
@@ -18,6 +18,6 @@ const Header = () => (
       </ul>
     </nav>
   </header>
-)
+);
 
-export default Header
+export default Header;

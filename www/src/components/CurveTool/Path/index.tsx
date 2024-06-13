@@ -1,17 +1,17 @@
 //@ts-nocheck
-import React from 'react'
-import { DescribePolarArc } from './arc'
-import { StatefulMover } from './mover'
+import React from "react";
+import { DescribePolarArc } from "./arc";
+import { StatefulMover } from "./mover";
 import {
   Rules,
   DirectionAndAngleRule,
   HorizontalOrVerticalRule,
-} from '@/components/CurveTool/Direction/rules'
-import { Point, Rule } from '@/components/CurveTool/Grid/types'
+} from "@/components/CurveTool/Direction/rules";
+import { Point, Rule } from "@/components/CurveTool/Grid/types";
 
 const DistanceCartesian = (radius: number): number => {
-  return Math.sqrt(Math.pow(radius, 2) / 2)
-}
+  return Math.sqrt(Math.pow(radius, 2) / 2);
+};
 
 /**
  * DescribePath generates the description for an SVG path representing the Peano curve
@@ -30,22 +30,22 @@ const DescribePath = (
   direction: string,
   orientation: string
 ) => {
-  const RadiusInCartesian = DistanceCartesian(radius)
-  const MoveDistance = DistanceCartesian(radius) * 2
-  let mover = StatefulMover(start)
-  let d = ''
+  const RadiusInCartesian = DistanceCartesian(radius);
+  const MoveDistance = DistanceCartesian(radius) * 2;
+  let mover = StatefulMover(start);
+  let d = "";
 
-  let rule: HorizontalOrVerticalRule
+  let rule: HorizontalOrVerticalRule;
   if (!orientation) {
     // randomize curve orientation
-    let coinFlip = Math.random()
+    let coinFlip = Math.random();
     if (coinFlip > 0.5) {
-      rule = Rules[diagonal].Horizontal
+      rule = Rules[diagonal].Horizontal;
     } else {
-      rule = Rules[diagonal].Vertical
+      rule = Rules[diagonal].Vertical;
     }
   } else {
-    rule = Rules[diagonal][orientation]
+    rule = Rules[diagonal][orientation];
   }
 
   const ProcessRule = (rule: DirectionAndAngleRule[]) => {
@@ -57,41 +57,41 @@ const DescribePath = (
           radius,
           rule[i].angles[0],
           rule[i].angles[1]
-        )
+        );
       }
       if (rule[i].direction) {
         // Move cursor
-        mover.Move(MoveDistance, rule[i].direction)
+        mover.Move(MoveDistance, rule[i].direction);
       }
     }
-  }
+  };
 
   // Move cursor to path start
-  let startPointRule = rule.startPoint
+  let startPointRule = rule.startPoint;
   for (let i = 0; i < startPointRule.length; i++) {
     mover.Move(
       RadiusInCartesian * startPointRule[i].scale,
       startPointRule[i].direction
-    )
+    );
   }
 
-  let commonRule = rule.common
-  ProcessRule(commonRule)
+  let commonRule = rule.common;
+  ProcessRule(commonRule);
 
   if (direction) {
-    const connectorRule = rule.connector[direction]
-    ProcessRule(connectorRule)
+    const connectorRule = rule.connector[direction];
+    ProcessRule(connectorRule);
   }
-  return d
-}
+  return d;
+};
 
 interface TileProps {
-  active: boolean
-  radius: number
-  start: Point
-  diagonal: string
-  direction: string
-  strokeWidth: number
+  active: boolean;
+  radius: number;
+  start: Point;
+  diagonal: string;
+  direction: string;
+  strokeWidth: number;
 }
 
 /**
@@ -110,22 +110,22 @@ const Tile = ({
   direction,
   strokeWidth,
 }: TileProps) => {
-  const d = DescribePath(radius, start, diagonal, direction, null)
+  const d = DescribePath(radius, start, diagonal, direction, null);
   return (
     <path
       stroke="black"
-      strokeWidth={strokeWidth ? strokeWidth : '4'}
+      strokeWidth={strokeWidth ? strokeWidth : "4"}
       fill="transparent"
       d={d}
     />
-  )
-}
+  );
+};
 
 interface TilesProps {
-  rules: Rule[]
-  points: Point[]
-  cellSize: number
-  strokeWidth: number
+  rules: Rule[];
+  points: Point[];
+  cellSize: number;
+  strokeWidth: number;
 }
 
 /**
@@ -149,5 +149,5 @@ export const Tiles = ({ rules, points, cellSize, strokeWidth }: TilesProps) => {
         />
       ))}
     </g>
-  )
-}
+  );
+};

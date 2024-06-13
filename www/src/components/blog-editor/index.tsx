@@ -11,7 +11,7 @@ import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
 import SaveIcon from "@material-ui/icons/Save";
 import PublishIcon from "@material-ui/icons/Publish";
 import DeleteIcon from "@material-ui/icons/Delete";
-import {throttle, DebouncedFunc, debounce} from "lodash";
+import { throttle, DebouncedFunc, debounce } from "lodash";
 
 import { Protected } from "@/utility/http";
 import { AlertData, ErrorAlert, SuccessAlert } from "../alert";
@@ -19,7 +19,6 @@ import { Roles } from "../auth";
 import Login from "../auth/login";
 import Notebook from "../notebook";
 import styles from "./editor.module.scss";
-
 
 const ImageMIMERegex = /^image\/(p?jpeg|gif|png)$/i;
 const LoadingText = "![](Uploading...)";
@@ -50,7 +49,7 @@ interface BlogEditorState {
 
 class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
   articleRef: React.RefObject<HTMLElement>;
-  debouncedAutoSaveDraft:  DebouncedFunc<() => Promise<void>>
+  debouncedAutoSaveDraft: DebouncedFunc<() => Promise<void>>;
 
   constructor(props: BlogEditorProps) {
     super(props);
@@ -106,7 +105,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
   checkIfMobile() {
     this.setState({
       mobile: window.innerWidth < 600,
-    })
+    });
   }
 
   closeSuccessAlert() {
@@ -313,9 +312,12 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
   }
 
   handleTextareaChange(e: ChangeEvent<HTMLTextAreaElement>) {
-    this.setState({
-      mdx: e.target.value,
-    }, this.debouncedAutoSaveDraft);
+    this.setState(
+      {
+        mdx: e.target.value,
+      },
+      this.debouncedAutoSaveDraft
+    );
   }
 
   insertAtCursor(
@@ -380,19 +382,19 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
       title: title,
       markdown: mdx,
     })
-        .then(() => {
-          this.setState({
-            saved: new Date()
-          });
-        })
-        .catch((error: AxiosError) => {
-          this.setState({
-            errorAlert: {
-              open: true,
-              message: error.response?.data,
-            }
-          });
+      .then(() => {
+        this.setState({
+          saved: new Date(),
         });
+      })
+      .catch((error: AxiosError) => {
+        this.setState({
+          errorAlert: {
+            open: true,
+            message: error.response?.data,
+          },
+        });
+      });
   }
 
   async saveDraft() {
@@ -535,7 +537,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
       deleteDraft,
       deletePost,
       revisePost,
-      toggleAssets
+      toggleAssets,
     } = this;
     if (auth) {
       return (
@@ -543,45 +545,49 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
           <div className={styles.toolbar}>
             <div className={styles.controls}>
               <Button
-                  variant="contained"
-                  color="secondary"
-                  size="small"
-                  startIcon={<PhotoLibraryIcon />}
-                  onClick={toggleAssets}
+                variant="contained"
+                color="secondary"
+                size="small"
+                startIcon={<PhotoLibraryIcon />}
+                onClick={toggleAssets}
               >
                 {showAssets ? "Hide" : "Show"}
               </Button>
               {draft && (
-                  <Button
-                      variant="contained"
-                      color="secondary"
-                      size="small"
-                      startIcon={<SaveIcon />}
-                      onClick={saveDraft}
-                  >
-                    Save
-                  </Button>
-              )}
-              <Button
+                <Button
                   variant="contained"
                   color="secondary"
                   size="small"
-                  startIcon={<DeleteIcon />}
-                  onClick={draft ? deleteDraft : deletePost}
+                  startIcon={<SaveIcon />}
+                  onClick={saveDraft}
+                >
+                  Save
+                </Button>
+              )}
+              <Button
+                variant="contained"
+                color="secondary"
+                size="small"
+                startIcon={<DeleteIcon />}
+                onClick={draft ? deleteDraft : deletePost}
               >
                 Delete
               </Button>
               <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  startIcon={<PublishIcon />}
-                  onClick={draft ? publishDraft : revisePost}
+                variant="contained"
+                color="primary"
+                size="small"
+                startIcon={<PublishIcon />}
+                onClick={draft ? publishDraft : revisePost}
               >
                 {draft ? "Publish" : "Revise"}
               </Button>
             </div>
-            { this.state.saved && <div className={styles.savedMessage}><p>{`draft last saved at ${this.state.saved.toLocaleTimeString()}`}</p></div> }
+            {this.state.saved && (
+              <div className={styles.savedMessage}>
+                <p>{`draft last saved at ${this.state.saved.toLocaleTimeString()}`}</p>
+              </div>
+            )}
           </div>
           <div
             className={`${styles.assets} ${
