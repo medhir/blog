@@ -4,16 +4,27 @@ import { Roles } from "../../../../components/auth";
 import BlogEditor from "../../../../components/blog-editor";
 import { Authenticated } from "../../../../utility/auth";
 import http from "../../../../utility/http";
+import { PostMetadata } from "@/components/blog";
 
 const DraftEditor = ({
   auth,
   id,
   mdx,
+  draftData,
 }: {
   auth: boolean;
   id: string;
   mdx: string;
-}) => <BlogEditor auth={auth} id={id} draft={true} mdx={mdx} />;
+  draftData: PostMetadata;
+}) => (
+  <BlogEditor
+    auth={auth}
+    id={id}
+    draft={true}
+    mdx={mdx}
+    draftData={draftData}
+  />
+);
 
 export default DraftEditor;
 
@@ -28,6 +39,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       props: {
         auth: authResponse.auth,
         id: ctx.params?.id,
+        draftData: draftResponse.data,
         mdx: draftResponse.data.markdown,
       },
     };

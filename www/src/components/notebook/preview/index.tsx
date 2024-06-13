@@ -6,12 +6,19 @@ import { useMDXComponents } from "@/mdx_components";
 
 interface PreviewProps {
   articleRef?: React.RefObject<HTMLElement>;
+  title: string;
   hidden?: boolean;
   source: MDXRemoteSerializeResult;
   scroll: boolean;
 }
 
-const Preview = ({ articleRef, hidden, scroll, source }: PreviewProps) => {
+const Preview = ({
+  articleRef,
+  hidden,
+  scroll,
+  source,
+  title,
+}: PreviewProps) => {
   const components = useMDXComponents();
   return (
     <div
@@ -25,6 +32,7 @@ const Preview = ({ articleRef, hidden, scroll, source }: PreviewProps) => {
         ref={articleRef}
         className={`${articleStyles.article} ${styles.article}`}
       >
+        <h1>{title}</h1>
         {source && <MDXRemote {...source} components={components} />}
       </article>
     </div>

@@ -19,6 +19,7 @@ import { Roles } from "../auth";
 import Login from "../auth/login";
 import Notebook from "../notebook";
 import styles from "./editor.module.scss";
+import { PostMetadata } from "@/components/blog";
 
 const ImageMIMERegex = /^image\/(p?jpeg|gif|png)$/i;
 const LoadingText = "![](Uploading...)";
@@ -33,6 +34,7 @@ interface BlogEditorProps {
   auth: boolean;
   id: string;
   draft: boolean;
+  draftData: PostMetadata;
   mdx: string;
 }
 
@@ -40,6 +42,7 @@ interface BlogEditorState {
   assets: Array<Asset>;
   key: number;
   mdx: string;
+  title: string;
   saved: Date | null;
   mobile: boolean;
   showAssets: boolean;
@@ -57,6 +60,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
       assets: [],
       key: new Date().getTime(),
       mdx: props.mdx,
+      title: props.draftData.title,
       saved: null,
       mobile: false,
       showAssets: false,
@@ -619,6 +623,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
             key={key}
             splitPane={!mobile}
             scroll={false}
+            title={this.state.title}
             mdx={mdx}
             handleDrop={handleDrop}
             handlePaste={handlePaste}

@@ -28,7 +28,11 @@ const Blog = ({ drafts, edit, posts }: BlogProps) => {
     const title = `Untitled ${Math.random()}`;
     Protected.Client.Post("/blog/draft/", {
       title,
-      markdown: `# ${title}`,
+      markdown: `---
+title: ${title}
+description: insert description here
+keywords: keyword1, keyword2
+---`,
     }).then((response) => {
       Router.push(`/blog/edit/draft/${response.data.id}`);
     });
