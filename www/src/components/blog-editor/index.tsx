@@ -43,7 +43,7 @@ interface BlogEditorState {
   key: number;
   mdx: string;
   title: string;
-  saved: Date | null;
+  saved: Date;
   mobile: boolean;
   showAssets: boolean;
   errorAlert: AlertData;
@@ -61,7 +61,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
       key: new Date().getTime(),
       mdx: props.mdx,
       title: props.draftData.title,
-      saved: null,
+      saved: new Date(props.draftData.saved_on as string),
       mobile: false,
       showAssets: false,
       errorAlert: {
@@ -525,8 +525,16 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
 
   render() {
     const { auth, draft } = this.props;
-    const { assets, key, mdx, mobile, showAssets, errorAlert, successAlert } =
-      this.state;
+    const {
+      assets,
+      key,
+      mdx,
+      mobile,
+      saved,
+      showAssets,
+      errorAlert,
+      successAlert,
+    } = this.state;
     const {
       articleRef,
       closeErrorAlert,
@@ -589,7 +597,9 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
             </div>
             {this.state.saved && (
               <div className={styles.savedMessage}>
-                <p>{`draft last saved at ${this.state.saved.toLocaleTimeString()}`}</p>
+                <p
+                  suppressHydrationWarning
+                >{`draft last saved at ${this.state.saved.toLocaleTimeString()}`}</p>
               </div>
             )}
           </div>
@@ -622,8 +632,8 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
             articleRef={articleRef}
             key={key}
             splitPane={!mobile}
+            saved={saved}
             scroll={false}
-            title={this.state.title}
             mdx={mdx}
             handleDrop={handleDrop}
             handlePaste={handlePaste}

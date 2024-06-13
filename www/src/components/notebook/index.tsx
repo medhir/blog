@@ -8,14 +8,12 @@ import { IconButton, Tooltip } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import { MDXRemoteSerializeResult } from "next-mdx-remote";
-import { PostMetadata } from "@/components/blog";
 
 interface NotebookProps {
   articleRef?: React.RefObject<HTMLElement>;
   className?: string;
-  draft: PostMetadata;
-  title: string;
   mdx: string;
+  saved: Date;
   scroll: boolean;
   splitPane: boolean;
   handleTextareaChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
@@ -26,7 +24,6 @@ interface NotebookProps {
 interface NotebookState {
   iMDX: string;
   parsedMDX: MDXRemoteSerializeResult;
-  title: string;
   preview: boolean;
   id: string;
   error?: any;
@@ -45,7 +42,6 @@ class Notebook extends Component<NotebookProps, NotebookState> {
       iMDX: props.mdx,
       id: uuid(),
       preview: true,
-      title: props.title,
       // @ts-ignore - not sure how to set a null version of MDXRemoteSerializeResult but this initialization seems to work.
       parsedMDX: "",
     };
@@ -60,7 +56,6 @@ class Notebook extends Component<NotebookProps, NotebookState> {
       .then((response) => {
         this.setState({
           parsedMDX: response.data.source,
-          title: response.data.source.frontmatter.title,
         });
       })
       .catch((err) => {
@@ -117,6 +112,7 @@ class Notebook extends Component<NotebookProps, NotebookState> {
     const {
       articleRef,
       className,
+      saved,
       scroll,
       splitPane,
       handleDrop,
@@ -135,10 +131,10 @@ class Notebook extends Component<NotebookProps, NotebookState> {
             value={iMDX}
           ></textarea>
           <Preview
+            saved={saved}
             articleRef={articleRef}
             scroll={scroll}
             source={parsedMDX}
-            title={this.state.title}
           />
         </div>
       );
@@ -168,10 +164,10 @@ class Notebook extends Component<NotebookProps, NotebookState> {
         </div>
         <Preview
           articleRef={articleRef}
+          saved={saved}
           scroll={scroll}
           source={parsedMDX}
           hidden={!preview}
-          title={this.state.title}
         />
       </div>
     );
