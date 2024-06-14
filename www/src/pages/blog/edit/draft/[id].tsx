@@ -10,19 +10,19 @@ const DraftEditor = ({
   auth,
   id,
   mdx,
-  draftData,
+  postMetadata,
 }: {
   auth: boolean;
   id: string;
   mdx: string;
-  draftData: PostMetadata;
+  postMetadata: PostMetadata;
 }) => (
   <BlogEditor
     auth={auth}
     id={id}
     draft={true}
     mdx={mdx}
-    draftData={draftData}
+    postMetadata={postMetadata}
   />
 );
 
@@ -35,11 +35,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const draftResponse = await http.Get(`/blog/draft/${ctx.params?.id}`, {
       headers: { cookie: authResponse.cookies },
     });
+    console.log(draftResponse);
     return {
       props: {
         auth: authResponse.auth,
         id: ctx.params?.id,
-        draftData: draftResponse.data,
+        postMetadata: draftResponse.data,
         mdx: draftResponse.data.markdown,
       },
     };

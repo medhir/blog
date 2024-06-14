@@ -22,7 +22,7 @@ const Blog = ({ post, source }: BlogProps) => (
       description={source.frontmatter.description as string}
       keywords={source.frontmatter.keywords as string}
     />
-    <Post source={source} />
+    <Post postMetadata={post} source={source} />
   </>
 );
 

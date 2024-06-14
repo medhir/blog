@@ -11,7 +11,7 @@ import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
 import SaveIcon from "@material-ui/icons/Save";
 import PublishIcon from "@material-ui/icons/Publish";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { throttle, DebouncedFunc, debounce } from "lodash";
+import { DebouncedFunc, debounce } from "lodash";
 
 import { Protected } from "@/utility/http";
 import { AlertData, ErrorAlert, SuccessAlert } from "../alert";
@@ -34,19 +34,19 @@ interface BlogEditorProps {
   auth: boolean;
   id: string;
   draft: boolean;
-  draftData: PostMetadata;
+  postMetadata: PostMetadata;
   mdx: string;
 }
 
 interface BlogEditorState {
   assets: Array<Asset>;
+  errorAlert: AlertData;
   key: number;
   mdx: string;
-  title: string;
-  saved: Date;
   mobile: boolean;
+  title: string;
+  postMetadata: PostMetadata;
   showAssets: boolean;
-  errorAlert: AlertData;
   successAlert: AlertData;
 }
 
@@ -60,8 +60,8 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
       assets: [],
       key: new Date().getTime(),
       mdx: props.mdx,
-      title: props.draftData.title,
-      saved: new Date(props.draftData.saved_on as string),
+      title: props.postMetadata.title,
+      postMetadata: props.postMetadata,
       mobile: false,
       showAssets: false,
       errorAlert: {
@@ -386,9 +386,9 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
       title: title,
       markdown: mdx,
     })
-      .then(() => {
+      .then((success) => {
         this.setState({
-          saved: new Date(),
+          postMetadata: success.data,
         });
       })
       .catch((error: AxiosError) => {
@@ -530,7 +530,7 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
       key,
       mdx,
       mobile,
-      saved,
+      postMetadata,
       showAssets,
       errorAlert,
       successAlert,
@@ -595,11 +595,11 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
                 {draft ? "Publish" : "Revise"}
               </Button>
             </div>
-            {this.state.saved && (
+            {postMetadata && (
               <div className={styles.savedMessage}>
-                <p
-                  suppressHydrationWarning
-                >{`draft last saved at ${this.state.saved.toLocaleTimeString()}`}</p>
+                <p suppressHydrationWarning>{`draft last saved at ${new Date(
+                  postMetadata.saved_on as number
+                ).toLocaleTimeString()}`}</p>
               </div>
             )}
           </div>
@@ -630,9 +630,10 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
           </div>
           <Notebook
             articleRef={articleRef}
+            draft={draft}
             key={key}
+            postMetadata={postMetadata}
             splitPane={!mobile}
-            saved={saved}
             scroll={false}
             mdx={mdx}
             handleDrop={handleDrop}

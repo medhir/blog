@@ -1,27 +1,27 @@
 import { GetServerSideProps } from "next";
 import React from "react";
-import { Roles } from "../../../../components/auth";
-import BlogEditor from "../../../../components/blog-editor";
-import { Authenticated } from "../../../../utility/auth";
-import http from "../../../../utility/http";
+import { Roles } from "@/components/auth";
+import BlogEditor from "@/components/blog-editor";
+import { Authenticated } from "@/utility/auth";
+import http from "@/utility/http";
 import { PostMetadata } from "@/components/blog";
 
 const DraftEditor = ({
   auth,
   id,
-  draftData,
+  postMetadata,
   mdx,
 }: {
   auth: any;
   id: any;
-  draftData: PostMetadata;
+  postMetadata: PostMetadata;
   mdx: any;
 }) => (
   <BlogEditor
     auth={auth}
     id={id}
     draft={false}
-    draftData={draftData}
+    postMetadata={postMetadata}
     mdx={mdx}
   />
 );
@@ -39,7 +39,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       props: {
         auth: authResponse.auth,
         id: postResponse.data.id,
-        draftData: postResponse.data,
+        postMetadata: postResponse.data,
         mdx: postResponse.data.markdown,
       },
     };

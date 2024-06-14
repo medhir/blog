@@ -18,9 +18,9 @@ export interface PostMetadata {
   slug: string;
   markdown: string;
   created_on: string;
-  saved_on?: string;
-  published_on?: string;
-  revised_on: string;
+  saved_on?: number;
+  published_on?: number;
+  revised_on?: number;
 }
 
 const Blog = ({ drafts, edit, posts }: BlogProps) => {
