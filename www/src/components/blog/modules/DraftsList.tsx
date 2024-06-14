@@ -10,12 +10,23 @@ interface DraftListItemProps {
 }
 
 const DraftListItem = ({ draft }: DraftListItemProps) => {
-  const saved = draft.saved_on ? new Date(draft.saved_on).toString() : "";
+  const locale = "en-US";
+  const localeStringOptions: Intl.DateTimeFormatOptions = {
+    month: "long", // long month format
+    day: "numeric", // numeric day format
+    year: "numeric", // numeric year format
+    hour: "numeric", // numeric hour format
+    minute: "numeric", // numeric minute format
+    hour12: true, // use 12-hour clock (AM/PM)
+  };
+  const saved = draft.saved_on
+    ? new Date(draft.saved_on).toLocaleTimeString(locale, localeStringOptions)
+    : "";
   return (
     <li className={styles.draft}>
       <Link href={`/blog/edit/draft/${draft.id}`}>
         <h3>{draft.title}</h3>
-        <p suppressHydrationWarning>{`Last saved at: ${saved}`}</p>
+        <p suppressHydrationWarning>{`Last saved at ${saved}`}</p>
       </Link>
     </li>
   );

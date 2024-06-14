@@ -57,33 +57,6 @@ const LoginForm = ({
               Log In
             </Button>
           </div>
-          <Grid container>
-            <Grid item xs>
-              <Link
-                href="#"
-                variant="body2"
-                onClick={(e) => {
-                  e.preventDefault();
-                  // initiate password reset flow
-                  Router.push("/password_reset");
-                }}
-              >
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link
-                href="#"
-                variant="body2"
-                onClick={(e) => {
-                  e.preventDefault();
-                  Router.push("/signup");
-                }}
-              >
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid>
         </Container>
       </form>
     </>

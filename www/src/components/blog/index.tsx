@@ -18,9 +18,9 @@ export interface PostMetadata {
   slug: string;
   markdown: string;
   created_on: string;
-  saved_on?: string;
-  published_on?: string;
-  revised_on: string;
+  saved_on?: number;
+  published_on?: number;
+  revised_on?: number;
 }
 
 const Blog = ({ drafts, edit, posts }: BlogProps) => {
@@ -28,7 +28,11 @@ const Blog = ({ drafts, edit, posts }: BlogProps) => {
     const title = `Untitled ${Math.random()}`;
     Protected.Client.Post("/blog/draft/", {
       title,
-      markdown: `# ${title}`,
+      markdown: `---
+title: ${title}
+description: insert description here
+keywords: keyword1, keyword2
+---`,
     }).then((response) => {
       Router.push(`/blog/edit/draft/${response.data.id}`);
     });

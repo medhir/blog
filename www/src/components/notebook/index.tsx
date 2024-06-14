@@ -8,12 +8,16 @@ import { IconButton, Tooltip } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import { MDXRemoteSerializeResult } from "next-mdx-remote";
+import { PostMetadata } from "@/components/blog";
+import post from "@/components/blog/modules/Post";
 
 interface NotebookProps {
   articleRef?: React.RefObject<HTMLElement>;
   className?: string;
   mdx: string;
   scroll: boolean;
+  draft: boolean;
+  postMetadata: PostMetadata;
   splitPane: boolean;
   handleTextareaChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   handleDrop?: (e: DragEvent<HTMLTextAreaElement>) => void;
@@ -111,6 +115,8 @@ class Notebook extends Component<NotebookProps, NotebookState> {
     const {
       articleRef,
       className,
+      draft,
+      postMetadata,
       scroll,
       splitPane,
       handleDrop,
@@ -128,7 +134,13 @@ class Notebook extends Component<NotebookProps, NotebookState> {
             onPaste={handlePaste}
             value={iMDX}
           ></textarea>
-          <Preview articleRef={articleRef} scroll={scroll} source={parsedMDX} />
+          <Preview
+            articleRef={articleRef}
+            draft={draft}
+            postMetadata={postMetadata}
+            scroll={scroll}
+            source={parsedMDX}
+          />
         </div>
       );
     }
@@ -157,6 +169,8 @@ class Notebook extends Component<NotebookProps, NotebookState> {
         </div>
         <Preview
           articleRef={articleRef}
+          draft
+          postMetadata={postMetadata}
           scroll={scroll}
           source={parsedMDX}
           hidden={!preview}

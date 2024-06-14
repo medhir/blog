@@ -11,8 +11,17 @@ interface PostListItemProps {
 }
 
 const PostListItem = ({ edit, post }: PostListItemProps) => {
+  const locale = "en-US";
+  const localeStringOptions: Intl.DateTimeFormatOptions = {
+    month: "long", // long month format
+    day: "numeric", // numeric day format
+    year: "numeric", // numeric year format
+  };
   const publishedDate = post.published_on
-    ? new Date(post.published_on).toDateString()
+    ? new Date(post.published_on).toLocaleDateString(
+        locale,
+        localeStringOptions
+      )
     : "";
   return (
     <li className={styles.post}>
