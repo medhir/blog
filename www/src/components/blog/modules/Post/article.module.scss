@@ -76,14 +76,10 @@
   }
 
   ul {
-    padding: 0px 10px 0px 10px;
-
-    li:before {
-      content: "";
-      margin-left: -0.25rem;
-    }
+    list-style-position: outside;
+    margin: 10px 25px;
     li {
-      padding: 1px 0px 1px 0px;
+      padding: 0px 5px;
     }
   }
 
