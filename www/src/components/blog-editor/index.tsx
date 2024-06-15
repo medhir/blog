@@ -44,8 +44,8 @@ interface BlogEditorState {
   key: number;
   mdx: string;
   mobile: boolean;
-  title: string;
   postMetadata: PostMetadata;
+  title: string;
   showAssets: boolean;
   successAlert: AlertData;
 }
@@ -565,26 +565,26 @@ class BlogEditor extends Component<BlogEditorProps, BlogEditorState> {
               >
                 {showAssets ? "Hide" : "Show"}
               </Button>
-              {draft && (
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  size="small"
-                  startIcon={<SaveIcon />}
-                  onClick={saveDraft}
-                >
-                  Save
-                </Button>
-              )}
-              <Button
-                variant="contained"
-                color="secondary"
-                size="small"
-                startIcon={<DeleteIcon />}
-                onClick={draft ? deleteDraft : deletePost}
-              >
-                Delete
-              </Button>
+              {/*{draft && (*/}
+              {/*  <Button*/}
+              {/*    variant="contained"*/}
+              {/*    color="secondary"*/}
+              {/*    size="small"*/}
+              {/*    startIcon={<SaveIcon />}*/}
+              {/*    onClick={saveDraft}*/}
+              {/*  >*/}
+              {/*    Save*/}
+              {/*  </Button>*/}
+              {/*)}*/}
+              {/*<Button*/}
+              {/*  variant="contained"*/}
+              {/*  color="secondary"*/}
+              {/*  size="small"*/}
+              {/*  startIcon={<DeleteIcon />}*/}
+              {/*  onClick={draft ? deleteDraft : deletePost}*/}
+              {/*>*/}
+              {/*  Delete*/}
+              {/*</Button>*/}
               <Button
                 variant="contained"
                 color="primary"
