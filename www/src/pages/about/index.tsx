@@ -10,16 +10,19 @@ const About = () => (
       <p>hello, and welcome to my tiny internet outpost.</p>
       <p>
         this website is both a labor of love and a rite of passage amongst
-        certain computer people as an{" "}
+        certain computer people as a{" "}
         <a href="https://github.com/medhir/blog">
-          overly complex blogging platform
-        </a>{" "}
-        I wrote myself.
+          blogging platform I wrote myself
+        </a>
+        .
       </p>
       <p>
         my interests span many domains. the past couple years have been focused
-        on things like cybersecurity, weightlifting, woodworking, and computer
-        graphics.
+        on things like cybersecurity, weightlifting, woodworking, and{" "}
+        <a href="https://www.instagram.com/p/CvTTMNaJoEg/">
+          3D texturing / animation
+        </a>{" "}
+        with <a href="https://www.blender.org">Blender</a>.
       </p>
       <p>
         previous explorations include developing web apps, building large-scale
