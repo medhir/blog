@@ -34,9 +34,6 @@ func (h *handlers) GetPhotos() http.HandlerFunc {
 		}
 		objects.Sort(gcs.ByDateDescending)
 		imageData := make([]photoData, 0, len(objects))
-		for i, object := range objects {
-			fmt.Printf("Object %d: %+v", i, object)
-		}
 		for _, object := range objects {
 			width, err := strconv.Atoi(object.Metadata["width"])
 			if err != nil {
