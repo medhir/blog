@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"path"
 	"strconv"
@@ -76,26 +77,31 @@ func (h *handlers) PostPhoto() http.HandlerFunc {
 			buf := bytes.NewBuffer(nil)
 			_, err = io.Copy(buf, file)
 			if err != nil {
+				log.Println(err.Error())
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 			processedImage, err := h.imgProcessor.ProcessImage(buf.Bytes())
 			if err != nil {
+				log.Printf("Unable to process image: %s", err.Error())
 				http.Error(w, fmt.Sprintf("Unable to process image: %s", err.Error()), http.StatusInternalServerError)
 				return
 			}
 			imageBounds, err := h.imgProcessor.GetImageDimensions(processedImage)
 			if err != nil {
+				log.Printf("Unable to get image dimensions: %s", err.Error())
 				http.Error(w, fmt.Sprintf("Unable to get image dimensions: %s", err.Error()), http.StatusInternalServerError)
 				return
 			}
 			cfImage, err := h.cf.AddImage(processedImage)
 			if err != nil {
+				log.Printf("Unable to add image to Cloudflare: %s", err.Error())
 				http.Error(w, fmt.Sprintf("Unable to add image to Cloudflare: %s", err.Error()), http.StatusInternalServerError)
 				return
 			}
 			blurDataURL, err := h.imgProcessor.GetBlurDataURL(processedImage)
 			if err != nil {
+				log.Printf("Unable to blur image data: %s", err.Error())
 				http.Error(w, fmt.Sprintf("Unable to blur image data: %s", err.Error()), http.StatusInternalServerError)
 				return
 			}
@@ -103,6 +109,7 @@ func (h *handlers) PostPhoto() http.HandlerFunc {
 			objectName := fmt.Sprintf("%s%s.jpg", prefix, id)
 			err = h.gcs.UploadObject(objectName, bucket, processedImage, true)
 			if err != nil {
+				log.Printf("Unable to upload image: %s", err.Error())
 				http.Error(w, fmt.Sprintf("Unable to upload image: %s", err.Error()), http.StatusInternalServerError)
 				return
 			}
