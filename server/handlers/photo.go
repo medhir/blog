@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"path"
 	"strconv"
@@ -66,6 +67,14 @@ func (h *handlers) GetPhotos() http.HandlerFunc {
 func (h *handlers) PostPhoto() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.ParseMultipartForm(32 << 20)
+		// get the preferred outgoing IP of this machine
+		conn, err := net.Dial("udp", "8.8.8.8:80")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer conn.Close()
+		localAddr := conn.LocalAddr().(*net.UDPAddr)
+		log.Printf("Preferred Outbound IP: %+v", localAddr)
 		fileHeaders := r.MultipartForm.File["photo"]
 		for _, fileHeader := range fileHeaders {
 			file, err := fileHeader.Open()
