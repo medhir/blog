@@ -20,6 +20,7 @@ import (
 
 	// pq is the database driver for connecting to postgres
 	_ "github.com/lib/pq"
+	muxgo "github.com/muxinc/mux-go"
 )
 
 const (
@@ -38,6 +39,7 @@ type Instance struct {
 	gcs    gcs.GCS
 	cf     cf.CF
 	db     sql.Postgres
+	vid    *muxgo.APIClient
 	env    string
 }
 
@@ -117,6 +119,21 @@ func NewInstance() (*Instance, error) {
 		return nil, errors.New("CLOUDFLARE_API_KEY must be provided")
 	}
 
+	// mux config
+	muxToken, ok := os.LookupEnv("MUX_ACCESS_TOKEN")
+	if !ok {
+		return nil, errors.New("MUX_ACCESS_TOKEN must be provided")
+	}
+	muxSecret, ok := os.LookupEnv("MUX_TOKEN_SECRET")
+	if !ok {
+		return nil, errors.New("MUX_TOKEN_SECRET must be provided")
+	}
+
+	video := muxgo.NewAPIClient(
+		muxgo.NewConfiguration(
+			muxgo.WithBasicAuth(muxToken, muxSecret),
+		))
+
 	cloudflare, err := cf.NewCF(ctx, cloudflareApiKey, cloudflareEmail, cloudflareAccountID)
 	if err != nil {
 		return nil, err
@@ -152,6 +169,7 @@ func NewInstance() (*Instance, error) {
 		auth:   auth,
 		gcs:    gcs,
 		cf:     cloudflare,
+		vid:    video,
 		env:    environment,
 		db:     db,
 	}

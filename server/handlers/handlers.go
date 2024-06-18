@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/medhir/blog/server/controllers/storage/cf"
+	muxgo "github.com/muxinc/mux-go"
 	"net/http"
 
 	"github.com/medhir/blog/server/controllers/auth"
@@ -41,6 +42,8 @@ type Handlers interface {
 	PostPhoto() http.HandlerFunc
 	DeletePhoto() http.HandlerFunc
 	HandlePhotos() http.HandlerFunc
+	// Videos
+	HandleVideo() http.HandlerFunc
 }
 
 // handlers describes dependencies needed to serve http requests
@@ -53,11 +56,12 @@ type handlers struct {
 	imgProcessor imageprocessor.ImageProcessor
 	db           sql.Postgres
 	cf           cf.CF
+	video        *muxgo.APIClient
 	env          string
 }
 
 // NewHandlers instantiates a new set of handlers
-func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, cf cf.CF, db sql.Postgres, env string) (Handlers, error) {
+func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, cf cf.CF, db sql.Postgres, video *muxgo.APIClient, env string) (Handlers, error) {
 	return &handlers{
 		ctx:          ctx,
 		auth:         auth,
@@ -66,6 +70,7 @@ func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, cf cf.CF, db 
 		imgProcessor: imageprocessor.NewImageProcessor(),
 		db:           db,
 		cf:           cf,
+		video:        video,
 		env:          env,
 	}, nil
 }
