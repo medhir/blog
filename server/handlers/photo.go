@@ -14,7 +14,6 @@ import (
 )
 
 const (
-	bucket = "medhir-com"
 	prefix = "photos/"
 )
 
@@ -28,13 +27,16 @@ func (h *handlers) GetPhotos() http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		objects, err := h.gcs.ListObjects(bucket, prefix)
+		objects, err := h.gcs.ListObjects(h.gcs.GetDefaultBucket(), prefix)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Could not retrieve photos, %v/%v", bucket, prefix), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Could not retrieve photos, %v/%v", h.gcs.GetDefaultBucket(), prefix), http.StatusInternalServerError)
 			return
 		}
 		objects.Sort(gcs.ByDateDescending)
 		imageData := make([]photoData, 0, len(objects))
+		for i, object := range objects {
+			fmt.Printf("Object %d: %+v", i, object)
+		}
 		for _, object := range objects {
 			width, err := strconv.Atoi(object.Metadata["width"])
 			if err != nil {
@@ -107,13 +109,13 @@ func (h *handlers) PostPhoto() http.HandlerFunc {
 			}
 			id := uuid.New().String()
 			objectName := fmt.Sprintf("%s%s.jpg", prefix, id)
-			err = h.gcs.UploadObject(objectName, bucket, processedImage, true)
+			err = h.gcs.UploadObject(objectName, h.gcs.GetDefaultBucket(), processedImage, true)
 			if err != nil {
 				log.Printf("Unable to upload image: %s", err.Error())
 				http.Error(w, fmt.Sprintf("Unable to upload image: %s", err.Error()), http.StatusInternalServerError)
 				return
 			}
-			err = h.gcs.AddObjectMetadata(objectName, bucket, map[string]string{
+			err = h.gcs.AddObjectMetadata(objectName, h.gcs.GetDefaultBucket(), map[string]string{
 				"width":       fmt.Sprintf("%d", imageBounds.Width),
 				"height":      fmt.Sprintf("%d", imageBounds.Height),
 				"cdnURL":      cfImage.Variants[0],
@@ -128,7 +130,7 @@ func (h *handlers) DeletePhoto() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		key := path.Base(r.URL.Path)
 		objectName := fmt.Sprintf("%s%s", prefix, key)
-		metadata, err := h.gcs.GetObjectMetadata(objectName, bucket)
+		metadata, err := h.gcs.GetObjectMetadata(objectName, h.gcs.GetDefaultBucket())
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Unable to get image metadata: %s", err.Error()), http.StatusInternalServerError)
 			return
@@ -138,7 +140,7 @@ func (h *handlers) DeletePhoto() http.HandlerFunc {
 			http.Error(w, fmt.Sprintf("Unable to delete cdn image: %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
-		err = h.gcs.DeleteObject(objectName, bucket)
+		err = h.gcs.DeleteObject(objectName, h.gcs.GetDefaultBucket())
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Unable to delete image: %s", err.Error()), http.StatusInternalServerError)
 			return

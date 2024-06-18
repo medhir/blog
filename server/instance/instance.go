@@ -50,13 +50,16 @@ func NewInstance() (*Instance, error) {
 		Addr: serverPort,
 	}
 
-	gcs, err := gcs.NewGCS(ctx)
+	defaultBucket, ok := os.LookupEnv("DEFAULT_GCS_BUCKET")
+	if !ok {
+		return nil, errors.New("DEFAULT_GCS_BUCKET must be provided")
+	}
+
+	gcs, err := gcs.NewGCS(ctx, defaultBucket)
 	if err != nil {
 		return nil, err
 	}
 
-	// get environment
-	var environment string
 	environment, ok := os.LookupEnv("ENVIRONMENT")
 	if !ok {
 		environment = local
