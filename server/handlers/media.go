@@ -17,13 +17,14 @@ const (
 )
 
 type mediaData struct {
-	Name          string `json:"name"`
-	Type          string `json:"type"`
-	URL           string `json:"url"`
-	MuxPlaybackID string `json:"muxPlaybackID,omitempty"`
-	Width         int    `json:"width,omitempty"`
-	Height        int    `json:"height,omitempty"`
-	BlurDataURL   string `json:"blurDataURL,omitempty"`
+	Name           string `json:"name"`
+	Type           string `json:"type"`
+	URL            string `json:"url"`
+	MuxAspectRatio string `json:"muxAspectRatio,omitempty"`
+	MuxPlaybackID  string `json:"muxPlaybackID,omitempty"`
+	Width          int    `json:"width,omitempty"`
+	Height         int    `json:"height,omitempty"`
+	BlurDataURL    string `json:"blurDataURL,omitempty"`
 }
 
 func (h *handlers) getMedia() http.HandlerFunc {
@@ -59,10 +60,11 @@ func (h *handlers) getMedia() http.HandlerFunc {
 				mediaList = append(mediaList, data)
 			case videoMedia:
 				data := mediaData{
-					Name:          path.Base(object.Name),
-					Type:          string(videoMedia),
-					MuxPlaybackID: object.Metadata["muxPlaybackID"],
-					URL:           object.Metadata["muxURL"],
+					Name:           path.Base(object.Name),
+					Type:           string(videoMedia),
+					MuxAspectRatio: object.Metadata["muxAspectRatio"],
+					MuxPlaybackID:  object.Metadata["muxPlaybackID"],
+					URL:            object.Metadata["muxURL"],
 				}
 				mediaList = append(mediaList, data)
 			default:

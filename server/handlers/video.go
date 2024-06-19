@@ -9,6 +9,8 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
+	"time"
 )
 
 func (h *handlers) getVideoURL() http.HandlerFunc {
@@ -60,14 +62,25 @@ func (h *handlers) postVideo() http.HandlerFunc {
 			return
 		}
 		muxAssetID := muxUploadData.Data.AssetId
-		muxAsset, err := h.video.AssetsApi.GetAsset(muxAssetID)
-		if err != nil {
-			msg := fmt.Sprintf("unable to get mux asset for assetID %s: %s", muxAssetID, err.Error())
-			log.Println(msg)
-			http.Error(w, msg, http.StatusInternalServerError)
-			return
+		var muxAsset muxgo.AssetResponse
+		for {
+			muxAsset, err = h.video.AssetsApi.GetAsset(muxAssetID)
+			if err != nil {
+				msg := fmt.Sprintf("unable to get mux asset for assetID %s: %s", muxAssetID, err.Error())
+				log.Println(msg)
+				http.Error(w, msg, http.StatusInternalServerError)
+				return
+			}
+			if muxAsset.Data.Status != "preparing" {
+				break
+			}
+			time.Sleep(1 * time.Second)
 		}
+		log.Printf("mux asset: %+v", muxAsset)
 		playbackID := muxAsset.Data.PlaybackIds[0].Id
+		log.Printf("mux aspect ratio: %+v", muxAsset.Data.AspectRatio)
+		aspectRatio := strings.Join(strings.Split(muxAsset.Data.AspectRatio, ":"), " / ")
+		log.Printf("mux aspect ratio formatted: %+v", aspectRatio)
 		objectName := fmt.Sprintf("%s%s", mediaPrefix, uuid.New().String())
 		err = h.gcs.UploadObject(objectName, h.gcs.GetDefaultBucket(), []byte{}, true)
 		if err != nil {
@@ -77,9 +90,10 @@ func (h *handlers) postVideo() http.HandlerFunc {
 			return
 		}
 		err = h.gcs.AddObjectMetadata(objectName, h.gcs.GetDefaultBucket(), map[string]string{
-			"type":          string(videoMedia),
-			"muxPlaybackID": playbackID,
-			"muxURL":        data.URL,
+			"type":           string(videoMedia),
+			"muxAspectRatio": aspectRatio,
+			"muxPlaybackID":  playbackID,
+			"muxURL":         data.URL,
 		})
 		if err != nil {
 			msg := fmt.Sprintf("unable to add object metadata: %s", err.Error())
