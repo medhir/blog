@@ -19,6 +19,15 @@ const nextConfig = {
       },
     ],
   },
+  redirects: async () =>{
+    return [
+      {
+        source: '/photos',
+        destination: '/',
+        permanent: true,
+      }
+    ]
+  }
 };
 
 /** @type {import('rehype-pretty-code').Options} */
