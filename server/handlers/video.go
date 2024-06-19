@@ -76,11 +76,8 @@ func (h *handlers) postVideo() http.HandlerFunc {
 			}
 			time.Sleep(1 * time.Second)
 		}
-		log.Printf("mux asset: %+v", muxAsset)
 		playbackID := muxAsset.Data.PlaybackIds[0].Id
-		log.Printf("mux aspect ratio: %+v", muxAsset.Data.AspectRatio)
 		aspectRatio := strings.Join(strings.Split(muxAsset.Data.AspectRatio, ":"), " / ")
-		log.Printf("mux aspect ratio formatted: %+v", aspectRatio)
 		objectName := fmt.Sprintf("%s%s", mediaPrefix, uuid.New().String())
 		err = h.gcs.UploadObject(objectName, h.gcs.GetDefaultBucket(), []byte{}, true)
 		if err != nil {
