@@ -8,7 +8,8 @@ import Layout from "../components/layout";
 
 export default function MyApp(props: { Component: any; pageProps: any }) {
   const { Component, pageProps } = props;
-
+  const metaDescription =
+    "medhir.com is the personal site and blog of Medhir Bhargava, a Seattle-based product manager and engineer. Stop by for thoughts on tech, art, and more.";
   React.useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");
@@ -21,14 +22,22 @@ export default function MyApp(props: { Component: any; pageProps: any }) {
     <React.Fragment>
       <Head>
         <title>medhir.com</title>
+        <meta name="description" content={metaDescription} />
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
-        <meta
-          name="description"
-          content="medhir.com is the personal site and blog of Medhir Bhargava, a Seattle-based product manager and engineer. Stop by for thoughts on tech, art, and more."
-        />
+
+        <meta property="og:url" content="https://medhir.com" />
+        <meta property="og:type" content="website" />
+        <meta name="og:title" content="medhir.com" />
+        <meta name="og:description" content={metaDescription} />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta property="twitter:domain" content="medhir.com" />
+        <meta property="twitter:url" content="https://medhir.com" />
+        <meta name="twitter:title" content="medhir.com" />
+        <meta name="twitter:description" content={metaDescription} />
       </Head>
       <Layout>
         <ThemeProvider theme={theme}>

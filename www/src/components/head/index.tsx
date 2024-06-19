@@ -1,4 +1,5 @@
 import NextHead from "next/head";
+import React from "react";
 
 interface HeadProps {
   title: string;
@@ -10,14 +11,16 @@ interface HeadProps {
 const Head = ({ title, description, keywords, image }: HeadProps) => (
   <NextHead>
     <title>{title}</title>
-    <meta name="og:title" content={title} />
     {description && <meta name="description" content={description} />}
-    {description && <meta name="og:description" content={description} />}
     {keywords && <meta name="keywords" content={keywords} />}
-    {keywords && <meta name="og:keywords" content={keywords} />}
+
+    <meta name="og:title" content={title} />
+    {description && <meta name="og:description" content={description} />}
     {image && <meta name="og:image" content={image} />}
-    <meta name="author" content="Medhir Bhargava" />
-    <link rel="icon" href="/favicon.ico" />
+
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    {image && <meta name="twitter:image" content={image} />}
   </NextHead>
 );
 
