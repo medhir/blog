@@ -27,9 +27,21 @@ const Home = ({ media }: HomeProps) => {
     return `${src.split("/public")[0]}/w=${width},q=${quality}`;
   };
 
+  const firstMedia = media[0];
+  let ogImageURL;
+  if (firstMedia.type === "photo") {
+    ogImageURL = cloudflareLoader({
+      src: firstMedia.url,
+      quality: 50,
+      width: 500,
+    });
+  } else if (firstMedia.type === "video") {
+    ogImageURL = `https://image.mux.com/${firstMedia.muxPlaybackID}/thumbnail.png?width=600&height=300&fit_mode=crop`;
+  }
+
   return (
     <>
-      <Head title="medhir.com" />
+      <Head title="medhir.com" image={ogImageURL} />
       <section className={styles.medias}>
         {media.map((mediaData, i) => {
           if (mediaData.type === photoMedia) {
