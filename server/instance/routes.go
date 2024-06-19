@@ -7,7 +7,7 @@ import (
 
 // AddRoutes registers all the application handlers to their corresponding url prefixes
 func (i *Instance) AddRoutes() error {
-	h, err := handlers.NewHandlers(i.ctx, i.auth, i.gcs, i.cf, i.db, i.env)
+	h, err := handlers.NewHandlers(i.ctx, i.auth, i.gcs, i.cf, i.db, i.vid, i.env)
 	if err != nil {
 		return err
 	}
@@ -33,5 +33,9 @@ func (i *Instance) AddRoutes() error {
 	i.router.HandleFunc("/blog/assets/", h.Authorize(auth.BlogOwner, h.HandleAssets()))
 	// 	photos
 	i.router.HandleFunc("/photos/", h.HandlePhotos())
+	// videos
+	i.router.HandleFunc("/video", h.HandleVideo())
+	// media
+	i.router.HandleFunc("/media", h.HandleMedia())
 	return nil
 }

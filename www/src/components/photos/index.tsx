@@ -18,34 +18,6 @@ export interface PhotosProps {
 }
 
 const Photos = ({ auth, photos }: PhotosProps) => {
-  // const [displayPhotos, setDisplayPhotos] = useState(photos.slice(0, 5))
-  //
-  // const handleScroll = () => {
-  //   if (
-  //     window.innerHeight + window.scrollY >= document.body.scrollHeight - 900 &&
-  //     displayPhotos.length <= photos.length
-  //   ) {
-  //     const numDisplayPhotos = displayPhotos.length
-  //     const additionalURLs = photos.slice(
-  //       numDisplayPhotos,
-  //       numDisplayPhotos + 1
-  //     )
-  //     const newDisplayPhotos = displayPhotos.concat(additionalURLs)
-  //     setDisplayPhotos(newDisplayPhotos)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   window.addEventListener('scroll', handleScroll)
-  //
-  //   return () => {
-  //     window.removeEventListener('scroll', handleScroll)
-  //   }
-  // })
-  //   const normalizeSrc = (src: string) => {
-  //       return src.startsWith('/') ? src.slice(1) : src;
-  //   };
-
   const cloudflareLoader = ({ src, width, quality }: ImageLoaderProps) => {
     return `${src.split("/public")[0]}/w=${width},q=${quality}`;
   };
@@ -79,11 +51,7 @@ const Photos = ({ auth, photos }: PhotosProps) => {
                 successMessage="photo deleted"
                 occuringMessage="deleting..."
                 errorMessage="unable to delete photo"
-                callback={() => {
-                  // let newDisplayPhotos = displayPhotos.slice()
-                  // newDisplayPhotos.splice(i, 1)
-                  // setDisplayPhotos(newDisplayPhotos)
-                }}
+                callback={() => {}}
               >
                 Delete
               </DeleteButton>

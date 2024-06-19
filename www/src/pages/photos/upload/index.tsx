@@ -1,9 +1,9 @@
 import React from "react";
-import Uploader from "../../../components/uploader";
+import Uploader from "@/components/uploader";
 import { GetServerSideProps } from "next";
-import { Authenticated } from "../../../utility/auth";
-import { Roles } from "../../../components/auth";
-import Login from "../../../components/auth/login";
+import { Authenticated } from "@/utility/auth";
+import { Roles } from "@/components/auth";
+import Login from "@/components/auth/login";
 
 const Upload = ({ auth }: { auth: any }) => {
   if (auth) {

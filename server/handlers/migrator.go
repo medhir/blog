@@ -84,14 +84,14 @@ func (h *handlers) MigrateBlog() http.HandlerFunc {
 			return
 		}
 		// get posts from GCS
-		postsMetadata, err := h.gcs.ListObjects(bucket, "blog/posts/")
+		postsMetadata, err := h.gcs.ListObjects(h.gcs.GetDefaultBucket(), "blog/posts/")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		var posts []blogPost
 		for _, post := range postsMetadata {
-			postData, err := h.gcs.GetObject(post.Name, bucket)
+			postData, err := h.gcs.GetObject(post.Name, h.gcs.GetDefaultBucket())
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -101,14 +101,14 @@ func (h *handlers) MigrateBlog() http.HandlerFunc {
 			posts = append(posts, data)
 		}
 		// get drafts from GCS
-		draftsMetadata, err := h.gcs.ListObjects(bucket, "blog/drafts/")
+		draftsMetadata, err := h.gcs.ListObjects(h.gcs.GetDefaultBucket(), "blog/drafts/")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		var drafts []blogDraft
 		for _, post := range draftsMetadata {
-			draftData, err := h.gcs.GetObject(post.Name, bucket)
+			draftData, err := h.gcs.GetObject(post.Name, h.gcs.GetDefaultBucket())
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return

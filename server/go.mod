@@ -46,6 +46,7 @@ require (
 	github.com/honeycombio/libhoney-go v1.12.4 // indirect
 	github.com/klauspost/compress v1.10.3 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/muxinc/mux-go v1.1.1 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

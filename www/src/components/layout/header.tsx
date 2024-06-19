@@ -3,7 +3,7 @@ import React from "react";
 
 const Header = () => (
   <header>
-    <h1>medhir</h1>
+    <h1>medhir.com</h1>
     <nav>
       <ul>
         <li>
@@ -13,7 +13,7 @@ const Header = () => (
           <Link href="/blog">blog</Link>
         </li>
         <li>
-          <Link href="/photos">photos</Link>
+          <Link href="/">media</Link>
         </li>
       </ul>
     </nav>

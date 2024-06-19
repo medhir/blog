@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"fmt"
+	"github.com/medhir/blog/server/controllers/auth"
 	"io"
 	"log"
 	"net/http"
@@ -14,7 +15,6 @@ import (
 )
 
 const (
-	bucket = "medhir-com"
 	prefix = "photos/"
 )
 
@@ -28,9 +28,9 @@ func (h *handlers) GetPhotos() http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		objects, err := h.gcs.ListObjects(bucket, prefix)
+		objects, err := h.gcs.ListObjects(h.gcs.GetDefaultBucket(), prefix)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Could not retrieve photos, %v/%v", bucket, prefix), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Could not retrieve photos, %v/%v", h.gcs.GetDefaultBucket(), prefix), http.StatusInternalServerError)
 			return
 		}
 		objects.Sort(gcs.ByDateDescending)
@@ -57,7 +57,7 @@ func (h *handlers) GetPhotos() http.HandlerFunc {
 		}
 		err = writeJSON(w, imageData)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Could not write image urls as json: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Could not write images as json: %v", err), http.StatusInternalServerError)
 			return
 		}
 	}
@@ -65,7 +65,11 @@ func (h *handlers) GetPhotos() http.HandlerFunc {
 
 func (h *handlers) PostPhoto() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		r.ParseMultipartForm(32 << 20)
+		err := r.ParseMultipartForm(32 << 20)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		fileHeaders := r.MultipartForm.File["photo"]
 		for _, fileHeader := range fileHeaders {
 			file, err := fileHeader.Open()
@@ -106,19 +110,26 @@ func (h *handlers) PostPhoto() http.HandlerFunc {
 				return
 			}
 			id := uuid.New().String()
-			objectName := fmt.Sprintf("%s%s.jpg", prefix, id)
-			err = h.gcs.UploadObject(objectName, bucket, processedImage, true)
+			objectName := fmt.Sprintf("%s%s.jpg", mediaPrefix, id)
+			err = h.gcs.UploadObject(objectName, h.gcs.GetDefaultBucket(), processedImage, true)
 			if err != nil {
 				log.Printf("Unable to upload image: %s", err.Error())
 				http.Error(w, fmt.Sprintf("Unable to upload image: %s", err.Error()), http.StatusInternalServerError)
 				return
 			}
-			err = h.gcs.AddObjectMetadata(objectName, bucket, map[string]string{
+			err = h.gcs.AddObjectMetadata(objectName, h.gcs.GetDefaultBucket(), map[string]string{
+				"type":        string(photoMedia),
 				"width":       fmt.Sprintf("%d", imageBounds.Width),
 				"height":      fmt.Sprintf("%d", imageBounds.Height),
 				"cdnURL":      cfImage.Variants[0],
 				"blurDataURL": blurDataURL,
 			})
+			if err != nil {
+				msg := fmt.Sprintf("Unable to add object metadata: %s", err.Error())
+				log.Printf(msg)
+				http.Error(w, fmt.Sprintf(msg), http.StatusInternalServerError)
+				return
+			}
 		}
 		w.WriteHeader(http.StatusOK)
 	}
@@ -128,7 +139,7 @@ func (h *handlers) DeletePhoto() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		key := path.Base(r.URL.Path)
 		objectName := fmt.Sprintf("%s%s", prefix, key)
-		metadata, err := h.gcs.GetObjectMetadata(objectName, bucket)
+		metadata, err := h.gcs.GetObjectMetadata(objectName, h.gcs.GetDefaultBucket())
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Unable to get image metadata: %s", err.Error()), http.StatusInternalServerError)
 			return
@@ -138,7 +149,7 @@ func (h *handlers) DeletePhoto() http.HandlerFunc {
 			http.Error(w, fmt.Sprintf("Unable to delete cdn image: %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
-		err = h.gcs.DeleteObject(objectName, bucket)
+		err = h.gcs.DeleteObject(objectName, h.gcs.GetDefaultBucket())
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Unable to delete image: %s", err.Error()), http.StatusInternalServerError)
 			return
@@ -153,11 +164,11 @@ func (h *handlers) HandlePhotos() http.HandlerFunc {
 		case http.MethodGet:
 			h.GetPhotos()(w, r)
 		case http.MethodPost:
-			h.PostPhoto()(w, r)
+			h.Authorize(auth.BlogOwner, h.PostPhoto())(w, r)
 		case http.MethodDelete:
-			h.DeletePhoto()(w, r)
+			h.Authorize(auth.BlogOwner, h.DeletePhoto())(w, r)
 		default:
-			http.Error(w, fmt.Sprintf("unimplemented http handler for method %s", r.Method), http.StatusMethodNotAllowed)
+			http.Error(w, fmt.Sprintf(unimplementedHttpHandlerMessage, r.Method), http.StatusMethodNotAllowed)
 		}
 	}
 }

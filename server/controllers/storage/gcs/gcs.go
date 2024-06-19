@@ -15,23 +15,30 @@ type GCS interface {
 	UploadObject(name, bucket string, obj []byte, public bool) error
 	DeleteObject(name, bucket string) error
 	ListObjects(bucket, prefix string) (Objects, error)
+	GetDefaultBucket() string
 }
 
 const projectID = "blog-121419"
 
 type gcs struct {
-	ctx    context.Context
-	client *storage.Client
+	ctx           context.Context
+	client        *storage.Client
+	defaultBucket string
 }
 
 // NewGCS instantiates a new GCS client wrapper
-func NewGCS(ctx context.Context) (GCS, error) {
+func NewGCS(ctx context.Context, bucket string) (GCS, error) {
 	client, err := storage.NewClient(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return &gcs{
-		ctx:    ctx,
-		client: client,
+		ctx:           ctx,
+		client:        client,
+		defaultBucket: bucket,
 	}, nil
+}
+
+func (g *gcs) GetDefaultBucket() string {
+	return g.defaultBucket
 }

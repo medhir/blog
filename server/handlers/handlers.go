@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/medhir/blog/server/controllers/storage/cf"
+	muxgo "github.com/muxinc/mux-go"
 	"net/http"
 
 	"github.com/medhir/blog/server/controllers/auth"
@@ -16,7 +17,7 @@ import (
 
 // Handlers describes all the http handlers available within the package
 type Handlers interface {
-	// Authentication
+	// Login Authentication
 	Login() http.HandlerFunc
 	ValidateJWT() http.HandlerFunc
 	RefreshJWT() http.HandlerFunc
@@ -41,6 +42,10 @@ type Handlers interface {
 	PostPhoto() http.HandlerFunc
 	DeletePhoto() http.HandlerFunc
 	HandlePhotos() http.HandlerFunc
+	// Videos
+	HandleVideo() http.HandlerFunc
+	// Media
+	HandleMedia() http.HandlerFunc
 }
 
 // handlers describes dependencies needed to serve http requests
@@ -53,11 +58,14 @@ type handlers struct {
 	imgProcessor imageprocessor.ImageProcessor
 	db           sql.Postgres
 	cf           cf.CF
+	video        *muxgo.APIClient
 	env          string
 }
 
+const unimplementedHttpHandlerMessage = "unimplemented http handler for method %s"
+
 // NewHandlers instantiates a new set of handlers
-func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, cf cf.CF, db sql.Postgres, env string) (Handlers, error) {
+func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, cf cf.CF, db sql.Postgres, video *muxgo.APIClient, env string) (Handlers, error) {
 	return &handlers{
 		ctx:          ctx,
 		auth:         auth,
@@ -66,6 +74,7 @@ func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, cf cf.CF, db 
 		imgProcessor: imageprocessor.NewImageProcessor(),
 		db:           db,
 		cf:           cf,
+		video:        video,
 		env:          env,
 	}, nil
 }
@@ -74,10 +83,13 @@ func NewHandlers(ctx context.Context, auth auth.Auth, gcs gcs.GCS, cf cf.CF, db 
 func writeJSON(w http.ResponseWriter, v interface{}) error {
 	data, err := json.Marshal(v)
 	if err != nil {
-		return fmt.Errorf("Could not encode json for %v", v)
+		return fmt.Errorf("could not encode json for %v", v)
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(data)
+	_, err = w.Write(data)
+	if err != nil {
+		return err
+	}
 	return nil
 }
