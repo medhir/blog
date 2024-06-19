@@ -30,9 +30,13 @@ const Home = ({ media }: HomeProps) => {
   const firstMedia = media[0];
   let ogImageURL;
   if (firstMedia.type === "photo") {
-    ogImageURL = firstMedia.url;
+    ogImageURL = cloudflareLoader({
+      src: firstMedia.url,
+      quality: 50,
+      width: 500,
+    });
   } else if (firstMedia.type === "video") {
-    ogImageURL = `https://image.mux.com/${firstMedia.muxPlaybackID}/thumbnail.png?width=214&height=121&fit_mode=crop`;
+    ogImageURL = `https://image.mux.com/${firstMedia.muxPlaybackID}/thumbnail.png?width=600&height=300&fit_mode=crop`;
   }
 
   return (
