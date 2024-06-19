@@ -59,6 +59,7 @@ const Home = ({ media }: HomeProps) => {
                   playbackId={mediaData.muxPlaybackID}
                   autoPlay="any"
                   loop={true}
+                  muted={true}
                   metadata={{
                     video_id: mediaData.name,
                     video_title: `Video ${mediaData.name}`,
