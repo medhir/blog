@@ -14,6 +14,7 @@ interface MediaData {
   width?: number;
   height?: number;
   blurDataURL?: string;
+  muxAspectRatio?: string;
   muxPlaybackID?: string;
 }
 
@@ -57,6 +58,9 @@ const Home = ({ media }: HomeProps) => {
               <div className={styles.media} key={mediaData.name}>
                 <MuxPlayer
                   className={styles.video}
+                  style={{
+                    aspectRatio: mediaData.muxAspectRatio,
+                  }}
                   playbackId={mediaData.muxPlaybackID}
                   autoPlay="any"
                   loop={true}
