@@ -44,6 +44,10 @@
           }
         }
 
+        li:last-child {
+          margin-right: 0px;
+        }
+
         li:hover:after {
           content: "";
           width: 100%;
@@ -52,8 +56,8 @@
           bottom: -4px;
           height: 2px;
           background: linear-gradient(270deg, #1100ff, #f700ff, #1100ff);
-          background-size: 200% 200%;
-          animation: underanimate 5s infinite;
+          background-size: 400% 400%;
+          animation: underanimate 20s infinite;
         }
       }
     }
