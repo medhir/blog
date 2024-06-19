@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"fmt"
+	"github.com/medhir/blog/server/controllers/auth"
 	"io"
 	"log"
 	"net/http"
@@ -56,7 +57,7 @@ func (h *handlers) GetPhotos() http.HandlerFunc {
 		}
 		err = writeJSON(w, imageData)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Could not write image urls as json: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Could not write images as json: %v", err), http.StatusInternalServerError)
 			return
 		}
 	}
@@ -64,7 +65,11 @@ func (h *handlers) GetPhotos() http.HandlerFunc {
 
 func (h *handlers) PostPhoto() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		r.ParseMultipartForm(32 << 20)
+		err := r.ParseMultipartForm(32 << 20)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		fileHeaders := r.MultipartForm.File["photo"]
 		for _, fileHeader := range fileHeaders {
 			file, err := fileHeader.Open()
@@ -105,7 +110,7 @@ func (h *handlers) PostPhoto() http.HandlerFunc {
 				return
 			}
 			id := uuid.New().String()
-			objectName := fmt.Sprintf("%s%s.jpg", prefix, id)
+			objectName := fmt.Sprintf("%s%s.jpg", mediaPrefix, id)
 			err = h.gcs.UploadObject(objectName, h.gcs.GetDefaultBucket(), processedImage, true)
 			if err != nil {
 				log.Printf("Unable to upload image: %s", err.Error())
@@ -113,11 +118,18 @@ func (h *handlers) PostPhoto() http.HandlerFunc {
 				return
 			}
 			err = h.gcs.AddObjectMetadata(objectName, h.gcs.GetDefaultBucket(), map[string]string{
+				"type":        string(photoMedia),
 				"width":       fmt.Sprintf("%d", imageBounds.Width),
 				"height":      fmt.Sprintf("%d", imageBounds.Height),
 				"cdnURL":      cfImage.Variants[0],
 				"blurDataURL": blurDataURL,
 			})
+			if err != nil {
+				msg := fmt.Sprintf("Unable to add object metadata: %s", err.Error())
+				log.Printf(msg)
+				http.Error(w, fmt.Sprintf(msg), http.StatusInternalServerError)
+				return
+			}
 		}
 		w.WriteHeader(http.StatusOK)
 	}
@@ -152,11 +164,11 @@ func (h *handlers) HandlePhotos() http.HandlerFunc {
 		case http.MethodGet:
 			h.GetPhotos()(w, r)
 		case http.MethodPost:
-			h.PostPhoto()(w, r)
+			h.Authorize(auth.BlogOwner, h.PostPhoto())(w, r)
 		case http.MethodDelete:
-			h.DeletePhoto()(w, r)
+			h.Authorize(auth.BlogOwner, h.DeletePhoto())(w, r)
 		default:
-			http.Error(w, fmt.Sprintf("unimplemented http handler for method %s", r.Method), http.StatusMethodNotAllowed)
+			http.Error(w, fmt.Sprintf(unimplementedHttpHandlerMessage, r.Method), http.StatusMethodNotAllowed)
 		}
 	}
 }

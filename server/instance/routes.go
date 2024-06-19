@@ -35,5 +35,7 @@ func (i *Instance) AddRoutes() error {
 	i.router.HandleFunc("/photos/", h.HandlePhotos())
 	// videos
 	i.router.HandleFunc("/video", h.HandleVideo())
+	// media
+	i.router.HandleFunc("/media", h.HandleMedia())
 	return nil
 }
