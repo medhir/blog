@@ -23,17 +23,15 @@
     nav {
       display: flex;
       ul {
-        //li:first-child {
-        //  margin: 10px 10px 10px 0px;
-        //}
         li {
           margin-left: 10px;
           margin-right: 10px;
           position: relative;
           cursor: pointer;
           color: rgb(0, 0, 255);
-          font-size: 1.15rem;
+          font-size: 1.2rem;
           display: inline-block;
+          transition: all ease-in-out 100ms;
 
           a {
             text-decoration: none;
@@ -70,10 +68,14 @@
       h1 {
         font-size: 1.5rem;
       }
-    }
 
-    nav > ul > li {
-      font-size: 1.3em;
+      nav {
+        ul {
+          li {
+            font-size: 1.1rem;
+          }
+        }
+      }
     }
   }
 
@@ -106,8 +108,8 @@
     height: auto;
     padding: 6px 20px;
     background: linear-gradient(45deg, rgb(0, 0, 255), rgb(255, 50, 231));
-    background-size: 400% 200%;
-    animation: underanimate 30s infinite;
+    background-size: 400% 400%;
+    animation: underanimate 60s infinite;
     border-top: 1px solid black;
   }
 
