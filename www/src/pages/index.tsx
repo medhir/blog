@@ -1,6 +1,6 @@
 import Head from "../components/head";
 import Image, { ImageLoaderProps } from "next/image";
-import styles from "@/components/photos/photos.module.scss";
+import styles from "@/pages/index.module.scss";
 import http from "@/utility/http";
 import MuxPlayer from "@mux/mux-player-react";
 
@@ -29,11 +29,11 @@ const Home = ({ media }: HomeProps) => {
   return (
     <>
       <Head title="medhir.com" />
-      <section className={styles.photos}>
+      <section className={styles.medias}>
         {media.map((mediaData, i) => {
           if (mediaData.type === photoMedia) {
             return (
-              <div className={styles.photo} key={mediaData.name}>
+              <div className={styles.media} key={mediaData.name}>
                 <Image
                   src={mediaData.url}
                   alt=""
@@ -54,8 +54,9 @@ const Home = ({ media }: HomeProps) => {
             );
           } else if (mediaData.type === videoMedia) {
             return (
-              <div className={styles.photo} key={mediaData.name}>
+              <div className={styles.media} key={mediaData.name}>
                 <MuxPlayer
+                  className={styles.video}
                   playbackId={mediaData.muxPlaybackID}
                   autoPlay="any"
                   loop={true}

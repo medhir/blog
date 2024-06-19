@@ -1,60 +1,57 @@
-.photos {
-  .photo {
-    width: 40%;
+.medias {
+  width: 100%;
+  .media {
+    width: 30%;
     margin: 10px auto;
     position: relative;
 
     img {
-      //width: 100%;
+      border: 1px solid black;
+    }
+
+    .video {
       border: 1px solid black;
     }
   }
 }
 
 @media only screen and (max-width: 1024px) {
-  .photos {
+  .medias {
     text-align: center;
 
-    .photo {
-      width: 60%;
-
-      img {
-        //width: 99%;
-      }
+    .media {
+      width: 40%;
     }
   }
 }
 
 @media only screen and (max-width: 768px) {
-  .photos {
+  .medias {
     text-align: center;
 
-    .photo {
-      width: 75%;
-
-      img {
-        //width: 99%;
-      }
+    .media {
+      width: 60%;
     }
   }
 }
 
 @media only screen and (max-width: 500px) {
-  .photos {
+  .medias {
     margin: 0;
-    background-color: black;
-
-    .photo:first-child {
+    .media:first-child {
       margin-top: 0px;
     }
 
-    .photo {
+    .media {
       margin: 10px auto;
       width: 100%;
 
       img {
         border: none;
-        //width: 100%;
+      }
+
+      .video {
+        border: none;
       }
     }
   }
@@ -66,4 +63,3 @@
   right: 0;
   margin: 5px;
 }
-
