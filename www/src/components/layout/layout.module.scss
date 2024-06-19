@@ -8,27 +8,32 @@
 
   header {
     display: flex;
-    padding: 8px 16px;
+    padding: 10px 20px;
     background-color: white;
     border-bottom: 1px solid black;
+    align-items: center;
+    justify-content: space-between;
 
     h1 {
       margin-right: 24px;
-      font-size: 2em;
+      font-size: 1.75rem;
+      transition: all ease-in-out 100ms;
     }
 
     nav {
+      display: flex;
       ul {
-        li:first-child {
-          margin: 10px 10px 10px 0px;
-        }
+        //li:first-child {
+        //  margin: 10px 10px 10px 0px;
+        //}
         li {
+          margin-left: 10px;
+          margin-right: 10px;
           position: relative;
           cursor: pointer;
           color: rgb(0, 0, 255);
           font-size: 1.15rem;
           display: inline-block;
-          margin: 10px 10px 0px 10px;
 
           a {
             text-decoration: none;
@@ -57,22 +62,14 @@
   @media only screen and (max-width: 600px) {
     header {
       padding: 10px 20px;
+
+      h1 {
+        font-size: 1.5rem;
+      }
     }
 
     nav > ul > li {
       font-size: 1.3em;
-    }
-
-    nav > ul > li:after {
-      content: "";
-      width: 100%;
-      position: absolute;
-      left: 0;
-      bottom: -2px;
-      height: 1px;
-      background: linear-gradient(270deg, #1100ff, #f700ff, #1100ff);
-      background-size: 200% 200%;
-      animation: underanimate 10s infinite;
     }
   }
 
@@ -103,7 +100,7 @@
 
   footer {
     height: auto;
-    padding: 8px 16px;
+    padding: 6px 20px;
     background: linear-gradient(45deg, rgb(0, 0, 255), rgb(255, 50, 231));
     background-size: 400% 200%;
     animation: underanimate 30s infinite;
@@ -119,7 +116,7 @@
 
   @media only screen and (max-width: 600px) {
     footer {
-      padding: 15px 20px;
+      //padding: 15px 20px;
     }
   }
 }

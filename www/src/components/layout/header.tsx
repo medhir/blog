@@ -3,7 +3,7 @@ import React from "react";
 
 const Header = () => (
   <header>
-    <h1>medhir</h1>
+    <h1>medhir.com</h1>
     <nav>
       <ul>
         <li>
