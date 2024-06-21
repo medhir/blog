@@ -2,7 +2,7 @@ import Head from "../components/head";
 import Image, { ImageLoaderProps } from "next/image";
 import styles from "@/pages/index.module.scss";
 import http from "@/utility/http";
-import MuxPlayer from "@mux/mux-player-react";
+import MuxPlayer from "@mux/mux-player-react/lazy";
 
 const photoMedia = "photo";
 const videoMedia = "video";
